@@ -1,45 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!--
-  Copyright (c) 2015, 2019, Gluon and/or its affiliates.
-  All rights reserved. Use is subject to license terms.
-
-  This file is available and licensed under the following license:
-
-  Redistribution and use in source and binary forms, with or without
-  modification, are permitted provided that the following conditions
-  are met:
-
-  - Redistributions of source code must retain the above copyright
-    notice, this list of conditions and the following disclaimer.
-  - Redistributions in binary form must reproduce the above copyright
-    notice, this list of conditions and the following disclaimer in
-    the documentation and/or other materials provided with the distribution.
-  - Neither the name of Oracle Corporation nor the names of its
-    contributors may be used to endorse or promote products derived
-    from this software without specific prior written permission.
-
-  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
--->
-
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXToggleButton?>
+<?import java.net.URL?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
-<?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
@@ -56,137 +23,138 @@
 
 <!--<?import org.kordamp.ikonli.javafx.StackedFontIcon?>-->
 
-<VBox minWidth="500.0" prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
+<?import com.jfoenix.controls.JFXTabPane?>
+<VBox minWidth="500.0" prefHeight="600.0" prefWidth="900.0" style="-fx-border-radius: 5; -fx-background-color: #ffffff;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.catas.wicked.proxy.gui.AppController">
   <children>
-    <MenuBar VBox.vgrow="NEVER">
-      <menus>
-        <Menu mnemonicParsing="false" text="File">
-          <items>
-            <MenuItem mnemonicParsing="false" text="New" />
-            <MenuItem mnemonicParsing="false" text="Open…" />
-            <Menu mnemonicParsing="false" text="Open Recent" />
-            <SeparatorMenuItem mnemonicParsing="false" />
-            <MenuItem mnemonicParsing="false" text="Close" />
-            <MenuItem mnemonicParsing="false" text="Save" />
-            <MenuItem mnemonicParsing="false" text="Save As…" />
-            <MenuItem mnemonicParsing="false" text="Revert" />
-            <SeparatorMenuItem mnemonicParsing="false" />
-            <MenuItem mnemonicParsing="false" text="Preferences…" />
-            <SeparatorMenuItem mnemonicParsing="false" />
-            <MenuItem mnemonicParsing="false" text="Quit" />
-          </items>
-        </Menu>
-        <Menu mnemonicParsing="false" text="Edit">
-          <items>
-            <MenuItem mnemonicParsing="false" text="Undo" />
-            <MenuItem mnemonicParsing="false" text="Redo" />
-            <SeparatorMenuItem mnemonicParsing="false" />
-            <MenuItem mnemonicParsing="false" text="Cut" />
-            <MenuItem mnemonicParsing="false" text="Copy" />
-            <MenuItem mnemonicParsing="false" text="Paste" />
-            <MenuItem mnemonicParsing="false" text="Delete" />
-            <SeparatorMenuItem mnemonicParsing="false" />
-            <MenuItem mnemonicParsing="false" text="Select All" />
-            <MenuItem mnemonicParsing="false" text="Unselect All" />
-          </items>
-        </Menu>
-            <Menu mnemonicParsing="false" text="Tools">
-              <items>
-                <MenuItem mnemonicParsing="false" text="Action 1" />
-              </items>
-            </Menu>
-            <Menu mnemonicParsing="false" text="proxy">
-               <items>
-                  <MenuItem mnemonicParsing="false" text="Action 1" />
-               </items>
-            </Menu>
-        <Menu mnemonicParsing="false" text="Help">
-          <items>
-            <MenuItem mnemonicParsing="false" text="About MyHelloApp" />
-          </items>
-        </Menu>
-      </menus>
+    <MenuBar style="-fx-background-color: TRANSPARENT;" VBox.vgrow="NEVER">
+      <!--<menus>-->
+      <!--  <Menu mnemonicParsing="false" text="File">-->
+      <!--    <items>-->
+      <!--      <MenuItem mnemonicParsing="false" text="New" />-->
+      <!--      <MenuItem mnemonicParsing="false" text="Open…" />-->
+      <!--      <Menu mnemonicParsing="false" text="Open Recent" />-->
+      <!--      <SeparatorMenuItem mnemonicParsing="false" />-->
+      <!--      <MenuItem mnemonicParsing="false" text="Close" />-->
+      <!--      <MenuItem mnemonicParsing="false" text="Save" />-->
+      <!--      <MenuItem mnemonicParsing="false" text="Save As…" />-->
+      <!--      <MenuItem mnemonicParsing="false" text="Revert" />-->
+      <!--      <SeparatorMenuItem mnemonicParsing="false" />-->
+      <!--      <MenuItem mnemonicParsing="false" text="Preferences…" />-->
+      <!--      <SeparatorMenuItem mnemonicParsing="false" />-->
+      <!--      <MenuItem mnemonicParsing="false" text="Quit" />-->
+      <!--    </items>-->
+      <!--  </Menu>-->
+      <!--  <Menu mnemonicParsing="false" text="Edit">-->
+      <!--    <items>-->
+      <!--      <MenuItem mnemonicParsing="false" text="Undo" />-->
+      <!--      <MenuItem mnemonicParsing="false" text="Redo" />-->
+      <!--      <SeparatorMenuItem mnemonicParsing="false" />-->
+      <!--      <MenuItem mnemonicParsing="false" text="Cut" />-->
+      <!--      <MenuItem mnemonicParsing="false" text="Copy" />-->
+      <!--      <MenuItem mnemonicParsing="false" text="Paste" />-->
+      <!--      <MenuItem mnemonicParsing="false" text="Delete" />-->
+      <!--      <SeparatorMenuItem mnemonicParsing="false" />-->
+      <!--      <MenuItem mnemonicParsing="false" text="Select All" />-->
+      <!--      <MenuItem mnemonicParsing="false" text="Unselect All" />-->
+      <!--    </items>-->
+      <!--  </Menu>-->
+      <!--      <Menu mnemonicParsing="false" text="Tools">-->
+      <!--        <items>-->
+      <!--          <MenuItem mnemonicParsing="false" text="Action 1" />-->
+      <!--        </items>-->
+      <!--      </Menu>-->
+      <!--      <Menu mnemonicParsing="false" text="proxy">-->
+      <!--         <items>-->
+      <!--            <MenuItem mnemonicParsing="false" text="Action 1" />-->
+      <!--         </items>-->
+      <!--      </Menu>-->
+      <!--  <Menu mnemonicParsing="false" text="Help">-->
+      <!--    <items>-->
+      <!--      <MenuItem mnemonicParsing="false" text="About MyHelloApp" />-->
+      <!--    </items>-->
+      <!--  </Menu>-->
+      <!--</menus>-->
     </MenuBar>
       <HBox prefHeight="547.0" prefWidth="900.0" VBox.vgrow="ALWAYS">
-          <AnchorPane maxWidth="55.0" minWidth="50.0" prefHeight="545.0" prefWidth="50.0" style="-fx-border-color: #e3e3e3; -fx-border-image-width: 2; -fx-border-radius: 5;">
-              <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="20.0">
-                  <Button prefWidth="200.0">
-                      <graphic>
-                          <FontIcon iconColor="#ff0b0b" iconLiteral="fas-minus-circle" iconSize="18" />
-                      </graphic>
-                  </Button>
-               <Button prefWidth="200.0">
+          <AnchorPane maxWidth="55.0" minWidth="50.0" prefHeight="545.0" prefWidth="50.0" style="-fx-background-color: TRANSPARENT;">
+              <VBox prefHeight="200.0" prefWidth="100.0" style="-fx-background-color: TRANSPARENT;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="20.0">
+                  <JFXToggleButton size="8.0" toggleColor="#00d7c1" toggleLineColor="#3fbcaf">
+                  <VBox.margin>
+                     <Insets left="-6.0" />
+                  </VBox.margin></JFXToggleButton>
+               <JFXButton prefWidth="200.0">
                   <graphic>
                      <FontIcon iconColor="#616161" iconLiteral="fas-broom" iconSize="18" />
                   </graphic>
                   <VBox.margin>
-                     <Insets top="20.0" />
+                     <Insets />
                   </VBox.margin>
-               </Button>
-                  <Button mnemonicParsing="false" prefWidth="200.0" textOverrun="CLIP">
+               </JFXButton>
+                  <JFXButton mnemonicParsing="false" prefWidth="200.0" textOverrun="CLIP">
                       <graphic>
                           <FontIcon iconColor="#616161" iconLiteral="fas-filter" iconSize="18" />
                       </graphic>
                       <VBox.margin>
                           <Insets top="20.0" />
                       </VBox.margin>
-                  </Button>
-                  <Button mnemonicParsing="false" prefWidth="200.0">
+                  </JFXButton>
+                  <JFXButton mnemonicParsing="false" prefWidth="200.0">
                       <graphic>
                           <FontIcon iconColor="#616161" iconLiteral="fas-bug" iconSize="18" />
                       </graphic>
                       <VBox.margin>
                           <Insets top="20.0" />
                       </VBox.margin>
-                  </Button>
-                  <Button mnemonicParsing="false" prefWidth="200.0">
+                  </JFXButton>
+                  <JFXButton mnemonicParsing="false" prefWidth="200.0">
                       <graphic>
                           <FontIcon iconColor="#616161" iconLiteral="fas-crosshairs" iconSize="18" />
                       </graphic>
                       <VBox.margin>
                           <Insets top="20.0" />
                       </VBox.margin>
-                  </Button>
-                  <Button mnemonicParsing="false" prefWidth="200.0">
+                  </JFXButton>
+                  <JFXButton mnemonicParsing="false" prefWidth="200.0">
                       <graphic>
                           <FontIcon iconColor="#616161" iconLiteral="fas-eye" iconSize="18" />
                       </graphic>
                       <VBox.margin>
                           <Insets top="20.0" />
                       </VBox.margin>
-                  </Button>
-                  <Button mnemonicParsing="false" prefWidth="200.0">
+                  </JFXButton>
+                  <JFXButton mnemonicParsing="false" prefWidth="200.0">
                       <graphic>
                           <FontIcon iconColor="#616161" iconLiteral="fas-marker" iconSize="18" />
                       </graphic>
                       <VBox.margin>
                           <Insets top="20.0" />
                       </VBox.margin>
-                  </Button>
+                  </JFXButton>
 
-                  <VBox prefHeight="350.0" prefWidth="38.0" />
-                  <Button mnemonicParsing="false" prefWidth="200.0">
+                  <!--<VBox prefHeight="350.0" prefWidth="38.0" />-->
+                  <Pane prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="ALWAYS" />
+                  <JFXButton mnemonicParsing="false" prefWidth="200.0">
                       <graphic>
                           <FontIcon iconColor="#616161" iconLiteral="fas-ellipsis-h" iconSize="18" />
                       </graphic>
-                  </Button>
+                  </JFXButton>
               </VBox>
           </AnchorPane>
-          <SplitPane dividerPositions="0.3" focusTraversable="true" minWidth="500.0" prefHeight="547.0" prefWidth="838.0" style="-fx-border-color: #1212ff;" HBox.hgrow="ALWAYS">
+          <SplitPane dividerPositions="0.3" focusTraversable="true" minWidth="500.0" prefHeight="547.0" prefWidth="838.0" HBox.hgrow="ALWAYS">
               <items>
-               <VBox prefHeight="200.0" prefWidth="100.0">
-                  <children>
-                        <ScrollPane minWidth="150.0" prefHeight="520.0" prefWidth="250.0" style="border-width: 0 2 0 0;">
-                            <content>
-                                <TreeView prefHeight="513.0" prefWidth="247.0" />
-                            </content>
-                        </ScrollPane>
-                     <TextField promptText="Filter" />
-                  </children>
-               </VBox>
-                  <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">
+                   <VBox prefHeight="200.0" prefWidth="100.0">
                       <children>
-                          <TabPane minWidth="300.0" prefHeight="567.0" prefWidth="584.0">
+                            <ScrollPane minWidth="150.0" prefHeight="520.0" prefWidth="250.0" VBox.vgrow="ALWAYS">
+                                <content>
+                                    <TreeView prefHeight="538.0" prefWidth="246.0" style="-fx-background-color: #ffffff;" visible="false" />
+                                </content>
+                            </ScrollPane>
+                         <TextField promptText="Filter" style="-fx-background-color: #ffffff;" />
+                      </children>
+                   </VBox>
+                   <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">
+                      <children>
+                          <JFXTabPane minWidth="300.0" prefHeight="567.0" prefWidth="584.0">
                               <tabs>
                                   <Tab text="Request">
                                       <content>
@@ -265,13 +233,13 @@
                                       </content>
                                   </Tab>
                               </tabs>
-                          </TabPane>
+                          </JFXTabPane>
                       </children>
                   </VBox>
               </items>
           </SplitPane>
       </HBox>
-    <HBox id="HBox" alignment="CENTER_LEFT" minHeight="30.0" prefHeight="30.0" prefWidth="900.0" spacing="5.0" VBox.vgrow="NEVER">
+    <HBox id="HBox" alignment="CENTER_LEFT" minHeight="20.0" prefHeight="20.0" prefWidth="900.0" spacing="5.0" style="-fx-background-color: #eeeeee;" VBox.vgrow="NEVER">
       <children>
         <Label maxHeight="1.7976931348623157E308" maxWidth="-1.0" text="Wicked Proxy" HBox.hgrow="ALWAYS">
           <font>
@@ -292,4 +260,8 @@
       </padding>
     </HBox>
   </children>
+   <stylesheets>
+      <URL value="@css/app.css" />
+      <URL value="@css/tabpane.css" />
+   </stylesheets>
 </VBox>

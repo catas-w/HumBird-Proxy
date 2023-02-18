@@ -1,0 +1,26 @@
+.button:armed,
+.button:hover,
+.button:focused,
+.button {
+    -fx-background-color: TRANSPARENT, TRANSPARENT, TRANSPARENT, TRANSPARENT;
+    -fx-background-radius: 3px;
+    -fx-background-insets: 0px;
+}
+
+.menu-bar {
+    -fx-background-color: TRANSPARENT;
+}
+
+.root {
+    -fx-background-color: #ffffff;
+}
+
+.button:hover {
+    -fx-opacity: 0.5;
+}
+
+.split-pane > .split-pane-divider {
+    -fx-padding: 0 0.75 0 0.75;
+    -fx-background-color: #d5d5d5;
+}
+

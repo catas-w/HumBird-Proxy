@@ -1,6 +1,8 @@
-package com.catas.wicked.proxy;
+package com.catas.wicked.proxy.gui;
 
+import com.jfoenix.assets.JFoenixResources;
 import javafx.application.Application;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -12,7 +14,10 @@ public class WickedProxyApplication extends Application {
     public void start(Stage primaryStage) throws Exception{
         Parent root = FXMLLoader.load(getClass().getResource("/application.fxml"));
         // primaryStage.setTitle("Hello World");
-        primaryStage.setScene(new Scene(root));
+        Scene scene = new Scene(root);
+        primaryStage.setScene(scene);
+        ObservableList<String> css = scene.getStylesheets();
+        // css.add(getClass().getResource("css/app.css").toExternalForm());
         primaryStage.show();
     }
 
