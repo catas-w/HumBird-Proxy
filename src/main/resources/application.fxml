@@ -32,12 +32,8 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 
-<?import com.gluonhq.charm.glisten.control.Avatar?>
-<?import com.gluonhq.charm.glisten.control.ExpansionPanel?>
-<?import com.gluonhq.charm.glisten.control.ExpansionPanel.CollapsedPanel?>
-<?import com.gluonhq.charm.glisten.control.ExpansionPanelContainer?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Accordion?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
@@ -47,15 +43,20 @@
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.control.TreeView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.paint.Color?>
 <?import javafx.scene.text.Font?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
 
-<VBox prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
+<!--<?import org.kordamp.ikonli.javafx.StackedFontIcon?>-->
+
+<VBox minWidth="500.0" prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
   <children>
     <MenuBar VBox.vgrow="NEVER">
       <menus>
@@ -107,102 +108,168 @@
       </menus>
     </MenuBar>
       <HBox prefHeight="547.0" prefWidth="900.0" VBox.vgrow="ALWAYS">
-         <children>
-            <AnchorPane maxWidth="55.0" minWidth="55.0" prefHeight="545.0" prefWidth="56.0" style="-fx-border-color: #e3e3e3; -fx-border-image-width: 2; -fx-border-radius: 5;">
-               <children>
-                  <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                     <children>
-                        <Avatar />
-                     </children>
-                  </VBox>
-               </children>
-            </AnchorPane>
-          <SplitPane dividerPositions="0.3" focusTraversable="true" prefHeight="547.0" prefWidth="838.0" style="-fx-border-color: #1212ff;" HBox.hgrow="ALWAYS">
-            <items>
-                  <ScrollPane prefHeight="200.0" prefWidth="200.0" style="border-width: 0 2 0 0;">
-                     <content>
-                          <Label alignment="CENTER" minWidth="60.0" prefWidth="-1.0" style="&#10;" text="Master" textAlignment="CENTER" wrapText="false">
-                            <font>
-                              <Font size="18.0" fx:id="x1" />
-                            </font>
-                            <textFill>
-                              <Color red="0.624" green="0.624" blue="0.624" fx:id="x2" />
-                            </textFill>
-                          </Label>
-                     </content>
-                  </ScrollPane>
+          <AnchorPane maxWidth="55.0" minWidth="50.0" prefHeight="545.0" prefWidth="50.0" style="-fx-border-color: #e3e3e3; -fx-border-image-width: 2; -fx-border-radius: 5;">
+              <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="20.0">
+                  <Button prefWidth="200.0">
+                      <graphic>
+                          <FontIcon iconColor="#ff0b0b" iconLiteral="fas-minus-circle" iconSize="18" />
+                      </graphic>
+                  </Button>
+               <Button prefWidth="200.0">
+                  <graphic>
+                     <FontIcon iconColor="#616161" iconLiteral="fas-broom" iconSize="18" />
+                  </graphic>
+                  <VBox.margin>
+                     <Insets top="20.0" />
+                  </VBox.margin>
+               </Button>
+                  <Button mnemonicParsing="false" prefWidth="200.0" textOverrun="CLIP">
+                      <graphic>
+                          <FontIcon iconColor="#616161" iconLiteral="fas-filter" iconSize="18" />
+                      </graphic>
+                      <VBox.margin>
+                          <Insets top="20.0" />
+                      </VBox.margin>
+                  </Button>
+                  <Button mnemonicParsing="false" prefWidth="200.0">
+                      <graphic>
+                          <FontIcon iconColor="#616161" iconLiteral="fas-bug" iconSize="18" />
+                      </graphic>
+                      <VBox.margin>
+                          <Insets top="20.0" />
+                      </VBox.margin>
+                  </Button>
+                  <Button mnemonicParsing="false" prefWidth="200.0">
+                      <graphic>
+                          <FontIcon iconColor="#616161" iconLiteral="fas-crosshairs" iconSize="18" />
+                      </graphic>
+                      <VBox.margin>
+                          <Insets top="20.0" />
+                      </VBox.margin>
+                  </Button>
+                  <Button mnemonicParsing="false" prefWidth="200.0">
+                      <graphic>
+                          <FontIcon iconColor="#616161" iconLiteral="fas-eye" iconSize="18" />
+                      </graphic>
+                      <VBox.margin>
+                          <Insets top="20.0" />
+                      </VBox.margin>
+                  </Button>
+                  <Button mnemonicParsing="false" prefWidth="200.0">
+                      <graphic>
+                          <FontIcon iconColor="#616161" iconLiteral="fas-marker" iconSize="18" />
+                      </graphic>
+                      <VBox.margin>
+                          <Insets top="20.0" />
+                      </VBox.margin>
+                  </Button>
+
+                  <VBox prefHeight="350.0" prefWidth="38.0" />
+                  <Button mnemonicParsing="false" prefWidth="200.0">
+                      <graphic>
+                          <FontIcon iconColor="#616161" iconLiteral="fas-ellipsis-h" iconSize="18" />
+                      </graphic>
+                  </Button>
+              </VBox>
+          </AnchorPane>
+          <SplitPane dividerPositions="0.3" focusTraversable="true" minWidth="500.0" prefHeight="547.0" prefWidth="838.0" style="-fx-border-color: #1212ff;" HBox.hgrow="ALWAYS">
+              <items>
+               <VBox prefHeight="200.0" prefWidth="100.0">
+                  <children>
+                        <ScrollPane minWidth="150.0" prefHeight="520.0" prefWidth="250.0" style="border-width: 0 2 0 0;">
+                            <content>
+                                <TreeView prefHeight="513.0" prefWidth="247.0" />
+                            </content>
+                        </ScrollPane>
+                     <TextField promptText="Filter" />
+                  </children>
+               </VBox>
                   <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">
-                     <children>
-                        <TabPane prefHeight="567.0" prefWidth="584.0">
-                          <tabs>
-                            <Tab text="Request">
-                              <content>
-                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="388.0" prefWidth="584.0">
-                                   <children>
-                                          <Accordion layoutX="87.0" prefHeight="474.0" prefWidth="289.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                            <panes>
-                                              <TitledPane text="Headers">
-                                                <content>
-                                                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-                                                </content>
-                                              </TitledPane>
-                                              <TitledPane text="Payload">
-                                                <content>
-                                                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-                                                </content>
-                                              </TitledPane>
-                                              <TitledPane text="untitled 3">
-                                                <content>
-                                                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-                                                </content>
-                                              </TitledPane>
-                                            </panes>
-                                          </Accordion>
-                                   </children>
-                                </AnchorPane>
-                              </content>
-                            </Tab>
-                            <Tab text="Response">
-                              <content>
-                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                                       <children>
-                                          <ExpansionPanelContainer prefHeight="485.0" prefWidth="584.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                              <items>
-                                                  <ExpansionPanel>
-                                                      <collapsedContent>
-                                                          <ExpansionPanel.CollapsedPanel>
-                                                              <titleNodes>
-                                                                  <Label text="Headers" />
-                                                              </titleNodes>
-                                                          </ExpansionPanel.CollapsedPanel>
-                                                      </collapsedContent>
-                                                  </ExpansionPanel>
-                                                  <ExpansionPanel>
-                                                      <collapsedContent>
-                                                          <ExpansionPanel.CollapsedPanel>
-                                                              <titleNodes>
-                                                                  <Label text="Preview" />
-                                                              </titleNodes>
-                                                          </ExpansionPanel.CollapsedPanel>
-                                                      </collapsedContent>
-                                                  </ExpansionPanel>
-                                              </items>
-                                          </ExpansionPanelContainer>
-                                       </children></AnchorPane>
-                              </content>
-                            </Tab>
-                              <Tab text="Timing">
-                                 <content>
-                                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-                                 </content>
-                              </Tab>
-                          </tabs>
-                        </TabPane>
-                     </children>
+                      <children>
+                          <TabPane minWidth="300.0" prefHeight="567.0" prefWidth="584.0">
+                              <tabs>
+                                  <Tab text="Request">
+                                      <content>
+                                          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="388.0" prefWidth="584.0">
+                                              <children>
+                                                  <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                      <children>
+                                                          <TitledPane animated="false" text="Headers">
+                                                              <content>
+                                                                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                                                              </content>
+                                                          </TitledPane>
+                                                          <TitledPane animated="false" text="Payload">
+                                                              <content>
+                                                                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                                                              </content>
+                                                          </TitledPane>
+                                                          <TitledPane animated="false" text="untitled">
+                                                              <content>
+                                                                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                                                              </content>
+                                                          </TitledPane>
+                                                      </children>
+                                                  </VBox>
+                                              </children>
+                                          </AnchorPane>
+                                      </content>
+                                  </Tab>
+                                  <Tab text="Response">
+                                      <content>
+                                          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                              <children>
+                                                  <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                      <children>
+                                                          <TitledPane animated="false" text="Headers">
+                                                              <content>
+                                                                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                                                              </content>
+                                                          </TitledPane>
+                                                          <TitledPane animated="false" text="Preview">
+                                                              <content>
+                                                                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                                                              </content>
+                                                          </TitledPane>
+                                                          <TitledPane animated="false" text="untitled">
+                                                              <content>
+                                                                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                                                              </content>
+                                                          </TitledPane>
+                                                      </children>
+                                                  </VBox>
+                                              </children>
+                                          </AnchorPane>
+                                      </content>
+                                  </Tab>
+                                  <Tab text="Timing">
+                                      <content>
+                                          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                              <children>
+                                                  <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                      <children>
+                                                          <TitledPane animated="false" text="untitled">
+                                                              <content>
+                                                                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                                                              </content>
+                                                          </TitledPane>
+                                                          <TitledPane animated="false" text="untitled">
+                                                              <content>
+                                                                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                                                              </content>
+                                                          </TitledPane>
+                                                      </children>
+                                                  </VBox>
+                                              </children>
+                                          </AnchorPane>
+                                      </content>
+                                  </Tab>
+                              </tabs>
+                          </TabPane>
+                      </children>
                   </VBox>
-            </items>
+              </items>
           </SplitPane>
-         </children>
       </HBox>
     <HBox id="HBox" alignment="CENTER_LEFT" minHeight="30.0" prefHeight="30.0" prefWidth="900.0" spacing="5.0" VBox.vgrow="NEVER">
       <children>
@@ -213,6 +280,9 @@
           <textFill>
             <Color red="0.625" green="0.625" blue="0.625" fx:id="x4" />
           </textFill>
+               <HBox.margin>
+                  <Insets left="5.0" />
+               </HBox.margin>
         </Label>
         <Pane prefHeight="-1.0" prefWidth="-1.0" HBox.hgrow="ALWAYS" />
         <Label font="$x3" maxWidth="-1.0" text="v1.0.0" textFill="$x4" HBox.hgrow="NEVER" />

@@ -35,17 +35,26 @@
             <version>9.0.10</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/com.gluonhq/gluonfx-maven-plugin -->
         <dependency>
             <groupId>com.gluonhq</groupId>
             <artifactId>gluonfx-maven-plugin</artifactId>
             <version>1.0.16</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/com.gluonhq/charm -->
+        <!--<dependency>-->
+        <!--    <groupId>com.gluonhq</groupId>-->
+        <!--    <artifactId>charm</artifactId>-->
+        <!--    <version>6.2.2</version>-->
+        <!--</dependency>-->
+
         <dependency>
-            <groupId>com.gluonhq</groupId>
-            <artifactId>charm</artifactId>
-            <version>6.2.2</version>
+            <groupId>org.kordamp.ikonli</groupId>
+            <artifactId>ikonli-fontawesome5-pack</artifactId>
+            <version>12.3.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.kordamp.ikonli</groupId>
+            <artifactId>ikonli-javafx</artifactId>
+            <version>12.3.1</version>
         </dependency>
 
 
