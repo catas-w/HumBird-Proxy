@@ -26,7 +26,7 @@
 
 
 .jfx-tab-pane .headers-region > .tab-selected-line{
-    -fx-pref-width: 1px !important;
+    -fx-pref-width: 12px !important;
     -fx-pref-height: 2px;
 }
 
@@ -35,7 +35,8 @@
 }
 
 .jfx-tab-pane .headers-region .tab-selected-line {
-    -fx-background-color: #00b7ce;;
+    -fx-background-color: #00b7ce;
+    /*-fx-background-color: TRANSPARENT;*/
 }
 
 
@@ -55,10 +56,13 @@
 }
 .jfx-tab-pane .headers-region .tab:closable .tab-container .tab-label{
     -fx-padding: 0 8 0 6;
+    -fx-background-color: #cbcbcb;
 }
 
-
-
 .jfx-tab-pane .headers-region .tab:selected .tab-container .tab-label {
-    -fx-text-fill: WHITE;
+    -fx-text-fill: #00b7ce;
+}
+
+.jfx-tab-pane .headers-region .tab {
+
 }

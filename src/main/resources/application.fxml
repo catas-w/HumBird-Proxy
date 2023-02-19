@@ -24,6 +24,10 @@
 <!--<?import org.kordamp.ikonli.javafx.StackedFontIcon?>-->
 
 <?import com.jfoenix.controls.JFXTabPane?>
+<?import com.jfoenix.controls.JFXTreeView?>
+<?import javafx.scene.control.TreeItem?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
 <VBox minWidth="500.0" prefHeight="600.0" prefWidth="900.0" style="-fx-border-radius: 5; -fx-background-color: #ffffff;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.catas.wicked.proxy.gui.AppController">
   <children>
     <MenuBar style="-fx-background-color: TRANSPARENT;" VBox.vgrow="NEVER">
@@ -144,21 +148,51 @@
               <items>
                    <VBox prefHeight="200.0" prefWidth="100.0">
                       <children>
-                            <ScrollPane minWidth="150.0" prefHeight="520.0" prefWidth="250.0" VBox.vgrow="ALWAYS">
-                                <content>
-                                    <TreeView prefHeight="538.0" prefWidth="246.0" style="-fx-background-color: #ffffff;" visible="false" />
-                                </content>
-                            </ScrollPane>
+                          <ScrollPane minWidth="150.0" prefHeight="520.0" prefWidth="250.0" VBox.vgrow="ALWAYS">
+                              <!--<TreeView id="reqTreeView" prefHeight="538.0" prefWidth="246.0" />-->
+                              <TreeView>
+                                  <TreeItem value="path" expanded="true">
+                                      <children>
+                                          <TreeItem value = "www.googlegooglegooglegooglegooglegoogle.com" expanded="true">
+                                              <graphic>
+                                                  <ImageView fitHeight="15" fitWidth="15">
+                                                      <Image url="/image/file.jpg" />
+                                                  </ImageView>
+                                              </graphic>
+                                              <children>
+                                                  <TreeItem value="/login" />
+                                                  <TreeItem value="/index" />
+                                              </children>
+                                          </TreeItem>
+                                          <TreeItem value = "www.amazon.com" expanded="true">
+                                              <graphic>
+                                                  <ImageView fitHeight="15" fitWidth="15">
+                                                      <Image url="/image/file.jpg" />
+                                                  </ImageView>
+                                              </graphic>
+                                              <children>
+                                                  <TreeItem value="/login" />
+                                                  <TreeItem value="/index">
+                                                      <children>
+                                                          <TreeItem value="/1"/>
+                                                      </children>
+                                                  </TreeItem>
+                                              </children>
+                                          </TreeItem>
+                                      </children>
+                                  </TreeItem>
+                              </TreeView>
+                          </ScrollPane>
                          <TextField promptText="Filter" style="-fx-background-color: #ffffff;" />
                       </children>
                    </VBox>
                    <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">
                       <children>
-                          <JFXTabPane minWidth="300.0" prefHeight="567.0" prefWidth="584.0">
+                          <JFXTabPane minWidth="300.0" prefHeight="567.0" prefWidth="584.0" VBox.vgrow="ALWAYS" style="-fx-background-color: TRANSPARENT;">
                               <tabs>
-                                  <Tab text="Request">
+                                  <Tab text="  Request  ">
                                       <content>
-                                          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="388.0" prefWidth="584.0">
+                                          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="388.0" prefWidth="584.0" style="-fx-background-color: #ffffff;">
                                               <children>
                                                   <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                                       <children>
@@ -183,7 +217,7 @@
                                           </AnchorPane>
                                       </content>
                                   </Tab>
-                                  <Tab text="Response">
+                                  <Tab text="  Response  ">
                                       <content>
                                           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                               <children>
@@ -210,7 +244,7 @@
                                           </AnchorPane>
                                       </content>
                                   </Tab>
-                                  <Tab text="Timing">
+                                  <Tab text="   Timing   ">
                                       <content>
                                           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                               <children>
@@ -221,7 +255,7 @@
                                                                   <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
                                                               </content>
                                                           </TitledPane>
-                                                          <TitledPane animated="false" text="untitled">
+                                                          <TitledPane animated="false" text="untitled" >
                                                               <content>
                                                                   <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
                                                               </content>
@@ -263,5 +297,6 @@
    <stylesheets>
       <URL value="@css/app.css" />
       <URL value="@css/tabpane.css" />
+      <URL value="@css/titlepane.css" />
    </stylesheets>
 </VBox>

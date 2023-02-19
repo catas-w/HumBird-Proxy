@@ -24,3 +24,12 @@
     -fx-background-color: #d5d5d5;
 }
 
+.scroll-bar {
+    -fx-background-color: #ffffff;
+}
+
+.scroll-bar:horizontal .thumb,
+.scroll-bar:vertical .thumb {
+    -fx-background-color: #bababa;
+    -fx-background-radius: 5em;
+}
