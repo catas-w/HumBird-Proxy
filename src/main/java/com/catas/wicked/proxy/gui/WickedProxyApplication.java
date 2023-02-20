@@ -13,7 +13,6 @@ public class WickedProxyApplication extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception{
         Parent root = FXMLLoader.load(getClass().getResource("/application.fxml"));
-        // primaryStage.setTitle("Hello World");
         Scene scene = new Scene(root);
         primaryStage.setScene(scene);
         ObservableList<String> css = scene.getStylesheets();

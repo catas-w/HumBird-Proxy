@@ -20,8 +20,8 @@
 }
 
 .split-pane > .split-pane-divider {
-    -fx-padding: 0 0.75 0 0.75;
-    -fx-background-color: #d5d5d5;
+    -fx-padding: 0 0.5 0 0.5;
+    -fx-background-color: #e3e3e3;
 }
 
 .scroll-bar {

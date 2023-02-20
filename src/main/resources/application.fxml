@@ -4,14 +4,15 @@
 <?import com.jfoenix.controls.JFXToggleButton?>
 <?import java.net.URL?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.MenuBar?>
-<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.control.TreeItem?>
 <?import javafx.scene.control.TreeView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
@@ -19,65 +20,19 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.paint.Color?>
 <?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.text.TextFlow?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
 <!--<?import org.kordamp.ikonli.javafx.StackedFontIcon?>-->
 
-<?import com.jfoenix.controls.JFXTabPane?>
-<?import com.jfoenix.controls.JFXTreeView?>
-<?import javafx.scene.control.TreeItem?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.image.Image?>
+<?import com.jfoenix.controls.JFXTabPane?>
+<?import com.jfoenix.controls.JFXTextArea?>
 <VBox minWidth="500.0" prefHeight="600.0" prefWidth="900.0" style="-fx-border-radius: 5; -fx-background-color: #ffffff;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.catas.wicked.proxy.gui.AppController">
   <children>
     <MenuBar style="-fx-background-color: TRANSPARENT;" VBox.vgrow="NEVER">
-      <!--<menus>-->
-      <!--  <Menu mnemonicParsing="false" text="File">-->
-      <!--    <items>-->
-      <!--      <MenuItem mnemonicParsing="false" text="New" />-->
-      <!--      <MenuItem mnemonicParsing="false" text="Open…" />-->
-      <!--      <Menu mnemonicParsing="false" text="Open Recent" />-->
-      <!--      <SeparatorMenuItem mnemonicParsing="false" />-->
-      <!--      <MenuItem mnemonicParsing="false" text="Close" />-->
-      <!--      <MenuItem mnemonicParsing="false" text="Save" />-->
-      <!--      <MenuItem mnemonicParsing="false" text="Save As…" />-->
-      <!--      <MenuItem mnemonicParsing="false" text="Revert" />-->
-      <!--      <SeparatorMenuItem mnemonicParsing="false" />-->
-      <!--      <MenuItem mnemonicParsing="false" text="Preferences…" />-->
-      <!--      <SeparatorMenuItem mnemonicParsing="false" />-->
-      <!--      <MenuItem mnemonicParsing="false" text="Quit" />-->
-      <!--    </items>-->
-      <!--  </Menu>-->
-      <!--  <Menu mnemonicParsing="false" text="Edit">-->
-      <!--    <items>-->
-      <!--      <MenuItem mnemonicParsing="false" text="Undo" />-->
-      <!--      <MenuItem mnemonicParsing="false" text="Redo" />-->
-      <!--      <SeparatorMenuItem mnemonicParsing="false" />-->
-      <!--      <MenuItem mnemonicParsing="false" text="Cut" />-->
-      <!--      <MenuItem mnemonicParsing="false" text="Copy" />-->
-      <!--      <MenuItem mnemonicParsing="false" text="Paste" />-->
-      <!--      <MenuItem mnemonicParsing="false" text="Delete" />-->
-      <!--      <SeparatorMenuItem mnemonicParsing="false" />-->
-      <!--      <MenuItem mnemonicParsing="false" text="Select All" />-->
-      <!--      <MenuItem mnemonicParsing="false" text="Unselect All" />-->
-      <!--    </items>-->
-      <!--  </Menu>-->
-      <!--      <Menu mnemonicParsing="false" text="Tools">-->
-      <!--        <items>-->
-      <!--          <MenuItem mnemonicParsing="false" text="Action 1" />-->
-      <!--        </items>-->
-      <!--      </Menu>-->
-      <!--      <Menu mnemonicParsing="false" text="proxy">-->
-      <!--         <items>-->
-      <!--            <MenuItem mnemonicParsing="false" text="Action 1" />-->
-      <!--         </items>-->
-      <!--      </Menu>-->
-      <!--  <Menu mnemonicParsing="false" text="Help">-->
-      <!--    <items>-->
-      <!--      <MenuItem mnemonicParsing="false" text="About MyHelloApp" />-->
-      <!--    </items>-->
-      <!--  </Menu>-->
-      <!--</menus>-->
     </MenuBar>
       <HBox prefHeight="547.0" prefWidth="900.0" VBox.vgrow="ALWAYS">
           <AnchorPane maxWidth="55.0" minWidth="50.0" prefHeight="545.0" prefWidth="50.0" style="-fx-background-color: TRANSPARENT;">
@@ -148,47 +103,44 @@
               <items>
                    <VBox prefHeight="200.0" prefWidth="100.0">
                       <children>
-                          <ScrollPane minWidth="150.0" prefHeight="520.0" prefWidth="250.0" VBox.vgrow="ALWAYS">
-                              <!--<TreeView id="reqTreeView" prefHeight="538.0" prefWidth="246.0" />-->
-                              <TreeView>
-                                  <TreeItem value="path" expanded="true">
-                                      <children>
-                                          <TreeItem value = "www.googlegooglegooglegooglegooglegoogle.com" expanded="true">
-                                              <graphic>
-                                                  <ImageView fitHeight="15" fitWidth="15">
-                                                      <Image url="/image/file.jpg" />
-                                                  </ImageView>
-                                              </graphic>
-                                              <children>
-                                                  <TreeItem value="/login" />
-                                                  <TreeItem value="/index" />
-                                              </children>
-                                          </TreeItem>
-                                          <TreeItem value = "www.amazon.com" expanded="true">
-                                              <graphic>
-                                                  <ImageView fitHeight="15" fitWidth="15">
-                                                      <Image url="/image/file.jpg" />
-                                                  </ImageView>
-                                              </graphic>
-                                              <children>
-                                                  <TreeItem value="/login" />
-                                                  <TreeItem value="/index">
-                                                      <children>
-                                                          <TreeItem value="/1"/>
-                                                      </children>
-                                                  </TreeItem>
-                                              </children>
-                                          </TreeItem>
-                                      </children>
-                                  </TreeItem>
-                              </TreeView>
-                          </ScrollPane>
+                          <TreeView fx:id="reqTreeView" prefHeight="553.0" prefWidth="254.0" showRoot="false" VBox.vgrow="ALWAYS">
+                              <TreeItem expanded="true" value="path">
+                                  <children>
+                                      <TreeItem expanded="true" value="https://www.googlegooglegooglegooglegooglegoogle.com">
+                                          <graphic>
+                                              <ImageView fitHeight="15" fitWidth="15">
+                                                  <Image url="/image/file.jpg" />
+                                              </ImageView>
+                                          </graphic>
+                                          <children>
+                                              <TreeItem value="/login" />
+                                              <TreeItem value="/index" />
+                                          </children>
+                                      </TreeItem>
+                                      <TreeItem expanded="true" value="http://www.amazon.com">
+                                          <graphic>
+                                              <ImageView fitHeight="15" fitWidth="15">
+                                                  <Image url="/image/file.jpg" />
+                                              </ImageView>
+                                          </graphic>
+                                          <children>
+                                              <TreeItem value="/login" />
+                                              <TreeItem value="/index">
+                                                  <children>
+                                                      <TreeItem value="/1" />
+                                                  </children>
+                                              </TreeItem>
+                                          </children>
+                                      </TreeItem>
+                                  </children>
+                              </TreeItem>
+                          </TreeView>
                          <TextField promptText="Filter" style="-fx-background-color: #ffffff;" />
                       </children>
                    </VBox>
                    <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">
                       <children>
-                          <JFXTabPane minWidth="300.0" prefHeight="567.0" prefWidth="584.0" VBox.vgrow="ALWAYS" style="-fx-background-color: TRANSPARENT;">
+                          <JFXTabPane minWidth="300.0" prefHeight="567.0" prefWidth="584.0" style="-fx-background-color: TRANSPARENT;" VBox.vgrow="ALWAYS">
                               <tabs>
                                   <Tab text="  Request  ">
                                       <content>
@@ -198,13 +150,20 @@
                                                       <children>
                                                           <TitledPane animated="false" text="Headers">
                                                               <content>
-                                                                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                                                                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                                                      <JFXTextArea fx:id="reqHeaderText" disable="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                                         <cursor>
+                                                                            <Cursor fx:constant="TEXT" />
+                                                                         </cursor>
+                                                                      </JFXTextArea>
+                                                                  </AnchorPane>
                                                               </content>
                                                           </TitledPane>
                                                           <TitledPane animated="false" text="Payload">
-                                                              <content>
-                                                                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-                                                              </content>
+                                                              <AnchorPane minHeight="0.0" minWidth="0.0"
+                                                                          prefHeight="180.0" prefWidth="200.0">
+                                                                  <JFXTextArea text="csaavdava" fx:id="reqPayload" promptText="Data" disable="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
+                                                              </AnchorPane>
                                                           </TitledPane>
                                                           <TitledPane animated="false" text="untitled">
                                                               <content>
@@ -255,7 +214,7 @@
                                                                   <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
                                                               </content>
                                                           </TitledPane>
-                                                          <TitledPane animated="false" text="untitled" >
+                                                          <TitledPane animated="false" text="untitled">
                                                               <content>
                                                                   <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
                                                               </content>
