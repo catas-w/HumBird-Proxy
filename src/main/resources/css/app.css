@@ -33,3 +33,33 @@
     -fx-background-color: #bababa;
     -fx-background-radius: 5em;
 }
+
+.jfx-list-cell-container .label {
+    -fx-text-fill: BLACK;
+}
+
+.jfx-list-cell:odd:selected .jfx-list-cell-container,
+.jfx-list-cell:even:selected .jfx-list-cell-container {
+    -fx-background-color: rgb(0.0, 0.0, 255.0);
+}
+
+.jfx-list-cell:odd:selected,
+.jfx-list-cell:even:selected {
+    -fx-background-color: #12abe7;
+}
+
+
+.jfx-list-cell:odd,
+.jfx-list-cell:even {
+    -fx-background-color: white;
+}
+
+
+.combo-box-popup .list-view .jfx-list-cell {
+    -fx-background-insets: 0.0;
+    -fx-text-fill: BLACK;
+}
+
+.combo-box-popup .list-view .jfx-list-cell:filled:hover {
+    -fx-text-fill: black;
+}

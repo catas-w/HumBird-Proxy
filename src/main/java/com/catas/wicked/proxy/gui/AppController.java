@@ -1,20 +1,29 @@
 package com.catas.wicked.proxy.gui;
 
+import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXPopup;
 import com.jfoenix.controls.JFXTextArea;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Cursor;
+import javafx.scene.control.TitledPane;
 import javafx.scene.control.TreeView;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextFlow;
+import javafx.scene.layout.VBox;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
 public class AppController implements Initializable {
+
+    @FXML
+    public TitledPane reqOtherPane;
+
+    @FXML
+    public TitledPane reqPayloadPane;
+
+    @FXML
+    private TitledPane reqHeaderPane;
 
     @FXML
     private TreeView<String> reqTreeView;
@@ -24,6 +33,14 @@ public class AppController implements Initializable {
 
     @FXML
     private JFXTextArea reqPayload;
+
+    @FXML
+    private JFXButton menuButton;
+
+    @FXML
+    private VBox reqVBox;
+
+    private JFXPopup popup;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -49,10 +66,28 @@ public class AppController implements Initializable {
                 "upgrade-insecure-requests: 1\n" +
                 "user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36");
         reqHeaderText.setEditable(false);
+
+        addTitleListener(reqHeaderPane);
+        addTitleListener(reqPayloadPane);
+        addTitleListener(reqOtherPane);
+
+        try {
+            popup = new JFXPopup(FXMLLoader.load(getClass().getResource("/fxml/mainMenu.fxml")));
+        } catch (IOException ioExc) {
+            ioExc.printStackTrace();
+        }
+        menuButton.setOnMouseClicked((e) ->
+                popup.show(menuButton, JFXPopup.PopupVPosition.BOTTOM, JFXPopup.PopupHPosition.LEFT));
     }
 
-    @FXML
-    public void onHeaderInput(ActionEvent event) {
-
+    private void addTitleListener(TitledPane pane) {
+        pane.expandedProperty().addListener((observable, oldValue, newValue) -> {
+            //make it fill space when expanded but not reserve space when collapsed
+            if (newValue) {
+                pane.maxHeightProperty().set(Double.POSITIVE_INFINITY);
+            } else {
+                pane.maxHeightProperty().set(Double.NEGATIVE_INFINITY);
+            }
+        });
     }
 }
