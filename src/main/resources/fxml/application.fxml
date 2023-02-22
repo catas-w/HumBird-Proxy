@@ -1,14 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXTextArea?>
 <?import com.jfoenix.controls.JFXToggleButton?>
 <?import java.net.URL?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.control.TreeItem?>
@@ -16,6 +21,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.paint.Color?>
 <?import javafx.scene.text.Font?>
@@ -23,10 +29,7 @@
 
 <!--<?import org.kordamp.ikonli.javafx.StackedFontIcon?>-->
 
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.image.Image?>
 <?import com.jfoenix.controls.JFXTabPane?>
-<?import com.jfoenix.controls.JFXTextArea?>
 <VBox minWidth="500.0" prefHeight="600.0" prefWidth="900.0" style="-fx-border-radius: 5; -fx-background-color: #ffffff;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.catas.wicked.proxy.gui.AppController">
   <children>
     <MenuBar style="-fx-background-color: TRANSPARENT;" VBox.vgrow="NEVER">
@@ -105,9 +108,7 @@
                                   <children>
                                       <TreeItem expanded="true" value="https://www.googlegooglegooglegooglegooglegoogle.com">
                                           <graphic>
-                                              <ImageView fitHeight="15" fitWidth="15">
-                                                  <Image url="/image/file.jpg" />
-                                              </ImageView>
+                                              <FontIcon iconColor="#616161" iconLiteral="fas-globe-africa" iconSize="12" />
                                           </graphic>
                                           <children>
                                               <TreeItem value="/login" />
@@ -116,9 +117,7 @@
                                       </TreeItem>
                                       <TreeItem expanded="true" value="http://www.amazon.com">
                                           <graphic>
-                                              <ImageView fitHeight="15" fitWidth="15">
-                                                  <Image url="/image/file.jpg" />
-                                              </ImageView>
+                                              <FontIcon iconColor="#616161" iconLiteral="fas-globe-africa" iconSize="12" />
                                           </graphic>
                                           <children>
                                               <TreeItem value="/login" />
@@ -132,12 +131,45 @@
                                   </children>
                               </TreeItem>
                           </TreeView>
-                         <TextField promptText="Filter" style="-fx-background-color: #ffffff;" />
+                     <HBox prefHeight="31.0" prefWidth="254.0">
+                        <children>
+                           <StackPane alignment="CENTER_RIGHT" prefHeight="150.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
+                              <children>
+                                     <TextField fx:id="filterInput" prefHeight="28.0" prefWidth="214.0" promptText="Filter" style="-fx-background-color: #ffffff;" />
+                                     <Button fx:id="filterCancelBtn" prefHeight="22.0" prefWidth="22.0" visible="false">
+                                         <graphic>
+                                             <FontIcon iconColor="#616161" iconLiteral="fas-times-circle" iconSize="14" opacity="0.6" />
+                                         </graphic>
+                                     </Button>
+                              </children>
+                           </StackPane>
+                               <MenuButton fx:id="listViewMenuBtn" mnemonicParsing="false" popupSide="TOP" prefHeight="28.0" prefWidth="45.0" styleClass="view-button" textFill="#363636bd">
+                                  <items>
+                                     <MenuItem fx:id="treeViewMenuItem" text="Tree view">
+                                         <graphic>
+                                             <FontIcon iconColor="#616161" iconLiteral="fas-tree" iconSize="18" />
+                                         </graphic>
+                                     </MenuItem>
+                                     <MenuItem fx:id="listViewMenuItem" text="List view">
+                                         <graphic>
+                                             <FontIcon iconColor="#616161" iconLiteral="fas-list-ul" iconSize="18" />
+                                         </graphic>
+                                     </MenuItem>
+                                  </items>
+                                  <font>
+                                     <Font name="System Bold" size="12.0" />
+                                  </font>
+                                   <graphic>
+                                       <FontIcon iconColor="#616161" iconLiteral="fas-tree" iconSize="18" />
+                                   </graphic>
+                               </MenuButton>
+                        </children>
+                     </HBox>
                       </children>
                    </VBox>
                    <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">
                       <children>
-                          <JFXTabPane minWidth="300.0" prefHeight="567.0" prefWidth="584.0" style="-fx-background-color: TRANSPARENT;" VBox.vgrow="ALWAYS">
+                          <JFXTabPane styleClass="jfx-tab-pane" minWidth="300.0" prefHeight="567.0" prefWidth="584.0" style="-fx-background-color: TRANSPARENT;" VBox.vgrow="ALWAYS">
                               <tabs>
                                   <Tab text="  Request  ">
                                       <content>
@@ -145,33 +177,25 @@
                                               <children>
                                                   <VBox fx:id="reqVBox" prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                                       <children>
-                                                          <TitledPane fx:id="reqHeaderPane" VBox.vgrow="ALWAYS" maxHeight="Infinity" animated="false"
-                                                                      text="Headers">
-                                                              <AnchorPane minHeight="0.0" minWidth="0.0"
-                                                                          prefHeight="180.0" prefWidth="200.0">
-                                                                  <JFXTextArea fx:id="reqHeaderText" disable="false"
-                                                                               AnchorPane.bottomAnchor="0.0"
-                                                                               AnchorPane.leftAnchor="0.0"
-                                                                               AnchorPane.rightAnchor="0.0"
-                                                                               AnchorPane.topAnchor="0.0">
+                                                          <TitledPane fx:id="reqHeaderPane" animated="false" maxHeight="Infinity" text="Headers" VBox.vgrow="ALWAYS">
+                                                              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                                                  <JFXTextArea fx:id="reqHeaderText" disable="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                                                       <cursor>
-                                                                          <Cursor fx:constant="TEXT"/>
+                                                                          <Cursor fx:constant="TEXT" />
                                                                       </cursor>
                                                                   </JFXTextArea>
                                                               </AnchorPane>
                                                           </TitledPane>
-                                                          <TitledPane fx:id="reqPayloadPane" VBox.vgrow="ALWAYS" maxHeight="Infinity" animated="false" text="Payload">
-                                                              <AnchorPane minHeight="0.0" minWidth="0.0"
-                                                                          prefHeight="180.0" prefWidth="200.0">
-                                                                  <JFXTextArea fx:id="reqPayload" promptText="Data" disable="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
+                                                          <TitledPane fx:id="reqPayloadPane" animated="false" maxHeight="Infinity" text="Payload" VBox.vgrow="ALWAYS">
+                                                              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                                                  <JFXTextArea fx:id="reqPayload" disable="true" promptText="Data" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                                                               </AnchorPane>
                                                           </TitledPane>
-                                                          <TitledPane fx:id="reqOtherPane" VBox.vgrow="ALWAYS" maxHeight="Infinity" animated="false" text="untitled">
+                                                          <TitledPane fx:id="reqOtherPane" animated="false" maxHeight="Infinity" text="untitled" VBox.vgrow="ALWAYS">
                                                               <AnchorPane minHeight="0.0" minWidth="0.0">
-                                                                  <JFXTextArea fx:id="reqTiming" promptText="Data" disable="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
+                                                                  <JFXTextArea fx:id="reqTiming" disable="true" promptText="Data" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                                                               </AnchorPane>
                                                           </TitledPane>
-                                                          <!--<VBox prefHeight="0.0" prefWidth="0.0"  VBox.vgrow="ALWAYS" style="-fx-background-color: white"/>-->
                                                       </children>
                                                   </VBox>
                                               </children>
@@ -180,26 +204,20 @@
                                   </Tab>
                                   <Tab text="  Response  ">
                                       <content>
-                                          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: #ffffff;">
                                               <children>
                                                   <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                                       <children>
-                                                          <TitledPane VBox.vgrow="SOMETIMES" animated="false" text="Headers" >
+                                                          <TitledPane fx:id="respHeaderPane" animated="false" text="Headers" VBox.vgrow="ALWAYS" maxHeight="Infinity">
                                                               <AnchorPane minHeight="0.0" minWidth="0.0">
-                                                                  <JFXTextArea promptText="Data" disable="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
+                                                                  <JFXTextArea disable="true" promptText="Data" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                                                               </AnchorPane>
                                                           </TitledPane>
-                                                          <TitledPane VBox.vgrow="SOMETIMES" animated="false" text="Preview">
+                                                          <TitledPane fx:id="respDataPane" animated="false" text="Preview" VBox.vgrow="ALWAYS" maxHeight="Infinity">
                                                               <AnchorPane minHeight="0.0" minWidth="0.0">
-                                                                  <JFXTextArea promptText="Data" disable="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
+                                                                  <JFXTextArea disable="true" promptText="Data" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                                                               </AnchorPane>
                                                           </TitledPane>
-                                                          <TitledPane VBox.vgrow="SOMETIMES" animated="false" text="untitled">
-                                                              <AnchorPane minHeight="0.0" minWidth="0.0">
-                                                                  <JFXTextArea promptText="Data" disable="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
-                                                              </AnchorPane>
-                                                          </TitledPane>
-                                                          <VBox prefHeight="0.0" prefWidth="0.0"  VBox.vgrow="ALWAYS" style="-fx-background-color: white"/>
                                                       </children>
                                                   </VBox>
                                               </children>
@@ -208,19 +226,19 @@
                                   </Tab>
                                   <Tab text="   Timing   ">
                                       <content>
-                                          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: #ffffff;">
                                               <children>
                                                   <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                                       <children>
-                                                          <TitledPane animated="false" text="untitled">
-                                                              <content>
-                                                                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-                                                              </content>
+                                                          <TitledPane animated="false" text="untitled" VBox.vgrow="ALWAYS" maxHeight="Infinity">
+                                                              <AnchorPane minHeight="0.0" minWidth="0.0">
+                                                                  <JFXTextArea disable="true" promptText="Data" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                                              </AnchorPane>
                                                           </TitledPane>
-                                                          <TitledPane animated="false" text="untitled">
-                                                              <content>
-                                                                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-                                                              </content>
+                                                          <TitledPane animated="false" text="untitled" VBox.vgrow="ALWAYS" maxHeight="Infinity">
+                                                              <AnchorPane minHeight="0.0" minWidth="0.0">
+                                                                  <JFXTextArea disable="true" promptText="Data" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                                              </AnchorPane>
                                                           </TitledPane>
                                                       </children>
                                                   </VBox>

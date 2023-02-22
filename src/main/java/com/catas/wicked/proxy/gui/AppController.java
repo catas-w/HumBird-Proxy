@@ -6,9 +6,10 @@ import com.jfoenix.controls.JFXTextArea;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.control.TitledPane;
-import javafx.scene.control.TreeView;
+import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.io.IOException;
 import java.net.URL;
@@ -17,10 +18,26 @@ import java.util.ResourceBundle;
 public class AppController implements Initializable {
 
     @FXML
-    public TitledPane reqOtherPane;
+    private TitledPane respHeaderPane;
+    @FXML
+    private TitledPane respDataPane;
+    @FXML
+    private MenuButton listViewMenuBtn;
+    @FXML
+    private MenuItem treeViewMenuItem;
+    @FXML
+    private MenuItem listViewMenuItem;
+    @FXML
+    private TitledPane reqOtherPane;
 
     @FXML
-    public TitledPane reqPayloadPane;
+    private TitledPane reqPayloadPane;
+
+    @FXML
+    private TextField filterInput;
+
+    @FXML
+    private Button filterCancelBtn;
 
     @FXML
     private TitledPane reqHeaderPane;
@@ -71,6 +88,9 @@ public class AppController implements Initializable {
         addTitleListener(reqPayloadPane);
         addTitleListener(reqOtherPane);
 
+        addTitleListener(respHeaderPane);
+        addTitleListener(respDataPane);
+
         try {
             popup = new JFXPopup(FXMLLoader.load(getClass().getResource("/fxml/mainMenu.fxml")));
         } catch (IOException ioExc) {
@@ -78,6 +98,36 @@ public class AppController implements Initializable {
         }
         menuButton.setOnMouseClicked((e) ->
                 popup.show(menuButton, JFXPopup.PopupVPosition.BOTTOM, JFXPopup.PopupHPosition.LEFT));
+
+        filterInputEventBind();
+        listViewEventBind(listViewMenuItem);
+        listViewEventBind(treeViewMenuItem);
+    }
+
+    private void listViewEventBind(MenuItem menuItem) {
+        menuItem.setOnAction(e -> {
+            FontIcon icon = (FontIcon) menuItem.getGraphic();
+            FontIcon fontIcon = new FontIcon(icon.getIconCode());
+            fontIcon.setIconSize(18);
+            fontIcon.setIconColor(Color.web("#616161"));
+            listViewMenuBtn.setGraphic(fontIcon);
+        });
+    }
+
+    private void filterInputEventBind() {
+        filterInput.setOnKeyTyped(e -> {
+            CharSequence characters = filterInput.getText();
+            if (characters.length() > 0) {
+                filterCancelBtn.setVisible(true);
+            } else {
+                filterCancelBtn.setVisible(false);
+            }
+        });
+
+        filterCancelBtn.setOnMouseClicked(e -> {
+            filterInput.clear();
+            filterCancelBtn.setVisible(false);
+        });
     }
 
     private void addTitleListener(TitledPane pane) {

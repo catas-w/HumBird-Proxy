@@ -48,6 +48,10 @@
     -fx-background-color: #12abe7;
 }
 
+.jfx-list-cell:odd:hover,
+.jfx-list-cell:even:hover {
+    -fx-background-color: #32b2e8;
+}
 
 .jfx-list-cell:odd,
 .jfx-list-cell:even {
@@ -55,6 +59,7 @@
 }
 
 
+/* popup menu */
 .combo-box-popup .list-view .jfx-list-cell {
     -fx-background-insets: 0.0;
     -fx-text-fill: BLACK;
@@ -63,3 +68,17 @@
 .combo-box-popup .list-view .jfx-list-cell:filled:hover {
     -fx-text-fill: black;
 }
+
+/* list/tree view menu */
+.view-button {
+    -fx-background-color: #ffffff;
+}
+
+.view-button:hover {
+    -fx-background-color: #d0d0d0;
+}
+
+.view-button .menu-item:selected {
+    -fx-background-color: #32b2e8;
+}
+
