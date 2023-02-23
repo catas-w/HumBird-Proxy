@@ -10,8 +10,9 @@
 <?import org.kordamp.ikonli.javafx.*?>
 
 <JFXListView fx:id="popupList" styleClass="popup-list-view" prefHeight="175"
-             xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
-    <Label>
+             xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+             fx:controller="com.catas.wicked.proxy.gui.MainMenuController">
+    <Label fx:id="proxySetting">
         Proxy
         <graphic>
             <StackPane styleClass="custom-jfx-list-view-icon-container">
@@ -19,7 +20,7 @@
             </StackPane>
         </graphic>
     </Label>
-    <Label>
+    <Label fx:id="appSetting">
         Settings
         <graphic>
             <StackPane styleClass="custom-jfx-list-view-icon-container">
@@ -27,7 +28,7 @@
             </StackPane>
         </graphic>
     </Label>
-    <Label>
+    <Label fx:id="exportSetting">
         Export
         <graphic>
             <StackPane styleClass="custom-jfx-list-view-icon-container">
@@ -35,7 +36,7 @@
             </StackPane>
         </graphic>
     </Label>
-    <Label>
+    <Label fx:id="exitBtn">
         Exit
         <graphic>
             <StackPane styleClass="custom-jfx-list-view-icon-container">
@@ -43,7 +44,7 @@
             </StackPane>
         </graphic>
     </Label>
-    <Label>
+    <Label fx:id="aboutBtn">
         About
         <graphic>
             <StackPane styleClass="custom-jfx-list-view-icon-container">
