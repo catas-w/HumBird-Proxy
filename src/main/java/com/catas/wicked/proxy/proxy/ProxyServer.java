@@ -1,5 +1,6 @@
 package com.catas.wicked.proxy.proxy;
 
+import com.catas.wicked.proxy.config.ProxyConfig;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -7,8 +8,6 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.codec.http.HttpObjectAggregator;
-import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
@@ -17,15 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ProxyServer {
 
-    private int port = 10024;
-
-    public final static HttpResponseStatus SUCCESS = new HttpResponseStatus(200,
-            "Connection established");
-    public final static HttpResponseStatus UNAUTHORIZED = new HttpResponseStatus(407,
-            "Unauthorized");
-
-    public ProxyServer(int port) {
-        this.port = port;
+    public ProxyServer() {
     }
 
     public void start() {
@@ -44,14 +35,13 @@ public class ProxyServer {
                         @Override
                         protected void initChannel(Channel channel) throws Exception {
                             channel.pipeline().addLast("httpCodec", new HttpServerCodec());
-                            channel.pipeline().addLast("httpObject", new HttpObjectAggregator(65536));
                             channel.pipeline().addLast("serverHandle", new ProxyServerHandler());
                         }
                     });
-            ChannelFuture channelFuture = bootstrap.bind(port).sync();
+            ChannelFuture channelFuture = bootstrap.bind(ProxyConfig.getInstance().getPort()).sync();
             channelFuture.channel().closeFuture().sync();
         } catch (InterruptedException e) {
-            log.error("Error happened to proxy server: ", e);
+            log.error("Error occured in proxy server: ", e);
         } finally {
             bossGroup.shutdownGracefully();
             workGroup.shutdownGracefully();
