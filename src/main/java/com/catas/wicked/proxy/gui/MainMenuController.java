@@ -1,13 +1,14 @@
 package com.catas.wicked.proxy.gui;
 
 import com.jfoenix.controls.JFXListView;
-import com.jfoenix.controls.JFXPopup;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
-import javafx.scene.control.Alert;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
+import javafx.stage.Window;
 
 import java.io.IOException;
 import java.net.URL;
@@ -26,26 +27,29 @@ public class MainMenuController implements Initializable {
     @FXML
     private Label aboutBtn;
 
-    private JFXPopup proxyPopup;
-
-    private Parent proxyScene;
+    private Dialog proxyConfigDialog;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         try {
-            proxyScene = FXMLLoader.load(getClass().getResource("/fxml/proxy-settings.fxml"));
+            Parent proxyScene = FXMLLoader.load(getClass().getResource("/fxml/proxy-settings.fxml"));
+            proxyConfigDialog = new Dialog<>();
+            proxyConfigDialog.setTitle("Proxy Config");
+            DialogPane dialogPane = proxyConfigDialog.getDialogPane();
+            dialogPane.setContent(proxyScene);
+            proxyConfigDialog.setHeight(proxySetting.getHeight());
+            proxyConfigDialog.setWidth(proxySetting.getWidth());
+            dialogPane.getStylesheets().add(
+                    getClass().getResource("/css/dialog.css").toExternalForm());
+            dialogPane.getStyleClass().add("myDialog");
+            Window window = dialogPane.getScene().getWindow();
+            window.setOnCloseRequest(e -> window.hide());
         } catch (IOException ioExc) {
             ioExc.printStackTrace();
         }
+
         proxySetting.setOnMouseClicked(e -> {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            // alert.getDialogPane().setContent(proxySetting);
-            alert.setGraphic(proxyScene);
-            alert.setTitle("Information Dialog");
-            alert.setHeight(proxySetting.getHeight());
-            alert.setWidth(proxySetting.getWidth());
-            alert.getButtonTypes().clear();
-            alert.showAndWait();
+            proxyConfigDialog.showAndWait();
         });
     }
 }

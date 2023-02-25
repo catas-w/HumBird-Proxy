@@ -14,8 +14,8 @@ public class WickedProxyApplication extends Application {
         Parent root = FXMLLoader.load(getClass().getResource("/fxml/application.fxml"));
         Scene scene = new Scene(root);
         primaryStage.setScene(scene);
-        ObservableList<String> css = scene.getStylesheets();
-        // css.add(getClass().getResource("css/app.css").toExternalForm());
+        primaryStage.setMinHeight(400);
+        primaryStage.setMinWidth(600);
         primaryStage.show();
     }
 
