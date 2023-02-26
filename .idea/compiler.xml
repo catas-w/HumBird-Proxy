@@ -7,7 +7,11 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="Wicked-Proxy" />
+        <module name="javafx-maven-archetypes" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="javafx-maven-archetypes" target="11" />
+    </bytecodeTargetLevel>
   </component>
 </project>

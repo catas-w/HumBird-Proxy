@@ -1,8 +1,6 @@
 package com.catas.wicked.proxy;
 
-import com.catas.wicked.proxy.gui.WickedProxyApplication;
-
-public class Main {
+public class AppRunner {
 
     public static void main(String[] args) {
         WickedProxyApplication.main(args);
