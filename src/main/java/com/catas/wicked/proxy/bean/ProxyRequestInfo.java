@@ -8,7 +8,7 @@ public class ProxyRequestInfo {
 
     private int port;
 
-    private boolean isHttps;
+    private boolean ssl;
 
     private String path;
 }

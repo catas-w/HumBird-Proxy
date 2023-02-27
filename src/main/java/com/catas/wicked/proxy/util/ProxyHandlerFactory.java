@@ -9,8 +9,10 @@ import io.netty.handler.proxy.Socks5ProxyHandler;
 import java.net.InetSocketAddress;
 
 public class ProxyHandlerFactory {
-    public static ProxyHandler build() {
-        ProxyConfig config = ProxyConfig.getInstance();
+
+    private ProxyConfig config;
+
+    public ProxyHandler build() {
         ProxyHandler proxyHandler = null;
         if (config != null) {
             InetSocketAddress inetSocketAddress = new InetSocketAddress(config.getHost(),

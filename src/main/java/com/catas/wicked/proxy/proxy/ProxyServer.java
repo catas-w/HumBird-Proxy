@@ -1,6 +1,9 @@
 package com.catas.wicked.proxy.proxy;
 
+import com.catas.wicked.proxy.cert.CertPool;
+import com.catas.wicked.proxy.cert.CertService;
 import com.catas.wicked.proxy.config.ProxyConfig;
+import com.catas.wicked.proxy.proxy.handler.ProxyServerHandler;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -12,9 +15,20 @@ import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 
 @Slf4j
+@Component
 public class ProxyServer {
+
+    @Autowired
+    private ProxyConfig proxyConfig;
+    @Autowired
+    private CertService certService;
+    @Autowired
+    private CertPool certPool;
 
     public ProxyServer() {
     }
@@ -35,10 +49,12 @@ public class ProxyServer {
                         @Override
                         protected void initChannel(Channel channel) throws Exception {
                             channel.pipeline().addLast("httpCodec", new HttpServerCodec());
-                            channel.pipeline().addLast("serverHandle", new ProxyServerHandler());
+                            channel.pipeline().addLast("serverHandle", new ProxyServerHandler(
+                                    proxyConfig, certService, certPool
+                            ));
                         }
                     });
-            ChannelFuture channelFuture = bootstrap.bind(ProxyConfig.getInstance().getPort()).sync();
+            ChannelFuture channelFuture = bootstrap.bind(proxyConfig.getPort()).sync();
             channelFuture.channel().closeFuture().sync();
         } catch (InterruptedException e) {
             log.error("Error occured in proxy server: ", e);
