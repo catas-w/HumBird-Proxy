@@ -14,9 +14,20 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import io.netty.handler.ssl.SslContextBuilder;
+import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
+import java.io.InputStream;
+import java.security.KeyPair;
+import java.security.PrivateKey;
+import java.security.cert.X509Certificate;
 
 
 @Slf4j
@@ -29,6 +40,9 @@ public class ProxyServer {
     private CertService certService;
     @Autowired
     private CertPool certPool;
+
+    @Autowired
+    private ResourceLoader resourceLoader;
 
     public ProxyServer() {
     }
@@ -61,6 +75,33 @@ public class ProxyServer {
         } finally {
             bossGroup.shutdownGracefully();
             workGroup.shutdownGracefully();
+        }
+    }
+
+    @PostConstruct
+    private void init() {
+        SslContextBuilder contextBuilder = SslContextBuilder.forClient().trustManager(InsecureTrustManagerFactory.INSTANCE);
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        X509Certificate caCert;
+        PrivateKey caPriKey;
+        try {
+            proxyConfig.setClientSslCtx(contextBuilder.build());
+            caCert = certService.loadCert((new ClassPathResource("/ca.crt").getInputStream()));
+            caPriKey = certService.loadPriKey((new ClassPathResource("/ca_private.der").getInputStream()));
+            //读取CA证书使用者信息
+            proxyConfig.setIssuer(certService.getSubject(caCert));
+            //读取CA证书有效时段(server证书有效期超出CA证书的，在手机上会提示证书不安全)
+            proxyConfig.setCaNotBefore(caCert.getNotBefore());
+            proxyConfig.setCaNotAfter(caCert.getNotAfter());
+            //CA私钥用于给动态生成的网站SSL证书签证
+            proxyConfig.setCaPriKey(caPriKey);
+            //生产一对随机公私钥用于网站SSL证书动态创建
+            KeyPair keyPair = certService.genKeyPair();
+            proxyConfig.setServerPriKey(keyPair.getPrivate());
+            proxyConfig.setServerPubKey(keyPair.getPublic());
+        } catch (Exception e) {
+            e.printStackTrace();
+            proxyConfig.setHandleSsl(false);
         }
     }
 }

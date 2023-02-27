@@ -4,6 +4,7 @@ import com.catas.wicked.proxy.bean.ProxyRequestInfo;
 import com.catas.wicked.proxy.cert.CertPool;
 import com.catas.wicked.proxy.cert.CertService;
 import com.catas.wicked.proxy.common.ProxyConstant;
+import com.catas.wicked.proxy.common.ServerStatus;
 import com.catas.wicked.proxy.config.ProxyConfig;
 import com.catas.wicked.proxy.util.WebUtils;
 import io.netty.bootstrap.Bootstrap;
@@ -15,13 +16,19 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.codec.DecoderException;
+import io.netty.handler.codec.DecoderResult;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.HttpContent;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponse;
+import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.codec.http.HttpVersion;
+import io.netty.handler.codec.http.TooLongHttpContentException;
+import io.netty.handler.codec.http.TooLongHttpHeaderException;
+import io.netty.handler.codec.http.TooLongHttpLineException;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.util.ReferenceCountUtil;
@@ -53,10 +60,13 @@ public class ProxyServerHandler extends ChannelInboundHandlerAdapter {
 
     private CertPool certPool;
 
+    private ServerStatus status;
+
     public ProxyServerHandler(ProxyConfig proxyConfig, CertService certService, CertPool certPool) {
         this.proxyConfig = proxyConfig;
         this.certService = certService;
         this.certPool = certPool;
+        this.status = ServerStatus.INIT;
     }
 
     @Override
@@ -72,19 +82,28 @@ public class ProxyServerHandler extends ChannelInboundHandlerAdapter {
 
     private void handleHttpRequest(ChannelHandlerContext ctx, Object msg) {
         HttpRequest request = (HttpRequest) msg;
-        setProxyRequest(WebUtils.getRequestProto(request));
-        if (HttpMethod.CONNECT.name().equalsIgnoreCase(request.method().name())) {
-            // https connect
-            HttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, ProxyConstant.SUCCESS);
-            ctx.writeAndFlush(response);
-            ctx.channel().pipeline().remove("httpCodec");
-            ReferenceCountUtil.release(msg);
-            return;
+
+        if (status.equals(ServerStatus.INIT)) {
+            setStatus(ServerStatus.RUNNING);
+            setProxyRequest(WebUtils.getRequestProto(request));
+            if (HttpMethod.CONNECT.name().equalsIgnoreCase(request.method().name())) {
+                // https connect
+                HttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, ProxyConstant.SUCCESS);
+                ctx.writeAndFlush(response);
+                ctx.channel().pipeline().remove("httpCodec");
+                ReferenceCountUtil.release(msg);
+                return;
+            }
         }
         handleProxyData(ctx.channel(), msg, true);
     }
 
     private void handleHttpContent(ChannelHandlerContext ctx, Object msg) {
+        ByteBuf content = ((HttpContent) msg).content();
+        if (content.isReadable()) {
+            String s = content.toString(StandardCharsets.UTF_8);
+            System.out.println(s);
+        }
         handleProxyData(ctx.channel(), msg, true);
     }
 
@@ -100,11 +119,13 @@ public class ProxyServerHandler extends ChannelInboundHandlerAdapter {
             ctx.pipeline().addFirst("sslHandle", sslCtx.newHandler(ctx.alloc()));
             // 重新过一遍pipeline，拿到解密后的的http报文
             ctx.pipeline().fireChannelRead(msg);
+
+            ByteBuf data = (ByteBuf) msg;
+            if (data.isReadable()) {
+                String s = data.toString(StandardCharsets.UTF_8);
+                System.out.println(s);
+            }
             return;
-        }
-        if (byteBuf.isReadable()) {
-            String s = byteBuf.toString(StandardCharsets.UTF_8);
-            System.out.println(s);
         }
 
         if (byteBuf.readableBytes() < 8) {

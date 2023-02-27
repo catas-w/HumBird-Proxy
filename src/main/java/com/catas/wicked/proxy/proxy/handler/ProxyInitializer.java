@@ -39,6 +39,10 @@ public class ProxyInitializer extends ChannelInitializer {
         }
         if (proxyConfig.isHandleSsl()) {
             // TODO
+            ch.pipeline().addLast(
+                    proxyConfig.getClientSslCtx().newHandler(ch.alloc(),
+                    proxyConfig.getHost(),
+                    proxyConfig.getPort()));
         }
         ch.pipeline().addLast("httpCodec", new HttpClientCodec());
         ch.pipeline().addLast("proxyClientHandler", new ProxyClientHandler(clientChannel));

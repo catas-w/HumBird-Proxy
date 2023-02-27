@@ -1,13 +1,8 @@
 package com.catas.wicked.proxy.cert;
 
-import com.catas.wicked.proxy.cert.spi.BouncyCastleCertGenerator;
 import com.catas.wicked.proxy.cert.spi.CertGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-
-import javax.annotation.Resource;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
