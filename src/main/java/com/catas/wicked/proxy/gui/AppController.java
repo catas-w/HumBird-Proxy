@@ -1,15 +1,19 @@
 package com.catas.wicked.proxy.gui;
 
 import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXPopup;
 import com.jfoenix.controls.JFXTextArea;
 import de.felixroske.jfxsupport.FXMLController;
+import javafx.application.Platform;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.stage.Window;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.io.IOException;
@@ -18,7 +22,12 @@ import java.util.ResourceBundle;
 
 @FXMLController
 public class AppController implements Initializable {
-
+    @FXML
+    private MenuButton mainMenuButton;
+    @FXML
+    private MenuItem proxySetting;
+    @FXML
+    private Button closeBtn;
     @FXML
     private TitledPane respHeaderPane;
     @FXML
@@ -59,7 +68,7 @@ public class AppController implements Initializable {
     @FXML
     private VBox reqVBox;
 
-    private JFXPopup popup;
+    private Dialog proxyConfigDialog;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -93,17 +102,42 @@ public class AppController implements Initializable {
         addTitleListener(respHeaderPane);
         addTitleListener(respDataPane);
 
-        try {
-            popup = new JFXPopup(FXMLLoader.load(getClass().getResource("/fxml/mainMenu.fxml")));
-        } catch (IOException ioExc) {
-            ioExc.printStackTrace();
-        }
-        menuButton.setOnMouseClicked((e) ->
-                popup.show(menuButton, JFXPopup.PopupVPosition.BOTTOM, JFXPopup.PopupHPosition.LEFT));
-
+        // list-view/tree-view
         filterInputEventBind();
         listViewEventBind(listViewMenuItem);
         listViewEventBind(treeViewMenuItem);
+
+        // proxy setting dialog
+        bindProxySettingBtn();
+
+        // close btn
+        closeBtn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                Platform.exit();
+            }
+        });
+    }
+
+    private void bindProxySettingBtn() {
+        try {
+            Parent proxyScene = FXMLLoader.load(getClass().getResource("/fxml/proxy-settings.fxml"));
+            proxyConfigDialog = new Dialog<>();
+            proxyConfigDialog.setTitle("Proxy Config");
+            DialogPane dialogPane = proxyConfigDialog.getDialogPane();
+            dialogPane.setContent(proxyScene);
+            dialogPane.getStylesheets().add(
+                    getClass().getResource("/css/dialog.css").toExternalForm());
+            dialogPane.getStyleClass().add("myDialog");
+            Window window = dialogPane.getScene().getWindow();
+            window.setOnCloseRequest(e -> window.hide());
+        } catch (IOException ioExc) {
+            ioExc.printStackTrace();
+        }
+
+        proxySetting.setOnAction(e -> {
+            proxyConfigDialog.showAndWait();
+        });
     }
 
     private void listViewEventBind(MenuItem menuItem) {

@@ -34,40 +34,6 @@
     -fx-background-radius: 5em;
 }
 
-.jfx-list-cell-container .label {
-    -fx-text-fill: BLACK;
-}
-
-.jfx-list-cell:odd:selected .jfx-list-cell-container,
-.jfx-list-cell:even:selected .jfx-list-cell-container {
-    -fx-background-color: rgb(0.0, 0.0, 255.0);
-}
-
-.jfx-list-cell:odd:selected,
-.jfx-list-cell:even:selected {
-    -fx-background-color: #12abe7;
-}
-
-.jfx-list-cell:odd:hover,
-.jfx-list-cell:even:hover {
-    -fx-background-color: #32b2e8;
-}
-
-.jfx-list-cell:odd,
-.jfx-list-cell:even {
-    -fx-background-color: white;
-}
-
-
-/* popup menu */
-.combo-box-popup .list-view .jfx-list-cell {
-    -fx-background-insets: 0.0;
-    -fx-text-fill: BLACK;
-}
-
-.combo-box-popup .list-view .jfx-list-cell:filled:hover {
-    -fx-text-fill: black;
-}
 
 /* list/tree view menu */
 .view-button {
@@ -78,7 +44,63 @@
     -fx-background-color: #d0d0d0;
 }
 
-.view-button .menu-item:selected {
-    -fx-background-color: #32b2e8;
+.view-button .menu-item:focused {
+    -fx-background-color: #29c1c1;
 }
 
+.view-button .menu-item {
+    -fx-arrows-visible: false;
+    -fx-background-radius: 6 6 6 6, 6 6 6 6, 6 6 6 6;
+}
+
+.context-menu {
+    -fx-background-color: white;
+    -fx-background-insets: 0, 1, 2;
+    -fx-background-radius: 6 6 6 6, 6 6 6 6, 6 6 6 6;
+    /*    -fx-padding: 0.666667em 0.083333em 0.666667em 0.083333em;  8 1 8 1 */
+    -fx-padding: 0.0em 0.083333em 0.0em 0.083333em; /* 4 1 8 1 */
+}
+
+.view-button  > .arrow-button {
+    -fx-padding: 0;
+}
+
+.view-button  > .arrow-button > .arrow {
+    -fx-padding: 0;
+}
+
+
+/* Main-menu */
+.main-menu-btn {
+    -fx-background-color: #ffffff;
+}
+
+.main-menu-btn:hover {
+    -fx-background-color: #d0d0d0;
+}
+
+.main-menu-btn .menu-item:focused {
+    -fx-background-color: #66c2b6;
+}
+
+.main-menu-btn .menu-item {
+    -fx-arrows-visible: false;
+    -fx-background-radius: 6 6 6 6, 6 6 6 6, 6 6 6 6;
+    -fx-padding: 10 50 10 5;
+}
+
+.main-menu-btn .context-menu {
+    -fx-background-color: #ffffff;
+    -fx-background-insets: 0, 1, 2;
+    -fx-background-radius: 6 6 6 6, 6 6 6 6, 6 6 6 6;
+    /*    -fx-padding: 0.666667em 0.083333em 0.666667em 0.083333em;  8 1 8 1 */
+    -fx-padding: 0.0em 0.083333em 0.0em 0.083333em; /* 4 1 8 1 */
+}
+
+.main-menu-btn  > .arrow-button {
+    -fx-padding: 0;
+}
+
+.main-menu-btn  > .arrow-button > .arrow {
+    -fx-padding: 0;
+}

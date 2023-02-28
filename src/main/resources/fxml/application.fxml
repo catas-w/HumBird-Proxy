@@ -30,10 +30,14 @@
 <!--<?import org.kordamp.ikonli.javafx.StackedFontIcon?>-->
 
 <?import com.jfoenix.controls.JFXTabPane?>
+<?import javafx.scene.control.ToolBar?>
 <VBox minWidth="500.0" prefHeight="600.0" prefWidth="900.0" style="-fx-border-radius: 5; -fx-background-color: #ffffff;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.catas.wicked.proxy.gui.AppController">
   <children>
-    <MenuBar style="-fx-background-color: TRANSPARENT;" VBox.vgrow="NEVER">
-    </MenuBar>
+    <ToolBar style="-fx-background-color: TRANSPARENT;" VBox.vgrow="NEVER">
+        <HBox>
+            <Button fx:id="closeBtn" text="X"/>
+        </HBox>
+    </ToolBar>
       <HBox prefHeight="547.0" prefWidth="900.0" VBox.vgrow="ALWAYS">
           <AnchorPane maxWidth="55.0" minWidth="50.0" prefHeight="545.0" prefWidth="50.0" style="-fx-background-color: TRANSPARENT;">
               <VBox prefHeight="200.0" prefWidth="100.0" style="-fx-background-color: TRANSPARENT;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="20.0">
@@ -92,11 +96,36 @@
 
                   <!--<VBox prefHeight="350.0" prefWidth="38.0" />-->
                   <Pane prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="ALWAYS" />
-                  <JFXButton fx:id="menuButton" mnemonicParsing="false" prefWidth="200.0">
+                  <MenuButton fx:id="mainMenuButton" mnemonicParsing="false" popupSide="TOP" prefHeight="28.0" prefWidth="45.0" styleClass="main-menu-btn" textFill="#363636bd">
+                      <items>
+                          <MenuItem fx:id="proxySetting" text="Proxy Settings">
+                              <graphic>
+                                  <FontIcon iconLiteral="fas-star" iconSize="24"/>
+                              </graphic>
+                          </MenuItem>
+                          <MenuItem fx:id="exportBtn" text="Export">
+                              <graphic>
+                                  <FontIcon iconLiteral="fas-star" iconSize="24"/>
+                              </graphic>
+                          </MenuItem>
+                          <MenuItem fx:id="AboutBtn" text="About">
+                              <graphic>
+                                  <FontIcon iconLiteral="fas-star" iconSize="24"/>
+                              </graphic>
+                          </MenuItem>
+                          <MenuItem fx:id="quitBtn" text="Quit">
+                              <graphic>
+                                  <FontIcon iconLiteral="fas-star" iconSize="24"/>
+                              </graphic>
+                          </MenuItem>
+                      </items>
+                      <font>
+                          <Font name="System Bold" size="12.0" />
+                      </font>
                       <graphic>
                           <FontIcon iconColor="#616161" iconLiteral="fas-ellipsis-h" iconSize="18" />
                       </graphic>
-                  </JFXButton>
+                  </MenuButton>
               </VBox>
           </AnchorPane>
           <SplitPane dividerPositions="0.3" focusTraversable="true" minWidth="500.0" prefHeight="547.0" prefWidth="838.0" HBox.hgrow="ALWAYS">
@@ -133,7 +162,7 @@
                           </TreeView>
                      <HBox prefHeight="31.0" prefWidth="254.0">
                         <children>
-                           <StackPane alignment="CENTER_RIGHT" prefHeight="150.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
+                           <StackPane alignment="CENTER_RIGHT" prefHeight="150.0" prefWidth="250.0" HBox.hgrow="ALWAYS">
                               <children>
                                      <TextField fx:id="filterInput" prefHeight="28.0" prefWidth="214.0" promptText="Filter" style="-fx-background-color: #ffffff;" />
                                      <Button fx:id="filterCancelBtn" prefHeight="22.0" prefWidth="22.0" visible="false">

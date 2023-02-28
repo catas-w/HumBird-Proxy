@@ -1,0 +1,25 @@
+.start-progress-bar {
+    -fx-progress-color: #05ba9f;
+    -fx-stroke-width: 1;
+}
+
+.start-progress-bar > .track{
+    -fx-background-color: #E0E0E0;
+}
+
+.progress-bar > .bar,
+.progress-bar:indeterminate > .bar{
+    -fx-background-color: #05ba9f;
+    -fx-padding: 1.5;
+}
+
+.start-progress-bar > .secondary-bar,
+.start-progress-bar:indeterminate > .secondary-bar{
+    -fx-background-color: #cde1b7;
+}
+
+.start-progress-bar > .track,
+.start-progress-bar > .bar {
+    -fx-background-radius: 0;
+    -fx-background-insets: 0;
+}
