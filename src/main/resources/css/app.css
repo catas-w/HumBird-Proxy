@@ -12,7 +12,7 @@
 }
 
 .root {
-    -fx-background-color: #ffffff;
+    -fx-background-color: TRANSPARENT;
 }
 
 .button:hover {
@@ -21,7 +21,7 @@
 
 .split-pane > .split-pane-divider {
     -fx-padding: 0 0.5 0 0.5;
-    -fx-background-color: #e3e3e3;
+    -fx-background-color: #efefef;
 }
 
 .scroll-bar {
@@ -41,7 +41,8 @@
 }
 
 .view-button:hover {
-    -fx-background-color: #d0d0d0;
+    /*-fx-background-color: #d0d0d0;*/
+    -fx-opacity: 0.6;
 }
 
 .view-button .menu-item:focused {
@@ -76,7 +77,8 @@
 }
 
 .main-menu-btn:hover {
-    -fx-background-color: #d0d0d0;
+    /*-fx-background-color: #d0d0d0;*/
+    -fx-opacity: 0.6;
 }
 
 .main-menu-btn .menu-item:focused {

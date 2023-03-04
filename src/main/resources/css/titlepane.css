@@ -10,10 +10,12 @@
 }
 .titled-pane > .title
 {
-    -fx-background-color: #efefef;
+    -fx-background-color: #ffffff;
+    -fx-border-width: 0 0 0 0;
+    -fx-border-color: #efefef;
     -fx-font-weight: BOLD;
     -fx-background-insets: 0, 1, 2;
-    -fx-background-radius: 5 5 0 0, 4 4 0 0, 3 3 0 0;
+    /*-fx-background-radius: 5 5 5 5, 5 5 5 5, 5 5 5 5;*/
     -fx-padding: 0.166667em 0.833333em 0.25em 0.833333em; /* 2 10 3 10 */
 }
 
@@ -24,7 +26,7 @@
 
 .titled-pane > .title > .arrow-button
 {
-    -fx-background-color: #efefef;
+    /*-fx-background-color: #efefef;*/
     -fx-background-insets: 0;
     -fx-background-radius: 0;
     -fx-padding: 0.0em 0.25em 0.0em 0.0em; /* 0 3 0 0 */
@@ -53,6 +55,6 @@
 
 .titled-pane:focused > .title > .arrow-button .arrow
 {
-    -fx-background-color: #dbdbdb;
+    /*-fx-background-color: #dbdbdb;*/
 }
 
