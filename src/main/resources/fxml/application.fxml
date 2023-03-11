@@ -1,35 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import com.jfoenix.controls.JFXButton?>
-<?import com.jfoenix.controls.JFXTextArea?>
-<?import com.jfoenix.controls.JFXToggleButton?>
-<?import java.net.URL?>
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.Cursor?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.MenuButton?>
-<?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.control.SplitPane?>
-<?import javafx.scene.control.Tab?>
-<?import javafx.scene.control.TabPane?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.control.TitledPane?>
-<?import javafx.scene.control.ToolBar?>
-<?import javafx.scene.control.TreeItem?>
-<?import javafx.scene.control.TreeView?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Pane?>
-<?import javafx.scene.layout.StackPane?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.paint.Color?>
-<?import javafx.scene.text.Font?>
-<?import org.kordamp.ikonli.javafx.FontIcon?>
+<?import com.jfoenix.controls.*?>
+<?import java.net.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.text.*?>
+<?import org.kordamp.ikonli.javafx.*?>
 
-
-<?import com.jfoenix.controls.JFXTabPane?>
-<VBox minWidth="500.0" prefHeight="600.0" prefWidth="900.0" style="-fx-border-radius: 5;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.catas.wicked.proxy.gui.AppController">
+<VBox minWidth="500.0" prefHeight="600.0" prefWidth="900.0" style="-fx-border-radius: 5;" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.catas.wicked.proxy.gui.AppController">
   <children>
     <!--<ToolBar style="-fx-background-color: TRANSPARENT;" VBox.vgrow="NEVER">-->
     <!--    <HBox>-->
@@ -39,19 +20,19 @@
       <HBox prefHeight="547.0" prefWidth="900.0" VBox.vgrow="ALWAYS">
           <AnchorPane maxWidth="55.0" minWidth="50.0" prefHeight="545.0" prefWidth="50.0" style="-fx-background-color: TRANSPARENT; -fx-border-color: #efefef; -fx-border-width: 0 1 0 0;">
               <VBox prefHeight="200.0" prefWidth="100.0" style="-fx-background-color: TRANSPARENT;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="20.0">
-                  <JFXToggleButton size="8.0" toggleColor="#00d7c1" toggleLineColor="#3fbcaf">
-                  <VBox.margin>
-                     <Insets left="-6.0" />
-                  </VBox.margin>
-               </JFXToggleButton>
-               <JFXButton prefWidth="200.0">
-                  <graphic>
-                     <FontIcon iconColor="#616161" iconLiteral="fas-broom" iconSize="18" />
-                  </graphic>
-                  <VBox.margin>
-                     <Insets />
-                  </VBox.margin>
-               </JFXButton>
+                  <JFXToggleButton size="8.0" textOverrun="CLIP" toggleColor="#00d7c1" toggleLineColor="#3fbcaf">
+                      <VBox.margin>
+                         <Insets left="-6.0" />
+                      </VBox.margin>
+                  </JFXToggleButton>
+                  <JFXButton prefWidth="200.0" textOverrun="CLIP">
+                      <graphic>
+                         <FontIcon iconColor="#616161" iconLiteral="fas-broom" iconSize="18" />
+                      </graphic>
+                      <VBox.margin>
+                         <Insets />
+                      </VBox.margin>
+                  </JFXButton>
                   <JFXButton mnemonicParsing="false" prefWidth="200.0" textOverrun="CLIP">
                       <graphic>
                           <FontIcon iconColor="#616161" iconLiteral="fas-filter" iconSize="18" />
@@ -60,7 +41,7 @@
                           <Insets top="20.0" />
                       </VBox.margin>
                   </JFXButton>
-                  <JFXButton mnemonicParsing="false" prefWidth="200.0">
+                  <JFXButton mnemonicParsing="false" prefWidth="200.0" textOverrun="CLIP">
                       <graphic>
                           <FontIcon iconColor="#616161" iconLiteral="fas-bug" iconSize="18" />
                       </graphic>
@@ -68,7 +49,7 @@
                           <Insets top="20.0" />
                       </VBox.margin>
                   </JFXButton>
-                  <JFXButton mnemonicParsing="false" prefWidth="200.0">
+                  <JFXButton mnemonicParsing="false" prefWidth="200.0" textOverrun="CLIP">
                       <graphic>
                           <FontIcon iconColor="#616161" iconLiteral="fas-crosshairs" iconSize="18" />
                       </graphic>
@@ -76,7 +57,7 @@
                           <Insets top="20.0" />
                       </VBox.margin>
                   </JFXButton>
-                  <JFXButton mnemonicParsing="false" prefWidth="200.0">
+                  <JFXButton mnemonicParsing="false" prefWidth="200.0" textOverrun="CLIP">
                       <graphic>
                           <FontIcon iconColor="#616161" iconLiteral="fas-eye" iconSize="18" />
                       </graphic>
@@ -84,7 +65,7 @@
                           <Insets top="20.0" />
                       </VBox.margin>
                   </JFXButton>
-                  <JFXButton mnemonicParsing="false" prefWidth="200.0">
+                  <JFXButton mnemonicParsing="false" prefWidth="200.0" textOverrun="CLIP">
                       <graphic>
                           <FontIcon iconColor="#616161" iconLiteral="fas-marker" iconSize="18" />
                       </graphic>
@@ -93,7 +74,6 @@
                       </VBox.margin>
                   </JFXButton>
 
-                     <!--<VBox prefHeight="350.0" prefWidth="38.0" />-->
                   <Pane prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="ALWAYS" />
                   <MenuButton fx:id="mainMenuButton" mnemonicParsing="false" popupSide="TOP" prefHeight="28.0" prefWidth="45.0" styleClass="main-menu-btn" textFill="#363636bd">
                       <items>
@@ -124,6 +104,9 @@
                       <graphic>
                           <FontIcon iconColor="#616161" iconLiteral="fas-ellipsis-h" iconSize="18" />
                       </graphic>
+                  <padding>
+                     <Insets left="3.0" />
+                  </padding>
                   </MenuButton>
               </VBox>
           </AnchorPane>
@@ -131,13 +114,14 @@
               <VBox prefHeight="200.0" prefWidth="100.0">
                   <HBox prefHeight="31.0" prefWidth="254.0">
                       <StackPane alignment="CENTER_RIGHT" prefHeight="150.0" prefWidth="250.0" HBox.hgrow="ALWAYS">
-                          <TextField fx:id="filterInput" prefHeight="28.0" prefWidth="214.0" promptText="Filter" style="-fx-background-color: #ffffff; -fx-border-color: #eeeeee; -fx-border-radius: 6;">
-                        <padding>
-                           <Insets bottom="1.0" left="2.0" />
-                        </padding>
-                        <StackPane.margin>
-                           <Insets bottom="1.0" left="5.0" top="2.0" />
-                        </StackPane.margin></TextField>
+                          <TextField fx:id="filterInput" prefHeight="28.0" prefWidth="214.0" promptText="Filter" style="-fx-background-color: #efefef; -fx-border-color: #eeeeee; -fx-border-radius: 6;">
+                                <padding>
+                                   <Insets bottom="1.0" left="2.0" />
+                                </padding>
+                                <StackPane.margin>
+                                   <Insets bottom="1.0" left="5.0" top="2.0" />
+                                </StackPane.margin>
+                          </TextField>
                           <Button fx:id="filterCancelBtn" prefHeight="22.0" prefWidth="22.0" visible="false">
                               <graphic>
                                   <FontIcon iconColor="#616161" iconLiteral="fas-times-circle" iconSize="14" opacity="0.6" />
@@ -224,12 +208,14 @@
                                                       </TitledPane>
                                                       <TitledPane fx:id="reqPayloadPane" animated="false" maxHeight="Infinity" text="Payload" VBox.vgrow="ALWAYS">
                                                           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                                                              <JFXTextArea fx:id="reqPayload" disable="true" promptText="Data" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                                              <JFXTextArea editable="false" fx:id="reqPayload" promptText="Data" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                                    sdfsfefe
+                                                              </JFXTextArea>
                                                           </AnchorPane>
                                                       </TitledPane>
                                                       <TitledPane fx:id="reqOtherPane" animated="false" maxHeight="Infinity" text="untitled" VBox.vgrow="ALWAYS">
-                                                          <AnchorPane minHeight="0.0" minWidth="0.0">
-                                                              <JFXTextArea fx:id="reqTiming" disable="true" promptText="Data" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                                          <AnchorPane  minHeight="0.0" minWidth="0.0">
+                                                              <JFXTextArea editable="false" fx:id="reqTiming" disable="true" promptText="Data" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                                                           </AnchorPane>
                                                       </TitledPane>
                                                   </children>
@@ -268,7 +254,7 @@
                                                   <children>
                                                       <TitledPane animated="false" maxHeight="Infinity" text="untitled" VBox.vgrow="ALWAYS">
                                                           <AnchorPane minHeight="0.0" minWidth="0.0">
-                                                              <JFXTextArea disable="true" promptText="Data" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                                              <JFXTextArea disable="true" editable="false" focusColor="#3dc4b1" promptText="Data" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                                                           </AnchorPane>
                                                       </TitledPane>
                                                       <TitledPane animated="false" maxHeight="Infinity" text="untitled" VBox.vgrow="ALWAYS">

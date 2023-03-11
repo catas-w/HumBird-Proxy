@@ -60,12 +60,6 @@ public class AppController implements Initializable {
     private JFXTextArea reqHeaderText;
 
     @FXML
-    private JFXTextArea reqPayload;
-
-    @FXML
-    private JFXButton menuButton;
-
-    @FXML
     private VBox reqVBox;
 
     private Dialog proxyConfigDialog;

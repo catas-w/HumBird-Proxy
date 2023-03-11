@@ -58,3 +58,14 @@
     /*-fx-background-color: #dbdbdb;*/
 }
 
+
+/* text-area */
+.titled-pane .jfx-text-area > .input-line {
+    /*-fx-background-color: -jfx-unfocus-color;*/
+    -fx-pref-height: 0;
+    /*-fx-translate-y: 1px;*/
+}
+
+.jfx-text-area > .input-focused-line {
+    -fx-pref-height: 0px;
+}
