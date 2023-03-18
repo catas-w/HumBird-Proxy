@@ -17,7 +17,7 @@
             style="-fx-background-color: #ffffff; -fx-border-radius: 5;"
             stylesheets="@../css/proxy-setting.css" xmlns="http://javafx.com/javafx/19"
             xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.catas.wicked.proxy.gui.ProxySettingController">
+            fx:controller="com.catas.wicked.proxy.gui.controller.ProxySettingController">
    <children>
       <GridPane alignment="TOP_CENTER" layoutX="53.0" layoutY="96.0" prefHeight="352.0" prefWidth="394.0" AnchorPane.bottomAnchor="42.0" AnchorPane.leftAnchor="65.0" AnchorPane.rightAnchor="85.0" AnchorPane.topAnchor="20.0">
         <columnConstraints>

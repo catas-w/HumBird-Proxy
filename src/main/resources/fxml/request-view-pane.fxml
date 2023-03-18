@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import org.kordamp.ikonli.javafx.*?>
+
+<VBox xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.catas.wicked.proxy.gui.controller.RequestViewPane">
+    <stylesheets>
+        <URL value="@../css/common-design.css" />
+        <URL value="@../css/request-view-pane.css" />
+    </stylesheets>
+    <HBox prefHeight="31.0" prefWidth="254.0">
+        <StackPane alignment="CENTER_RIGHT" prefHeight="150.0" prefWidth="250.0" HBox.hgrow="ALWAYS">
+            <TextField fx:id="filterInput" prefHeight="28.0" prefWidth="214.0" promptText="Filter" style="-fx-background-color: #efefef; -fx-border-color: #eeeeee; -fx-border-radius: 10;">
+                <padding>
+                    <Insets bottom="1.0" left="2.0" />
+                </padding>
+                <StackPane.margin>
+                    <Insets bottom="2.0" left="5.0" top="2.0" />
+                </StackPane.margin>
+            </TextField>
+            <Button fx:id="filterCancelBtn" prefHeight="22.0" prefWidth="22.0" visible="false">
+                <graphic>
+                    <FontIcon iconColor="#616161" iconLiteral="fas-times-circle" iconSize="14" opacity="0.6" />
+                </graphic>
+                <StackPane.margin>
+                    <Insets bottom="1.0" top="2.0" />
+                </StackPane.margin>
+            </Button>
+        </StackPane>
+        <MenuButton fx:id="listViewMenuBtn" mnemonicParsing="false" prefHeight="28.0" prefWidth="45.0" styleClass="view-button" textFill="#363636bd">
+            <items>
+                <MenuItem fx:id="treeViewMenuItem" text="Tree view">
+                    <graphic>
+                        <FontIcon iconColor="#616161" iconLiteral="fas-tree" iconSize="18" />
+                    </graphic>
+                </MenuItem>
+                <MenuItem fx:id="listViewMenuItem" text="List view">
+                    <graphic>
+                        <FontIcon iconColor="#616161" iconLiteral="fas-list-ul" iconSize="18" />
+                    </graphic>
+                </MenuItem>
+            </items>
+            <font>
+                <Font name="System Bold" size="12.0" />
+            </font>
+            <graphic>
+                <FontIcon iconColor="#616161" iconLiteral="fas-tree" iconSize="18" />
+            </graphic>
+        </MenuButton>
+    </HBox>
+    <TreeView fx:id="reqTreeView" prefHeight="553.0" prefWidth="254.0" showRoot="false" VBox.vgrow="ALWAYS">
+        <TreeItem expanded="true" value="path">
+            <children>
+                <TreeItem expanded="true" value="https://www.google.com">
+                    <graphic>
+                        <FontIcon iconColor="#616161" iconLiteral="fas-globe-africa" iconSize="12" />
+                    </graphic>
+                    <children>
+                        <TreeItem value="/login" />
+                        <TreeItem value="/index" />
+                    </children>
+                </TreeItem>
+                <TreeItem expanded="true" value="http://www.amazon.com">
+                    <graphic>
+                        <FontIcon iconColor="#616161" iconLiteral="fas-globe-africa" iconSize="12" />
+                    </graphic>
+                    <children>
+                        <TreeItem value="/login" />
+                        <TreeItem value="/index">
+                            <children>
+                                <TreeItem value="/1" />
+                            </children>
+                        </TreeItem>
+                    </children>
+                </TreeItem>
+            </children>
+        </TreeItem>
+        <VBox.margin>
+            <Insets />
+        </VBox.margin>
+        <padding>
+            <Insets top="-1.0" />
+        </padding>
+    </TreeView>
+
+</VBox>

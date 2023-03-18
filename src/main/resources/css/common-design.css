@@ -1,0 +1,32 @@
+.root {
+    -theme-green: #23a88e;
+    -cyan-50: #e0f7fa;
+    -cyan-100: #b2ebf2;
+    -cyan-200: #80deea;
+    -cyan-300: #4dd0e1;
+    -cyan-400: #26c6da;
+    -cyan-500: #00bcd4;
+    -cyan-600: #00acc1;
+    -cyan-700: #0097a7;
+    -cyan-800: #00838f;
+    -cyan-900: #006064;
+    -cyan-A100: #84ffff;
+    -cyan-A200: #18ffff;
+    -cyan-A400: #00e5ff;
+    -cyan-A700: #00b8d4;
+
+    -teal-50: #e0f2f1;
+    -teal-100: #b2dfdb;
+    -teal-200: #80cbc4;
+    -teal-300: #4db6ac;
+    -teal-400: #26a69a;
+    -teal-500: #009688;
+    -teal-600: #00897b;
+    -teal-700: #00796b;
+    -teal-800: #00695c;
+    -teal-900: #004d40;
+    -teal-A100: #a7ffeb;
+    -teal-A200: #64ffda;
+    -teal-A400: #1de9b6;
+    -teal-A700: #00bfa5;
+}

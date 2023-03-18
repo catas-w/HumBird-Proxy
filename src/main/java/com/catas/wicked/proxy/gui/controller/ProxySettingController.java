@@ -1,4 +1,4 @@
-package com.catas.wicked.proxy.gui;
+package com.catas.wicked.proxy.gui.controller;
 
 import com.jfoenix.controls.JFXButton;
 import de.felixroske.jfxsupport.FXMLController;
