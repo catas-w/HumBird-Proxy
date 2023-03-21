@@ -1,6 +1,6 @@
 package com.catas.wicked.proxy.util;
 
-import com.catas.wicked.proxy.config.ProxyConfig;
+import com.catas.wicked.proxy.config.ApplicationConfig;
 import io.netty.handler.proxy.HttpProxyHandler;
 import io.netty.handler.proxy.ProxyHandler;
 import io.netty.handler.proxy.Socks4ProxyHandler;
@@ -10,7 +10,7 @@ import java.net.InetSocketAddress;
 
 public class ProxyHandlerFactory {
 
-    private ProxyConfig config;
+    private ApplicationConfig config;
 
     public ProxyHandler build() {
         ProxyHandler proxyHandler = null;

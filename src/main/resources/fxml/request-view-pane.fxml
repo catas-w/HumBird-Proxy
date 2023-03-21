@@ -7,10 +7,12 @@
 <?import javafx.scene.text.*?>
 <?import org.kordamp.ikonli.javafx.*?>
 
-<VBox xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.catas.wicked.proxy.gui.controller.RequestViewPane">
+<VBox xmlns="http://javafx.com/javafx/11.0.14-internal"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.catas.wicked.proxy.gui.controller.RequestViewController">
     <stylesheets>
-        <URL value="@../css/common-design.css" />
-        <URL value="@../css/request-view-pane.css" />
+        <URL value="@/css/common-design.css" />
+        <URL value="@/css/request-view-pane.css" />
     </stylesheets>
     <HBox prefHeight="31.0" prefWidth="254.0">
         <StackPane alignment="CENTER_RIGHT" prefHeight="150.0" prefWidth="250.0" HBox.hgrow="ALWAYS">
@@ -22,9 +24,9 @@
                     <Insets bottom="2.0" left="5.0" top="2.0" />
                 </StackPane.margin>
             </TextField>
-            <Button fx:id="filterCancelBtn" prefHeight="22.0" prefWidth="22.0" visible="false">
+            <Button fx:id="filterCancelBtn" prefHeight="22.0" prefWidth="22.0" style="-fx-background-color: TRANSPARENT;" visible="false">
                 <graphic>
-                    <FontIcon iconColor="#616161" iconLiteral="fas-times-circle" iconSize="14" opacity="0.6" />
+                    <FontIcon iconColor="#616161" iconLiteral="fas-times-circle" iconSize="14" opacity="0.7" />
                 </graphic>
                 <StackPane.margin>
                     <Insets bottom="1.0" top="2.0" />
@@ -52,32 +54,32 @@
             </graphic>
         </MenuButton>
     </HBox>
-    <TreeView fx:id="reqTreeView" prefHeight="553.0" prefWidth="254.0" showRoot="false" VBox.vgrow="ALWAYS">
-        <TreeItem expanded="true" value="path">
-            <children>
-                <TreeItem expanded="true" value="https://www.google.com">
-                    <graphic>
-                        <FontIcon iconColor="#616161" iconLiteral="fas-globe-africa" iconSize="12" />
-                    </graphic>
-                    <children>
-                        <TreeItem value="/login" />
-                        <TreeItem value="/index" />
-                    </children>
-                </TreeItem>
-                <TreeItem expanded="true" value="http://www.amazon.com">
-                    <graphic>
-                        <FontIcon iconColor="#616161" iconLiteral="fas-globe-africa" iconSize="12" />
-                    </graphic>
-                    <children>
-                        <TreeItem value="/login" />
-                        <TreeItem value="/index">
-                            <children>
-                                <TreeItem value="/1" />
-                            </children>
-                        </TreeItem>
-                    </children>
-                </TreeItem>
-            </children>
+    <TreeView fx:id="reqTreeView" editable="true" prefHeight="553.0" prefWidth="254.0" showRoot="false" VBox.vgrow="ALWAYS">
+        <TreeItem fx:id="root" expanded="true" value="path">
+        <!--    <children>-->
+                <!--<TreeItem expanded="true" value="https://www.google.com">-->
+                <!--    <graphic>-->
+                <!--        <FontIcon iconColor="#616161" iconLiteral="fas-globe-africa" iconSize="12" />-->
+                <!--    </graphic>-->
+                <!--    <children>-->
+                <!--        <TreeItem value="/login" />-->
+                <!--        <TreeItem value="/index" />-->
+                <!--    </children>-->
+                <!--</TreeItem>-->
+                <!--<TreeItem expanded="true" value="http://www.amazon.com">-->
+                <!--    <graphic>-->
+                <!--        <FontIcon iconColor="#616161" iconLiteral="fas-globe-africa" iconSize="12" />-->
+                <!--    </graphic>-->
+                <!--    <children>-->
+                <!--        <TreeItem value="/login" />-->
+                <!--        <TreeItem value="/index">-->
+                <!--            <children>-->
+                <!--                <TreeItem value="/1" />-->
+                <!--            </children>-->
+                <!--        </TreeItem>-->
+                <!--    </children>-->
+                <!--</TreeItem>-->
+        <!--    </children>-->
         </TreeItem>
         <VBox.margin>
             <Insets />

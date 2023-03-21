@@ -1,7 +1,7 @@
 package com.catas.wicked.proxy.proxy.handler;
 
 import com.catas.wicked.proxy.bean.ProxyRequestInfo;
-import com.catas.wicked.proxy.config.ProxyConfig;
+import com.catas.wicked.proxy.config.ApplicationConfig;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import io.netty.handler.codec.http.HttpClientCodec;
@@ -10,7 +10,7 @@ import io.netty.handler.proxy.ProxyHandler;
 
 public class ProxyInitializer extends ChannelInitializer {
 
-    private ProxyConfig proxyConfig;
+    private ApplicationConfig applicationConfig;
 
     private Channel clientChannel;
 
@@ -21,11 +21,11 @@ public class ProxyInitializer extends ChannelInitializer {
     public ProxyInitializer(Channel clientChannel,
                             ProxyRequestInfo requestInfo,
                             ProxyHandler proxyHandler,
-                            ProxyConfig proxyConfig) {
+                            ApplicationConfig applicationConfig) {
         this.clientChannel = clientChannel;
         this.requestInfo = requestInfo;
         this.proxyHandler = proxyHandler;
-        this.proxyConfig = proxyConfig;
+        this.applicationConfig = applicationConfig;
     }
 
     public ProxyInitializer(Channel clientChannel) {
@@ -37,12 +37,12 @@ public class ProxyInitializer extends ChannelInitializer {
         if (proxyHandler != null) {
             ch.pipeline().addLast(proxyHandler);
         }
-        if (proxyConfig.isHandleSsl()) {
+        if (applicationConfig.isHandleSsl()) {
             // TODO
             ch.pipeline().addLast(
-                    proxyConfig.getClientSslCtx().newHandler(ch.alloc(),
-                    proxyConfig.getHost(),
-                    proxyConfig.getPort()));
+                    applicationConfig.getClientSslCtx().newHandler(ch.alloc(),
+                    applicationConfig.getHost(),
+                    applicationConfig.getPort()));
         }
         ch.pipeline().addLast("httpCodec", new HttpClientCodec());
         ch.pipeline().addLast("proxyClientHandler", new ProxyClientHandler(clientChannel));

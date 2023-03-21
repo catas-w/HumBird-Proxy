@@ -61,7 +61,7 @@
                 <Insets top="20.0"/>
             </VBox.margin>
         </JFXButton>
-        <JFXButton mnemonicParsing="false" prefWidth="200.0" textOverrun="CLIP">
+        <JFXButton fx:id="eyeBtn" mnemonicParsing="false" prefWidth="200.0" textOverrun="CLIP">
             <graphic>
                 <FontIcon iconColor="#616161" iconLiteral="fas-eye" iconSize="18"/>
             </graphic>
@@ -69,7 +69,7 @@
                 <Insets top="20.0"/>
             </VBox.margin>
         </JFXButton>
-        <JFXButton mnemonicParsing="false" prefWidth="200.0" textOverrun="CLIP">
+        <JFXButton fx:id="markerBtn" mnemonicParsing="false" prefWidth="200.0" textOverrun="CLIP">
             <graphic>
                 <FontIcon iconColor="#616161" iconLiteral="fas-marker" iconSize="18"/>
             </graphic>

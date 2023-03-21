@@ -1,4 +1,8 @@
 
+.button:hover {
+    -fx-opacity: 0.5;
+}
+
 /* list/tree view menu */
 .view-button {
     -fx-background-color: #ffffff;

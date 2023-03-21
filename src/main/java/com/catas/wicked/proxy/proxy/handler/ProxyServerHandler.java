@@ -5,7 +5,7 @@ import com.catas.wicked.proxy.cert.CertPool;
 import com.catas.wicked.proxy.cert.CertService;
 import com.catas.wicked.proxy.common.ProxyConstant;
 import com.catas.wicked.proxy.common.ServerStatus;
-import com.catas.wicked.proxy.config.ProxyConfig;
+import com.catas.wicked.proxy.config.ApplicationConfig;
 import com.catas.wicked.proxy.util.WebUtils;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
@@ -16,19 +16,13 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.DecoderException;
-import io.netty.handler.codec.DecoderResult;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.HttpContent;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponse;
-import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.codec.http.HttpVersion;
-import io.netty.handler.codec.http.TooLongHttpContentException;
-import io.netty.handler.codec.http.TooLongHttpHeaderException;
-import io.netty.handler.codec.http.TooLongHttpLineException;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.util.ReferenceCountUtil;
@@ -54,7 +48,7 @@ public class ProxyServerHandler extends ChannelInboundHandlerAdapter {
 
     private byte[] httpTagBuf;
 
-    private ProxyConfig proxyConfig;
+    private ApplicationConfig applicationConfig;
 
     private CertService certService;
 
@@ -62,8 +56,8 @@ public class ProxyServerHandler extends ChannelInboundHandlerAdapter {
 
     private ServerStatus status;
 
-    public ProxyServerHandler(ProxyConfig proxyConfig, CertService certService, CertPool certPool) {
-        this.proxyConfig = proxyConfig;
+    public ProxyServerHandler(ApplicationConfig applicationConfig, CertService certService, CertPool certPool) {
+        this.applicationConfig = applicationConfig;
         this.certService = certService;
         this.certPool = certPool;
         this.status = ServerStatus.INIT;
@@ -110,11 +104,11 @@ public class ProxyServerHandler extends ChannelInboundHandlerAdapter {
     private void handleSsl(ChannelHandlerContext ctx, Object msg) throws Exception {
         // TODO
         ByteBuf byteBuf = (ByteBuf) msg;
-        if (proxyConfig.isHandleSsl() && byteBuf.getByte(0) == 22) {
+        if (applicationConfig.isHandleSsl() && byteBuf.getByte(0) == 22) {
             getProxyRequest().setSsl(true);
             int port = ((InetSocketAddress) ctx.channel().localAddress()).getPort();
             SslContext sslCtx = SslContextBuilder
-                    .forServer(proxyConfig.getServerPriKey(), certPool.getCert(port, getProxyRequest().getHost())).build();
+                    .forServer(applicationConfig.getServerPriKey(), certPool.getCert(port, getProxyRequest().getHost())).build();
             ctx.pipeline().addFirst("httpCodec", new HttpServerCodec());
             ctx.pipeline().addFirst("sslHandle", sslCtx.newHandler(ctx.alloc()));
             // 重新过一遍pipeline，拿到解密后的的http报文
@@ -157,7 +151,7 @@ public class ProxyServerHandler extends ChannelInboundHandlerAdapter {
             if (isHttp && !(msg instanceof HttpRequest)) {
                 return;
             }
-            ChannelInitializer channelInitializer = isHttp ? new ProxyInitializer(channel, proxyRequest, null, proxyConfig)
+            ChannelInitializer channelInitializer = isHttp ? new ProxyInitializer(channel, proxyRequest, null, applicationConfig)
                     : new TunnelProxyInitializer(channel, null);
             Bootstrap bootstrap = new Bootstrap();
 

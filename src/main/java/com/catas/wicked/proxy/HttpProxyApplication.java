@@ -15,7 +15,7 @@ public class HttpProxyApplication {
         log.info("Server starting...");
         AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(HttpProxyApplication.class);
         ProxyServer server = (ProxyServer) context.getBean("proxyServer");
-        Object config = context.getBean("proxyConfig");
+        Object config = context.getBean("applicationConfig");
         server.start();
     }
 }

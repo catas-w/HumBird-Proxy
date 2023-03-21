@@ -3,8 +3,6 @@ package com.catas.wicked.proxy;
 import com.catas.wicked.proxy.gui.ApplicationView;
 import com.catas.wicked.proxy.gui.CustomLoadingView;
 import de.felixroske.jfxsupport.AbstractJavaFxApplicationSupport;
-import javafx.application.ConditionalFeature;
-import javafx.application.Platform;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -31,4 +29,8 @@ public class WickedProxyApplication extends AbstractJavaFxApplicationSupport {
         return super.loadDefaultIcons();
     }
 
+    @Override
+    public void stop() throws Exception {
+
+    }
 }

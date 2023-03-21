@@ -1,4 +1,4 @@
-package com.catas.wicked.proxy.utils;
+package com.catas.wicked.proxy.util;
 
 import java.util.concurrent.*;
 

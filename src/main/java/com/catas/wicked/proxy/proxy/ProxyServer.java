@@ -2,7 +2,7 @@ package com.catas.wicked.proxy.proxy;
 
 import com.catas.wicked.proxy.cert.CertPool;
 import com.catas.wicked.proxy.cert.CertService;
-import com.catas.wicked.proxy.config.ProxyConfig;
+import com.catas.wicked.proxy.config.ApplicationConfig;
 import com.catas.wicked.proxy.proxy.handler.ProxyServerHandler;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
@@ -19,12 +19,10 @@ import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.io.InputStream;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
@@ -35,7 +33,7 @@ import java.security.cert.X509Certificate;
 public class ProxyServer {
 
     @Autowired
-    private ProxyConfig proxyConfig;
+    private ApplicationConfig applicationConfig;
     @Autowired
     private CertService certService;
     @Autowired
@@ -64,11 +62,11 @@ public class ProxyServer {
                         protected void initChannel(Channel channel) throws Exception {
                             channel.pipeline().addLast("httpCodec", new HttpServerCodec());
                             channel.pipeline().addLast("serverHandle", new ProxyServerHandler(
-                                    proxyConfig, certService, certPool
+                                    applicationConfig, certService, certPool
                             ));
                         }
                     });
-            ChannelFuture channelFuture = bootstrap.bind(proxyConfig.getPort()).sync();
+            ChannelFuture channelFuture = bootstrap.bind(applicationConfig.getPort()).sync();
             channelFuture.channel().closeFuture().sync();
         } catch (InterruptedException e) {
             log.error("Error occured in proxy server: ", e);
@@ -85,23 +83,22 @@ public class ProxyServer {
         X509Certificate caCert;
         PrivateKey caPriKey;
         try {
-            proxyConfig.setClientSslCtx(contextBuilder.build());
+            applicationConfig.setClientSslCtx(contextBuilder.build());
             caCert = certService.loadCert((new ClassPathResource("/ca.crt").getInputStream()));
             caPriKey = certService.loadPriKey((new ClassPathResource("/ca_private.der").getInputStream()));
             //读取CA证书使用者信息
-            proxyConfig.setIssuer(certService.getSubject(caCert));
+            applicationConfig.setIssuer(certService.getSubject(caCert));
             //读取CA证书有效时段(server证书有效期超出CA证书的，在手机上会提示证书不安全)
-            proxyConfig.setCaNotBefore(caCert.getNotBefore());
-            proxyConfig.setCaNotAfter(caCert.getNotAfter());
+            applicationConfig.setCaNotBefore(caCert.getNotBefore());
+            applicationConfig.setCaNotAfter(caCert.getNotAfter());
             //CA私钥用于给动态生成的网站SSL证书签证
-            proxyConfig.setCaPriKey(caPriKey);
+            applicationConfig.setCaPriKey(caPriKey);
             //生产一对随机公私钥用于网站SSL证书动态创建
             KeyPair keyPair = certService.genKeyPair();
-            proxyConfig.setServerPriKey(keyPair.getPrivate());
-            proxyConfig.setServerPubKey(keyPair.getPublic());
+            applicationConfig.setServerPriKey(keyPair.getPrivate());
+            applicationConfig.setServerPubKey(keyPair.getPublic());
         } catch (Exception e) {
-            e.printStackTrace();
-            proxyConfig.setHandleSsl(false);
+            applicationConfig.setHandleSsl(false);
         }
     }
 }

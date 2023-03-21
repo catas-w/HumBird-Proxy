@@ -7,6 +7,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.paint.Color;
 import org.kordamp.ikonli.javafx.FontIcon;
@@ -15,7 +16,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 @FXMLController
-public class RequestViewPane implements Initializable {
+public class RequestViewController implements Initializable {
 
     @FXML
     private MenuButton listViewMenuBtn;
@@ -29,6 +30,16 @@ public class RequestViewPane implements Initializable {
     private Button filterCancelBtn;
     @FXML
     private TreeView<String> reqTreeView;
+    @FXML
+    private TreeItem<String> root;
+
+    public TreeView<String> getReqTreeView() {
+        return reqTreeView;
+    }
+
+    public TreeItem<String> getRoot() {
+        return root;
+    }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -37,7 +48,6 @@ public class RequestViewPane implements Initializable {
         listViewEventBind(listViewMenuItem);
         listViewEventBind(treeViewMenuItem);
     }
-
 
 
     private void listViewEventBind(MenuItem menuItem) {
