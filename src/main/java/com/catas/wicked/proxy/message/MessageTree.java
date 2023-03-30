@@ -4,7 +4,7 @@ import com.catas.wicked.proxy.bean.MessageEntity;
 import com.catas.wicked.proxy.config.ApplicationConfig;
 import com.catas.wicked.proxy.gui.controller.RequestViewController;
 import com.catas.wicked.proxy.util.ThreadPoolService;
-import io.netty.handler.codec.http.HttpMethod;
+import com.catas.wicked.proxy.util.WebUtils;
 import javafx.application.Platform;
 import javafx.scene.control.TreeItem;
 import javafx.scene.paint.Color;
@@ -15,12 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @Component
@@ -77,24 +72,22 @@ public class MessageTree implements DisposableBean {
     private void add(MessageEntity msg) {
         // create leaf node
         TreeNode node = new TreeNode();
-        node.requestId = msg.getRequestId();
-        node.method = msg.getMethod();
-        node.url = msg.getRequestUrl();
-        node.type = msg.getType();
-        node.isLeaf = true;
+        node.setRequestId(msg.getRequestId());
+        node.setMethod(msg.getMethod());
+        node.setUrl(msg.getRequestUrl());
+        node.setType(msg.getType());
+        node.setLeaf(true);
 
         // add node to its position
-        ArrayList<String> pathSplits = new ArrayList<>();
-        pathSplits.add(msg.getHost());
-        pathSplits.addAll(Arrays.asList(msg.getPath().split("/")));
+        List<String> pathSplits = WebUtils.getPathSplits(msg);
         TreeNode parent = findAndCreatParentNode(root, pathSplits, 0);
-        parent.requestList.add(node);
-        if (parent.isCreatedUI) {
+        parent.getRequestList().add(node);
+        if (parent.isCreatedUI()) {
             createTreeItemUI(parent, node);
         }
 
-        latestNode.next = node;
-        node.prev = latestNode;
+        latestNode.setNext(node);
+        node.setPrev(latestNode);
         latestNode = node;
     }
 
@@ -105,20 +98,23 @@ public class MessageTree implements DisposableBean {
      */
     private void createTreeItemUI(TreeNode parent, TreeNode node) {
         // TODO add event listener
-        if (parent == root) {
-            parent.treeItem = requestViewController.getRoot();
+        if (!node.isLeaf() && node.getTreeItem() != null) {
+            return;
         }
-        TreeItem<String> parentTreeItem = parent.treeItem;
+        if (parent == root) {
+            parent.setTreeItem(requestViewController.getRoot());
+        }
+        TreeItem<String> parentTreeItem = parent.getTreeItem();
         TreeItem<String> treeItem = new TreeItem<>();
-        treeItem.setValue(node.path);
-        if (node.path.startsWith("http")) {
+        treeItem.setValue(node.getPath());
+        if (node.getPath().startsWith("http")) {
             FontIcon icon = new FontIcon();
             icon.setIconColor(Color.valueOf("#616161"));
             icon.setIconLiteral("fas-globe-africa");
             icon.setIconSize(12);
             treeItem.setGraphic(icon);
         }
-        node.treeItem = treeItem;
+        node.setTreeItem(treeItem);
         Platform.runLater(() -> {
            parentTreeItem.getChildren().add(treeItem);
         });
@@ -134,62 +130,17 @@ public class MessageTree implements DisposableBean {
             return parent;
         }
         String curPath = path.get(index);
-        TreeNode node = parent.children.get(curPath);
+        TreeNode node = parent.getChildren().get(curPath);
         if (node == null) {
             node = new TreeNode();
-            node.path = curPath;
-            // node.url = parent.url + "/" + curPath;
-            parent.children.put(curPath, node);
+            node.setPath(curPath);
+            parent.getChildren().put(curPath, node);
         }
-        if (parent.isCreatedUI) {
+        if (parent.isCreatedUI()) {
             createTreeItemUI(parent, node);
         }
         return findAndCreatParentNode(node, path, ++index);
     }
 
-    class TreeNode {
-        /**
-         * request/response
-         */
-        private String type;
-        /**
-         *  request id
-         */
-        private String requestId;
-        /**
-         * request method
-         */
-        private HttpMethod method;
-        /**
-         * host
-         */
-        private String host;
-        /**
-         * full url
-         */
-        private String url;
-        /**
-         * separate path
-         */
-        private String path;
-        /**
-         * data
-         */
-        private byte[] body;
 
-        private boolean isLeaf;
-        private boolean isCreatedUI = true;
-        private TreeItem<String> treeItem;
-        private Map<String, TreeNode> children;
-        private List<TreeNode> requestList;
-        private TreeNode next;
-        private TreeNode prev;
-
-        TreeNode() {
-            this.children = new HashMap<>();
-            this.requestList = new LinkedList<>();
-            this.url = "";
-            this.path = "";
-        }
-    }
 }

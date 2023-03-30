@@ -56,30 +56,30 @@
     </HBox>
     <TreeView fx:id="reqTreeView" editable="true" prefHeight="553.0" prefWidth="254.0" showRoot="false" VBox.vgrow="ALWAYS">
         <TreeItem fx:id="root" expanded="true" value="path">
-        <!--    <children>-->
-                <!--<TreeItem expanded="true" value="https://www.google.com">-->
-                <!--    <graphic>-->
-                <!--        <FontIcon iconColor="#616161" iconLiteral="fas-globe-africa" iconSize="12" />-->
-                <!--    </graphic>-->
-                <!--    <children>-->
-                <!--        <TreeItem value="/login" />-->
-                <!--        <TreeItem value="/index" />-->
-                <!--    </children>-->
-                <!--</TreeItem>-->
-                <!--<TreeItem expanded="true" value="http://www.amazon.com">-->
-                <!--    <graphic>-->
-                <!--        <FontIcon iconColor="#616161" iconLiteral="fas-globe-africa" iconSize="12" />-->
-                <!--    </graphic>-->
-                <!--    <children>-->
-                <!--        <TreeItem value="/login" />-->
-                <!--        <TreeItem value="/index">-->
-                <!--            <children>-->
-                <!--                <TreeItem value="/1" />-->
-                <!--            </children>-->
-                <!--        </TreeItem>-->
-                <!--    </children>-->
-                <!--</TreeItem>-->
-        <!--    </children>-->
+            <children>
+                <TreeItem expanded="true" value="https://www.google.com">
+                    <graphic>
+                        <FontIcon iconColor="#616161" iconLiteral="fas-globe-africa" iconSize="12" />
+                    </graphic>
+                    <children>
+                        <TreeItem value="/login" />
+                        <TreeItem value="/index" />
+                    </children>
+                </TreeItem>
+                <TreeItem expanded="true" value="http://www.amazon.com">
+                    <graphic>
+                        <FontIcon iconColor="#616161" iconLiteral="fas-globe-africa" iconSize="12" />
+                    </graphic>
+                    <children>
+                        <TreeItem value="/login" />
+                        <TreeItem value="/index">
+                            <children>
+                                <TreeItem value="/1" />
+                            </children>
+                        </TreeItem>
+                    </children>
+                </TreeItem>
+            </children>
         </TreeItem>
         <VBox.margin>
             <Insets />

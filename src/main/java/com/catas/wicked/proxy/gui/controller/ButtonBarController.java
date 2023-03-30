@@ -18,6 +18,7 @@ import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
@@ -59,12 +60,13 @@ public class ButtonBarController implements Initializable {
 
         markerBtn.setOnAction(event -> {
             String url = list.get(index++);
-            MessageEntity msg = new MessageEntity();
-            msg.setRequestUrl(url);
-            msg.setHost(url.substring(0, 22));
-            msg.setPath(url.substring(22));
-            msg.setContentType(HttpMethod.POST.name());
-            queue.pushMsg(msg);
+            try {
+                MessageEntity msg = new MessageEntity(url);
+                msg.setContentType(HttpMethod.POST.name());
+                queue.pushMsg(msg);
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
             if (index >= list.size()) {
                 index = 0;
             }
