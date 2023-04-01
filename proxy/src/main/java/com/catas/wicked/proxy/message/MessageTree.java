@@ -79,7 +79,10 @@ public class MessageTree implements DisposableBean {
         node.setLeaf(true);
 
         // add node to its position
-        List<String> pathSplits = WebUtils.getPathSplits(msg);
+        List<String> pathSplits = WebUtils.getPathSplits(msg.getUrl());
+        node.setPath(pathSplits.get(pathSplits.size() - 1));
+        pathSplits.remove(pathSplits.size() - 1);
+
         TreeNode parent = findAndCreatParentNode(root, pathSplits, 0);
         parent.getRequestList().add(node);
         if (parent.isCreatedUI()) {

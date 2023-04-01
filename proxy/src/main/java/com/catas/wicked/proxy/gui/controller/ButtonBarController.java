@@ -56,7 +56,9 @@ public class ButtonBarController implements Initializable {
         list.add("https://www.amzaon.com/home");
         list.add("https://www.google.com/page");
         list.add("https://www.google.com/home/deftail/2");
-        list.add("https://www.google.com/home/deftail/2");
+        list.add("https://www.google.com/home/deftail/2?name=jack&host=local");
+        list.add("https://www.amazon.com");
+        list.add("https://www.bing.com");
 
         markerBtn.setOnAction(event -> {
             String url = list.get(index++);

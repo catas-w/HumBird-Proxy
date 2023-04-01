@@ -1,6 +1,5 @@
 package com.catas.wicked.proxy.util;
 
-import com.catas.wicked.proxy.bean.MessageEntity;
 import com.catas.wicked.proxy.bean.ProxyRequestInfo;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpRequest;
@@ -31,15 +30,21 @@ public class WebUtils {
         return requestInfo;
     }
 
-    public static List<String> getPathSplits(MessageEntity msg) {
+    public static List<String> getPathSplits(URL url) {
         ArrayList<String> list = new ArrayList<>();
-        list.add(msg.getUrl().getHost());
-        String[] split = msg.getUrl().getPath().split("/");
-        for (String s : split) {
-            if (StringUtils.isNotBlank(s)) {
-                list.add(s);
+        list.add(url.getHost());
+        String[] split = url.getPath().split("/");
+        for (String item : split) {
+            if (StringUtils.isNotBlank(item)) {
+                list.add(item);
             }
+        }
+        if (!list.isEmpty() && StringUtils.isNotBlank(url.getQuery())) {
+            String lastPath = list.get(list.size() - 1);
+            list.set(list.size() - 1, lastPath + url.getQuery());
         }
         return list;
     }
+
+
 }
