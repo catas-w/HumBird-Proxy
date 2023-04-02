@@ -79,7 +79,7 @@ public class MessageTree implements DisposableBean {
         node.setLeaf(true);
 
         // add node to its position
-        List<String> pathSplits = WebUtils.getPathSplits(msg.getUrl());
+        List<String> pathSplits = WebUtils.getPathSplits(msg.getUrl().toString());
         node.setPath(pathSplits.get(pathSplits.size() - 1));
         pathSplits.remove(pathSplits.size() - 1);
 
@@ -110,11 +110,18 @@ public class MessageTree implements DisposableBean {
         TreeItem<String> parentTreeItem = parent.getTreeItem();
         TreeItem<String> treeItem = new TreeItem<>();
         treeItem.setValue(node.getPath());
+
         if (node.getPath().startsWith("http")) {
             FontIcon icon = new FontIcon();
-            icon.setIconColor(Color.valueOf("#616161"));
+            icon.setIconColor(Color.valueOf("#1D78C6"));
             icon.setIconLiteral("fas-globe-africa");
-            icon.setIconSize(12);
+            icon.setIconSize(14);
+            treeItem.setGraphic(icon);
+        } else if (!node.isLeaf()) {
+            FontIcon icon = new FontIcon();
+            icon.setIconColor(Color.valueOf("#1D78C6"));
+            icon.setIconLiteral("fas-tag");
+            icon.setIconSize(14);
             treeItem.setGraphic(icon);
         }
         node.setTreeItem(treeItem);

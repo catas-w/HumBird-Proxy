@@ -1,5 +1,6 @@
 package com.catas.wicked.proxy.gui.controller;
 
+import com.catas.wicked.proxy.gui.componet.RequestViewTreeCell;
 import de.felixroske.jfxsupport.FXMLController;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -47,6 +48,8 @@ public class RequestViewController implements Initializable {
         filterInputEventBind();
         listViewEventBind(listViewMenuItem);
         listViewEventBind(treeViewMenuItem);
+
+        reqTreeView.setCellFactory(view -> new RequestViewTreeCell<>());
     }
 
 

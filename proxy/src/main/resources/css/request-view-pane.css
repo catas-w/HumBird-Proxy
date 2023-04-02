@@ -37,3 +37,19 @@
 .view-button  > .arrow-button > .arrow {
     -fx-padding: 0;
 }
+
+/* tree view */
+.tree-cell:selected {
+    -fx-background-color: #b5e0d9;
+}
+
+.tree-cell:selected .req-method-label {
+    -fx-opacity: 1;
+}
+.req-method-label {
+    -fx-text-fill: #ffffff;
+    -fx-background-color: #29c1c1;
+    -fx-border-radius: 0.5em;
+    -fx-opacity: 0.6;
+    -fx-padding: 0 0.1em 0 0.1em;
+}

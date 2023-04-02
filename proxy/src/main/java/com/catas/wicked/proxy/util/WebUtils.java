@@ -31,7 +31,7 @@ public class WebUtils {
     }
 
     public static List<String> getPathSplits(URL url) {
-        ArrayList<String> list = new ArrayList<>();
+        List<String> list = new ArrayList<>();
         list.add(url.getHost());
         String[] split = url.getPath().split("/");
         for (String item : split) {
@@ -46,5 +46,26 @@ public class WebUtils {
         return list;
     }
 
-
+    public static List<String> getPathSplits(String url) {
+        List<String> list = new ArrayList<>();
+        int len = url.length();
+        int slashCount = 0;
+        int left = 0;
+        for (int i=0; i < len; i++) {
+            char chr = url.charAt(i);
+            if (chr == '/') {
+                if (slashCount < 2) {
+                    slashCount ++;
+                } else {
+                    list.add(url.substring(left, i));
+                    slashCount ++;
+                    left = i + 1;
+                }
+            } else if (chr == '?') {
+                break;
+            }
+        }
+        list.add(url.substring(left));
+        return list;
+    }
 }
