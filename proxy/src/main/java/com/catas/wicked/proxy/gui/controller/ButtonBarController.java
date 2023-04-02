@@ -58,12 +58,25 @@ public class ButtonBarController implements Initializable {
         list.add("https://www.google.com/home/deftail/2");
         list.add("https://www.google.com/home/deftail/2?name=jack&host=local");
         list.add("https://www.amazon.com");
+        list.add("https://www.bing.com/index");
+        list.add("https://www.bing.com/home");
+        list.add("https://www.microsoft.com/search");
+        list.add("https://www.microsoft.com/lolo");
         list.add("https://www.bing.com");
 
         markerBtn.setOnAction(event -> {
             String url = list.get(index++);
             try {
                 MessageEntity msg = new MessageEntity(url);
+                if (url.contains("google")) {
+                    msg.setMethod(HttpMethod.GET);
+                } else if (url.contains("bing")) {
+                    msg.setMethod(HttpMethod.DELETE);
+                } else if (url.contains("microsoft")) {
+                    msg.setMethod(HttpMethod.PUT);
+                } else {
+                    msg.setMethod(HttpMethod.POST);
+                }
                 msg.setContentType(HttpMethod.POST.name());
                 queue.pushMsg(msg);
             } catch (MalformedURLException e) {

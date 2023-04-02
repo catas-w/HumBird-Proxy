@@ -1,5 +1,6 @@
 package com.catas.wicked.proxy.message;
 
+import com.catas.wicked.proxy.gui.componet.RequestCell;
 import io.netty.handler.codec.http.HttpMethod;
 import javafx.scene.control.TreeItem;
 import lombok.Data;
@@ -42,7 +43,7 @@ class TreeNode {
 
     private boolean isLeaf;
     private boolean isCreatedUI = true;
-    private TreeItem<String> treeItem;
+    private TreeItem<RequestCell> treeItem;
     private Map<String, TreeNode> children;
     private List<TreeNode> requestList;
     private TreeNode next;

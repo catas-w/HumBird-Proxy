@@ -2,6 +2,7 @@ package com.catas.wicked.proxy.message;
 
 import com.catas.wicked.proxy.bean.MessageEntity;
 import com.catas.wicked.proxy.config.ApplicationConfig;
+import com.catas.wicked.proxy.gui.componet.RequestCell;
 import com.catas.wicked.proxy.gui.controller.RequestViewController;
 import com.catas.wicked.proxy.util.ThreadPoolService;
 import com.catas.wicked.proxy.util.WebUtils;
@@ -85,9 +86,7 @@ public class MessageTree implements DisposableBean {
 
         TreeNode parent = findAndCreatParentNode(root, pathSplits, 0);
         parent.getRequestList().add(node);
-        if (parent.isCreatedUI()) {
-            createTreeItemUI(parent, node);
-        }
+        createTreeItemUI(parent, node);
 
         latestNode.setNext(node);
         node.setPrev(latestNode);
@@ -107,11 +106,14 @@ public class MessageTree implements DisposableBean {
         if (parent == root) {
             parent.setTreeItem(requestViewController.getRoot());
         }
-        TreeItem<String> parentTreeItem = parent.getTreeItem();
-        TreeItem<String> treeItem = new TreeItem<>();
-        treeItem.setValue(node.getPath());
+        TreeItem<RequestCell> parentTreeItem = parent.getTreeItem();
+        TreeItem<RequestCell> treeItem = new TreeItem<>();
 
-        if (node.getPath().startsWith("http")) {
+        RequestCell requestCell = new RequestCell(node.getPath(), node.getMethod() == null ? "": node.getMethod().name());
+        requestCell.setLeaf(node.isLeaf());
+        treeItem.setValue(requestCell);
+
+        if (!node.isLeaf() && node.getPath().startsWith("http")) {
             FontIcon icon = new FontIcon();
             icon.setIconColor(Color.valueOf("#1D78C6"));
             icon.setIconLiteral("fas-globe-africa");
@@ -125,6 +127,7 @@ public class MessageTree implements DisposableBean {
             treeItem.setGraphic(icon);
         }
         node.setTreeItem(treeItem);
+        node.setCreatedUI(true);
         Platform.runLater(() -> {
            parentTreeItem.getChildren().add(treeItem);
         });
@@ -151,6 +154,4 @@ public class MessageTree implements DisposableBean {
         }
         return findAndCreatParentNode(node, path, ++index);
     }
-
-
 }

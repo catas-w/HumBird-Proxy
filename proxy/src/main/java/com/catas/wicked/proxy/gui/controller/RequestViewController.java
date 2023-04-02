@@ -32,13 +32,13 @@ public class RequestViewController implements Initializable {
     @FXML
     private TreeView<String> reqTreeView;
     @FXML
-    private TreeItem<String> root;
+    private TreeItem root;
 
     public TreeView<String> getReqTreeView() {
         return reqTreeView;
     }
 
-    public TreeItem<String> getRoot() {
+    public TreeItem getRoot() {
         return root;
     }
 

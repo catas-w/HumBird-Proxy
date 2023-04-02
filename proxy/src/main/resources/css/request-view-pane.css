@@ -40,7 +40,7 @@
 
 /* tree view */
 .tree-cell:selected {
-    -fx-background-color: #b5e0d9;
+    -fx-background-color: #afbdb9;
 }
 
 .tree-cell:selected .req-method-label {
@@ -52,4 +52,17 @@
     -fx-border-radius: 0.5em;
     -fx-opacity: 0.6;
     -fx-padding: 0 0.1em 0 0.1em;
+}
+
+.method-label-get {
+    -fx-background-color: #40c155;
+}
+.method-label-post {
+    -fx-background-color: #1c72bf;
+}
+.method-label-put {
+    -fx-background-color: #c19f41;
+}
+.method-label-delete {
+    -fx-background-color: #bb3636;
 }
