@@ -7,6 +7,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
@@ -21,7 +22,6 @@ public class RequestViewTreeCell<T> extends TreeCell<T> {
     private HBox hbox;
     private StackPane selectedPane = new StackPane();
     private Label methodLabel;
-    private Label pathLabel;
 
     private InvalidationListener treeItemGraphicInvalidationListener = observable -> updateDisplay(getItem(),
             isEmpty());
@@ -30,7 +30,7 @@ public class RequestViewTreeCell<T> extends TreeCell<T> {
 
     private WeakReference<TreeItem<T>> treeItemRef;
 
-    public RequestViewTreeCell() {
+    public RequestViewTreeCell(TreeView<RequestCell> treeView) {
         selectedPane.getStyleClass().add("selection-bar");
         selectedPane.setBackground(new Background(new BackgroundFill(Color.RED, CornerRadii.EMPTY, Insets.EMPTY)));
         selectedPane.setPrefWidth(3);
@@ -54,9 +54,23 @@ public class RequestViewTreeCell<T> extends TreeCell<T> {
         if (getTreeItem() != null) {
             getTreeItem().graphicProperty().addListener(weakTreeItemGraphicListener);
         }
+
+        this.setOnMouseClicked(e -> {
+            TreeItem<T> treeItem = getTreeItem();
+            if (treeItem != null) {
+                RequestCell cell = (RequestCell) treeItem.getValue();
+                System.out.println("Clicked " + cell.getPath());
+            }
+        });
     }
 
-
+    private HBox createHBox(RequestCell requestCell) {
+        HBox hBox = new HBox(3);
+        if (requestCell.isLeaf()) {
+            hBox.getStyleClass().add("req-leaf");
+        }
+        return hBox;
+    }
 
     private void updateDisplay(T item, boolean empty) {
         if (item == null || empty) {
@@ -74,10 +88,13 @@ public class RequestViewTreeCell<T> extends TreeCell<T> {
                     hbox.getChildren().setAll(treeItem.getGraphic(), (Node) item);
                     setGraphic(hbox);
                 } else if (item instanceof RequestCell) {
-                    hbox = null;
-                    setText(((RequestCell) item).getPath());
-                    treeItem.getGraphic().getStyleClass().add("req-method-label");
-                    setGraphic(treeItem.getGraphic());
+                    if (hbox == null) {
+                        hbox = createHBox((RequestCell) item);
+                        setText(((RequestCell) item).getPath());
+                        treeItem.getGraphic().getStyleClass().add("req-method-label");
+                        hbox.getChildren().setAll(treeItem.getGraphic());
+                    }
+                    setGraphic(hbox);
                 } else {
                     hbox = null;
                     setText(item.toString());
@@ -85,6 +102,7 @@ public class RequestViewTreeCell<T> extends TreeCell<T> {
                 }
             } else {
                 hbox = null;
+                methodLabel = null;
                 if (item instanceof Node) {
                     setText(null);
                     setGraphic((Node) item);
@@ -92,7 +110,7 @@ public class RequestViewTreeCell<T> extends TreeCell<T> {
                     RequestCell requestCell = (RequestCell) item;
                     setText(requestCell.getPath());
                     if (hbox == null) {
-                        hbox = new HBox(3);
+                        hbox = createHBox(requestCell);
                     }
                     if (methodLabel == null) {
                         methodLabel = new Label(requestCell.getMethod());

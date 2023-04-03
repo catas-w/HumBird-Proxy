@@ -42,7 +42,7 @@ class TreeNode {
     private byte[] body;
 
     private boolean isLeaf;
-    private boolean isCreatedUI = true;
+    private boolean isCreatedUI;
     private TreeItem<RequestCell> treeItem;
     private Map<String, TreeNode> children;
     private List<TreeNode> requestList;
@@ -54,5 +54,14 @@ class TreeNode {
         this.requestList = new LinkedList<>();
         this.url = "";
         this.path = "";
+    }
+
+    @Override
+    public String toString() {
+        return "TreeNode{" +
+                "requestId='" + requestId + '\'' +
+                ", method=" + method +
+                ", path='" + path + '\'' +
+                '}';
     }
 }

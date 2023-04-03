@@ -50,41 +50,32 @@ public class ButtonBarController implements Initializable {
 
     private void testTreeItem() {
         ArrayList<String> list = new ArrayList<>();
-        list.add("https://www.google.com/index/page/1");
-        list.add("https://www.google.com/index/page/2");
-        list.add("https://www.google.com/index/page/3");
-        list.add("https://www.amzaon.com/home");
-        list.add("https://www.google.com/page");
-        list.add("https://www.google.com/home/deftail/2");
-        list.add("https://www.google.com/home/deftail/2?name=jack&host=local");
-        list.add("https://www.amazon.com");
-        list.add("https://www.bing.com/index");
-        list.add("https://www.bing.com/home");
-        list.add("https://www.microsoft.com/search");
-        list.add("https://www.microsoft.com/lolo");
-        list.add("https://www.bing.com");
+        list.add("GET https://www.google.com/index/page/1");
+        list.add("GET https://www.google.com/index/page/2");
+        list.add("POST https://www.google.com/index/page/3");
+        list.add("GET https://www.amzaon.com/home");
+        list.add("PUT https://www.google.com/page");
+        list.add("DELETE https://www.google.com/home/deftail/2");
+        list.add("GET https://www.google.com/home/deftail/2?name=jack&host=local");
+        list.add("DELETE https://www.amazon.com");
+        list.add("PUT https://www.bing.com/index");
+        list.add("POST https://www.bing.com/home");
+        list.add("POST https://www.microsoft.com/search");
+        list.add("GET https://www.microsoft.com/lolo");
+        list.add("GET https://www.bing.com");
 
         markerBtn.setOnAction(event -> {
-            String url = list.get(index++);
+            String url = list.get(index % (list.size() - 1));
             try {
-                MessageEntity msg = new MessageEntity(url);
-                if (url.contains("google")) {
-                    msg.setMethod(HttpMethod.GET);
-                } else if (url.contains("bing")) {
-                    msg.setMethod(HttpMethod.DELETE);
-                } else if (url.contains("microsoft")) {
-                    msg.setMethod(HttpMethod.PUT);
-                } else {
-                    msg.setMethod(HttpMethod.POST);
-                }
-                msg.setContentType(HttpMethod.POST.name());
+                String[] split = url.split(" ");
+                MessageEntity msg = new MessageEntity(split[1]);
+                msg.setMethod(new HttpMethod(split[0]));
+
                 queue.pushMsg(msg);
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             }
-            if (index >= list.size()) {
-                index = 0;
-            }
+            index ++;
         });
     }
 

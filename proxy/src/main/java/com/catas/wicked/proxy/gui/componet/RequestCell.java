@@ -2,6 +2,7 @@ package com.catas.wicked.proxy.gui.componet;
 
 import io.netty.handler.codec.http.HttpMethod;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,5 +35,12 @@ public class RequestCell {
     public RequestCell(String path, String method) {
         this.path = path;
         this.method = method;
+    }
+
+    public String getMethod() {
+        if (StringUtils.isNotBlank(method) && method.length() > 4) {
+            return method.substring(0, 3);
+        }
+        return method;
     }
 }

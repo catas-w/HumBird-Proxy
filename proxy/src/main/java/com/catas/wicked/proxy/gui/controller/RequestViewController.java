@@ -1,5 +1,6 @@
 package com.catas.wicked.proxy.gui.controller;
 
+import com.catas.wicked.proxy.gui.componet.RequestCell;
 import com.catas.wicked.proxy.gui.componet.RequestViewTreeCell;
 import de.felixroske.jfxsupport.FXMLController;
 import javafx.fxml.FXML;
@@ -30,13 +31,9 @@ public class RequestViewController implements Initializable {
     @FXML
     private Button filterCancelBtn;
     @FXML
-    private TreeView<String> reqTreeView;
+    private TreeView<RequestCell> reqTreeView;
     @FXML
     private TreeItem root;
-
-    public TreeView<String> getReqTreeView() {
-        return reqTreeView;
-    }
 
     public TreeItem getRoot() {
         return root;
@@ -49,7 +46,13 @@ public class RequestViewController implements Initializable {
         listViewEventBind(listViewMenuItem);
         listViewEventBind(treeViewMenuItem);
 
-        reqTreeView.setCellFactory(view -> new RequestViewTreeCell<>());
+        reqTreeView.setCellFactory(view -> new RequestViewTreeCell<>(view));
+        // reqTreeView.setCellFactory(new Callback<TreeView<RequestCell>, TreeCell<RequestCell>>() {
+        //     @Override
+        //     public TreeCell<RequestCell> call(TreeView<RequestCell> stringTreeView) {
+        //         return null;
+        //     }
+        // });
     }
 
 

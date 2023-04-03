@@ -149,9 +149,7 @@ public class MessageTree implements DisposableBean {
             node.setPath(curPath);
             parent.getChildren().put(curPath, node);
         }
-        if (parent.isCreatedUI()) {
-            createTreeItemUI(parent, node);
-        }
+        createTreeItemUI(parent, node);
         return findAndCreatParentNode(node, path, ++index);
     }
 }

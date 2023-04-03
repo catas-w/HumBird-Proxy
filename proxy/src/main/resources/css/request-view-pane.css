@@ -40,29 +40,33 @@
 
 /* tree view */
 .tree-cell:selected {
-    -fx-background-color: #afbdb9;
+    -fx-background-color: #b6b6b6;
 }
 
 .tree-cell:selected .req-method-label {
     -fx-opacity: 1;
+    -fx-text-fill: #ffffff;
+}
+.req-leaf {
+    /*-fx-background-color: #29c1c1;*/
 }
 .req-method-label {
-    -fx-text-fill: #ffffff;
-    -fx-background-color: #29c1c1;
+    /*-fx-text-fill: #29c1c1;*/
+    /*-fx-background-color: #29c1c1;*/
     -fx-border-radius: 0.5em;
     -fx-opacity: 0.6;
     -fx-padding: 0 0.1em 0 0.1em;
 }
 
 .method-label-get {
-    -fx-background-color: #40c155;
+    -fx-text-fill: #3eb352;
 }
 .method-label-post {
-    -fx-background-color: #1c72bf;
+    -fx-text-fill: #1c72bf;
 }
 .method-label-put {
-    -fx-background-color: #c19f41;
+    -fx-text-fill: #c19f41;
 }
 .method-label-delete {
-    -fx-background-color: #bb3636;
+    -fx-text-fill: #bb3636;
 }
