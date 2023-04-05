@@ -150,6 +150,8 @@ public class MessageTree implements DisposableBean {
             parent.getChildren().put(curPath, node);
         }
         createTreeItemUI(parent, node);
+        RequestCell cell = node.getTreeItem().getValue();
+        cell.setCreatedTime(System.currentTimeMillis());
         return findAndCreatParentNode(node, path, ++index);
     }
 }

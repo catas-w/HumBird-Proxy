@@ -70,3 +70,8 @@
 .method-label-delete {
     -fx-text-fill: #bb3636;
 }
+
+.req-cell-bar {
+    -fx-background-color: #29c1c1;
+    -fx-opacity: 0;
+}

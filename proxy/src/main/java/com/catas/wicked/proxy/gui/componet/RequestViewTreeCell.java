@@ -1,19 +1,16 @@
 package com.catas.wicked.proxy.gui.componet;
 
+import javafx.animation.FadeTransition;
 import javafx.beans.InvalidationListener;
 import javafx.beans.WeakInvalidationListener;
-import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
+import javafx.util.Duration;
 
 import java.lang.ref.WeakReference;
 
@@ -22,6 +19,8 @@ public class RequestViewTreeCell<T> extends TreeCell<T> {
     private HBox hbox;
     private StackPane selectedPane = new StackPane();
     private Label methodLabel;
+    private FadeTransition fadeTransition;
+    private FadeTransition showTransition;
 
     private InvalidationListener treeItemGraphicInvalidationListener = observable -> updateDisplay(getItem(),
             isEmpty());
@@ -31,11 +30,8 @@ public class RequestViewTreeCell<T> extends TreeCell<T> {
     private WeakReference<TreeItem<T>> treeItemRef;
 
     public RequestViewTreeCell(TreeView<RequestCell> treeView) {
-        selectedPane.getStyleClass().add("selection-bar");
-        selectedPane.setBackground(new Background(new BackgroundFill(Color.RED, CornerRadii.EMPTY, Insets.EMPTY)));
-        selectedPane.setPrefWidth(3);
+        selectedPane.getStyleClass().add("req-cell-bar");
         selectedPane.setMouseTransparent(true);
-        selectedProperty().addListener((o, oldVal, newVal) -> selectedPane.setVisible(newVal ? true : false));
 
         final InvalidationListener treeItemInvalidationListener = observable -> {
             TreeItem<T> oldTreeItem = treeItemRef == null ? null : treeItemRef.get();
@@ -64,10 +60,51 @@ public class RequestViewTreeCell<T> extends TreeCell<T> {
         });
     }
 
+    @Override
+    protected void layoutChildren() {
+        super.layoutChildren();
+        if (!getChildren().contains(selectedPane)) {
+            getChildren().add(0, selectedPane);
+        }
+        selectedPane.resizeRelocate(0, 0, getWidth(), getHeight());
+        selectedPane.setVisible(true);
+        selectedPane.setOpacity(0);
+    }
+
+    /**
+     * play animation
+     */
+    private void triggerFade() {
+        if (showTransition == null) {
+            showTransition = new FadeTransition();
+            showTransition.setNode(selectedPane);
+            showTransition.setDuration(Duration.millis(500));
+            showTransition.setCycleCount(1);
+            showTransition.setAutoReverse(true);
+            showTransition.setFromValue(0);
+            showTransition.setToValue(1);
+        }
+        if (this.fadeTransition == null) {
+            this.fadeTransition = new FadeTransition();
+            this.fadeTransition.setNode(selectedPane);
+            this.fadeTransition.setDuration(Duration.millis(1000));
+            this.fadeTransition.setCycleCount(1);
+            this.fadeTransition.setAutoReverse(true);
+            this.fadeTransition.setFromValue(1.0);
+            this.fadeTransition.setToValue(0.0);
+        }
+        showTransition.play();
+        this.fadeTransition.play();
+    }
+
     private HBox createHBox(RequestCell requestCell) {
         HBox hBox = new HBox(3);
         if (requestCell.isLeaf()) {
             hBox.getStyleClass().add("req-leaf");
+        }
+        if (requestCell.isOnCreated()) {
+            triggerFade();
+            // System.out.println("Refresh: created: " + requestCell.getPath());
         }
         return hBox;
     }

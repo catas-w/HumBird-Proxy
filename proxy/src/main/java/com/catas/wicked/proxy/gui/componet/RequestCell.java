@@ -18,6 +18,13 @@ public class RequestCell {
 
     private String styleClass;
 
+    /**
+     * if Show animation or not
+     */
+    private boolean isOnCreated;
+
+    private long createdTime;
+
     private static Map<String, String> styleMap;
 
     static {
@@ -35,6 +42,7 @@ public class RequestCell {
     public RequestCell(String path, String method) {
         this.path = path;
         this.method = method;
+        this.createdTime = System.currentTimeMillis();
     }
 
     public String getMethod() {
@@ -42,5 +50,9 @@ public class RequestCell {
             return method.substring(0, 3);
         }
         return method;
+    }
+
+    public boolean isOnCreated() {
+        return System.currentTimeMillis() - createdTime < 100;
     }
 }
