@@ -6,6 +6,7 @@ import de.felixroske.jfxsupport.FXMLController;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.ListView;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
@@ -33,6 +34,8 @@ public class RequestViewController implements Initializable {
     @FXML
     private TreeView<RequestCell> reqTreeView;
     @FXML
+    private ListView reqListView;
+    @FXML
     private TreeItem root;
 
     public TreeItem getRoot() {
@@ -47,12 +50,6 @@ public class RequestViewController implements Initializable {
         listViewEventBind(treeViewMenuItem);
 
         reqTreeView.setCellFactory(view -> new RequestViewTreeCell<>(view));
-        // reqTreeView.setCellFactory(new Callback<TreeView<RequestCell>, TreeCell<RequestCell>>() {
-        //     @Override
-        //     public TreeCell<RequestCell> call(TreeView<RequestCell> stringTreeView) {
-        //         return null;
-        //     }
-        // });
     }
 
 
@@ -63,6 +60,14 @@ public class RequestViewController implements Initializable {
             fontIcon.setIconSize(18);
             fontIcon.setIconColor(Color.web("#616161"));
             listViewMenuBtn.setGraphic(fontIcon);
+
+            if (reqTreeView.isVisible()) {
+                reqTreeView.setVisible(false);
+                reqListView.setVisible(true);
+            } else {
+                reqTreeView.setVisible(true);
+                reqListView.setVisible(false);
+            }
         });
     }
 
