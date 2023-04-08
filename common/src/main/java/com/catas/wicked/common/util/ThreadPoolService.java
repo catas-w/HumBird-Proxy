@@ -30,6 +30,10 @@ public class ThreadPoolService {
         return service.submit(task);
     }
 
+    public void shutdown() {
+        service.shutdown();
+    }
+
     public static ThreadPoolService getInstance() {
         return Holder.instance;
     }

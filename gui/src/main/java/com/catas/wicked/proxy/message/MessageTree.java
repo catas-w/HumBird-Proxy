@@ -1,6 +1,8 @@
 package com.catas.wicked.proxy.message;
 
-import com.catas.wicked.common.bean.MessageEntity;
+import com.catas.wicked.common.bean.BaseMessage;
+import com.catas.wicked.common.bean.PoisonMessage;
+import com.catas.wicked.common.bean.RequestMessage;
 import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.common.pipeline.MessageQueue;
 import com.catas.wicked.proxy.gui.componet.RequestCell;
@@ -13,7 +15,6 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.paint.Color;
 import lombok.extern.slf4j.Slf4j;
 import org.kordamp.ikonli.javafx.FontIcon;
-import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -22,13 +23,11 @@ import java.util.List;
 
 @Slf4j
 @Component
-public class MessageTree implements DisposableBean {
+public class MessageTree {
 
     private final TreeNode root = new TreeNode();
 
     private TreeNode latestNode;
-
-    private boolean running;
 
     private Thread worker;
 
@@ -45,12 +44,15 @@ public class MessageTree implements DisposableBean {
     public void init() {
         // fetch data from queue and add to message tree
         latestNode = root;
-        running = true;
         worker = new Thread(() -> {
-            while (running) {
+            while (!appConfig.getShutDownFlag().get()) {
                 try {
-                    MessageEntity msg = messageQueue.getMsg();
-                    add(msg);
+                    BaseMessage msg = messageQueue.getMsg();
+                    if (msg instanceof RequestMessage) {
+                        add((RequestMessage) msg);
+                    } else if (msg instanceof PoisonMessage) {
+                        throw new InterruptedException();
+                    }
                 } catch (InterruptedException e) {
                     log.info("-- quit --");
                     break;
@@ -62,17 +64,11 @@ public class MessageTree implements DisposableBean {
         ThreadPoolService.getInstance().run(worker);
     }
 
-    @Override
-    public void destroy() {
-        running = false;
-        this.worker.interrupt();
-    }
-
     /**
      * 根据 path 添加节点到树中
      * @param msg request/response entity
      */
-    private void add(MessageEntity msg) {
+    private void add(RequestMessage msg) {
         // create leaf node
         TreeNode node = new TreeNode();
         node.setRequestId(msg.getRequestId());

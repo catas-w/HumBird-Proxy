@@ -1,6 +1,6 @@
 package com.catas.wicked.proxy.gui.controller;
 
-import com.catas.wicked.common.bean.MessageEntity;
+import com.catas.wicked.common.bean.RequestMessage;
 import com.catas.wicked.common.pipeline.MessageQueue;
 import com.jfoenix.controls.JFXButton;
 import de.felixroske.jfxsupport.FXMLController;
@@ -68,7 +68,7 @@ public class ButtonBarController implements Initializable {
             String url = list.get(index % (list.size() - 1));
             try {
                 String[] split = url.split(" ");
-                MessageEntity msg = new MessageEntity(split[1]);
+                RequestMessage msg = new RequestMessage(split[1]);
                 msg.setMethod(new HttpMethod(split[0]));
 
                 queue.pushMsg(msg);

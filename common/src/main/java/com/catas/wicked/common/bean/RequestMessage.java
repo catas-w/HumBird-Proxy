@@ -2,12 +2,14 @@ package com.catas.wicked.common.bean;
 
 import io.netty.handler.codec.http.HttpMethod;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
-public class MessageEntity {
+public class RequestMessage extends BaseMessage{
 
     private String type;
 
@@ -31,9 +33,9 @@ public class MessageEntity {
 
     private boolean isEnd;
 
-    public MessageEntity() {}
+    public RequestMessage() {}
 
-    public MessageEntity(String requestUrl) throws MalformedURLException {
+    public RequestMessage(String requestUrl) throws MalformedURLException {
         this.url = new URL(requestUrl);
         this.requestUrl = requestUrl;
     }
