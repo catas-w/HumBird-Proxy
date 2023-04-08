@@ -5,12 +5,12 @@
 
 /* list/tree view menu */
 .view-button {
-    -fx-background-color: #ffffff;
+    -fx-background-color: TRANSPARENT;
 }
 
 .view-button:hover {
-    /*-fx-background-color: #d0d0d0;*/
-    -fx-opacity: 0.6;
+    -fx-background-color: #c7c7c7;
+    /*-fx-opacity: 0.6;*/
 }
 
 .view-button .menu-item:focused {
@@ -39,8 +39,11 @@
 }
 
 /* tree view */
+.tree-view {
+    -fx-background-insets: 0;
+}
 .tree-cell:selected {
-    -fx-background-color: #b6b6b6;
+    -fx-background-color: #d4d4d4;
 }
 
 .tree-cell:selected .req-method-label {
@@ -51,11 +54,10 @@
     /*-fx-background-color: #29c1c1;*/
 }
 .req-method-label {
-    /*-fx-text-fill: #29c1c1;*/
-    /*-fx-background-color: #29c1c1;*/
     -fx-border-radius: 0.5em;
     -fx-opacity: 0.6;
     -fx-padding: 0 0.1em 0 0.1em;
+    -fx-font-weight: bold;
 }
 
 .method-label-get {
@@ -75,3 +77,23 @@
     -fx-background-color: #29c1c1;
     -fx-opacity: 0;
 }
+
+
+/* List view cell */
+.list-view {
+    -fx-background-insets: 0;
+}
+.list-cell:selected .req-method-label {
+    -fx-opacity: 1;
+    -fx-text-fill: #ffffff;
+}
+.list-cell:odd:selected,
+.list-cell:even:selected{
+    -fx-background-color: #d4d4d4;
+}
+
+.list-cell:odd,
+.list-cell:even {
+    -fx-background-color: TRANSPARENT;
+}
+

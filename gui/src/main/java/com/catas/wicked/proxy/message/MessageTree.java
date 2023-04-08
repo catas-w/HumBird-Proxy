@@ -8,6 +8,7 @@ import com.catas.wicked.proxy.gui.controller.RequestViewController;
 import com.catas.wicked.common.util.ThreadPoolService;
 import com.catas.wicked.common.util.WebUtils;
 import javafx.application.Platform;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TreeItem;
 import javafx.scene.paint.Color;
 import lombok.extern.slf4j.Slf4j;
@@ -87,7 +88,10 @@ public class MessageTree implements DisposableBean {
 
         TreeNode parent = findAndCreatParentNode(root, pathSplits, 0);
         parent.getRequestList().add(node);
+
+        // 创建 UI
         createTreeItemUI(parent, node);
+        createListItemUI(node);
 
         latestNode.setNext(node);
         node.setPrev(latestNode);
@@ -100,7 +104,6 @@ public class MessageTree implements DisposableBean {
      * @param node tree node
      */
     private void createTreeItemUI(TreeNode parent, TreeNode node) {
-        // TODO add event listener
         if (!node.isLeaf() && node.getTreeItem() != null) {
             return;
         }
@@ -154,5 +157,20 @@ public class MessageTree implements DisposableBean {
         RequestCell cell = node.getTreeItem().getValue();
         cell.setCreatedTime(System.currentTimeMillis());
         return findAndCreatParentNode(node, path, ++index);
+    }
+
+    /**
+     * 创建 list-item ui
+     * @param node
+     */
+    private void createListItemUI(TreeNode node) {
+        if (node == null || !node.isLeaf()) {
+            return;
+        }
+        RequestCell requestCell = new RequestCell(node.getUrl(), node.getMethod() == null ? "" : node.getMethod().name());
+        ListView<RequestCell> reqListView = requestViewController.getReqListView();
+        Platform.runLater(() -> {
+            reqListView.getItems().add(requestCell);
+        });
     }
 }

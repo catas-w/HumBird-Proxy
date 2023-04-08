@@ -1,6 +1,7 @@
 package com.catas.wicked.proxy.gui.controller;
 
 import com.catas.wicked.proxy.gui.componet.RequestCell;
+import com.catas.wicked.proxy.gui.componet.RequestViewListCell;
 import com.catas.wicked.proxy.gui.componet.RequestViewTreeCell;
 import de.felixroske.jfxsupport.FXMLController;
 import javafx.fxml.FXML;
@@ -34,12 +35,16 @@ public class RequestViewController implements Initializable {
     @FXML
     private TreeView<RequestCell> reqTreeView;
     @FXML
-    private ListView reqListView;
+    private ListView<RequestCell> reqListView;
     @FXML
     private TreeItem root;
 
     public TreeItem getRoot() {
         return root;
+    }
+
+    public ListView<RequestCell> getReqListView() {
+        return reqListView;
     }
 
     @Override
@@ -49,7 +54,8 @@ public class RequestViewController implements Initializable {
         listViewEventBind(listViewMenuItem);
         listViewEventBind(treeViewMenuItem);
 
-        reqTreeView.setCellFactory(view -> new RequestViewTreeCell<>(view));
+        reqTreeView.setCellFactory(RequestViewTreeCell::new);
+        reqListView.setCellFactory(RequestViewListCell::new);
     }
 
 
@@ -61,7 +67,7 @@ public class RequestViewController implements Initializable {
             fontIcon.setIconColor(Color.web("#616161"));
             listViewMenuBtn.setGraphic(fontIcon);
 
-            if (reqTreeView.isVisible()) {
+            if (menuItem.getId().contains("list")) {
                 reqTreeView.setVisible(false);
                 reqListView.setVisible(true);
             } else {

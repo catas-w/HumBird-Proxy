@@ -31,7 +31,7 @@
                 </StackPane.margin>
             </Button>
         </StackPane>
-        <MenuButton fx:id="listViewMenuBtn" maxWidth="22.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="22.0" styleClass="view-button" textFill="#363636bd" HBox.hgrow="NEVER">
+        <MenuButton fx:id="listViewMenuBtn" maxWidth="22.0" mnemonicParsing="false" prefHeight="17.0" prefWidth="17.0" styleClass="view-button" textFill="#363636bd" HBox.hgrow="NEVER">
             <items>
                 <MenuItem fx:id="treeViewMenuItem" text="Tree view">
                     <graphic>
@@ -50,48 +50,16 @@
             <graphic>
                 <FontIcon iconColor="#616161" iconLiteral="fas-tree" iconSize="18" />
             </graphic>
+         <HBox.margin>
+            <Insets bottom="2.0" left="1.0" right="1.0" top="2.0" />
+         </HBox.margin>
         </MenuButton>
     </HBox>
     <StackPane prefWidth="254.0" VBox.vgrow="ALWAYS">
-        <TreeView fx:id="reqTreeView" editable="true" prefHeight="553.0" prefWidth="254.0" showRoot="false" visible="false">
-            <TreeItem fx:id="root" expanded="true" value="path">
-                <!--<children>-->
-              <!--<TreeItem expanded="true" value="https://www.google.com">-->
-              <!--    <graphic>-->
-              <!--        <FontIcon iconColor="#616161" iconLiteral="fas-globe-africa" iconSize="12" />-->
-              <!--    </graphic>-->
-              <!--    <children>-->
-              <!--        <TreeItem value="/login" />-->
-              <!--        <TreeItem value="/index" />-->
-              <!--    </children>-->
-              <!--</TreeItem>-->
-              <!--<TreeItem expanded="true" value="http://www.amazon.com">-->
-              <!--    <graphic>-->
-              <!--        <FontIcon iconColor="#616161" iconLiteral="fas-globe-africa" iconSize="12" />-->
-              <!--    </graphic>-->
-              <!--    <children>-->
-              <!--        <TreeItem value="/login" />-->
-              <!--        <TreeItem value="/index">-->
-              <!--            <children>-->
-              <!--                <TreeItem value="/1" />-->
-              <!--            </children>-->
-              <!--        </TreeItem>-->
-              <!--    </children>-->
-              <!--</TreeItem>-->
-                <!--</children>-->
-            </TreeItem>
-            <padding>
-                <Insets top="-1.0" />
-            </padding>
+        <TreeView fx:id="reqTreeView" editable="true" prefHeight="553.0" prefWidth="254.0" showRoot="false" visible="true">
+            <TreeItem fx:id="root" expanded="true" value="path"/>
         </TreeView>
-        <ListView fx:id="reqListView" prefHeight="200.0" prefWidth="200.0" visible="true">
-            <Label text="1234" />
-            <Label text="1234" />
-            <Label text="1234" />
-            <padding>
-                <Insets left="-1.0" right="-1.0" top="1.0" />
-            </padding>
-        </ListView>
+        <ListView fx:id="reqListView" prefHeight="200.0" prefWidth="200.0" visible="false"/>
     </StackPane>
 
 </VBox>
