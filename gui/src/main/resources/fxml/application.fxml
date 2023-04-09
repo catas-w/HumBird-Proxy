@@ -7,7 +7,7 @@
 <?import javafx.scene.paint.*?>
 <?import javafx.scene.text.*?>
 
-<VBox minWidth="500.0" prefHeight="600.0" prefWidth="900.0" style="-fx-border-radius: 5;"
+<VBox minWidth="500.0" prefHeight="650.0" prefWidth="1000.0" style="-fx-border-radius: 5;"
       xmlns="http://javafx.com/javafx/11.0.14-internal"
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.catas.wicked.proxy.gui.controller.AppController">

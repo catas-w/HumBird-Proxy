@@ -39,13 +39,11 @@ public class ProxyServer {
     @Autowired
     private CertPool certPool;
 
-    @Autowired
-    private ResourceLoader resourceLoader;
-
     public ProxyServer() {
     }
 
     public void start() {
+        log.info("--- Proxy server Starting ---");
         NioEventLoopGroup workGroup = new NioEventLoopGroup(2);
         NioEventLoopGroup bossGroup = new NioEventLoopGroup();
 
@@ -69,7 +67,7 @@ public class ProxyServer {
             ChannelFuture channelFuture = bootstrap.bind(applicationConfig.getPort()).sync();
             channelFuture.channel().closeFuture().sync();
         } catch (InterruptedException e) {
-            log.error("Error occured in proxy server: ", e);
+            log.error("Error occurred in proxy server: ", e);
         } finally {
             bossGroup.shutdownGracefully();
             workGroup.shutdownGracefully();
@@ -79,7 +77,6 @@ public class ProxyServer {
     @PostConstruct
     private void init() {
         SslContextBuilder contextBuilder = SslContextBuilder.forClient().trustManager(InsecureTrustManagerFactory.INSTANCE);
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         X509Certificate caCert;
         PrivateKey caPriKey;
         try {
@@ -98,7 +95,9 @@ public class ProxyServer {
             applicationConfig.setServerPriKey(keyPair.getPrivate());
             applicationConfig.setServerPubKey(keyPair.getPublic());
         } catch (Exception e) {
+            log.error("Certificate load error: {}", e.getMessage());
             applicationConfig.setHandleSsl(false);
         }
+        start();
     }
 }
