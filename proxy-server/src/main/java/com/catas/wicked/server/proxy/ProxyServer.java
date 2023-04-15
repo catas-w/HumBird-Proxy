@@ -3,15 +3,12 @@ package com.catas.wicked.server.proxy;
 import com.catas.wicked.server.cert.CertPool;
 import com.catas.wicked.server.cert.CertService;
 import com.catas.wicked.common.config.ApplicationConfig;
-import com.catas.wicked.server.proxy.handler.ProxyServerHandler;
+import com.catas.wicked.server.handler.server.ProxyServerInitializer;
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.ssl.SslContextBuilder;
@@ -19,7 +16,6 @@ import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -34,10 +30,15 @@ public class ProxyServer {
 
     @Autowired
     private ApplicationConfig applicationConfig;
+
     @Autowired
     private CertService certService;
+
     @Autowired
     private CertPool certPool;
+
+    @Autowired
+    private ProxyServerInitializer proxyServerInitializer;
 
     public ProxyServer() {
     }
@@ -54,16 +55,17 @@ public class ProxyServer {
                     .option(ChannelOption.SO_BACKLOG, 128)
                     .option(ChannelOption.TCP_NODELAY, true)
                     .handler(new LoggingHandler(LogLevel.INFO))
-                    .childHandler(new ChannelInitializer<Channel>() {
-
-                        @Override
-                        protected void initChannel(Channel channel) throws Exception {
-                            channel.pipeline().addLast("httpCodec", new HttpServerCodec());
-                            channel.pipeline().addLast("serverHandle", new ProxyServerHandler(
-                                    applicationConfig, certService, certPool
-                            ));
-                        }
-                    });
+                    .childHandler(proxyServerInitializer);
+                    // .childHandler(new ChannelInitializer<Channel>() {
+                    //
+                    //     @Override
+                    //     protected void initChannel(Channel channel) throws Exception {
+                    //         channel.pipeline().addLast("httpCodec", new HttpServerCodec());
+                    //         channel.pipeline().addLast("serverHandle", new ProxyServerHandler(
+                    //                 applicationConfig, certService, certPool
+                    //         ));
+                    //     }
+                    // });
             ChannelFuture channelFuture = bootstrap.bind(applicationConfig.getPort()).sync();
             channelFuture.channel().closeFuture().sync();
         } catch (InterruptedException e) {

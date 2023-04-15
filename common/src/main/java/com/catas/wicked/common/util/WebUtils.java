@@ -1,6 +1,7 @@
 package com.catas.wicked.common.util;
 
 import com.catas.wicked.common.bean.ProxyRequestInfo;
+import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpRequest;
 import org.apache.commons.lang3.StringUtils;
@@ -30,22 +31,6 @@ public class WebUtils {
         return requestInfo;
     }
 
-    public static List<String> getPathSplits(URL url) {
-        List<String> list = new ArrayList<>();
-        list.add(url.getHost());
-        String[] split = url.getPath().split("/");
-        for (String item : split) {
-            if (StringUtils.isNotBlank(item)) {
-                list.add(item);
-            }
-        }
-        if (!list.isEmpty() && StringUtils.isNotBlank(url.getQuery())) {
-            String lastPath = list.get(list.size() - 1);
-            list.set(list.size() - 1, lastPath + url.getQuery());
-        }
-        return list;
-    }
-
     public static List<String> getPathSplits(String url) {
         List<String> list = new ArrayList<>();
         int len = url.length();
@@ -67,5 +52,14 @@ public class WebUtils {
         }
         list.add(url.substring(left));
         return list;
+    }
+
+    public static boolean isHttp(ByteBuf byteBuf) {
+        byte[] bytes = new byte[8];
+        byteBuf.getBytes(0, bytes);
+        String methodToken = new String(bytes);
+        return methodToken.startsWith("GET ") || methodToken.startsWith("POST ") || methodToken.startsWith("HEAD ")
+                || methodToken.startsWith("PUT ") || methodToken.startsWith("DELETE ") || methodToken.startsWith("OPTIONS ")
+                || methodToken.startsWith("CONNECT ") || methodToken.startsWith("TRACE ");
     }
 }

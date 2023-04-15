@@ -46,6 +46,6 @@ public class ProxyInitializer extends ChannelInitializer {
         }
         ch.pipeline().addLast("httpCodec", new HttpClientCodec());
         ch.pipeline().addLast("proxyClientHandler", new ProxyClientHandler(clientChannel));
-        ch.pipeline().addLast("proxyOutHandler", new ProxyClientOutHandler());
+        // ch.pipeline().addLast("proxyOutHandler", new ProxyClientOutHandler());
     }
 }

@@ -33,7 +33,7 @@ public class ApplicationConfig {
 
     private int throttleLevel = 0;
 
-    private int maxRequestSize = 1000;
+    private int maxContentSize = 10;
 
     private SslContext clientSslCtx;
     private String issuer;
