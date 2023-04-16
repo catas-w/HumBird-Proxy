@@ -33,7 +33,7 @@ public class ProxyServerInitializer extends ChannelInitializer {
         ch.pipeline().addLast("strategyHandler", new StrategyHandler(appConfig, certPool));
         if (appConfig.isRecording()) {
             ch.pipeline().addLast("httpAggregator",
-                    new HttpObjectAggregator(appConfig.getMaxContentSize() * 1024) {
+                    new HttpObjectAggregator(appConfig.getMaxContentSize()) {
                         @Override
                         public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
                             // TODO process maxContent

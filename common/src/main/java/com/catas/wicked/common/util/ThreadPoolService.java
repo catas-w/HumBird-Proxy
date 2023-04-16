@@ -6,7 +6,7 @@ public class ThreadPoolService {
 
     private int corePoolSize = 8;
 
-    private int maxPoolSize = 20;
+    private int maxPoolSize = 128;
 
     private long aliveTime = 0L;
 
@@ -31,7 +31,7 @@ public class ThreadPoolService {
     }
 
     public void shutdown() {
-        service.shutdown();
+        service.shutdownNow();
     }
 
     public static ThreadPoolService getInstance() {

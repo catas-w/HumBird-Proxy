@@ -41,15 +41,12 @@ public class ProxyProcessHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        log.info("--- process proxy data ---");
         ProxyRequestInfo requestInfo = ctx.channel().attr(requestInfoAttributeKey).get();
         if (!applicationConfig.isHandleSsl() && requestInfo != null && BooleanUtils.isTrue(requestInfo.isSsl())) {
             handleProxyData(ctx.channel(), msg, false);
         } else  {
             handleProxyData(ctx.channel(), msg, true);
         }
-
-        ctx.fireChannelRead(msg);
     }
 
     private void handleProxyData(Channel channel, Object msg, boolean isHttp) {

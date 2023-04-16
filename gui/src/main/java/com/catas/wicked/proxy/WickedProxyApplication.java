@@ -15,7 +15,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import java.util.Collection;
 
 @Slf4j
-@SpringBootApplication(scanBasePackages = {"com.catas.wicked.proxy", "com.catas.wicked.common"})
+@SpringBootApplication(scanBasePackages = {"com.catas.wicked.proxy", "com.catas.wicked.common", "com.catas.wicked.server"})
 public class WickedProxyApplication extends AbstractJavaFxApplicationSupport {
 
 

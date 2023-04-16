@@ -1,6 +1,7 @@
 package com.catas.wicked.server.handler.server;
 
 import com.catas.wicked.common.bean.ProxyRequestInfo;
+import com.catas.wicked.common.bean.RequestMessage;
 import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.common.pipeline.MessageQueue;
 import io.netty.buffer.ByteBuf;
@@ -35,12 +36,17 @@ public class RequestRecordHandler extends ChannelInboundHandlerAdapter {
             String uri = request.uri();
             HttpHeaders headers = request.headers();
             HttpMethod method = request.method();
-            log.info("uri: {}\nheaders: {}\nmethod: {}", uri, headers, method);
+            log.info("-- uri: {}\n-- headers: {}\n-- method: {}", uri, headers, method);
             ByteBuf content = request.content();
+
+            RequestMessage requestMessage = new RequestMessage(uri);
+            requestMessage.setMethod(method);
+
             if (content.isReadable()) {
                 String cont = content.toString(StandardCharsets.UTF_8);
-                log.info("content: {}", cont);
+                log.info("-- content: {}", cont.length() > 1000 ? cont.substring(0, 1000): cont);
             }
+            messageQueue.pushMsg(requestMessage);
             System.out.println("=========== Request end ============");
         } else if (msg instanceof HttpRequest) {
             System.out.println("=========== http request ====================");

@@ -1,5 +1,6 @@
 package com.catas.wicked.server.proxy;
 
+import com.catas.wicked.common.util.ThreadPoolService;
 import com.catas.wicked.server.cert.CertPool;
 import com.catas.wicked.server.cert.CertService;
 import com.catas.wicked.common.config.ApplicationConfig;
@@ -69,7 +70,7 @@ public class ProxyServer {
             ChannelFuture channelFuture = bootstrap.bind(applicationConfig.getPort()).sync();
             channelFuture.channel().closeFuture().sync();
         } catch (InterruptedException e) {
-            log.error("Error occurred in proxy server: ", e);
+            log.info("Proxy server interrupt: ", e);
         } finally {
             bossGroup.shutdownGracefully();
             workGroup.shutdownGracefully();
@@ -100,6 +101,7 @@ public class ProxyServer {
             log.error("Certificate load error: {}", e.getMessage());
             applicationConfig.setHandleSsl(false);
         }
-        start();
+        ThreadPoolService.getInstance().run(this::start);
+        // start();
     }
 }
