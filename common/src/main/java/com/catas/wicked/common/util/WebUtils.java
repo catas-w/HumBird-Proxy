@@ -4,8 +4,9 @@ import com.catas.wicked.common.bean.ProxyRequestInfo;
 import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpRequest;
-import org.apache.commons.lang3.StringUtils;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -61,5 +62,10 @@ public class WebUtils {
         return methodToken.startsWith("GET ") || methodToken.startsWith("POST ") || methodToken.startsWith("HEAD ")
                 || methodToken.startsWith("PUT ") || methodToken.startsWith("DELETE ") || methodToken.startsWith("OPTIONS ")
                 || methodToken.startsWith("CONNECT ") || methodToken.startsWith("TRACE ");
+    }
+
+    public static String getStoragePath() throws IOException {
+        File directory = new File("..");
+        return directory.getCanonicalPath();
     }
 }

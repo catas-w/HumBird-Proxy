@@ -13,7 +13,7 @@ public class RequestMessage extends BaseMessage{
 
     private String type;
 
-    private HttpMethod method;
+    private String method;
 
     private String contentType;
 

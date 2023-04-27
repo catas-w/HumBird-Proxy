@@ -4,7 +4,6 @@ import com.catas.wicked.common.bean.RequestMessage;
 import com.catas.wicked.common.pipeline.MessageQueue;
 import com.jfoenix.controls.JFXButton;
 import de.felixroske.jfxsupport.FXMLController;
-import io.netty.handler.codec.http.HttpMethod;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -69,7 +68,7 @@ public class ButtonBarController implements Initializable {
             try {
                 String[] split = url.split(" ");
                 RequestMessage msg = new RequestMessage(split[1]);
-                msg.setMethod(new HttpMethod(split[0]));
+                msg.setMethod(split[0]);
 
                 queue.pushMsg(msg);
             } catch (MalformedURLException e) {

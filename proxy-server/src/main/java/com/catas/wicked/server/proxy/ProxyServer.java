@@ -70,7 +70,7 @@ public class ProxyServer {
             ChannelFuture channelFuture = bootstrap.bind(applicationConfig.getPort()).sync();
             channelFuture.channel().closeFuture().sync();
         } catch (InterruptedException e) {
-            log.info("Proxy server interrupt: ", e);
+            log.info("Proxy server interrupt: {}", e.getMessage());
         } finally {
             bossGroup.shutdownGracefully();
             workGroup.shutdownGracefully();

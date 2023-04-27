@@ -5,15 +5,18 @@ import com.catas.wicked.common.bean.PoisonMessage;
 import com.catas.wicked.common.bean.RequestMessage;
 import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.common.pipeline.MessageQueue;
+import com.catas.wicked.common.util.IdUtil;
 import com.catas.wicked.proxy.gui.componet.RequestCell;
 import com.catas.wicked.proxy.gui.controller.RequestViewController;
 import com.catas.wicked.common.util.ThreadPoolService;
 import com.catas.wicked.common.util.WebUtils;
+import io.netty.handler.codec.http.HttpMethod;
 import javafx.application.Platform;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TreeItem;
 import javafx.scene.paint.Color;
 import lombok.extern.slf4j.Slf4j;
+import org.ehcache.Cache;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -39,6 +42,9 @@ public class MessageTree {
 
     @Autowired
     private RequestViewController requestViewController;
+
+    @Autowired
+    private Cache<String, RequestMessage> requestCache;
 
     @PostConstruct
     public void init() {
@@ -69,10 +75,13 @@ public class MessageTree {
      * @param msg request/response entity
      */
     private void add(RequestMessage msg) {
+        // put to cache
+        requestCache.put(IdUtil.getId(), msg);
+
         // create leaf node
         TreeNode node = new TreeNode();
         node.setRequestId(msg.getRequestId());
-        node.setMethod(msg.getMethod());
+        node.setMethod(new HttpMethod(msg.getMethod()));
         node.setUrl(msg.getRequestUrl());
         node.setType(msg.getType());
         node.setLeaf(true);

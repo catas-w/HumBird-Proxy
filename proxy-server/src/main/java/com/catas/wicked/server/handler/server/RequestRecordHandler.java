@@ -14,6 +14,7 @@ import io.netty.handler.codec.http.HttpRequest;
 import io.netty.util.AttributeKey;
 import lombok.extern.slf4j.Slf4j;
 
+import java.net.MalformedURLException;
 import java.nio.charset.StandardCharsets;
 
 @Slf4j
@@ -28,29 +29,41 @@ public class RequestRecordHandler extends ChannelInboundHandlerAdapter {
         this.messageQueue = messageQueue;
     }
 
+    /**
+     * 参数解析: org.springframework.web.method.annotation.RequestParamMapMethodArgumentResolver
+     */
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         if (msg instanceof FullHttpRequest) {
-            System.out.println("======= Request start ===========");
             FullHttpRequest request = (FullHttpRequest) msg;
-            String uri = request.uri();
-            HttpHeaders headers = request.headers();
-            HttpMethod method = request.method();
-            log.info("-- uri: {}\n-- headers: {}\n-- method: {}", uri, headers, method);
-            ByteBuf content = request.content();
-
-            RequestMessage requestMessage = new RequestMessage(uri);
-            requestMessage.setMethod(method);
-
-            if (content.isReadable()) {
-                String cont = content.toString(StandardCharsets.UTF_8);
-                log.info("-- content: {}", cont.length() > 1000 ? cont.substring(0, 1000): cont);
-            }
-            messageQueue.pushMsg(requestMessage);
-            System.out.println("=========== Request end ============");
+            recordHttpRequest(request.copy());
         } else if (msg instanceof HttpRequest) {
-            System.out.println("=========== http request ====================");
+            System.out.println("-- http request --");
         }
         ctx.fireChannelRead(msg);
+    }
+
+    /**
+     * decode HttpPostRequestDecoder
+     */
+    private void recordHttpRequest(FullHttpRequest request) throws MalformedURLException {
+        System.out.println("=========== Request start ============");
+        String uri = request.uri();
+        HttpHeaders headers = request.headers();
+        HttpMethod method = request.method();
+        log.info("-- uri: {}\n-- headers: {}\n-- method: {}", uri, headers, method);
+        ByteBuf content = request.content();
+
+        RequestMessage requestMessage = new RequestMessage(uri);
+        requestMessage.setMethod(method.name());
+        if (content.isReadable()) {
+            String cont = content.toString(StandardCharsets.UTF_8);
+            requestMessage.setBody(cont.getBytes());
+            log.info("-- content: {}", cont.length() > 1000 ? cont.substring(0, 1000): cont);
+        }
+
+        // save to request tree
+        messageQueue.pushMsg(requestMessage);
+        System.out.println("=========== Request end ============");
     }
 }
