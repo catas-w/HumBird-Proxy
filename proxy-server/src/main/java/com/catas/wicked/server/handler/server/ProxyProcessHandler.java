@@ -2,8 +2,7 @@ package com.catas.wicked.server.handler.server;
 
 import com.catas.wicked.common.bean.ProxyRequestInfo;
 import com.catas.wicked.common.config.ApplicationConfig;
-import com.catas.wicked.server.proxy.handler.ProxyInitializer;
-import com.catas.wicked.server.proxy.handler.TunnelProxyInitializer;
+import com.catas.wicked.server.handler.ClientInitializerFactory;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -33,10 +32,13 @@ public class ProxyProcessHandler extends ChannelInboundHandlerAdapter {
 
     private List<Object> requestList;
 
+    private ClientInitializerFactory initializerFactory;
+
     private final AttributeKey<ProxyRequestInfo> requestInfoAttributeKey = AttributeKey.valueOf("requestInfo");
 
-    public ProxyProcessHandler(ApplicationConfig applicationConfig) {
+    public ProxyProcessHandler(ApplicationConfig applicationConfig, ClientInitializerFactory initializerFactory) {
         this.applicationConfig = applicationConfig;
+        this.initializerFactory = initializerFactory;
     }
 
     @Override
@@ -57,10 +59,10 @@ public class ProxyProcessHandler extends ChannelInboundHandlerAdapter {
             }
             Attribute<ProxyRequestInfo> attr = channel.attr(requestInfoAttributeKey);
             ProxyRequestInfo requestInfo = attr.get();
-            ChannelInitializer channelInitializer = isHttp ? new ProxyInitializer(channel, requestInfo, null, applicationConfig)
-                    : new TunnelProxyInitializer(channel, null);
-            Bootstrap bootstrap = new Bootstrap();
+            ChannelInitializer channelInitializer = initializerFactory.getChannelInitializer(
+                    isHttp, channel, null, requestInfo);
 
+            Bootstrap bootstrap = new Bootstrap();
             bootstrap.group(channel.eventLoop())
                     .channel(NioSocketChannel.class)
                     .handler(channelInitializer);

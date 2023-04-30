@@ -1,4 +1,4 @@
-package com.catas.wicked.server.proxy.handler;
+package com.catas.wicked.server.handler.client;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;

@@ -1,43 +1,39 @@
-package com.catas.wicked.server.proxy.handler;
+package com.catas.wicked.server.handler.client;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import io.netty.handler.codec.DecoderResult;
-import io.netty.handler.codec.http.HttpContent;
-import io.netty.handler.codec.http.HttpResponse;
-import io.netty.util.ReferenceCountUtil;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.LinkedList;
+import java.util.List;
 
 @Slf4j
 public class ProxyClientHandler extends ChannelInboundHandlerAdapter {
 
     private Channel clientChannel;
 
+    private final List<Object> responseList;
+
     public ProxyClientHandler(Channel clientChannel) {
         this.clientChannel = clientChannel;
+        responseList = new LinkedList<>();
     }
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        if (!clientChannel.isOpen()) {
-            ReferenceCountUtil.release(msg);
-            return;
-        }
-
-        if (msg instanceof HttpResponse) {
-            DecoderResult decoderResult = ((HttpResponse) msg).decoderResult();
-            Throwable cause = decoderResult.cause();
-            if(cause != null){
-                ReferenceCountUtil.release(msg);
-                this.exceptionCaught(ctx, cause);
-                return;
+        if (clientChannel.isOpen()) {
+            if (!responseList.isEmpty()) {
+                synchronized (responseList) {
+                    responseList.forEach(resp -> clientChannel.writeAndFlush(msg));
+                }
             }
-            // TODO: record resp & throttle
-        } else if (msg instanceof HttpContent) {
-            // TODO: record
+            clientChannel.writeAndFlush(msg);
+        } else {
+            synchronized (responseList) {
+                responseList.add(msg);
+            }
         }
-        clientChannel.writeAndFlush(msg);
     }
 
     @Override
@@ -50,5 +46,6 @@ public class ProxyClientHandler extends ChannelInboundHandlerAdapter {
         ctx.channel().close();
         clientChannel.close();
         // TODO: exception handle
+        log.error("Error occurred in Proxy client.", cause);
     }
 }

@@ -76,7 +76,7 @@ public class MessageTree {
      */
     private void add(RequestMessage msg) {
         // put to cache
-        requestCache.put(IdUtil.getId(), msg);
+        requestCache.put(msg.getRequestId(), msg);
 
         // create leaf node
         TreeNode node = new TreeNode();

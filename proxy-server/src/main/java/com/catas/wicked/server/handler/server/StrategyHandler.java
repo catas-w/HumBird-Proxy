@@ -33,7 +33,7 @@ import java.net.InetSocketAddress;
 @Slf4j
 public class StrategyHandler extends ChannelInboundHandlerAdapter {
 
-    private boolean isConnected;
+    private boolean isRecording;
 
     private byte[] httpTagBuf;
 
@@ -49,6 +49,7 @@ public class StrategyHandler extends ChannelInboundHandlerAdapter {
         this.applicationConfig = applicationConfig;
         this.certPool = certPool;
         this.status = ServerStatus.INIT;
+        this.isRecording = applicationConfig.isRecording();
     }
 
     @Override
@@ -69,7 +70,9 @@ public class StrategyHandler extends ChannelInboundHandlerAdapter {
         if (status.equals(ServerStatus.INIT)) {
             status = ServerStatus.RUNNING;
             Attribute<ProxyRequestInfo> attr = ctx.channel().attr(requestInfoAttributeKey);
-            attr.set(WebUtils.getRequestProto(request));
+            ProxyRequestInfo requestInfo = WebUtils.getRequestProto(request);
+            requestInfo.setRecording(isRecording);
+            attr.set(requestInfo);
 
             if (HttpMethod.CONNECT.name().equalsIgnoreCase(request.method().name())) {
                 // https connect

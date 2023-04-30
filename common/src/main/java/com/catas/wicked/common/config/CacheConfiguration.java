@@ -5,6 +5,7 @@ import com.catas.wicked.common.util.AppContextUtil;
 import com.catas.wicked.common.util.WebUtils;
 import org.ehcache.Cache;
 import org.ehcache.CacheManager;
+import org.ehcache.CachePersistenceException;
 import org.ehcache.PersistentCacheManager;
 import org.ehcache.config.builders.CacheConfigurationBuilder;
 import org.ehcache.config.builders.CacheManagerBuilder;
@@ -44,8 +45,9 @@ public class CacheConfiguration implements DisposableBean {
     }
 
     @Override
-    public void destroy() {
-        CacheManager cacheManager = (CacheManager) AppContextUtil.getBean("cacheManager");
+    public void destroy() throws CachePersistenceException {
+        PersistentCacheManager cacheManager = (PersistentCacheManager) AppContextUtil.getBean("cacheManager");
         cacheManager.close();
+        cacheManager.destroy();
     }
 }

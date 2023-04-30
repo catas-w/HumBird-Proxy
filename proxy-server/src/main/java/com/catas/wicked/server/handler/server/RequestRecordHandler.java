@@ -11,6 +11,7 @@ import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpRequest;
+import io.netty.util.Attribute;
 import io.netty.util.AttributeKey;
 import lombok.extern.slf4j.Slf4j;
 
@@ -36,7 +37,7 @@ public class RequestRecordHandler extends ChannelInboundHandlerAdapter {
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         if (msg instanceof FullHttpRequest) {
             FullHttpRequest request = (FullHttpRequest) msg;
-            recordHttpRequest(request.copy());
+            recordHttpRequest(ctx, request.copy());
         } else if (msg instanceof HttpRequest) {
             System.out.println("-- http request --");
         }
@@ -46,7 +47,7 @@ public class RequestRecordHandler extends ChannelInboundHandlerAdapter {
     /**
      * decode HttpPostRequestDecoder
      */
-    private void recordHttpRequest(FullHttpRequest request) throws MalformedURLException {
+    private void recordHttpRequest(ChannelHandlerContext ctx, FullHttpRequest request) throws MalformedURLException {
         System.out.println("=========== Request start ============");
         String uri = request.uri();
         HttpHeaders headers = request.headers();
@@ -63,7 +64,12 @@ public class RequestRecordHandler extends ChannelInboundHandlerAdapter {
         }
 
         // save to request tree
+        Attribute<ProxyRequestInfo> attr = ctx.channel().attr(requestInfoAttributeKey);
+        ProxyRequestInfo requestInfo = attr.get();
+        requestMessage.setRequestId(requestInfo.getRequestId());
         messageQueue.pushMsg(requestMessage);
+
+        log.info("RequestId: " + requestInfo.getRequestId());
         System.out.println("=========== Request end ============");
     }
 }

@@ -7,6 +7,8 @@ import com.catas.wicked.common.common.ProxyConstant;
 import com.catas.wicked.common.common.ServerStatus;
 import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.common.util.WebUtils;
+import com.catas.wicked.server.handler.client.ProxyClientInitializer;
+import com.catas.wicked.server.handler.client.TunnelProxyInitializer;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
@@ -151,7 +153,7 @@ public class ProxyServerHandler extends ChannelInboundHandlerAdapter {
             if (isHttp && !(msg instanceof HttpRequest)) {
                 return;
             }
-            ChannelInitializer channelInitializer = isHttp ? new ProxyInitializer(channel, proxyRequest, null, applicationConfig)
+            ChannelInitializer channelInitializer = isHttp ? new ProxyClientInitializer(channel, null, applicationConfig)
                     : new TunnelProxyInitializer(channel, null);
             Bootstrap bootstrap = new Bootstrap();
 

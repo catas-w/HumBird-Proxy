@@ -11,4 +11,8 @@ public class ProxyRequestInfo {
     private boolean ssl;
 
     private String path;
+
+    private boolean isRecording;
+
+    private String requestId;
 }
