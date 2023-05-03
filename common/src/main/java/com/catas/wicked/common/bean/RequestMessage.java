@@ -1,17 +1,15 @@
 package com.catas.wicked.common.bean;
 
-import io.netty.handler.codec.http.HttpMethod;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Map;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class RequestMessage extends BaseMessage{
-
-    private String type;
 
     private String method;
 
@@ -33,11 +31,16 @@ public class RequestMessage extends BaseMessage{
 
     private boolean isEnd;
 
+    private Map<String, String> headers;
+
+    private ResponseMessage response;
+
     public RequestMessage() {}
 
     public RequestMessage(String requestUrl) throws MalformedURLException {
         this.url = new URL(requestUrl);
         this.requestUrl = requestUrl;
+        this.setType(MessageType.REQUEST);
     }
 }
 

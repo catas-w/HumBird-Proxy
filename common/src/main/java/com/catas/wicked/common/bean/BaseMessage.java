@@ -7,5 +7,11 @@ import java.io.Serializable;
 @Data
 public class BaseMessage implements Serializable {
 
-    private String type;
+    private MessageType type;
+
+    public enum MessageType {
+        REQUEST,
+        RESPONSE,
+        POISON
+    }
 }

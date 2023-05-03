@@ -11,7 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class RestApiController {
 
     @RequestMapping("/test")
-    public String testApi() {
+    public String testApi() throws InterruptedException {
+        Thread.sleep(5000);
         return "From wicked-proxy";
     }
 

@@ -34,6 +34,8 @@ public class ProxyProcessHandler extends ChannelInboundHandlerAdapter {
 
     private ClientInitializerFactory initializerFactory;
 
+    private ProxyRequestInfo requestInfo;
+
     private final AttributeKey<ProxyRequestInfo> requestInfoAttributeKey = AttributeKey.valueOf("requestInfo");
 
     public ProxyProcessHandler(ApplicationConfig applicationConfig, ClientInitializerFactory initializerFactory) {
@@ -43,22 +45,31 @@ public class ProxyProcessHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        ProxyRequestInfo requestInfo = ctx.channel().attr(requestInfoAttributeKey).get();
-        if (!applicationConfig.isHandleSsl() && requestInfo != null && BooleanUtils.isTrue(requestInfo.isSsl())) {
-            handleProxyData(ctx.channel(), msg, false);
+        ProxyRequestInfo curRequestInfo = ctx.channel().attr(requestInfoAttributeKey).get();
+        if (curRequestInfo == null) {
+            log.error("Request info is null");
+            ReferenceCountUtil.release(msg);
+            return;
+        }
+        boolean channelChange = false;
+        if (!curRequestInfo.equals(requestInfo)) {
+            requestInfo = curRequestInfo;
+            channelChange = true;
+        }
+        if (!applicationConfig.isHandleSsl() && curRequestInfo != null && BooleanUtils.isTrue(curRequestInfo.isSsl())) {
+            handleProxyData(ctx.channel(), msg, false, channelChange);
         } else  {
-            handleProxyData(ctx.channel(), msg, true);
+            handleProxyData(ctx.channel(), msg, true, channelChange);
         }
     }
 
-    private void handleProxyData(Channel channel, Object msg, boolean isHttp) {
-        // TODO: record request
-        if (channelFuture == null) {
+    private void handleProxyData(Channel channel, Object msg, boolean isHttp, boolean channelChange ) {
+        if (channelChange || channelFuture == null) {
             if (isHttp && (!(msg instanceof FullHttpRequest))) {
                 return;
             }
-            Attribute<ProxyRequestInfo> attr = channel.attr(requestInfoAttributeKey);
-            ProxyRequestInfo requestInfo = attr.get();
+            // Attribute<ProxyRequestInfo> attr = channel.attr(requestInfoAttributeKey);
+            // ProxyRequestInfo requestInfo = attr.get();
             ChannelInitializer channelInitializer = initializerFactory.getChannelInitializer(
                     isHttp, channel, null, requestInfo);
 

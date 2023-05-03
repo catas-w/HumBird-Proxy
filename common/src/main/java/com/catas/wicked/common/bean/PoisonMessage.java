@@ -7,5 +7,5 @@ import lombok.EqualsAndHashCode;
 @Data
 public class PoisonMessage extends BaseMessage{
 
-    private String type = "poison";
+    private MessageType type = MessageType.POISON;
 }

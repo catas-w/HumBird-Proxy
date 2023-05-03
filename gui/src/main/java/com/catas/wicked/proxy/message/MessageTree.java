@@ -3,9 +3,9 @@ package com.catas.wicked.proxy.message;
 import com.catas.wicked.common.bean.BaseMessage;
 import com.catas.wicked.common.bean.PoisonMessage;
 import com.catas.wicked.common.bean.RequestMessage;
+import com.catas.wicked.common.bean.ResponseMessage;
 import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.common.pipeline.MessageQueue;
-import com.catas.wicked.common.util.IdUtil;
 import com.catas.wicked.proxy.gui.componet.RequestCell;
 import com.catas.wicked.proxy.gui.controller.RequestViewController;
 import com.catas.wicked.common.util.ThreadPoolService;
@@ -54,11 +54,7 @@ public class MessageTree {
             while (!appConfig.getShutDownFlag().get()) {
                 try {
                     BaseMessage msg = messageQueue.getMsg();
-                    if (msg instanceof RequestMessage) {
-                        add((RequestMessage) msg);
-                    } else if (msg instanceof PoisonMessage) {
-                        throw new InterruptedException();
-                    }
+                    processMsg(msg);
                 } catch (InterruptedException e) {
                     log.info("-- quit --");
                     break;
@@ -68,6 +64,23 @@ public class MessageTree {
             }
         });
         ThreadPoolService.getInstance().run(worker);
+    }
+
+    private void processMsg(BaseMessage msg) throws Exception {
+        if (msg instanceof PoisonMessage) {
+            throw new InterruptedException();
+        }
+        if (msg.getType() == BaseMessage.MessageType.REQUEST) {
+            add((RequestMessage) msg);
+        } else if (msg.getType() == BaseMessage.MessageType.RESPONSE) {
+            ResponseMessage respMessage = (ResponseMessage) msg;
+            RequestMessage data = requestCache.get(respMessage.getRequestId());
+            if (data != null) {
+                System.out.println("<<<<< Add Resp >>>>>" + respMessage.getRequestId());
+                data.setResponse(respMessage);
+                requestCache.put(data.getRequestId(), data);
+            }
+        }
     }
 
     /**
@@ -83,7 +96,7 @@ public class MessageTree {
         node.setRequestId(msg.getRequestId());
         node.setMethod(new HttpMethod(msg.getMethod()));
         node.setUrl(msg.getRequestUrl());
-        node.setType(msg.getType());
+        node.setType(msg.getType().name());
         node.setLeaf(true);
 
         // add node to its position

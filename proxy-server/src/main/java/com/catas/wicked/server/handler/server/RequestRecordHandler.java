@@ -16,7 +16,8 @@ import io.netty.util.AttributeKey;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.MalformedURLException;
-import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 public class RequestRecordHandler extends ChannelInboundHandlerAdapter {
@@ -34,10 +35,14 @@ public class RequestRecordHandler extends ChannelInboundHandlerAdapter {
      * 参数解析: org.springframework.web.method.annotation.RequestParamMapMethodArgumentResolver
      */
     @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+    public void channelRead(ChannelHandlerContext ctx, Object msg) {
         if (msg instanceof FullHttpRequest) {
             FullHttpRequest request = (FullHttpRequest) msg;
-            recordHttpRequest(ctx, request.copy());
+            try {
+                recordHttpRequest(ctx, request.copy());
+            } catch (MalformedURLException e) {
+                log.error("Record request error: ", e);
+            }
         } else if (msg instanceof HttpRequest) {
             System.out.println("-- http request --");
         }
@@ -46,6 +51,7 @@ public class RequestRecordHandler extends ChannelInboundHandlerAdapter {
 
     /**
      * decode HttpPostRequestDecoder
+     * 记录请求信息
      */
     private void recordHttpRequest(ChannelHandlerContext ctx, FullHttpRequest request) throws MalformedURLException {
         System.out.println("=========== Request start ============");
@@ -56,11 +62,24 @@ public class RequestRecordHandler extends ChannelInboundHandlerAdapter {
         ByteBuf content = request.content();
 
         RequestMessage requestMessage = new RequestMessage(uri);
+        Map<String, String> map = new HashMap<>();
+        headers.entries().forEach(entry -> {
+            map.put(entry.getKey(), entry.getValue());
+        });
         requestMessage.setMethod(method.name());
+        requestMessage.setHeaders(map);
+
         if (content.isReadable()) {
-            String cont = content.toString(StandardCharsets.UTF_8);
-            requestMessage.setBody(cont.getBytes());
-            log.info("-- content: {}", cont.length() > 1000 ? cont.substring(0, 1000): cont);
+            // String cont = content.toString(StandardCharsets.UTF_8);
+            // requestMessage.setBody(cont.getBytes());
+            // log.info("-- content: {}", cont.length() > 1000 ? cont.substring(0, 1000): cont);
+            if (content.hasArray()) {
+                requestMessage.setBody(content.array());
+            } else {
+                byte[] bytes = new byte[content.readableBytes()];
+                content.getBytes(content.readerIndex(), bytes);
+                requestMessage.setBody(bytes);
+            }
         }
 
         // save to request tree

@@ -9,11 +9,14 @@ import com.catas.wicked.server.cert.CertPool;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.handler.codec.DecoderException;
+import io.netty.handler.codec.DecoderResult;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpObject;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponse;
+import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.codec.http.HttpVersion;
 import io.netty.handler.ssl.SslContext;
@@ -58,22 +61,33 @@ public class StrategyHandler extends ChannelInboundHandlerAdapter {
             handleHttpRequest(ctx, msg);
         }
 
-        if (msg instanceof HttpObject) {
-            ctx.fireChannelRead(msg);
-        } else {
+        if (!(msg instanceof HttpObject)) {
             handleSsl(ctx, msg);
         }
+        ctx.fireChannelRead(msg);
     }
 
     private void handleHttpRequest(ChannelHandlerContext ctx, Object msg) {
         HttpRequest request = (HttpRequest) msg;
+        DecoderResult result = request.decoderResult();
+        Throwable cause = result.cause();
+
+        if (cause instanceof DecoderException) {
+            HttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.BAD_REQUEST);
+            ctx.writeAndFlush(response);
+            ReferenceCountUtil.release(msg);
+            return;
+        }
+
+        // TODO: Http 2.0+
+        System.out.println("************ New Request ************" + request.protocolVersion());
+        Attribute<ProxyRequestInfo> attr = ctx.channel().attr(requestInfoAttributeKey);
+        ProxyRequestInfo requestInfo = WebUtils.getRequestProto(request);
+        requestInfo.setRecording(applicationConfig.isRecording());
+        attr.set(requestInfo);
+
         if (status.equals(ServerStatus.INIT)) {
             status = ServerStatus.RUNNING;
-            Attribute<ProxyRequestInfo> attr = ctx.channel().attr(requestInfoAttributeKey);
-            ProxyRequestInfo requestInfo = WebUtils.getRequestProto(request);
-            requestInfo.setRecording(isRecording);
-            attr.set(requestInfo);
-
             if (HttpMethod.CONNECT.name().equalsIgnoreCase(request.method().name())) {
                 // https connect
                 HttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, ProxyConstant.SUCCESS);
