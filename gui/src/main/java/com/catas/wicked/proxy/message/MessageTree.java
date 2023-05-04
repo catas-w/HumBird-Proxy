@@ -16,6 +16,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TreeItem;
 import javafx.scene.paint.Color;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.ehcache.Cache;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,7 +90,9 @@ public class MessageTree {
      */
     private void add(RequestMessage msg) {
         // put to cache
-        requestCache.put(msg.getRequestId(), msg);
+        if (StringUtils.isNotBlank(msg.getRequestId())) {
+            requestCache.put(msg.getRequestId(), msg);
+        }
 
         // create leaf node
         TreeNode node = new TreeNode();
@@ -126,13 +129,14 @@ public class MessageTree {
             return;
         }
         if (parent == root) {
-            parent.setTreeItem(requestViewController.getRoot());
+            parent.setTreeItem(requestViewController.getTreeRoot());
         }
         TreeItem<RequestCell> parentTreeItem = parent.getTreeItem();
         TreeItem<RequestCell> treeItem = new TreeItem<>();
 
         RequestCell requestCell = new RequestCell(node.getPath(), node.getMethod() == null ? "": node.getMethod().name());
         requestCell.setLeaf(node.isLeaf());
+        requestCell.setRequestId(node.getRequestId());
         treeItem.setValue(requestCell);
 
         if (!node.isLeaf() && node.getPath().startsWith("http")) {
@@ -186,6 +190,7 @@ public class MessageTree {
             return;
         }
         RequestCell requestCell = new RequestCell(node.getUrl(), node.getMethod() == null ? "" : node.getMethod().name());
+        requestCell.setRequestId(node.getRequestId());
         ListView<RequestCell> reqListView = requestViewController.getReqListView();
         Platform.runLater(() -> {
             reqListView.getItems().add(requestCell);

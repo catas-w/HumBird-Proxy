@@ -1,8 +1,7 @@
 package com.catas.wicked.proxy.gui.controller;
 
 import com.catas.wicked.proxy.gui.componet.RequestCell;
-import com.catas.wicked.proxy.gui.componet.RequestViewListCell;
-import com.catas.wicked.proxy.gui.componet.RequestViewTreeCell;
+import com.catas.wicked.proxy.gui.componet.ViewCellFactory;
 import de.felixroske.jfxsupport.FXMLController;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -15,6 +14,7 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.paint.Color;
 import org.kordamp.ikonli.javafx.FontIcon;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -39,7 +39,10 @@ public class RequestViewController implements Initializable {
     @FXML
     private TreeItem root;
 
-    public TreeItem getRoot() {
+    @Autowired
+    private ViewCellFactory cellFactory;
+
+    public TreeItem getTreeRoot() {
         return root;
     }
 
@@ -54,8 +57,8 @@ public class RequestViewController implements Initializable {
         listViewEventBind(listViewMenuItem);
         listViewEventBind(treeViewMenuItem);
 
-        reqTreeView.setCellFactory(RequestViewTreeCell::new);
-        reqListView.setCellFactory(RequestViewListCell::new);
+        reqTreeView.setCellFactory(treeView -> cellFactory.createTreeCell(treeView));
+        reqListView.setCellFactory(listView -> cellFactory.createListCell(listView));
     }
 
 

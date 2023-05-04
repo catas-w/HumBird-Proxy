@@ -10,6 +10,8 @@ import java.util.Map;
 @Data
 public class RequestCell {
 
+    private String requestId;
+
     private String path;
 
     private String method;

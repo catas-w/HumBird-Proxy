@@ -1,7 +1,7 @@
 package com.catas.wicked.proxy.gui.componet;
 
+import com.catas.wicked.proxy.service.RequestViewService;
 import javafx.animation.FadeTransition;
-import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
@@ -17,6 +17,7 @@ public class RequestViewListCell<T> extends ListCell<T> {
     private FadeTransition fadeTransition;
     private FadeTransition showTransition;
     private RequestCell requestCell;
+    private RequestViewService requestViewService;
     private final static String DEFAULT_STYLE_CLASS = "req-list-cell";
 
     public RequestViewListCell(ListView<RequestCell> listView) {
@@ -25,10 +26,15 @@ public class RequestViewListCell<T> extends ListCell<T> {
         selectedPane.setMouseTransparent(true);
 
         this.setOnMouseClicked(e -> {
-            if (this.requestCell != null) {
+            if (this.requestCell != null && requestViewService != null) {
                 System.out.println("clicked list cell: " + requestCell.getPath());
+                requestViewService.updateView(requestCell.getRequestId());
             }
         });
+    }
+
+    public void setRequestViewService(RequestViewService requestViewService) {
+        this.requestViewService = requestViewService;
     }
 
     /**
@@ -95,14 +101,7 @@ public class RequestViewListCell<T> extends ListCell<T> {
         } else {
             T listItem = getItem();
             if (listItem != null) {
-                if (item instanceof Node) {
-                    setText(null);
-                    if (hbox == null) {
-                        hbox = new HBox(3);
-                        hbox.getChildren().add((Node) item);
-                    }
-                    setGraphic(hbox);
-                } else if (item instanceof RequestCell) {
+                if (item instanceof RequestCell) {
                     RequestCell requestCell = (RequestCell) item;
                     if (hbox == null) {
                         hbox = createHBox((RequestCell) item);
@@ -122,20 +121,13 @@ public class RequestViewListCell<T> extends ListCell<T> {
             } else {
                 hbox = null;
                 methodLabel = null;
-                if (item instanceof Node) {
-                    setText(null);
-                    setGraphic((Node) item);
-                } else if (item instanceof RequestCell) {
+                if (item instanceof RequestCell) {
                     RequestCell requestCell = (RequestCell) item;
                     setText(requestCell.getPath());
-                    if (hbox == null) {
-                        hbox = createHBox(requestCell);
-                    }
-                    if (methodLabel == null) {
-                        methodLabel = new Label(requestCell.getMethod());
-                        methodLabel.getStyleClass().add("req-method-label");
-                        methodLabel.getStyleClass().add(requestCell.getStyleClass());
-                    }
+                    hbox = createHBox(requestCell);
+                    methodLabel = new Label(requestCell.getMethod());
+                    methodLabel.getStyleClass().add("req-method-label");
+                    methodLabel.getStyleClass().add(requestCell.getStyleClass());
                     hbox.getChildren().setAll(methodLabel);
                     setGraphic(hbox);
                 } else {

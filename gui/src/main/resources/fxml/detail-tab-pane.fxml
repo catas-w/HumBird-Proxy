@@ -29,7 +29,7 @@
                             text="Headers" VBox.vgrow="ALWAYS">
                     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0"
                                 prefWidth="200.0">
-                        <JFXTextArea fx:id="reqHeaderText" disable="false"
+                        <JFXTextArea fx:id="reqHeaderArea" disable="false"
                                      AnchorPane.bottomAnchor="0.0"
                                      AnchorPane.leftAnchor="0.0"
                                      AnchorPane.rightAnchor="0.0"
@@ -44,19 +44,18 @@
                             text="Payload" VBox.vgrow="ALWAYS">
                     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0"
                                 prefWidth="200.0">
-                        <JFXTextArea fx:id="reqPayload" editable="false" promptText="Data"
+                        <JFXTextArea fx:id="reqPayloadArea" editable="false" promptText="Data"
                                      AnchorPane.bottomAnchor="0.0"
                                      AnchorPane.leftAnchor="0.0"
                                      AnchorPane.rightAnchor="0.0"
                                      AnchorPane.topAnchor="0.0">
-                            sdfsfefe
                         </JFXTextArea>
                     </AnchorPane>
                 </TitledPane>
                 <TitledPane fx:id="reqOtherPane" animated="false" maxHeight="Infinity"
                             text="untitled" VBox.vgrow="ALWAYS">
                     <AnchorPane minHeight="0.0" minWidth="0.0">
-                        <JFXTextArea fx:id="reqTiming" disable="true" editable="false"
+                        <JFXTextArea fx:id="reqTimingArea" disable="true" editable="false"
                                      promptText="Data" AnchorPane.bottomAnchor="0.0"
                                      AnchorPane.leftAnchor="0.0"
                                      AnchorPane.rightAnchor="0.0"
@@ -75,7 +74,7 @@
                 <TitledPane fx:id="respHeaderPane" animated="false" maxHeight="Infinity"
                             text="Headers" VBox.vgrow="ALWAYS">
                     <AnchorPane minHeight="0.0" minWidth="0.0">
-                        <JFXTextArea disable="true" promptText="Data"
+                        <JFXTextArea fx:id="respHeaderArea" disable="true" promptText="Data"
                                      AnchorPane.bottomAnchor="0.0"
                                      AnchorPane.leftAnchor="0.0"
                                      AnchorPane.rightAnchor="0.0"
@@ -85,7 +84,7 @@
                 <TitledPane fx:id="respDataPane" animated="false" maxHeight="Infinity"
                             text="Preview" VBox.vgrow="ALWAYS">
                     <AnchorPane minHeight="0.0" minWidth="0.0">
-                        <JFXTextArea disable="true" promptText="Data"
+                        <JFXTextArea fx:id="respContentArea" disable="true" promptText="Data"
                                      AnchorPane.bottomAnchor="0.0"
                                      AnchorPane.leftAnchor="0.0"
                                      AnchorPane.rightAnchor="0.0"
