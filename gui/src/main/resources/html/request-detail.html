@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Title</title>
+        <link rel="stylesheet" href="../lib/bootstrap/bootstrap.css"/>
+        <script src="../lib/bootstrap/bootstrap.min.js"></script>
+        <style>
+            div:focus {
+                outline: none !important;
+            }
+            .main {
+                padding-left: 0;
+                padding-right: 0;
+            }
+            .bi-triangle-fill {
+                transform: rotate(90deg);
+                margin-bottom: 2px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container-fluid main">
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active fw-bold" id="overview-tab" data-bs-toggle="tab" data-bs-target="#overview-tab-pane" type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">
+                        Overview
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link fw-bold" id="request-tab" data-bs-toggle="tab" data-bs-target="#request-tab-pane" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">Request</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link fw-bold" id="response-tab" data-bs-toggle="tab" data-bs-target="#response-tab-pane" type="button" role="tab" aria-controls="contact-tab-pane" aria-selected="false">Response</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link fw-bold" id="timing-tab" data-bs-toggle="tab" data-bs-target="#timing-tab-pane" type="button" role="tab" aria-controls="disabled-tab-pane" aria-selected="false">Timing</button>
+                </li>
+            </ul>
+            <div class="tab-content" id="myTabContent">
+                <div class="tab-pane fade show active" id="overview-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <button class="btn btn-light text-start fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-triangle-fill" viewBox="0 0 16 16" style="transform: rotate(90deg);">
+                                    <path fill-rule="evenodd" d="M7.022 1.566a1.13 1.13 0 0 1 1.96 0l6.857 11.667c.457.778-.092 1.767-.98 1.767H1.144c-.889 0-1.437-.99-.98-1.767L7.022 1.566z"></path>
+                                </svg>
+                                Overview
+                            </button>
+                            <div class="collapse" id="collapseExample">
+                                <div class="card card-body">
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <button class="btn btn-light text-start" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample2" aria-expanded="false" aria-controls="collapseExample">
+                                Button with data-bs-target
+                            </button>
+                            <div class="collapse" id="collapseExample2">
+                                <div class="card card-body">
+                                    <p>Some placeholder content for the collaps</p>
+                                    e component. This panel is hidden by default but revealed when the user activates the relevant trigger.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="request-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
+                    Request
+                </div>
+                <div class="tab-pane fade" id="response-tab-pane" role="tabpanel" aria-labelledby="contact-tab" tabindex="0">
+                    Response
+                </div>
+                <div class="tab-pane" id="timing-tab-pane" role="tabpanel"  tabindex="0">
+                    timing
+                </div>
+            </div>
+        </div>
+
+        <script>
+
+        </script>
+    </body>
+</html>

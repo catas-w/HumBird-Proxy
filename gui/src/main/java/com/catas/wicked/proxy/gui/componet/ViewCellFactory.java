@@ -15,7 +15,6 @@ public class ViewCellFactory {
     private RequestViewService requestViewService;
 
     public RequestViewTreeCell<RequestCell> createTreeCell(TreeView<RequestCell> treeView) {
-        // TODO
         RequestViewTreeCell<RequestCell> treeCell = new RequestViewTreeCell<>(treeView);
         treeCell.setRequestViewService(requestViewService);
         return treeCell;

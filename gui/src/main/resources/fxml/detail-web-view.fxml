@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.web.WebView?>
+
+<VBox alignment="TOP_CENTER" prefHeight="600.0" prefWidth="800.0"
+      xmlns="http://javafx.com/javafx/11.0.14-internal"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.catas.wicked.proxy.gui.controller.DetailWebViewController">
+    <AnchorPane VBox.vgrow="ALWAYS">
+        <WebView fx:id="detailWebView"
+                 AnchorPane.bottomAnchor="0.0"
+                 AnchorPane.leftAnchor="0.0"
+                 AnchorPane.rightAnchor="0.0"
+                 AnchorPane.topAnchor="0.0"/>
+    </AnchorPane>
+</VBox>

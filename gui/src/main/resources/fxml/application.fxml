@@ -25,7 +25,8 @@
         <SplitPane dividerPositions="0.3" focusTraversable="true" minWidth="500.0" prefHeight="547.0" prefWidth="838.0"
                    style="-fx-background-color: TRANSPARENT;" HBox.hgrow="ALWAYS">
             <fx:include source="request-view-pane.fxml"/>
-            <fx:include source="detail-tab-pane.fxml"/>
+<!--            <fx:include source="detail-tab-pane.fxml"/>-->
+            <fx:include source="detail-web-view.fxml"/>
         </SplitPane>
     </HBox>
     <HBox id="HBox" alignment="CENTER_LEFT" minHeight="20.0" prefHeight="20.0" prefWidth="900.0" spacing="5.0"

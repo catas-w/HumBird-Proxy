@@ -21,7 +21,6 @@ public class RequestViewTreeCell<T> extends TreeCell<T> {
     private Label methodLabel;
     private FadeTransition fadeTransition;
     private FadeTransition showTransition;
-    private RequestCell requestCell;
     private RequestViewService requestViewService;
 
     private InvalidationListener treeItemGraphicInvalidationListener = observable -> updateDisplay(getItem(),

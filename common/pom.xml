@@ -15,18 +15,34 @@
         <module>../gui</module>
         <module>../proxy-server</module>
     </modules>
+    <properties>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+    </properties>
+
 
     <dependencies>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
-            <version>19</version>
+            <version>19.0.2.1</version>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>
-            <version>19</version>
+            <version>19.0.2.1</version>
         </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-base</artifactId>
+            <version>19.0.2.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-web</artifactId>
+            <version>19.0.2.1</version>
+        </dependency>
+
         <dependency>
             <groupId>de.roskenet</groupId>
             <artifactId>springboot-javafx-support</artifactId>
