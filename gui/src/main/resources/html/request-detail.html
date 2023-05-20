@@ -4,19 +4,13 @@
         <meta charset="UTF-8">
         <title>Title</title>
         <link rel="stylesheet" href="../lib/bootstrap/bootstrap.css"/>
+        <link rel="stylesheet" href="../lib/highlight/default.min.css"/>
+        <link rel="stylesheet" href="../css/webview/detail-tab.css"/>
         <script src="../lib/bootstrap/bootstrap.min.js"></script>
+        <script src="../lib/highlight/highlight.min.js"></script>
+        <script src="../lib/jq/jquery-3.7.0.min.js"></script>
         <style>
-            div:focus {
-                outline: none !important;
-            }
-            .main {
-                padding-left: 0;
-                padding-right: 0;
-            }
-            .bi-triangle-fill {
-                transform: rotate(90deg);
-                margin-bottom: 2px;
-            }
+
         </style>
     </head>
     <body>
@@ -28,39 +22,45 @@
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link fw-bold" id="request-tab" data-bs-toggle="tab" data-bs-target="#request-tab-pane" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">Request</button>
+                    <button class="nav-link fw-bold" id="request-tab" data-bs-toggle="tab" data-bs-target="#request-tab-pane" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">
+                        &nbsp;Request&nbsp;
+                    </button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link fw-bold" id="response-tab" data-bs-toggle="tab" data-bs-target="#response-tab-pane" type="button" role="tab" aria-controls="contact-tab-pane" aria-selected="false">Response</button>
+                    <button class="nav-link fw-bold" id="response-tab" data-bs-toggle="tab" data-bs-target="#response-tab-pane" type="button" role="tab" aria-controls="contact-tab-pane" aria-selected="false">
+                        Response
+                    </button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link fw-bold" id="timing-tab" data-bs-toggle="tab" data-bs-target="#timing-tab-pane" type="button" role="tab" aria-controls="disabled-tab-pane" aria-selected="false">Timing</button>
+                    <button class="nav-link fw-bold" id="timing-tab" data-bs-toggle="tab" data-bs-target="#timing-tab-pane" type="button" role="tab" aria-controls="disabled-tab-pane" aria-selected="false">
+                        &nbsp;Timing&nbsp;
+                    </button>
                 </li>
             </ul>
             <div class="tab-content" id="myTabContent">
                 <div class="tab-pane fade show active" id="overview-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
                     <div class="container-fluid">
                         <div class="row">
-                            <button class="btn btn-light text-start fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-triangle-fill" viewBox="0 0 16 16" style="transform: rotate(90deg);">
-                                    <path fill-rule="evenodd" d="M7.022 1.566a1.13 1.13 0 0 1 1.96 0l6.857 11.667c.457.778-.092 1.767-.98 1.767H1.144c-.889 0-1.437-.99-.98-1.767L7.022 1.566z"></path>
-                                </svg>
+                            <button class="btn btn-light text-start fw-bold tab-title" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+                                <img class="play-icon spanReset" src="../image/play-solid.svg" alt="">
                                 Overview
                             </button>
                             <div class="collapse" id="collapseExample">
-                                <div class="card card-body">
-
+                                <div class="card card-body border-light ">
+                                    <code class="language-headers">
+                                    </code>
                                 </div>
                             </div>
                         </div>
                         <div class="row">
-                            <button class="btn btn-light text-start" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample2" aria-expanded="false" aria-controls="collapseExample">
-                                Button with data-bs-target
+                            <button class="btn btn-light text-start fw-bold tab-title" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDetail" aria-expanded="false" aria-controls="collapseExample">
+                                <img class="play-icon spanReset" src="../image/play-solid.svg" alt="">
+                                Detail
                             </button>
-                            <div class="collapse" id="collapseExample2">
-                                <div class="card card-body">
-                                    <p>Some placeholder content for the collaps</p>
-                                    e component. This panel is hidden by default but revealed when the user activates the relevant trigger.
+                            <div class="collapse" id="collapseDetail">
+                                <div class="card card-body border-light ">
+                                    <code class="language-json">
+                                    </code>
                                 </div>
                             </div>
                         </div>
@@ -78,8 +78,50 @@
             </div>
         </div>
 
+        <script src="../js/detail-tab-main.js"></script>
         <script>
+            $(function () {
+                bindEvents();
 
+                hljs.configure({
+                    tabReplace: '    ', // 4 spaces
+                });
+                hljs.registerLanguage('headers', function () {
+                    return {
+                        name: "headers",
+                        case_insensitive: true, // language is case-insensitive
+                        keywords: '',
+                        scope: "test",
+                        contains: [
+                            {
+                                unicodeRegex: '.+?:',
+                                scope: 'headers-key',
+                                begin: /^.+?:\s/,
+                                // end: '\w'
+                            }
+                        ]
+                    }
+                });
+                initTestData();
+                // hljs.highlightAll();
+            });
+
+            function bindEvents() {
+                $('.btn.tab-title').click(function () {
+                    $(this).children('.play-icon').toggleClass('spanRotate');
+                })
+            }
+
+            function initTestData() {
+                initData("collapseExample", `User-Agent: for "Mozilla: /5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36\nHost: google.com`);
+                initData("collapseDetail", `{\n    "name": "JacK",\n\t"age": 23,\n\t"Num": 23\n}`);
+            }
+
+            function initData(tabId, content) {
+                let selector = `#${tabId} .card code`;
+                let ele = $(selector).text(content);
+                hljs.highlightElement($(selector)[0]);
+            }
         </script>
     </body>
 </html>
