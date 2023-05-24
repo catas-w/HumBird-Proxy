@@ -6,6 +6,7 @@
         <link rel="stylesheet" href="../lib/bootstrap/bootstrap.css"/>
         <link rel="stylesheet" href="../lib/highlight/default.min.css"/>
         <link rel="stylesheet" href="../css/webview/detail-tab.css"/>
+        <script src="../lib/popper/popper.min.js"></script>
         <script src="../lib/bootstrap/bootstrap.min.js"></script>
         <script src="../lib/highlight/highlight.min.js"></script>
         <script src="../lib/jq/jquery-3.7.0.min.js"></script>
@@ -58,9 +59,25 @@
                                 Detail
                             </button>
                             <div class="collapse" id="collapseDetail">
+                                <div class="card card-body border-light">
+                                    <div class="btn-group col-md-6 col-lg-6 col-sm-6" role="group" aria-label="Basic example">
+                                        <button type="button" class="btn btn-sm btn-light">Text</button>
+                                        <button type="button" class="btn btn-sm btn-light">Origin</button>
+                                        <button type="button" class="btn btn-sm btn-light">Hex</button>
+                                        <button type="button" class="btn btn-sm btn-light">Preview</button>
+
+                                        <select class="form-select-sm bg-light border-light offset-2" aria-label="select">
+                                            <option selected>Code</option>
+                                            <option value="1">Json</option>
+                                            <option value="2">HTML</option>
+                                            <option value="3">XML</option>
+                                        </select>
+                                    </div>
+                                </div>
                                 <div class="card card-body border-light ">
-                                    <code class="language-json">
+                                    <code class="language-json ">
                                     </code>
+                                    <img src="../image/file.jpg" class="card-img visually-hidden" alt="Image failed to load">
                                 </div>
                             </div>
                         </div>

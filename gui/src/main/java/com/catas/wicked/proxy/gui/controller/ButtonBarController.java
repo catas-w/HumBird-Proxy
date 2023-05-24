@@ -2,6 +2,7 @@ package com.catas.wicked.proxy.gui.controller;
 
 import com.catas.wicked.common.bean.RequestMessage;
 import com.catas.wicked.common.pipeline.MessageQueue;
+import com.google.common.base.Strings;
 import com.jfoenix.controls.JFXButton;
 import de.felixroske.jfxsupport.FXMLController;
 import javafx.fxml.FXML;
@@ -12,6 +13,8 @@ import javafx.scene.control.Dialog;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
 import javafx.stage.Window;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,12 +42,27 @@ public class ButtonBarController implements Initializable {
 
     private int index = 0;
 
+    @Autowired
+    private DetailWebViewController webViewController;
+
     @SneakyThrows
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         // proxy setting dialog
         bindProxySettingBtn();
         testTreeItem();
+        testWebview();
+    }
+
+    private void testWebview() {
+        eyeBtn.setOnAction(event -> {
+            WebView webView = webViewController.getDetailWebView();
+            WebEngine engine = webView.getEngine();
+//            engine.executeScript("initTestData()");
+            String content = "{   \"name\": \"JacK\",\"age\": 23,\"Num\": 23}";
+            String cmd = String.format("initData('collapseDetail', '%s')", content);
+            engine.executeScript(cmd);
+        });
     }
 
     private void testTreeItem() {

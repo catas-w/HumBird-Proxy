@@ -2,21 +2,34 @@ package com.catas.wicked.proxy.service;
 
 import com.catas.wicked.common.bean.RequestMessage;
 import com.catas.wicked.common.bean.ResponseMessage;
-import com.catas.wicked.common.common.DetailArea;
+import com.catas.wicked.common.util.BrotliUtils;
+import com.catas.wicked.common.util.GzipUtils;
 import com.catas.wicked.proxy.gui.controller.DetailTabController;
+import com.catas.wicked.proxy.gui.controller.DetailWebViewController;
+import javafx.scene.web.WebEngine;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.ehcache.Cache;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 
 /**
  * Update gui of tab-pane
  */
+@Slf4j
 @Service
 public class RequestViewService {
 
     @Autowired
     private DetailTabController detailTabController;
+
+    @Autowired
+    private DetailWebViewController webViewController;
 
     @Autowired
     private Cache<String, RequestMessage> requestCache;
@@ -31,12 +44,61 @@ public class RequestViewService {
         RequestMessage request = requestCache.get(requestId);
         ResponseMessage response = request.getResponse();
 
-        // TODO
-        detailTabController.setRequestDetail(DetailArea.REQUEST_HEADER, request.getHeaders().toString());
-        detailTabController.setRequestDetail(DetailArea.REQUEST_PAYLOAD, new String(request.getBody()));
+        // Media-type
+        WebEngine webEngine = webViewController.getDetailWebView().getEngine();
 
-        detailTabController.setRequestDetail(DetailArea.RESP_HEADER,
-                response.getStatus() + "\n" + response.getHeaders().toString());
-        detailTabController.setRequestDetail(DetailArea.RESP_CONTENT, new String(response.getContent()));
+        String reqHeaderStr = parseHeaders(request.getHeaders());
+        byte[] reqBody = parseContent(request.getHeaders(), request.getBody());
+        System.out.println("*** Request headers: " + reqHeaderStr);
+        System.out.println("*** Request body: " + new String(reqBody));
+
+        if (response == null) {
+            System.out.println("=== Response waiting...");
+        } else {
+            String respHeaderStr = parseHeaders(response.getHeaders());
+            byte[] respContent = parseContent(response.getHeaders(), response.getContent());
+            System.out.println("*** Resp headers: " + respHeaderStr);
+            System.out.println("*** Resp body: " + new String(respContent));
+        }
+    }
+
+    private String parseHeaders(Map<String, String> headers) {
+        if (headers == null || headers.isEmpty()) {
+            return "";
+        }
+        StringBuffer buffer = new StringBuffer();
+        headers.entrySet().forEach(entry -> {
+            buffer.append(entry.getKey()).append(":\s").append(entry.getValue());
+        });
+        return buffer.toString();
+    }
+
+    private byte[] parseContent(Map<String, String> headers, byte[] content) {
+        if (content == null || content.length == 0) {
+            return new byte[0];
+        }
+        String contentEncoding = null;
+        for (Map.Entry<String, String> entry : headers.entrySet()) {
+            if ("content-encoding".equals(entry.getKey().toLowerCase().strip())) {
+                contentEncoding = entry.getValue().toLowerCase().strip();
+                break;
+            }
+        }
+
+        // content-encoding gzip,compress,deflate,br
+        if (StringUtils.isNotBlank(contentEncoding)) {
+            try {
+                switch (contentEncoding) {
+                    case "gzip" -> content = GzipUtils.decompress(content);
+                    case "br" -> content = BrotliUtils.decompress(content);
+                    case "deflate" -> content = GzipUtils.inflate(content);
+                    default -> {
+                    }
+                }
+            } catch (IOException e) {
+                log.error("Content decompressFailed; {}", contentEncoding);
+            }
+        }
+        return content;
     }
 }
