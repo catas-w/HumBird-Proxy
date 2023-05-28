@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class ProxyRequestInfo {
+
     private String host;
 
     private int port;
@@ -15,4 +16,11 @@ public class ProxyRequestInfo {
     private boolean isRecording;
 
     private String requestId;
+
+    private ClientType clientType;
+
+    public enum ClientType {
+        TUNNEL,
+        NORMAL
+    }
 }

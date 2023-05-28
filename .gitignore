@@ -34,3 +34,4 @@ crashlytics-build.properties
 fabric.properties
 
 cache/
+logs/

@@ -36,15 +36,22 @@ public class RequestRecordHandler extends ChannelInboundHandlerAdapter {
      */
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
-        if (msg instanceof FullHttpRequest) {
-            FullHttpRequest request = (FullHttpRequest) msg;
-            try {
-                recordHttpRequest(ctx, request.copy());
-            } catch (MalformedURLException e) {
-                log.error("Record request error: ", e);
+        Attribute<ProxyRequestInfo> attr = ctx.channel().attr(requestInfoAttributeKey);
+        ProxyRequestInfo requestInfo = attr.get();
+
+        if (requestInfo.isRecording()) {
+            if (msg instanceof FullHttpRequest) {
+                FullHttpRequest request = (FullHttpRequest) msg;
+                try {
+                    recordHttpRequest(ctx, request.copy());
+                } catch (MalformedURLException e) {
+                    log.error("Record request error: ", e);
+                }
+            } else if (msg instanceof HttpRequest) {
+                System.out.println("-- http request --");
+            } else {
+                System.out.println("-- wwwwww https wwwww --");
             }
-        } else if (msg instanceof HttpRequest) {
-            System.out.println("-- http request --");
         }
         ctx.fireChannelRead(msg);
     }

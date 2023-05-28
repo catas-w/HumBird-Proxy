@@ -29,7 +29,6 @@ public class WebUtils {
         }
         requestInfo.setHost(url.getHost().isEmpty() ? httpRequest.headers().get(HttpHeaderNames.HOST) : url.getHost());
         requestInfo.setPort(url.getPort() != -1 ? url.getPort() : url.getDefaultPort());
-        requestInfo.setRequestId(IdUtil.getId());
         return requestInfo;
     }
 

@@ -57,16 +57,6 @@ public class ProxyServer {
                     .option(ChannelOption.TCP_NODELAY, true)
                     .handler(new LoggingHandler(LogLevel.INFO))
                     .childHandler(proxyServerInitializer);
-                    // .childHandler(new ChannelInitializer<Channel>() {
-                    //
-                    //     @Override
-                    //     protected void initChannel(Channel channel) throws Exception {
-                    //         channel.pipeline().addLast("httpCodec", new HttpServerCodec());
-                    //         channel.pipeline().addLast("serverHandle", new ProxyServerHandler(
-                    //                 applicationConfig, certService, certPool
-                    //         ));
-                    //     }
-                    // });
             ChannelFuture channelFuture = bootstrap.bind(applicationConfig.getPort()).sync();
             channelFuture.channel().closeFuture().sync();
         } catch (InterruptedException e) {

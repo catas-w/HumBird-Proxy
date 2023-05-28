@@ -51,20 +51,12 @@ public class ProxyProcessHandler extends ChannelInboundHandlerAdapter {
             ReferenceCountUtil.release(msg);
             return;
         }
-        boolean channelChange = false;
-        if (!curRequestInfo.equals(requestInfo)) {
-            requestInfo = curRequestInfo;
-            channelChange = true;
-        }
-        if (!applicationConfig.isHandleSsl() && curRequestInfo != null && BooleanUtils.isTrue(curRequestInfo.isSsl())) {
-            handleProxyData(ctx.channel(), msg, false, channelChange);
-        } else  {
-            handleProxyData(ctx.channel(), msg, true, channelChange);
-        }
+
+        handleProxyData(ctx.channel(), msg, curRequestInfo.getClientType() == ProxyRequestInfo.ClientType.NORMAL);
     }
 
-    private void handleProxyData(Channel channel, Object msg, boolean isHttp, boolean channelChange ) {
-        if (channelChange || channelFuture == null) {
+    private void handleProxyData(Channel channel, Object msg, boolean isHttp) {
+        if (channelFuture == null) {
             if (isHttp && (!(msg instanceof FullHttpRequest))) {
                 return;
             }
