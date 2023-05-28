@@ -52,18 +52,19 @@ public class ProxyProcessHandler extends ChannelInboundHandlerAdapter {
             return;
         }
 
-        handleProxyData(ctx.channel(), msg, curRequestInfo.getClientType() == ProxyRequestInfo.ClientType.NORMAL);
+        handleProxyData(ctx.channel(), msg, curRequestInfo);
     }
 
-    private void handleProxyData(Channel channel, Object msg, boolean isHttp) {
+    private void handleProxyData(Channel channel, Object msg, ProxyRequestInfo requestInfo) {
         if (channelFuture == null) {
-            if (isHttp && (!(msg instanceof FullHttpRequest))) {
+            if (requestInfo.getClientType() == ProxyRequestInfo.ClientType.NORMAL
+                    && (!(msg instanceof FullHttpRequest))) {
                 return;
             }
             // Attribute<ProxyRequestInfo> attr = channel.attr(requestInfoAttributeKey);
             // ProxyRequestInfo requestInfo = attr.get();
             ChannelInitializer channelInitializer = initializerFactory.getChannelInitializer(
-                    isHttp, channel, null, requestInfo);
+                    channel, null, requestInfo);
 
             Bootstrap bootstrap = new Bootstrap();
             bootstrap.group(channel.eventLoop())

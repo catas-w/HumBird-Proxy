@@ -19,6 +19,14 @@ public class ProxyRequestInfo {
 
     private ClientType clientType;
 
+    private boolean isNewRequest;
+
+    public boolean isNewAndReset() {
+        boolean res = this.isNewRequest;
+        this.isNewRequest = false;
+        return res;
+    }
+
     public enum ClientType {
         TUNNEL,
         NORMAL

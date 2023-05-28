@@ -78,6 +78,7 @@ public class StrategyHandler extends ChannelInboundHandlerAdapter {
             requestInfo = WebUtils.getRequestProto(request);
             attr.set(requestInfo);
         }
+        requestInfo.setNewRequest(true);
         requestInfo.setRequestId(IdUtil.getId());
         requestInfo.setRecording(appConfig.isRecording());
 

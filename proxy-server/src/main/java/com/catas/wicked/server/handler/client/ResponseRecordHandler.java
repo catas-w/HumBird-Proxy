@@ -43,8 +43,6 @@ public class ResponseRecordHandler extends ChannelInboundHandlerAdapter {
 
         HttpHeaders headers = resp.headers();
         HttpResponseStatus status = resp.status();
-        log.info("-- headers: {}", headers);
-        log.info("-- status: {}", status);
 
         ResponseMessage responseMessage = new ResponseMessage();
         Map<String, String> map = new HashMap<>();
@@ -55,8 +53,6 @@ public class ResponseRecordHandler extends ChannelInboundHandlerAdapter {
         responseMessage.setHeaders(map);
         ByteBuf content = resp.content();
         if (content.isReadable()) {
-            // String cont = content.toString(StandardCharsets.UTF_8);
-            // log.info("-- cont: {}", cont.length() > 1000 ? cont.substring(0, 1000): cont);
             if (content.hasArray()) {
                 responseMessage.setContent(content.array());
             } else {

@@ -21,11 +21,10 @@ public class ClientInitializerFactory {
     @Autowired
     private MessageQueue messageQueue;
 
-    public ChannelInitializer getChannelInitializer(boolean isHttp,
-                                                           Channel channel,
-                                                           ProxyHandler proxyHandler,
-                                                           ProxyRequestInfo requestInfo) {
-        if (isHttp) {
+    public ChannelInitializer getChannelInitializer(Channel channel,
+                                                    ProxyHandler proxyHandler,
+                                                    ProxyRequestInfo requestInfo) {
+        if (requestInfo.getClientType() == ProxyRequestInfo.ClientType.NORMAL) {
             ProxyClientInitializer httpInitializer = new ProxyClientInitializer(channel, proxyHandler, appConfig);
             httpInitializer.setAppConfig(appConfig);
             httpInitializer.setMessageQueue(messageQueue);

@@ -10,7 +10,7 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpMethod;
-import io.netty.handler.codec.http.HttpRequest;
+import io.netty.handler.codec.http.HttpObject;
 import io.netty.util.Attribute;
 import io.netty.util.AttributeKey;
 import lombok.extern.slf4j.Slf4j;
@@ -40,20 +40,41 @@ public class RequestRecordHandler extends ChannelInboundHandlerAdapter {
         ProxyRequestInfo requestInfo = attr.get();
 
         if (requestInfo.isRecording()) {
-            if (msg instanceof FullHttpRequest) {
-                FullHttpRequest request = (FullHttpRequest) msg;
-                try {
+            try {
+                if (msg instanceof FullHttpRequest) {
+                    FullHttpRequest request = (FullHttpRequest) msg;
                     recordHttpRequest(ctx, request.copy());
-                } catch (MalformedURLException e) {
-                    log.error("Record request error: ", e);
+                } else if (!(msg instanceof HttpObject)){
+                    recordUnDecodedRequest(ctx, requestInfo);
                 }
-            } else if (msg instanceof HttpRequest) {
-                System.out.println("-- http request --");
-            } else {
-                System.out.println("-- wwwwww https wwwww --");
+            } catch (MalformedURLException e) {
+                log.error("Record request error: ", e);
             }
         }
         ctx.fireChannelRead(msg);
+    }
+
+
+    private void recordUnDecodedRequest(ChannelHandlerContext ctx, ProxyRequestInfo requestInfo)
+            throws MalformedURLException {
+        if (!requestInfo.isNewAndReset()) {
+            return;
+        }
+        System.out.println("=========== Un-decoded Request start ============");
+        StringBuilder builder = new StringBuilder();
+        builder.append("https://").append(requestInfo.getHost());
+        if (requestInfo.getPort() != 80 || requestInfo.getPort() != 443) {
+            builder.append(":").append(requestInfo.getPort());
+        }
+        builder.append("/Encrypted");
+        RequestMessage requestMessage = new RequestMessage(builder.toString());
+        requestMessage.setRequestId(requestInfo.getRequestId());
+        requestMessage.setMethod("UNKNOWN");
+        requestMessage.setHeaders(new HashMap<>());
+        messageQueue.pushMsg(requestMessage);
+
+        log.info("RequestId: " + requestInfo.getRequestId());
+        System.out.println("=========== Un-decoded Request end ============");
     }
 
     /**
@@ -77,9 +98,6 @@ public class RequestRecordHandler extends ChannelInboundHandlerAdapter {
         requestMessage.setHeaders(map);
 
         if (content.isReadable()) {
-            // String cont = content.toString(StandardCharsets.UTF_8);
-            // requestMessage.setBody(cont.getBytes());
-            // log.info("-- content: {}", cont.length() > 1000 ? cont.substring(0, 1000): cont);
             if (content.hasArray()) {
                 requestMessage.setBody(content.array());
             } else {
