@@ -15,11 +15,11 @@ import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
@@ -29,16 +29,16 @@ import java.security.cert.X509Certificate;
 @Component
 public class ProxyServer {
 
-    @Autowired
+    @Resource
     private ApplicationConfig applicationConfig;
 
-    @Autowired
+    @Resource
     private CertService certService;
 
-    @Autowired
+    @Resource
     private CertPool certPool;
 
-    @Autowired
+    @Resource
     private ProxyServerInitializer proxyServerInitializer;
 
     public ProxyServer() {

@@ -1,14 +1,17 @@
 package com.catas.wicked.server.cert;
 
 import com.catas.wicked.server.cert.spi.CertGenerator;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.KeyFactory;
 import java.security.KeyPair;
@@ -24,19 +27,32 @@ import java.security.spec.EncodedKeySpec;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Base64;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static com.catas.wicked.common.common.ProxyConstant.CERT_FILE_PATTERN;
+import static com.catas.wicked.common.common.ProxyConstant.PRIVATE_FILE_PATTERN;
+import static com.catas.wicked.common.common.ProxyConstant.START_DATE;
+import static com.catas.wicked.common.common.ProxyConstant.SUBJECT;
+
 @Service
 public class CertService {
 
-    public KeyFactory keyFactory;
+    private final KeyFactory keyFactory;
+
+    private CertGenerator certGenerator;
 
     @Autowired
-    public CertGenerator certGenerator;
+    public void setCertGenerator(CertGenerator certGenerator) {
+        this.certGenerator = certGenerator;
+    }
 
     public CertService() {
         try {
@@ -71,14 +87,6 @@ public class CertService {
      */
     public PrivateKey loadPriKey(String path) throws Exception {
         return loadPriKey(Files.readAllBytes(Paths.get(path)));
-    }
-
-    /**
-     * 从文件加载RSA私钥 openssl pkcs8 -topk8 -nocrypt -inform PEM -outform DER -in ca.key -out
-     * ca_private.der
-     */
-    public PrivateKey loadPriKey(URI uri) throws Exception {
-        return loadPriKey(Paths.get(uri).toString());
     }
 
     /**
@@ -120,14 +128,6 @@ public class CertService {
      * 从文件加载RSA公钥
      * openssl rsa -in ca.key -pubout -outform DER -out ca_pub.der
      */
-    public PublicKey loadPubKey(URI uri) throws Exception {
-        return loadPubKey(Paths.get(uri).toString());
-    }
-
-    /**
-     * 从文件加载RSA公钥
-     * openssl rsa -in ca.key -pubout -outform DER -out ca_pub.der
-     */
     public PublicKey loadPubKey(InputStream inputStream) throws Exception {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         byte[] bts = new byte[1024];
@@ -160,13 +160,6 @@ public class CertService {
     }
 
     /**
-     * 从文件加载证书
-     */
-    public X509Certificate loadCert(URI uri) throws Exception {
-        return loadCert(Paths.get(uri).toString());
-    }
-
-    /**
      * 读取ssl证书使用者信息
      */
     public String getSubject(InputStream inputStream) throws Exception {
@@ -182,7 +175,7 @@ public class CertService {
      */
     public String getSubject(X509Certificate certificate) throws Exception {
         //读出来顺序是反的需要反转下
-        List<String> tempList = Arrays.asList(certificate.getIssuerDN().toString().split(", "));
+        List<String> tempList = Arrays.asList(certificate.getIssuerX500Principal().toString().split(", "));
         return IntStream.rangeClosed(0, tempList.size() - 1)
                 .mapToObj(i -> tempList.get(tempList.size() - i - 1)).collect(Collectors.joining(", "));
     }
@@ -206,4 +199,54 @@ public class CertService {
         return certGenerator.generateCaCert(subject, caNotBefore, caNotAfter, keyPair);
     }
 
+    /**
+     * 生成 CA 证书和私钥到文件
+     * @param basePath 文件路径
+     */
+    public void generateCACertFile(Path basePath) throws Exception {
+        DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        Date notBeforeDate = formatter.parse(START_DATE);
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(notBeforeDate);
+        calendar.add(Calendar.YEAR, 30);
+        Date notAfterDate = calendar.getTime();
+
+        KeyPair keyPair = genKeyPair();
+        assert keyPair != null;
+
+        PrivateKey privateKey = keyPair.getPrivate();
+        // PublicKey publicKey = keyPair.getPublic();
+
+        String privateKeyStr = Base64.getEncoder().encodeToString(privateKey.getEncoded());
+        String pKeyFileContent = String.format(PRIVATE_FILE_PATTERN, privateKeyStr);
+        FileUtils.write(basePath.resolve("private.key").toFile(), wrap(pKeyFileContent), StandardCharsets.UTF_8);
+
+
+        X509Certificate cert =
+                certGenerator.generateCaCert(SUBJECT, notBeforeDate, notAfterDate, genKeyPair());
+
+        byte[] encoded = cert.getEncoded();
+        String certStr = Base64.getEncoder().encodeToString(encoded);
+        String certFileContent = String.format(CERT_FILE_PATTERN, certStr);
+
+        FileUtils.write(basePath.resolve("cert.crt").toFile(), wrap(certFileContent), StandardCharsets.UTF_8);
+    }
+
+    private String wrap(String content) {
+        if (StringUtils.isEmpty(content)) {
+            return content;
+        }
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < content.length(); i++) {
+            builder.append(content.charAt(i));
+            if (i > 0 && i % 64 == 0) {
+                builder.append('\n');
+            }
+        }
+        if (builder.charAt(builder.length() - 1) != '\n') {
+            builder.append('\n');
+        }
+        return builder.toString();
+    }
 }

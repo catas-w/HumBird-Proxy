@@ -25,11 +25,14 @@ import java.util.Date;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.catas.wicked.common.common.ProxyConstant.SIGNATURE;
+
 @Service("certGenerator")
 public class BouncyCastleCertGenerator implements CertGenerator{
 
+
+
     static {
-        //注册BouncyCastleProvider加密库
         Security.addProvider(new BouncyCastleProvider());
     }
 
@@ -37,9 +40,6 @@ public class BouncyCastleCertGenerator implements CertGenerator{
     public X509Certificate generateServerCert(String issuer, PrivateKey caPriKey, Date caNotBefore,
                                               Date caNotAfter, PublicKey serverPubKey,
                                               String... hosts) throws Exception {
-        /* String issuer = "C=CN, ST=GD, L=SZ, O=lee, OU=study, CN=ProxyeeRoot";
-        String subject = "C=CN, ST=GD, L=SZ, O=lee, OU=study, CN=" + host;*/
-        //根据CA证书subject来动态生成目标服务器证书的issuer和subject
         String subject = Stream.of(issuer.split(", ")).map(item -> {
             String[] arr = item.split("=");
             if ("CN".equals(arr[0])) {
@@ -49,23 +49,19 @@ public class BouncyCastleCertGenerator implements CertGenerator{
             }
         }).collect(Collectors.joining(", "));
 
-        //doc from https://www.cryptoworkshop.com/guide/
         JcaX509v3CertificateBuilder jv3Builder = new JcaX509v3CertificateBuilder(new X500Name(issuer),
-                //issue#3 修复ElementaryOS上证书不安全问题(serialNumber为1时证书会提示不安全)，避免serialNumber冲突，采用时间戳+4位随机数生成
                 BigInteger.valueOf(System.currentTimeMillis() + (long) (Math.random() * 10000) + 1000),
                 caNotBefore,
                 caNotAfter,
                 new X500Name(subject),
                 serverPubKey);
-        //SAN扩展证书支持的域名，否则浏览器提示证书不安全
         GeneralName[] generalNames = new GeneralName[hosts.length];
         for (int i = 0; i < hosts.length; i++) {
             generalNames[i] = new GeneralName(GeneralName.dNSName, hosts[i]);
         }
         GeneralNames subjectAltName = new GeneralNames(generalNames);
         jv3Builder.addExtension(Extension.subjectAlternativeName, false, subjectAltName);
-        //SHA256 用SHA1浏览器可能会提示证书不安全
-        ContentSigner signer = new JcaContentSignerBuilder("SHA256WithRSAEncryption").build(caPriKey);
+        ContentSigner signer = new JcaContentSignerBuilder(SIGNATURE).build(caPriKey);
         return new JcaX509CertificateConverter().getCertificate(jv3Builder.build(signer));
     }
 
@@ -79,7 +75,7 @@ public class BouncyCastleCertGenerator implements CertGenerator{
                 new X500Name(subject),
                 keyPair.getPublic());
         jv3Builder.addExtension(Extension.basicConstraints, true, new BasicConstraints(0));
-        ContentSigner signer = new JcaContentSignerBuilder("SHA256WithRSAEncryption")
+        ContentSigner signer = new JcaContentSignerBuilder(SIGNATURE)
                 .build(keyPair.getPrivate());
         return new JcaX509CertificateConverter().getCertificate(jv3Builder.build(signer));
     }
