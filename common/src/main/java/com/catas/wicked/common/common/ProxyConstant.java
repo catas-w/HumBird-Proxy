@@ -11,9 +11,9 @@ public class ProxyConstant {
     public static final String SUBJECT = "C=CN, ST=SC, L=CD, O=Catas, CN=Catas";
 
     public static final String PRIVATE_FILE_PATTERN = """
-                -----BEGIN RSA PRIVATE KEY-----
+                -----BEGIN PRIVATE KEY-----
                 %s
-                -----END RSA PRIVATE KEY-----
+                -----END PRIVATE KEY-----
                 """;
 
     public static final String CERT_FILE_PATTERN = """

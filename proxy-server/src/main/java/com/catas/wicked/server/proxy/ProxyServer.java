@@ -74,11 +74,10 @@ public class ProxyServer {
         PrivateKey caPriKey;
         try {
             applicationConfig.setClientSslCtx(contextBuilder.build());
-            caCert = certService.loadCert((new ClassPathResource("/ca.crt").getInputStream()));
-            caPriKey = certService.loadPriKey((new ClassPathResource("/ca_private.der").getInputStream()));
+            caCert = certService.loadCert((new ClassPathResource("/cert/cert.crt").getInputStream()));
+            caPriKey = certService.loadPriKey((new ClassPathResource("/cert/private.key").getInputStream()));
             //读取CA证书使用者信息
             applicationConfig.setIssuer(certService.getSubject(caCert));
-            //读取CA证书有效时段(server证书有效期超出CA证书的，在手机上会提示证书不安全)
             applicationConfig.setCaNotBefore(caCert.getNotBefore());
             applicationConfig.setCaNotAfter(caCert.getNotAfter());
             //CA私钥用于给动态生成的网站SSL证书签证
@@ -88,7 +87,7 @@ public class ProxyServer {
             applicationConfig.setServerPriKey(keyPair.getPrivate());
             applicationConfig.setServerPubKey(keyPair.getPublic());
         } catch (Exception e) {
-            log.error("Certificate load error: {}", e.getMessage());
+            log.error("Certificate load error: ", e);
             applicationConfig.setHandleSsl(false);
         }
         ThreadPoolService.getInstance().run(this::start);

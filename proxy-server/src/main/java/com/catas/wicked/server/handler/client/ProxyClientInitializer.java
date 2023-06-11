@@ -36,7 +36,7 @@ public class ProxyClientInitializer extends ChannelInitializer {
         if (proxyHandler != null) {
             ch.pipeline().addLast(proxyHandler);
         }
-        if (appConfig.isHandleSsl()) {
+        if (requestInfo.isSsl()) {
             // TODO
             ch.pipeline().addLast(appConfig.getClientSslCtx().newHandler(ch.alloc(),
                             appConfig.getHost(),

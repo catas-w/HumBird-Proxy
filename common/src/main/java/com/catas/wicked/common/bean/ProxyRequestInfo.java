@@ -28,7 +28,14 @@ public class ProxyRequestInfo {
     }
 
     public enum ClientType {
+        /**
+         * 隧道代理，不解析 http
+         */
         TUNNEL,
+
+        /**
+         * 普通代理，解析 http
+         */
         NORMAL
     }
 }

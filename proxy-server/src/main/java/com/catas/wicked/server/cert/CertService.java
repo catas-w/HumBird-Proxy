@@ -75,9 +75,8 @@ public class CertService {
      * 从文件加载RSA私钥
      * openssl pkcs8 -topk8 -nocrypt -inform PEM -outform DER -in ca.key -out ca_private.der
      */
-    public PrivateKey loadPriKey(byte[] bts)
-            throws NoSuchAlgorithmException, InvalidKeySpecException {
-        EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(bts);
+    public PrivateKey loadPriKey(byte[] bts) throws InvalidKeySpecException {
+        EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(Base64.getDecoder().decode(bts));
         return keyFactory.generatePrivate(privateKeySpec);
     }
 
@@ -94,7 +93,7 @@ public class CertService {
      * openssl pkcs8 -topk8 -nocrypt -inform PEM -outform DER -in ca.key -out ca_private.der
      */
     public PrivateKey loadPriKey(InputStream inputStream)
-            throws IOException, InvalidKeySpecException, NoSuchAlgorithmException {
+            throws IOException, InvalidKeySpecException {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         byte[] bts = new byte[1024];
         int len;
@@ -103,7 +102,13 @@ public class CertService {
         }
         inputStream.close();
         outputStream.close();
-        return loadPriKey(outputStream.toByteArray());
+
+        String[] pattern = PRIVATE_FILE_PATTERN.split("\\n");
+        String content = outputStream.toString(StandardCharsets.UTF_8)
+                .replace(pattern[0], "")
+                .replace(pattern[2], "")
+                .replaceAll("\\n", "");
+        return loadPriKey(content.getBytes(StandardCharsets.UTF_8));
     }
 
     /**
@@ -165,7 +170,7 @@ public class CertService {
     public String getSubject(InputStream inputStream) throws Exception {
         X509Certificate certificate = loadCert(inputStream);
         //读出来顺序是反的需要反转下
-        List<String> tempList = Arrays.asList(certificate.getIssuerDN().toString().split(", "));
+        List<String> tempList = Arrays.asList(certificate.getIssuerX500Principal().toString().split(", "));
         return IntStream.rangeClosed(0, tempList.size() - 1)
                 .mapToObj(i -> tempList.get(tempList.size() - i - 1)).collect(Collectors.joining(", "));
     }
@@ -216,21 +221,20 @@ public class CertService {
         assert keyPair != null;
 
         PrivateKey privateKey = keyPair.getPrivate();
-        // PublicKey publicKey = keyPair.getPublic();
 
         String privateKeyStr = Base64.getEncoder().encodeToString(privateKey.getEncoded());
-        String pKeyFileContent = String.format(PRIVATE_FILE_PATTERN, privateKeyStr);
-        FileUtils.write(basePath.resolve("private.key").toFile(), wrap(pKeyFileContent), StandardCharsets.UTF_8);
+        String pKeyFileContent = String.format(PRIVATE_FILE_PATTERN, wrap(privateKeyStr));
+        FileUtils.write(basePath.resolve("private.key").toFile(), pKeyFileContent, StandardCharsets.UTF_8);
 
 
         X509Certificate cert =
-                certGenerator.generateCaCert(SUBJECT, notBeforeDate, notAfterDate, genKeyPair());
+                certGenerator.generateCaCert(SUBJECT, notBeforeDate, notAfterDate, keyPair);
 
         byte[] encoded = cert.getEncoded();
         String certStr = Base64.getEncoder().encodeToString(encoded);
-        String certFileContent = String.format(CERT_FILE_PATTERN, certStr);
+        String certFileContent = String.format(CERT_FILE_PATTERN, wrap(certStr));
 
-        FileUtils.write(basePath.resolve("cert.crt").toFile(), wrap(certFileContent), StandardCharsets.UTF_8);
+        FileUtils.write(basePath.resolve("cert.crt").toFile(), certFileContent, StandardCharsets.UTF_8);
     }
 
     private String wrap(String content) {
@@ -244,9 +248,9 @@ public class CertService {
                 builder.append('\n');
             }
         }
-        if (builder.charAt(builder.length() - 1) != '\n') {
-            builder.append('\n');
-        }
+        // if (builder.charAt(builder.length() - 1) != '\n') {
+        //     builder.append('\n');
+        // }
         return builder.toString();
     }
 }

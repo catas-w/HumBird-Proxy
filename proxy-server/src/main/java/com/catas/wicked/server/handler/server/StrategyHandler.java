@@ -30,6 +30,7 @@ import io.netty.util.ReferenceCountUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
+import java.util.NoSuchElementException;
 
 /**
  * None recording: httpCodec - strategyHandler - proxyProcessHandler
@@ -119,7 +120,9 @@ public class StrategyHandler extends ChannelInboundHandlerAdapter {
                 // https connect
                 HttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, ProxyConstant.SUCCESS);
                 ctx.writeAndFlush(response);
-                ctx.channel().pipeline().remove("httpCodec");
+                try {
+                    ctx.channel().pipeline().remove("httpCodec");
+                } catch (NoSuchElementException ignore) {}
                 ReferenceCountUtil.release(msg);
                 return;
             }
@@ -128,10 +131,12 @@ public class StrategyHandler extends ChannelInboundHandlerAdapter {
     }
 
     private void handleSsl(ChannelHandlerContext ctx, Object msg) throws Exception {
-        // TODO: 判断是否为新请求
+        // 判断是否为新请求
         ByteBuf byteBuf = (ByteBuf) msg;
         if (byteBuf.getByte(0) == 22) {
             // new request
+            ProxyRequestInfo requestInfo = refreshRequestInfo(ctx, null);
+            requestInfo.setSsl(true);
             if (appConfig.isHandleSsl()) {
                 int port = ((InetSocketAddress) ctx.channel().localAddress()).getPort();
                 String host = ((InetSocketAddress) ctx.channel().remoteAddress()).getHostName();
@@ -144,9 +149,10 @@ public class StrategyHandler extends ChannelInboundHandlerAdapter {
                 ctx.pipeline().fireChannelRead(msg);
                 return;
             }
-            ProxyRequestInfo requestInfo = refreshRequestInfo(ctx, null);
             requestInfo.setClientType(ProxyRequestInfo.ClientType.TUNNEL);
-            ctx.pipeline().remove("httpAggregator");
+            try {
+                ctx.pipeline().remove("httpAggregator");
+            } catch (NoSuchElementException ignore) {}
         }
 
         if (byteBuf.readableBytes() < 8) {

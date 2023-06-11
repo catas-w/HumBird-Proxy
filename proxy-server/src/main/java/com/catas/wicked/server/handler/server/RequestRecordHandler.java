@@ -43,7 +43,7 @@ public class RequestRecordHandler extends ChannelInboundHandlerAdapter {
             try {
                 if (msg instanceof FullHttpRequest) {
                     FullHttpRequest request = (FullHttpRequest) msg;
-                    recordHttpRequest(ctx, request.copy());
+                    recordHttpRequest(ctx, request.copy(), requestInfo);
                 } else if (!(msg instanceof HttpObject)){
                     recordUnDecodedRequest(ctx, requestInfo);
                 }
@@ -55,19 +55,17 @@ public class RequestRecordHandler extends ChannelInboundHandlerAdapter {
     }
 
 
+    /**
+     * record unparsed http request
+     */
     private void recordUnDecodedRequest(ChannelHandlerContext ctx, ProxyRequestInfo requestInfo)
             throws MalformedURLException {
         if (!requestInfo.isNewAndReset()) {
             return;
         }
         System.out.println("=========== Un-decoded Request start ============");
-        StringBuilder builder = new StringBuilder();
-        builder.append("https://").append(requestInfo.getHost());
-        if (requestInfo.getPort() != 80 || requestInfo.getPort() != 443) {
-            builder.append(":").append(requestInfo.getPort());
-        }
-        builder.append("/Encrypted");
-        RequestMessage requestMessage = new RequestMessage(builder.toString());
+        String builder = getHostname(requestInfo) + "/Encrypted";
+        RequestMessage requestMessage = new RequestMessage(builder);
         requestMessage.setRequestId(requestInfo.getRequestId());
         requestMessage.setMethod("UNKNOWN");
         requestMessage.setHeaders(new HashMap<>());
@@ -77,11 +75,32 @@ public class RequestRecordHandler extends ChannelInboundHandlerAdapter {
         System.out.println("=========== Un-decoded Request end ============");
     }
 
+
+    private String getHostname(ProxyRequestInfo requestInfo) {
+        StringBuilder builder = new StringBuilder();
+        if (requestInfo.isSsl()) {
+            builder.append("https://");
+            builder.append(requestInfo.getHost());
+            if (requestInfo.getPort() != 443) {
+                builder.append(":").append(requestInfo.getPort());
+            }
+        } else {
+            builder.append("http://");
+            if (requestInfo.getPort() != 80) {
+                builder.append(":").append(requestInfo.getPort());
+            }
+        }
+
+        log.info("Get host name from requestInfo: {}", builder);
+        return builder.toString();
+    }
+
     /**
      * decode HttpPostRequestDecoder
      * 记录请求信息
      */
-    private void recordHttpRequest(ChannelHandlerContext ctx, FullHttpRequest request) throws MalformedURLException {
+    private void recordHttpRequest(ChannelHandlerContext ctx, FullHttpRequest request, ProxyRequestInfo requestInfo)
+            throws MalformedURLException {
         System.out.println("=========== Request start ============");
         String uri = request.uri();
         HttpHeaders headers = request.headers();
@@ -89,6 +108,9 @@ public class RequestRecordHandler extends ChannelInboundHandlerAdapter {
         log.info("-- uri: {}\n-- headers: {}\n-- method: {}", uri, headers, method);
         ByteBuf content = request.content();
 
+        if (!uri.startsWith("http")) {
+            uri = getHostname(requestInfo);
+        }
         RequestMessage requestMessage = new RequestMessage(uri);
         Map<String, String> map = new HashMap<>();
         headers.entries().forEach(entry -> {
@@ -108,8 +130,6 @@ public class RequestRecordHandler extends ChannelInboundHandlerAdapter {
         }
 
         // save to request tree
-        Attribute<ProxyRequestInfo> attr = ctx.channel().attr(requestInfoAttributeKey);
-        ProxyRequestInfo requestInfo = attr.get();
         requestMessage.setRequestId(requestInfo.getRequestId());
         messageQueue.pushMsg(requestMessage);
 

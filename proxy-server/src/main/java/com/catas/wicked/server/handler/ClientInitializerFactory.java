@@ -31,8 +31,7 @@ public class ClientInitializerFactory {
             httpInitializer.setRequestInfo(requestInfo);
             return httpInitializer;
         } else {
-            TunnelProxyInitializer tunnelProxyInitializer = new TunnelProxyInitializer(channel, proxyHandler);
-            return tunnelProxyInitializer;
+            return new TunnelProxyInitializer(channel, proxyHandler);
         }
     }
 }
