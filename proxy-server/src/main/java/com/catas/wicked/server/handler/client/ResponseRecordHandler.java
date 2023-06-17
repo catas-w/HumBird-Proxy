@@ -39,8 +39,6 @@ public class ResponseRecordHandler extends ChannelInboundHandlerAdapter {
     }
 
     private void recordHttpResponse(ChannelHandlerContext ctx, FullHttpResponse resp) {
-        System.out.println("=========== Response start ============");
-
         HttpHeaders headers = resp.headers();
         HttpResponseStatus status = resp.status();
 
@@ -64,8 +62,6 @@ public class ResponseRecordHandler extends ChannelInboundHandlerAdapter {
 
         responseMessage.setRequestId(requestInfo.getRequestId());
         messageQueue.pushMsg(responseMessage);
-        log.info("-- RequestId: " + requestInfo.getRequestId());
-
-        System.out.println("=========== Response end ============");
+        // log.info("-- RequestId: " + requestInfo.getRequestId());
     }
 }

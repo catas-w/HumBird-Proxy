@@ -33,7 +33,6 @@ import java.net.InetSocketAddress;
 import java.util.NoSuchElementException;
 
 /**
- * None recording: httpCodec - strategyHandler - proxyProcessHandler
  * Http recording: httpCodec - strategyHandler - [aggregator] - [recorderHandler] - proxyProcessHandler
  * ssl  recording: httpCodec - [sslHandle] - strategyHandler - [aggregator] - [recorderHandler] - proxyProcessHandler
  */
@@ -50,19 +49,14 @@ public class StrategyHandler extends ChannelInboundHandlerAdapter {
 
     private final AttributeKey<ProxyRequestInfo> requestInfoAttributeKey = AttributeKey.valueOf("requestInfo");
 
-    private final String id;
-
     public StrategyHandler(ApplicationConfig applicationConfig, CertPool certPool) {
         this.appConfig = applicationConfig;
         this.certPool = certPool;
         this.status = ServerStatus.INIT;
-
-        id = IdUtil.getId();
     }
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        log.info("Handler id = {}", id);
         if (msg instanceof HttpRequest) {
             handleHttpRequest(ctx, msg);
         } else if (msg instanceof HttpContent) {

@@ -10,12 +10,11 @@ import javafx.scene.web.WebEngine;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.ehcache.Cache;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
 
 
 /**
@@ -25,13 +24,13 @@ import java.util.concurrent.atomic.AtomicReference;
 @Service
 public class RequestViewService {
 
-    @Autowired
+    @Resource
     private DetailTabController detailTabController;
 
-    @Autowired
+    @Resource
     private DetailWebViewController webViewController;
 
-    @Autowired
+    @Resource
     private Cache<String, RequestMessage> requestCache;
 
     private String currentRequestId;

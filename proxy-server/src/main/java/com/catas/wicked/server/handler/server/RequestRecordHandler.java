@@ -50,6 +50,8 @@ public class RequestRecordHandler extends ChannelInboundHandlerAdapter {
             } catch (MalformedURLException e) {
                 log.error("Record request error: ", e);
             }
+        } else {
+            log.info("==== Un-record request: {} ====", requestInfo.getHost());
         }
         ctx.fireChannelRead(msg);
     }
@@ -63,16 +65,16 @@ public class RequestRecordHandler extends ChannelInboundHandlerAdapter {
         if (!requestInfo.isNewAndReset()) {
             return;
         }
-        System.out.println("=========== Un-decoded Request start ============");
-        String builder = getHostname(requestInfo) + "/Encrypted";
-        RequestMessage requestMessage = new RequestMessage(builder);
+
+        String url = getHostname(requestInfo) + "/<Encrypted>";
+        RequestMessage requestMessage = new RequestMessage(url);
         requestMessage.setRequestId(requestInfo.getRequestId());
         requestMessage.setMethod("UNKNOWN");
         requestMessage.setHeaders(new HashMap<>());
         messageQueue.pushMsg(requestMessage);
 
-        log.info("RequestId: " + requestInfo.getRequestId());
-        System.out.println("=========== Un-decoded Request end ============");
+        // log.info("RequestId: " + requestInfo.getRequestId());
+        log.info("==== Record request: {} ====", url);
     }
 
 
@@ -91,7 +93,7 @@ public class RequestRecordHandler extends ChannelInboundHandlerAdapter {
             }
         }
 
-        log.info("Get host name from requestInfo: {}", builder);
+        // log.info("Get host name from requestInfo: {}", builder);
         return builder.toString();
     }
 
@@ -101,11 +103,10 @@ public class RequestRecordHandler extends ChannelInboundHandlerAdapter {
      */
     private void recordHttpRequest(ChannelHandlerContext ctx, FullHttpRequest request, ProxyRequestInfo requestInfo)
             throws MalformedURLException {
-        System.out.println("=========== Request start ============");
         String uri = request.uri();
         HttpHeaders headers = request.headers();
         HttpMethod method = request.method();
-        log.info("-- uri: {}\n-- headers: {}\n-- method: {}", uri, headers, method);
+        // log.info("-- uri: {}\n-- headers: {}\n-- method: {}", uri, headers, method);
         ByteBuf content = request.content();
 
         if (!uri.startsWith("http")) {
@@ -133,7 +134,6 @@ public class RequestRecordHandler extends ChannelInboundHandlerAdapter {
         requestMessage.setRequestId(requestInfo.getRequestId());
         messageQueue.pushMsg(requestMessage);
 
-        log.info("RequestId: " + requestInfo.getRequestId());
-        System.out.println("=========== Request end ============");
+        log.info("==== Record request: {} ====", uri);
     }
 }
