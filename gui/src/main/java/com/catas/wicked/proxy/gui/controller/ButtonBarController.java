@@ -1,35 +1,45 @@
 package com.catas.wicked.proxy.gui.controller;
 
 import com.catas.wicked.common.bean.RequestMessage;
+import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.common.pipeline.MessageQueue;
-import com.google.common.base.Strings;
 import com.jfoenix.controls.JFXButton;
 import de.felixroske.jfxsupport.FXMLController;
+import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
+import javafx.scene.paint.Color;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.Window;
 import lombok.SneakyThrows;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.kordamp.ikonli.javafx.FontIcon;
 
+import javax.annotation.Resource;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
+import static com.catas.wicked.common.common.StyleConstant.BTN_ACTIVE;
+import static com.catas.wicked.common.common.StyleConstant.BTN_INACTIVE;
+
 @FXMLController
 public class ButtonBarController implements Initializable {
 
     public JFXButton markerBtn;
     public JFXButton eyeBtn;
+    public JFXButton recordBtn;
+    public JFXButton sslBtn;
     @FXML
     private MenuButton mainMenuButton;
     @FXML
@@ -37,12 +47,15 @@ public class ButtonBarController implements Initializable {
 
     private Dialog proxyConfigDialog;
 
-    @Autowired
+    @Resource
     private MessageQueue queue;
+
+    @Resource
+    private ApplicationConfig appConfig;
 
     private int index = 0;
 
-    @Autowired
+    @Resource
     private DetailWebViewController webViewController;
 
     @SneakyThrows
@@ -114,6 +127,32 @@ public class ButtonBarController implements Initializable {
 
         proxySetting.setOnAction(e -> {
             proxyConfigDialog.showAndWait();
+        });
+    }
+
+    public void handleSSlBtn(ActionEvent actionEvent) {
+        Node graphic = sslBtn.getGraphic();
+        toggleBtnColor(graphic);
+        appConfig.setHandleSsl(!appConfig.isHandleSsl());
+    }
+
+    public void handleRecordBtn(ActionEvent actionEvent) {
+        Node graphic = recordBtn.getGraphic();
+        toggleBtnColor(graphic);
+        appConfig.setRecording(!appConfig.isRecording());
+    }
+
+    private void toggleBtnColor(Node graphic) {
+        FontIcon icon = (FontIcon) graphic;
+        Color iconColor = (Color) icon.getIconColor();
+
+        String toColor = BTN_INACTIVE;
+        if (iconColor.equals(Color.valueOf(toColor))) {
+            toColor = BTN_ACTIVE;
+        }
+        String finalToColor = toColor;
+        Platform.runLater(() -> {
+            icon.setIconColor(Color.valueOf(finalToColor));
         });
     }
 }

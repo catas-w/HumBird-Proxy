@@ -193,7 +193,7 @@ public class CertService {
     public X509Certificate genCert(String issuer, PrivateKey caPriKey, Date caNotBefore,
                                           Date caNotAfter, PublicKey serverPubKey,
                                           String... hosts) throws Exception {
-        return certGenerator.generateServerCert(issuer, caPriKey, caNotBefore, caNotBefore, serverPubKey, hosts);
+        return certGenerator.generateServerCert(issuer, caPriKey, caNotBefore, caNotAfter, serverPubKey, hosts);
     }
 
     /**

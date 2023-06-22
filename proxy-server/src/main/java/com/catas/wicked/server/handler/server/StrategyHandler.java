@@ -32,9 +32,21 @@ import lombok.extern.slf4j.Slf4j;
 import java.net.InetSocketAddress;
 import java.util.NoSuchElementException;
 
+import static com.catas.wicked.common.common.NettyConstant.AGGREGATOR;
+import static com.catas.wicked.common.common.NettyConstant.HTTP_CODEC;
+import static com.catas.wicked.common.common.NettyConstant.SERVER_STRATEGY;
+import static com.catas.wicked.common.common.NettyConstant.SSL_HANDLER;
+
 /**
- * Http recording: httpCodec - strategyHandler - [aggregator] - [recorderHandler] - proxyProcessHandler
- * ssl  recording: httpCodec - [sslHandle] - strategyHandler - [aggregator] - [recorderHandler] - proxyProcessHandler
+ * Decide which handlers to use for current channel and refresh request-info
+ * ---
+ * Http: 全部解码
+ * Https: 仅在 isRecord && handleSSl && certOK 时解码，其他情况均发送原始数据块
+ * ---
+ * http record [NORMAL]:    httpCodec - strategyHandler - [aggregator] - recordHandler - proxyProcessHandler
+ * http un-record [NORMAL]: httpCodec - strategyHandler - recordHandler - proxyProcessHandler
+ * ssl record [NORMAL]:     httpCodec - [sslHandler] - strategyHandler - [aggregator] - recordHandler - proxyProcessHandler
+ * ssl un-record [TUNNEL]:  strategyHandler - recordHandler - proxyProcessHandler
  */
 @Slf4j
 public class StrategyHandler extends ChannelInboundHandlerAdapter {
@@ -62,10 +74,13 @@ public class StrategyHandler extends ChannelInboundHandlerAdapter {
         } else if (msg instanceof HttpContent) {
             ctx.fireChannelRead(msg);
         } else if (!(msg instanceof HttpObject)) {
-            handleSsl(ctx, msg);
+            handleRaw(ctx, msg);
         }
     }
 
+    /**
+     * Refresh http request-info when new request arrives
+     */
     private ProxyRequestInfo refreshRequestInfo(ChannelHandlerContext ctx, HttpRequest request) {
         Attribute<ProxyRequestInfo> attr = ctx.channel().attr(requestInfoAttributeKey);
         ProxyRequestInfo requestInfo = attr.get();
@@ -76,7 +91,7 @@ public class StrategyHandler extends ChannelInboundHandlerAdapter {
         requestInfo.setNewRequest(true);
         requestInfo.setRequestId(IdUtil.getId());
         requestInfo.setRecording(appConfig.isRecording());
-
+        requestInfo.setRequestStartTime(System.currentTimeMillis());
         return requestInfo;
     }
 
@@ -92,20 +107,20 @@ public class StrategyHandler extends ChannelInboundHandlerAdapter {
             return;
         }
 
-
         ProxyRequestInfo requestInfo = refreshRequestInfo(ctx, request);
         if (!requestInfo.isRecording()) {
-            ctx.channel().pipeline().remove("httpAggregator");
-            requestInfo.setClientType(ProxyRequestInfo.ClientType.TUNNEL);
+            try {
+                ctx.channel().pipeline().remove(AGGREGATOR);
+            } catch (Exception ignored) {}
+            // requestInfo.setClientType(ProxyRequestInfo.ClientType.TUNNEL);
         } else {
             try {
-                ctx.channel().pipeline().addAfter(
-                        "strategyHandler",
-                        "httpAggregator",
+                ctx.channel().pipeline().addAfter(SERVER_STRATEGY, AGGREGATOR,
                         new HttpObjectAggregator(appConfig.getMaxContentSize()));
             } catch (IllegalArgumentException ignore) {}
-            requestInfo.setClientType(ProxyRequestInfo.ClientType.NORMAL);
+            // requestInfo.setClientType(ProxyRequestInfo.ClientType.NORMAL);
         }
+        requestInfo.setClientType(ProxyRequestInfo.ClientType.NORMAL);
         // attr.set(requestInfo);
 
         if (status.equals(ServerStatus.INIT)) {
@@ -115,7 +130,7 @@ public class StrategyHandler extends ChannelInboundHandlerAdapter {
                 HttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, ProxyConstant.SUCCESS);
                 ctx.writeAndFlush(response);
                 try {
-                    ctx.channel().pipeline().remove("httpCodec");
+                    ctx.channel().pipeline().remove(HTTP_CODEC);
                 } catch (NoSuchElementException ignore) {}
                 ReferenceCountUtil.release(msg);
                 return;
@@ -124,28 +139,27 @@ public class StrategyHandler extends ChannelInboundHandlerAdapter {
         ctx.fireChannelRead(msg);
     }
 
-    private void handleSsl(ChannelHandlerContext ctx, Object msg) throws Exception {
+    private void handleRaw(ChannelHandlerContext ctx, Object msg) throws Exception {
         // 判断是否为新请求
         ByteBuf byteBuf = (ByteBuf) msg;
         if (byteBuf.getByte(0) == 22) {
             // new request
             ProxyRequestInfo requestInfo = refreshRequestInfo(ctx, null);
             requestInfo.setSsl(true);
-            if (appConfig.isHandleSsl()) {
+            if (requestInfo.isRecording() && appConfig.isHandleSsl()) {
                 int port = ((InetSocketAddress) ctx.channel().localAddress()).getPort();
-                String host = ((InetSocketAddress) ctx.channel().remoteAddress()).getHostName();
-
+                String originHost = requestInfo.getHost();
                 SslContext sslCtx = SslContextBuilder.forServer(
-                        appConfig.getServerPriKey(), certPool.getCert(port, host)).build();
+                        appConfig.getServerPriKey(), certPool.getCert(port, originHost)).build();
 
-                ctx.pipeline().addFirst("httpCodec", new HttpServerCodec());
-                ctx.pipeline().addFirst("sslHandle", sslCtx.newHandler(ctx.alloc()));
+                ctx.pipeline().addFirst(HTTP_CODEC, new HttpServerCodec());
+                ctx.pipeline().addFirst(SSL_HANDLER, sslCtx.newHandler(ctx.alloc()));
                 ctx.pipeline().fireChannelRead(msg);
                 return;
             }
             requestInfo.setClientType(ProxyRequestInfo.ClientType.TUNNEL);
             try {
-                ctx.pipeline().remove("httpAggregator");
+                ctx.pipeline().remove(AGGREGATOR);
             } catch (NoSuchElementException ignore) {}
         }
 
@@ -165,8 +179,9 @@ public class StrategyHandler extends ChannelInboundHandlerAdapter {
 
         // 如果connect后面跑的是HTTP报文，也可以抓包处理
         if (WebUtils.isHttp(byteBuf)) {
-            ctx.pipeline().addFirst("httpCodec", new HttpServerCodec());
+            ctx.pipeline().addFirst(HTTP_CODEC, new HttpServerCodec());
             ctx.pipeline().fireChannelRead(msg);
+            return;
         }
         ctx.fireChannelRead(msg);
     }

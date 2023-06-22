@@ -49,7 +49,9 @@ public class RequestViewService {
         String reqHeaderStr = parseHeaders(request.getHeaders());
         byte[] reqBody = parseContent(request.getHeaders(), request.getBody());
         System.out.println("*** Request headers: " + reqHeaderStr);
-        System.out.println("*** Request body: " + new String(reqBody));
+        // System.out.println("*** Request body: " + new String(reqBody));
+        System.out.println("*** Request start : " + request.getStartTime());
+        System.out.println("*** Request end : " + request.getEndTime());
 
         if (response == null) {
             System.out.println("=== Response waiting...");
@@ -57,7 +59,9 @@ public class RequestViewService {
             String respHeaderStr = parseHeaders(response.getHeaders());
             byte[] respContent = parseContent(response.getHeaders(), response.getContent());
             System.out.println("*** Resp headers: " + respHeaderStr);
-            System.out.println("*** Resp body: " + new String(respContent));
+            // System.out.println("*** Resp body: " + new String(respContent));
+            System.out.println("*** Resp start : " + response.getStartTime());
+            System.out.println("*** Resp end : " + response.getEndTime());
         }
     }
 

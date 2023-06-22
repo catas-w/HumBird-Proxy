@@ -6,7 +6,7 @@ public class ProxyConstant {
 
     public static final String SIGNATURE = "SHA256WithRSAEncryption";
 
-    public static final String START_DATE = "2023-01-01 ";
+    public static final String START_DATE = "2023-01-01";
 
     public static final String SUBJECT = "C=CN, ST=SC, L=CD, O=Catas, CN=Catas";
 

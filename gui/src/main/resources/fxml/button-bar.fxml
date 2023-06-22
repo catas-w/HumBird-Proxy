@@ -1,116 +1,116 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import com.jfoenix.controls.*?>
+<?import java.net.*?>
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import org.kordamp.ikonli.javafx.*?>
 
-<?import com.jfoenix.controls.JFXToggleButton?>
-<?import javafx.geometry.Insets?>
-<?import com.jfoenix.controls.JFXButton?>
-<?import org.kordamp.ikonli.javafx.FontIcon?>
-<?import javafx.scene.text.Font?>
-<?import java.net.URL?>
-<AnchorPane maxWidth="55.0" minWidth="50.0" prefHeight="545.0" prefWidth="50.0"
-            xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.catas.wicked.proxy.gui.controller.ButtonBarController"
-            style="-fx-background-color: TRANSPARENT; -fx-border-color: #efefef; -fx-border-width: 0 1 0 0;">
+<AnchorPane maxWidth="55.0" minWidth="50.0" prefHeight="545.0" prefWidth="50.0" style="-fx-background-color: TRANSPARENT; -fx-border-color: #efefef; -fx-border-width: 0 1 0 0;" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.catas.wicked.proxy.gui.controller.ButtonBarController">
     <stylesheets>
-        <URL value="@../css/common-design.css"/>
-        <URL value="@../css/button-bar.css"/>
+        <URL value="@../css/common-design.css" />
+        <URL value="@../css/button-bar.css" />
     </stylesheets>
-    <VBox prefHeight="200.0" prefWidth="100.0" style="-fx-background-color: TRANSPARENT;"
-          AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0"
-          AnchorPane.topAnchor="20.0">
-        <JFXButton mnemonicParsing="false" prefWidth="200.0" textOverrun="CLIP">
+    <VBox prefHeight="200.0" prefWidth="100.0" style="-fx-background-color: TRANSPARENT;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="20.0">
+        <JFXButton fx:id="recordBtn" onAction="#handleRecordBtn" mnemonicParsing="false" prefWidth="200.0"  textOverrun="CLIP">
             <graphic>
-                <FontIcon iconColor="#d70c19" iconLiteral="fas-record-vinyl" iconSize="18"/>
+                <FontIcon iconColor="#68cbc8" iconLiteral="fas-record-vinyl" iconSize="18" />
             </graphic>
             <VBox.margin>
-                <Insets top="20.0"/>
+                <Insets top="20.0" />
+            </VBox.margin>
+        </JFXButton>
+        <JFXButton fx:id="sslBtn" onAction="#handleSSlBtn" mnemonicParsing="false" prefWidth="200.0" textOverrun="CLIP">
+            <graphic>
+                <FontIcon iconColor="#68cbc8" iconLiteral="fas-mask" iconSize="18" />
+            </graphic>
+            <VBox.margin>
+                <Insets top="20.0" />
             </VBox.margin>
         </JFXButton>
         <JFXButton mnemonicParsing="false" prefWidth="200.0" textOverrun="CLIP">
             <graphic>
-                <FontIcon iconColor="#616161" iconLiteral="fas-broom" iconSize="18"/>
+                <FontIcon iconColor="#616161" iconLiteral="fas-broom" iconSize="18" />
             </graphic>
             <VBox.margin>
-                <Insets top="20.0"/>
+                <Insets top="20.0" />
             </VBox.margin>
         </JFXButton>
         <JFXButton mnemonicParsing="false" prefWidth="200.0" textOverrun="CLIP">
             <graphic>
-                <FontIcon iconColor="#616161" iconLiteral="fas-filter" iconSize="18"/>
+                <FontIcon iconColor="#616161" iconLiteral="fas-filter" iconSize="18" />
             </graphic>
             <VBox.margin>
-                <Insets top="20.0"/>
+                <Insets top="20.0" />
             </VBox.margin>
         </JFXButton>
         <JFXButton mnemonicParsing="false" prefWidth="200.0" textOverrun="CLIP">
             <graphic>
-                <FontIcon iconColor="#616161" iconLiteral="fas-bug" iconSize="18"/>
+                <FontIcon iconColor="#616161" iconLiteral="fas-bug" iconSize="18" />
             </graphic>
             <VBox.margin>
-                <Insets top="20.0"/>
+                <Insets top="20.0" />
             </VBox.margin>
         </JFXButton>
         <JFXButton mnemonicParsing="false" prefWidth="200.0" textOverrun="CLIP">
             <graphic>
-                <FontIcon iconColor="#616161" iconLiteral="fas-crosshairs" iconSize="18"/>
+                <FontIcon iconColor="#616161" iconLiteral="fas-crosshairs" iconSize="18" />
             </graphic>
             <VBox.margin>
-                <Insets top="20.0"/>
+                <Insets top="20.0" />
             </VBox.margin>
         </JFXButton>
         <JFXButton fx:id="eyeBtn" mnemonicParsing="false" prefWidth="200.0" textOverrun="CLIP">
             <graphic>
-                <FontIcon iconColor="#616161" iconLiteral="fas-eye" iconSize="18"/>
+                <FontIcon iconColor="#616161" iconLiteral="fas-eye" iconSize="18" />
             </graphic>
             <VBox.margin>
-                <Insets top="20.0"/>
+                <Insets top="20.0" />
             </VBox.margin>
         </JFXButton>
         <JFXButton fx:id="markerBtn" mnemonicParsing="false" prefWidth="200.0" textOverrun="CLIP">
             <graphic>
-                <FontIcon iconColor="#616161" iconLiteral="fas-marker" iconSize="18"/>
+                <FontIcon iconColor="#616161" iconLiteral="fas-marker" iconSize="18" />
             </graphic>
             <VBox.margin>
-                <Insets top="20.0"/>
+                <Insets top="20.0" />
             </VBox.margin>
         </JFXButton>
 
-        <Pane prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="ALWAYS"/>
-        <MenuButton fx:id="mainMenuButton" mnemonicParsing="false" popupSide="TOP" prefHeight="28.0"
-                    prefWidth="45.0" styleClass="main-menu-btn" textFill="#363636bd">
+        <Pane prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="ALWAYS" />
+        <MenuButton fx:id="mainMenuButton" mnemonicParsing="false" popupSide="TOP" prefHeight="28.0" prefWidth="45.0" styleClass="main-menu-btn" textFill="#363636bd">
             <items>
                 <MenuItem fx:id="proxySetting" text="Proxy Settings">
                     <graphic>
-                        <FontIcon iconLiteral="fas-star" iconSize="24"/>
+                        <FontIcon iconLiteral="fas-star" iconSize="24" />
                     </graphic>
                 </MenuItem>
                 <MenuItem fx:id="exportBtn" text="Export">
                     <graphic>
-                        <FontIcon iconLiteral="fas-star" iconSize="24"/>
+                        <FontIcon iconLiteral="fas-star" iconSize="24" />
                     </graphic>
                 </MenuItem>
                 <MenuItem fx:id="AboutBtn" text="About">
                     <graphic>
-                        <FontIcon iconLiteral="fas-star" iconSize="24"/>
+                        <FontIcon iconLiteral="fas-star" iconSize="24" />
                     </graphic>
                 </MenuItem>
                 <MenuItem fx:id="quitBtn" text="Quit">
                     <graphic>
-                        <FontIcon iconLiteral="fas-star" iconSize="24"/>
+                        <FontIcon iconLiteral="fas-star" iconSize="24" />
                     </graphic>
                 </MenuItem>
             </items>
             <font>
-                <Font name="System Bold" size="12.0"/>
+                <Font name="System Bold" size="12.0" />
             </font>
             <graphic>
-                <FontIcon iconColor="#616161" iconLiteral="fas-ellipsis-h" iconSize="18"/>
+                <FontIcon iconColor="#616161" iconLiteral="fas-ellipsis-h" iconSize="18" />
             </graphic>
             <padding>
-                <Insets left="3.0"/>
+                <Insets left="3.0" />
             </padding>
         </MenuButton>
     </VBox>

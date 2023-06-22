@@ -13,11 +13,9 @@ public class BaseMessage implements Serializable {
 
     private MessageType type;
 
-    private long timestamp;
+    private long startTime;
 
-    public BaseMessage() {
-        this.timestamp = System.currentTimeMillis();
-    }
+    private long endTime;
 
     public enum MessageType {
         REQUEST,

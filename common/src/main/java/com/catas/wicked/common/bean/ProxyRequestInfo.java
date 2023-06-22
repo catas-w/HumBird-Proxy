@@ -19,7 +19,12 @@ public class ProxyRequestInfo {
 
     private ClientType clientType;
 
+    private long requestStartTime;
+
+    private long responseStartTime;
     private boolean isNewRequest;
+
+    private boolean useExternalProxy;
 
     public boolean isNewAndReset() {
         boolean res = this.isNewRequest;

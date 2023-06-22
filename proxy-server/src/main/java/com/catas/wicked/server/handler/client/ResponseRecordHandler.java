@@ -5,8 +5,9 @@ import com.catas.wicked.common.bean.ResponseMessage;
 import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.common.pipeline.MessageQueue;
 import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.channel.ChannelPromise;
 import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpResponseStatus;
@@ -17,7 +18,7 @@ import java.util.Map;
 
 
 @Slf4j
-public class ResponseRecordHandler extends ChannelInboundHandlerAdapter {
+public class ResponseRecordHandler extends ChannelDuplexHandler {
 
     private ApplicationConfig appConfig;
     private MessageQueue messageQueue;
@@ -30,9 +31,13 @@ public class ResponseRecordHandler extends ChannelInboundHandlerAdapter {
     }
 
     @Override
+    public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
+        super.write(ctx, msg, promise);
+    }
+
+    @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        if (msg instanceof FullHttpResponse) {
-            FullHttpResponse response = (FullHttpResponse) msg;
+        if (requestInfo.isRecording() && msg instanceof FullHttpResponse response) {
             recordHttpResponse(ctx, response);
         }
         ctx.fireChannelRead(msg);
@@ -48,6 +53,7 @@ public class ResponseRecordHandler extends ChannelInboundHandlerAdapter {
             map.put(entry.getKey(), entry.getValue());
         });
 
+        responseMessage.setStatus(status.code());
         responseMessage.setHeaders(map);
         ByteBuf content = resp.content();
         if (content.isReadable()) {

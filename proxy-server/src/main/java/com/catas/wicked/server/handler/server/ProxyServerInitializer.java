@@ -11,6 +11,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import static com.catas.wicked.common.common.NettyConstant.HTTP_CODEC;
+import static com.catas.wicked.common.common.NettyConstant.REQUEST_RECORDER;
+import static com.catas.wicked.common.common.NettyConstant.SERVER_PROCESSOR;
+import static com.catas.wicked.common.common.NettyConstant.SERVER_STRATEGY;
+
 
 @Slf4j
 @Component
@@ -30,9 +35,9 @@ public class ProxyServerInitializer extends ChannelInitializer {
 
     @Override
     protected void initChannel(Channel ch) throws Exception {
-        ch.pipeline().addLast("httpCodec", new HttpServerCodec());
-        ch.pipeline().addLast("strategyHandler", new StrategyHandler(appConfig, certPool));
-        ch.pipeline().addLast("requestRecorder", new RequestRecordHandler(appConfig, messageQueue));
-        ch.pipeline().addLast("proxyProcessor", new ProxyProcessHandler(appConfig, clientInitializerFactory));
+        ch.pipeline().addLast(HTTP_CODEC, new HttpServerCodec());
+        ch.pipeline().addLast(SERVER_STRATEGY, new StrategyHandler(appConfig, certPool));
+        ch.pipeline().addLast(REQUEST_RECORDER, new RequestRecordHandler(appConfig, messageQueue));
+        ch.pipeline().addLast(SERVER_PROCESSOR, new ProxyProcessHandler(appConfig, clientInitializerFactory, messageQueue));
     }
 }

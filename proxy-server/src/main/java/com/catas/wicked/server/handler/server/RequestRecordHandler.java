@@ -71,6 +71,8 @@ public class RequestRecordHandler extends ChannelInboundHandlerAdapter {
         requestMessage.setRequestId(requestInfo.getRequestId());
         requestMessage.setMethod("UNKNOWN");
         requestMessage.setHeaders(new HashMap<>());
+        requestMessage.setStartTime(requestInfo.getRequestStartTime());
+        requestMessage.setEndTime(System.currentTimeMillis());
         messageQueue.pushMsg(requestMessage);
 
         // log.info("RequestId: " + requestInfo.getRequestId());
@@ -132,6 +134,8 @@ public class RequestRecordHandler extends ChannelInboundHandlerAdapter {
 
         // save to request tree
         requestMessage.setRequestId(requestInfo.getRequestId());
+        requestMessage.setStartTime(requestInfo.getRequestStartTime());
+        requestMessage.setEndTime(System.currentTimeMillis());
         messageQueue.pushMsg(requestMessage);
 
         log.info("==== Record request: {} ====", uri);
