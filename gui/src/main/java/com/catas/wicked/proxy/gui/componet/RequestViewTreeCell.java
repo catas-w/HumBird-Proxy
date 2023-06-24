@@ -110,7 +110,6 @@ public class RequestViewTreeCell<T> extends TreeCell<T> {
         }
         if (requestCell.isOnCreated()) {
             triggerFade();
-            // System.out.println("Refresh: created: " + requestCell.getPath());
         }
         return hBox;
     }
@@ -120,40 +119,27 @@ public class RequestViewTreeCell<T> extends TreeCell<T> {
             hbox = null;
             setText(null);
             setGraphic(null);
+            if (this.showTransition != null) {
+                this.showTransition.stop();
+            }
+            if (this.fadeTransition != null) {
+                this.fadeTransition.stop();
+            }
+            selectedPane.setVisible(false);
         } else {
-            TreeItem<T> treeItem = getTreeItem();
-            if (treeItem != null && treeItem.getGraphic() != null) {
-                // System.out.println("1111");
-                if (item instanceof RequestCell) {
-                    if (hbox == null) {
-                        hbox = createHBox((RequestCell) item);
-                        setText(((RequestCell) item).getPath());
-                        treeItem.getGraphic().getStyleClass().add("req-method-label");
-                        hbox.getChildren().setAll(treeItem.getGraphic());
-                        setGraphic(hbox);
-                    }
-                } else {
-                    hbox = null;
-                    setText(item.toString());
-                    setGraphic(treeItem.getGraphic());
-                }
-            } else {
-                // System.out.println("2222");
-                hbox = null;
-                methodLabel = null;
-                if (item instanceof RequestCell) {
-                    RequestCell requestCell = (RequestCell) item;
-                    setText(requestCell.getPath());
+            if (item instanceof RequestCell requestCell) {
+                setText(requestCell.getPath());
+                if (methodLabel == null) {
                     methodLabel = new Label(requestCell.getMethod());
                     methodLabel.getStyleClass().add("req-method-label");
-                    methodLabel.getStyleClass().add(requestCell.getStyleClass());
-                    hbox = createHBox(requestCell);
-                    hbox.getChildren().setAll(methodLabel);
-                    setGraphic(hbox);
                 } else {
-                    setText(item.toString());
-                    setGraphic(null);
+                    methodLabel.setText(requestCell.getMethod());
                 }
+                methodLabel.getStyleClass().add(requestCell.getStyleClass());
+
+                hbox = createHBox(requestCell);
+                hbox.getChildren().setAll(methodLabel);
+                setGraphic(hbox);
             }
         }
     }

@@ -76,7 +76,7 @@ public class RequestRecordHandler extends ChannelInboundHandlerAdapter {
         messageQueue.pushMsg(requestMessage);
 
         // log.info("RequestId: " + requestInfo.getRequestId());
-        log.info("==== Record request: {} ====", url);
+        log.info("==== Record request[encrypted]: {} ====", url);
     }
 
 
@@ -112,7 +112,7 @@ public class RequestRecordHandler extends ChannelInboundHandlerAdapter {
         ByteBuf content = request.content();
 
         if (!uri.startsWith("http")) {
-            uri = getHostname(requestInfo);
+            uri = getHostname(requestInfo) + uri;
         }
         RequestMessage requestMessage = new RequestMessage(uri);
         Map<String, String> map = new HashMap<>();
@@ -138,6 +138,6 @@ public class RequestRecordHandler extends ChannelInboundHandlerAdapter {
         requestMessage.setEndTime(System.currentTimeMillis());
         messageQueue.pushMsg(requestMessage);
 
-        log.info("==== Record request: {} ====", uri);
+        log.info("==== Record request[decoded]: {} ====", uri);
     }
 }

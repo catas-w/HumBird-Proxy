@@ -46,6 +46,6 @@
             </HBox.margin>
         </Label>
         <Pane prefHeight="-1.0" prefWidth="-1.0" HBox.hgrow="ALWAYS"/>
-        <Label font="$x3" maxWidth="-1.0" text="v1.1.3" textFill="$x4" HBox.hgrow="NEVER"/>
+        <Label font="$x3" maxWidth="-1.0" text="v1.0.0" textFill="$x4" HBox.hgrow="NEVER"/>
     </HBox>
 </VBox>

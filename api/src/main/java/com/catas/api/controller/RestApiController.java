@@ -7,31 +7,36 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("")
 public class RestApiController {
 
-    @RequestMapping("/test")
+    @RequestMapping("")
+    public String host() {
+        return "Time" + System.currentTimeMillis();
+    }
+
+    @RequestMapping("/api/test")
     public String testApi() throws InterruptedException {
         Thread.sleep(5000);
         return "From wicked-proxy";
     }
 
-    @RequestMapping("/page")
+    @RequestMapping("/api/page")
     public String page() {
         return "Page";
     }
 
-    @RequestMapping("/page/{num}")
+    @RequestMapping("/api/page/{num}")
     public String pageNum(@PathVariable("num") int num) {
         return "Page-" + num;
     }
 
-    @RequestMapping("/page/{num}/detail")
+    @RequestMapping("/api/page/{num}/detail")
     public String pageDetail(@PathVariable("num") int num) {
         return "Page-" + num + "-Detail";
     }
 
-    @RequestMapping("/test/params")
+    @RequestMapping("/api/test/params")
     public String param(@RequestParam Param param) {
         return "Param: " + param.toString();
     }

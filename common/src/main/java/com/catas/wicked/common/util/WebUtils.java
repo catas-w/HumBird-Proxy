@@ -43,7 +43,10 @@ public class WebUtils {
                 if (slashCount < 2) {
                     slashCount ++;
                 } else {
-                    list.add(url.substring(left, i));
+                    String path = url.substring(left, i);
+                    if (path.length() > 0) {
+                        list.add(path);
+                    }
                     slashCount ++;
                     left = i + 1;
                 }
@@ -51,7 +54,12 @@ public class WebUtils {
                 break;
             }
         }
-        list.add(url.substring(left));
+        if (left <= url.length() - 1) {
+            list.add(url.substring(left));
+        }
+        if (list.size() == 1) {
+            list.add("<Default>");
+        }
         return list;
     }
 
