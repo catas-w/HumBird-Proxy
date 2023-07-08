@@ -85,3 +85,30 @@ div:focus {
 /*.hljs-string {*/
 /*    color: #c4940a;*/
 /*}*/
+
+
+/* Badge */
+.title-url .badge{
+    background-color: #9b9b9b;
+    margin-right: 5px;
+    /*padding-top: 1px;*/
+    /*padding-bottom: 2px;*/
+}
+
+.badge-get {
+    background-color: #0dbd91 !important;
+}
+.badge-post {
+    background-color: #d58045 !important;
+}
+.badge-put {
+    background-color: #117fc4 !important;
+}
+.badge-delete {
+    background-color: #d52c2c !important;
+}
+
+.title-url {
+    font-size: smaller;
+    margin-top: 3px
+}
