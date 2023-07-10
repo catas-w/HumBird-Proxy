@@ -68,7 +68,7 @@
                                 <span class="badge badge-post">POST</span>
                                 <span class="title">Http1.1&nbsp;&nbsp;&nbsp;://www.google.com200</span>
                             </h6>
-                            <button class="btn btn-light text-start fw-bold tab-title" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+                            <button class="btn btn-light text-start fw-bold tab-title" type="button" data-bs-toggle="collapse" data-bs-target="#requestHeaders" aria-expanded="false" aria-controls="collapseExample">
                                 <img class="play-icon spanReset" src="../image/play-solid.svg" alt="">
                                 Headers
                             </button>
@@ -80,11 +80,11 @@
                             </div>
                         </div>
                         <div class="row">
-                            <button class="btn btn-light text-start fw-bold tab-title" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDetail" aria-expanded="false" aria-controls="collapseExample">
+                            <button class="btn btn-light text-start fw-bold tab-title" type="button" data-bs-toggle="collapse" data-bs-target="#requestDetail" aria-expanded="false" aria-controls="collapseExample">
                                 <img class="play-icon spanReset" src="../image/play-solid.svg" alt="">
                                 Payload
                             </button>
-                            <div class="collapse" id="RequestDetail">
+                            <div class="collapse" id="requestDetail">
                                 <div class="card card-body border-light">
                                     <div class="btn-group col-md-6 col-lg-6 col-sm-6" role="group" aria-label="Basic example">
                                         <button type="button" class="btn btn-sm btn-light">Preview</button>
@@ -149,10 +149,10 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="card card-body border-light ">
+                                <div class="card card-body border-light">
                                     <code class="language-json">
                                     </code>
-                                    <!--<img src="../image/file.jpg" class="card-img visually-hidden" alt="Image failed to load">-->
+                                    <img src="../image/file.jpg" class="card-img visually-hidden" alt="Image failed to load">
                                 </div>
                             </div>
                         </div>
@@ -206,7 +206,7 @@
                         ]
                     }
                 });
-                initTestData();
+                // initTestData();
                 // hljs.highlightAll();
             });
 
@@ -221,22 +221,45 @@
                 renderData("responseHeaders", `User-Agent: for "Mozilla: /5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36\nHost: google.com`);
                 renderData("responseDetail", `{"name": "Jack"}`);
 
-                let requestInfo = {
+                let info = {
                     method: 'PUT',
                     url: 'https://bing.com',
                     protocol: 'HTTP1.1',
                     code: 404
                 };
-                setUrlTitle(requestInfo);
+                setUrlTitle(info);
+
+                let imgContent = `data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/`;
+                // renderImage('responseDetail', imgContent);
             }
 
             // set and render the data of <code>
             function renderData(tabId, content) {
                 let selector = `#${tabId} .card code`;
+
+                // hide imageView
+                let imgEle = $(`#${tabId} .card-img`);
+                if (imgEle.length > 0) {
+                    imgEle.addClass('visually-hidden');
+                }
+
+                $(selector).removeClass('visually-hidden');
                 $(selector).text(content);
                 hljs.highlightElement($(selector)[0]);
-                new bootstrap.Collapse(`#${tabId}`);
-                $(`#${tabId}`).siblings(".tab-title").children('.play-icon').toggleClass('spanRotate');
+
+                $(`#${tabId}`).collapse('show');
+                $(`#${tabId}`).siblings(".tab-title").children('.play-icon').addClass('spanRotate');
+            }
+
+            // render base64 format image data
+            function renderImage(tabId, content) {
+                let selector = `#${tabId} .card code`;
+                $(selector).addClass('visually-hidden');
+                $(selector).text('');
+
+                let imgEle = $(`#${tabId} .card-img`);
+                imgEle.removeClass('visually-hidden');
+                imgEle.attr('src', content);
             }
 
             // set url, method & protocol info
