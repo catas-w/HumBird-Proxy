@@ -138,19 +138,6 @@ public class MessageTree {
         requestCell.setRequestId(node.getRequestId());
         treeItem.setValue(requestCell);
 
-        if (!node.isLeaf() && node.getPath().startsWith("http")) {
-            FontIcon icon = new FontIcon();
-            icon.setIconColor(Color.valueOf("#1D78C6"));
-            icon.setIconLiteral("fas-globe-africa");
-            icon.setIconSize(14);
-            treeItem.setGraphic(icon);
-        } else if (!node.isLeaf()) {
-            FontIcon icon = new FontIcon();
-            icon.setIconColor(Color.valueOf("#1D78C6"));
-            icon.setIconLiteral("fas-tag");
-            icon.setIconSize(14);
-            treeItem.setGraphic(icon);
-        }
         node.setTreeItem(treeItem);
         node.setCreatedUI(true);
         Platform.runLater(() -> {

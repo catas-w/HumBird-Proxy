@@ -10,7 +10,9 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
 import javafx.util.Duration;
+import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.lang.ref.WeakReference;
 
@@ -105,8 +107,21 @@ public class RequestViewTreeCell<T> extends TreeCell<T> {
 
     private HBox createHBox(RequestCell requestCell) {
         HBox hBox = new HBox(3);
+
         if (requestCell.isLeaf()) {
             hBox.getStyleClass().add("req-leaf");
+        } else {
+            FontIcon icon = new FontIcon();
+            icon.getStyleClass().add("req-icon");
+            icon.setIconColor(Color.valueOf("#8C9C9E"));
+            if (requestCell.getPath().startsWith("http")) {
+                icon.setIconLiteral("fas-globe-africa");
+            } else {
+                icon.setIconLiteral("fas-folder-minus");
+            }
+            icon.setIconSize(14);
+            // icon.getStyleClass().add("request-path-icon");
+            hBox.getChildren().add(icon);
         }
         if (requestCell.isOnCreated()) {
             triggerFade();
@@ -138,7 +153,7 @@ public class RequestViewTreeCell<T> extends TreeCell<T> {
                 methodLabel.getStyleClass().add(requestCell.getStyleClass());
 
                 hbox = createHBox(requestCell);
-                hbox.getChildren().setAll(methodLabel);
+                hbox.getChildren().add(methodLabel);
                 setGraphic(hbox);
             }
         }

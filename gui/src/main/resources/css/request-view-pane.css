@@ -53,6 +53,18 @@
 .req-leaf {
     /*-fx-background-color: #29c1c1;*/
 }
+.tree-cell {
+    -fx-background-color: -fx-control-inner-background;
+    -fx-padding: 0.1em; /* 3 */
+    -fx-text-fill: #3d4242;
+    -fx-indent: 10;
+}
+.tree-cell .arrow {
+    -fx-background-color: #8C9C9E;
+}
+.tree-cell .label {
+    -fx-padding: 0.0em 0.0em 0.0em 0.0em; /* 0 0 0 3 */
+}
 .req-method-label {
     -fx-border-radius: 0.5em;
     -fx-opacity: 0.6;

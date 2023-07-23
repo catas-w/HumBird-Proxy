@@ -102,11 +102,20 @@
             <version>3.10.8</version>
         </dependency>
 
+        <!-- decompress -->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-compress</artifactId>
             <version>1.23.0</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.brotli/dec -->
+        <dependency>
+            <groupId>org.brotli</groupId>
+            <artifactId>dec</artifactId>
+            <version>0.1.2</version>
+        </dependency>
+
+
 
     </dependencies>
 
