@@ -105,11 +105,11 @@ public class RequestViewTreeCell<T> extends TreeCell<T> {
         this.fadeTransition.play();
     }
 
-    private HBox createHBox(RequestCell requestCell) {
-        HBox hBox = new HBox(3);
+    private HBox createOrUpdateHBox(RequestCell requestCell) {
+        HBox box = new HBox(3);
 
         if (requestCell.isLeaf()) {
-            hBox.getStyleClass().add("req-leaf");
+            box.getStyleClass().add("req-leaf");
         } else {
             FontIcon icon = new FontIcon();
             icon.getStyleClass().add("req-icon");
@@ -121,12 +121,12 @@ public class RequestViewTreeCell<T> extends TreeCell<T> {
             }
             icon.setIconSize(14);
             // icon.getStyleClass().add("request-path-icon");
-            hBox.getChildren().add(icon);
+            box.getChildren().add(icon);
         }
         if (requestCell.isOnCreated()) {
             triggerFade();
         }
-        return hBox;
+        return box;
     }
 
     private void updateDisplay(T item, boolean empty) {
@@ -149,11 +149,14 @@ public class RequestViewTreeCell<T> extends TreeCell<T> {
                     methodLabel.getStyleClass().add("req-method-label");
                 } else {
                     methodLabel.setText(requestCell.getMethod());
+                    methodLabel.getStyleClass().removeIf(styleClass -> styleClass.startsWith("method-label"));
                 }
                 methodLabel.getStyleClass().add(requestCell.getStyleClass());
 
-                hbox = createHBox(requestCell);
-                hbox.getChildren().add(methodLabel);
+                if (hbox == null) {
+                    hbox = createOrUpdateHBox(requestCell);
+                    hbox.getChildren().add(methodLabel);
+                }
                 setGraphic(hbox);
             }
         }

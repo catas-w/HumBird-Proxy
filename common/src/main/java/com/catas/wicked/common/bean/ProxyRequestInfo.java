@@ -2,6 +2,9 @@ package com.catas.wicked.common.bean;
 
 import lombok.Data;
 
+/**
+ * request-info of a channel
+ */
 @Data
 public class ProxyRequestInfo {
 
@@ -25,6 +28,8 @@ public class ProxyRequestInfo {
     private boolean isNewRequest;
 
     private boolean useExternalProxy;
+
+    private boolean isOversize;
 
     public boolean isNewAndReset() {
         boolean res = this.isNewRequest;

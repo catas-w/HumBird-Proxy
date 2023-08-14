@@ -37,8 +37,12 @@ public class RequestMessage extends BaseMessage{
 
     public RequestMessage() {}
 
-    public RequestMessage(String requestUrl) throws MalformedURLException {
-        this.url = new URL(requestUrl);
+    public RequestMessage(String requestUrl) {
+        try {
+            this.url = new URL(requestUrl);
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
         this.requestUrl = requestUrl;
         this.setType(MessageType.REQUEST);
     }

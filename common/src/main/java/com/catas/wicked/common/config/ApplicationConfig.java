@@ -1,7 +1,7 @@
 package com.catas.wicked.common.config;
 
 import com.catas.wicked.common.bean.PoisonMessage;
-import com.catas.wicked.common.common.ProxyType;
+import com.catas.wicked.common.constant.ProxyType;
 import com.catas.wicked.common.pipeline.MessageQueue;
 import com.catas.wicked.common.util.AppContextUtil;
 import com.catas.wicked.common.util.ThreadPoolService;
@@ -33,7 +33,7 @@ public class ApplicationConfig {
 
     private int throttleLevel = 0;
 
-    private int maxContentSize = 10 * 1024 * 1024;
+    private int maxContentSize = 1 * 1024 * 1024;
 
     private SslContext clientSslCtx;
     private String issuer;

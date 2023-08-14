@@ -76,4 +76,14 @@ public class WebUtils {
         File directory = new File("..");
         return directory.getCanonicalPath();
     }
+
+    /**
+     * if request is form-data
+     */
+    public static boolean isFormRequest(String contentType) {
+        return contentType != null &&
+                (contentType.contains("application/x-www-form-urlencoded") ||
+                        contentType.contains("multipart/form-data"));
+    }
+
 }

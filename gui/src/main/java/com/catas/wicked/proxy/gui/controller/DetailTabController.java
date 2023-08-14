@@ -1,6 +1,6 @@
 package com.catas.wicked.proxy.gui.controller;
 
-import com.catas.wicked.common.common.DetailArea;
+import com.catas.wicked.common.constant.DetailArea;
 import com.jfoenix.controls.JFXTextArea;
 import de.felixroske.jfxsupport.FXMLController;
 import javafx.application.Platform;

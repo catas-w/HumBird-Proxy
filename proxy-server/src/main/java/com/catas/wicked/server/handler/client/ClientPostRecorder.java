@@ -1,53 +1,62 @@
 package com.catas.wicked.server.handler.client;
 
+
 import com.catas.wicked.common.bean.ProxyRequestInfo;
 import com.catas.wicked.common.bean.ResponseMessage;
 import com.catas.wicked.common.config.ApplicationConfig;
+import com.catas.wicked.common.constant.ProxyConstant;
 import com.catas.wicked.common.pipeline.MessageQueue;
-import com.catas.wicked.common.util.ThreadPoolService;
 import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelPromise;
+import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpResponseStatus;
+import io.netty.util.AttributeKey;
+import io.netty.util.ReferenceCountUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
 import java.util.Map;
 
-
+/**
+ * 客户端响应记录器
+ * record responses
+ */
 @Slf4j
-public class ResponseRecordHandler extends ChannelDuplexHandler {
+public class ClientPostRecorder extends ChannelInboundHandlerAdapter {
 
     private ApplicationConfig appConfig;
     private MessageQueue messageQueue;
-    private ProxyRequestInfo requestInfo;
+    private final AttributeKey<ProxyRequestInfo> requestInfoKey = AttributeKey.valueOf(ProxyConstant.REQUEST_INFO);
 
-    public ResponseRecordHandler(ApplicationConfig appConfig, MessageQueue messageQueue, ProxyRequestInfo requestInfo) {
-        this.appConfig = appConfig;
+    public ClientPostRecorder(ApplicationConfig applicationConfig, MessageQueue messageQueue) {
+        this.appConfig = applicationConfig;
         this.messageQueue = messageQueue;
-        this.requestInfo = requestInfo;
-    }
-
-    @Override
-    public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
-        super.write(ctx, msg, promise);
     }
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        if (requestInfo.isRecording() && msg instanceof FullHttpResponse response) {
-            // TODO: 使用异步处理
-            // recordHttpResponse(ctx, response);
-            FullHttpResponse respCopy = response.copy();
-            ThreadPoolService.getInstance().run(() -> recordHttpResponse(ctx, respCopy));
+        ProxyRequestInfo requestInfo = ctx.channel().attr(requestInfoKey).get();
+        if (!requestInfo.isRecording()) {
+            ReferenceCountUtil.release(msg);
+            return;
         }
-        ctx.fireChannelRead(msg);
+        if (msg instanceof FullHttpResponse response) {
+            try {
+                recordHttpResponse(ctx, response, requestInfo);
+            } catch (Exception e) {
+                log.error("Error in recording response.", e);
+            } finally {
+                response.release();
+            }
+        } else {
+            log.error("????????");
+            ReferenceCountUtil.release(msg);
+        }
     }
 
-    private void recordHttpResponse(ChannelHandlerContext ctx, FullHttpResponse resp) {
+    private void recordHttpResponse(ChannelHandlerContext ctx, FullHttpResponse resp, ProxyRequestInfo requestInfo) {
         HttpHeaders headers = resp.headers();
         HttpResponseStatus status = resp.status();
 
@@ -72,7 +81,6 @@ public class ResponseRecordHandler extends ChannelDuplexHandler {
 
         responseMessage.setRequestId(requestInfo.getRequestId());
         messageQueue.pushMsg(responseMessage);
-        resp.release();
         // log.info("-- RequestId: " + requestInfo.getRequestId());
     }
 }

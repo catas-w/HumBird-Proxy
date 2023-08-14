@@ -57,7 +57,7 @@
     -fx-background-color: -fx-control-inner-background;
     -fx-padding: 0.1em; /* 3 */
     -fx-text-fill: #3d4242;
-    -fx-indent: 10;
+    -fx-indent: 14;
 }
 .tree-cell .arrow {
     -fx-background-color: #8C9C9E;
@@ -73,16 +73,16 @@
 }
 
 .method-label-get {
-    -fx-text-fill: #3eb352;
+    -fx-text-fill: #3eb352 !important;
 }
 .method-label-post {
-    -fx-text-fill: #1c72bf;
+    -fx-text-fill: #1c72bf !important;
 }
 .method-label-put {
-    -fx-text-fill: #c19f41;
+    -fx-text-fill: #c19f41 !important;
 }
 .method-label-delete {
-    -fx-text-fill: #bb3636;
+    -fx-text-fill: #bb3636 !important;
 }
 
 .req-cell-bar {

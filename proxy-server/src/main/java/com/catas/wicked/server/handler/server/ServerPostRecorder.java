@@ -3,8 +3,8 @@ package com.catas.wicked.server.handler.server;
 import com.catas.wicked.common.bean.ProxyRequestInfo;
 import com.catas.wicked.common.bean.RequestMessage;
 import com.catas.wicked.common.config.ApplicationConfig;
+import com.catas.wicked.common.constant.ProxyConstant;
 import com.catas.wicked.common.pipeline.MessageQueue;
-import com.catas.wicked.common.util.ThreadPoolService;
 import com.catas.wicked.common.util.WebUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -13,82 +13,52 @@ import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpObject;
-import io.netty.util.Attribute;
 import io.netty.util.AttributeKey;
+import io.netty.util.ReferenceCountUtil;
 import lombok.extern.slf4j.Slf4j;
-import java.net.MalformedURLException;
+
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * 代理服务器请求记录器
+ * record requests
+ */
 @Slf4j
-public class RequestRecordHandler extends ChannelInboundHandlerAdapter {
+public class ServerPostRecorder extends ChannelInboundHandlerAdapter {
 
-    private ApplicationConfig applicationConfig;
+    private ApplicationConfig appConfig;
     private MessageQueue messageQueue;
-    private final AttributeKey<ProxyRequestInfo> requestInfoAttributeKey = AttributeKey.valueOf("requestInfo");
+    private final AttributeKey<ProxyRequestInfo> requestInfoKey = AttributeKey.valueOf(ProxyConstant.REQUEST_INFO);
 
-    public RequestRecordHandler(ApplicationConfig applicationConfig, MessageQueue messageQueue) {
-        this.applicationConfig = applicationConfig;
+    public ServerPostRecorder(ApplicationConfig applicationConfig, MessageQueue messageQueue) {
+        this.appConfig = applicationConfig;
         this.messageQueue = messageQueue;
     }
 
-    /**
-     * 参数解析: org.springframework.web.method.annotation.RequestParamMapMethodArgumentResolver
-     */
     @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) {
-        Attribute<ProxyRequestInfo> attr = ctx.channel().attr(requestInfoAttributeKey);
-        ProxyRequestInfo requestInfo = attr.get();
-
-        if (requestInfo.isRecording()) {
-            try {
-                // TODO: 使用异步处理
-                if (msg instanceof FullHttpRequest request) {
-                    // recordHttpRequest(ctx, request.copy(), requestInfo);
-                    FullHttpRequest requestCopy = request.copy();
-                    ThreadPoolService.getInstance().run(() -> {
-                                try {
-                                    recordHttpRequest(ctx, requestCopy, requestInfo);
-                                } catch (MalformedURLException e) {
-                                    throw new RuntimeException(e);
-                                }
-                            }
-                    );
-                } else if (!(msg instanceof HttpObject)){
-                    recordUnDecodedRequest(ctx, requestInfo);
-                }
-            } catch (MalformedURLException e) {
-                log.error("Record request error: ", e);
-            }
-        } else {
-            log.info("==== Un-record request: {} ====", requestInfo.getHost());
-        }
-        ctx.fireChannelRead(msg);
-    }
-
-
-    /**
-     * record unparsed http request
-     */
-    private void recordUnDecodedRequest(ChannelHandlerContext ctx, ProxyRequestInfo requestInfo)
-            throws MalformedURLException {
-        if (!requestInfo.isNewAndReset()) {
+    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+        ProxyRequestInfo requestInfo = ctx.channel().attr(requestInfoKey).get();
+        System.out.println("---- Handlers: " + ctx.channel().pipeline().names());
+        if (!requestInfo.isRecording()) {
+            ReferenceCountUtil.release(msg);
             return;
         }
 
-        String url = getHostname(requestInfo) + "/<Encrypted>";
-        RequestMessage requestMessage = new RequestMessage(url);
-        requestMessage.setRequestId(requestInfo.getRequestId());
-        requestMessage.setMethod("UNKNOWN");
-        requestMessage.setHeaders(new HashMap<>());
-        requestMessage.setStartTime(requestInfo.getRequestStartTime());
-        requestMessage.setEndTime(System.currentTimeMillis());
-        messageQueue.pushMsg(requestMessage);
-
-        // log.info("RequestId: " + requestInfo.getRequestId());
-        log.info("==== Record request[encrypted]: {} ====", url);
+        try {
+            if (msg instanceof FullHttpRequest fullHttpRequest) {
+                recordHttpRequest(ctx, fullHttpRequest, requestInfo);
+            } else if (!(msg instanceof HttpObject)) {
+                recordUnDecodedRequest(ctx, requestInfo);
+            } else {
+                log.error("?????");
+            }
+        } catch (Exception e) {
+            log.error("Error in recording http request.", e);
+        } finally {
+            ReferenceCountUtil.release(msg);
+        }
     }
-
 
     private String getHostname(ProxyRequestInfo requestInfo) {
         StringBuilder builder = new StringBuilder();
@@ -110,11 +80,31 @@ public class RequestRecordHandler extends ChannelInboundHandlerAdapter {
     }
 
     /**
+     * record unparsed http request
+     */
+    private void recordUnDecodedRequest(ChannelHandlerContext ctx, ProxyRequestInfo requestInfo) {
+        if (!requestInfo.isNewAndReset()) {
+            return;
+        }
+
+        String url = getHostname(requestInfo) + "/<Encrypted>";
+        RequestMessage requestMessage = new RequestMessage(url);
+        requestMessage.setRequestId(requestInfo.getRequestId());
+        requestMessage.setMethod("UNKNOWN");
+        requestMessage.setHeaders(new HashMap<>());
+        requestMessage.setStartTime(requestInfo.getRequestStartTime());
+        requestMessage.setEndTime(System.currentTimeMillis());
+        messageQueue.pushMsg(requestMessage);
+
+        // log.info("RequestId: " + requestInfo.getRequestId());
+        log.info("==== Record request[encrypted]: {} ====", url);
+    }
+
+    /**
      * decode HttpPostRequestDecoder
      * 记录请求信息
      */
-    private void recordHttpRequest(ChannelHandlerContext ctx, FullHttpRequest request, ProxyRequestInfo requestInfo)
-            throws MalformedURLException {
+    private void recordHttpRequest(ChannelHandlerContext ctx, FullHttpRequest request, ProxyRequestInfo requestInfo) {
         String uri = request.uri();
         HttpHeaders headers = request.headers();
         HttpMethod method = request.method();
@@ -157,7 +147,6 @@ public class RequestRecordHandler extends ChannelInboundHandlerAdapter {
         requestMessage.setStartTime(requestInfo.getRequestStartTime());
         requestMessage.setEndTime(System.currentTimeMillis());
         messageQueue.pushMsg(requestMessage);
-        request.release();
 
         log.info("==== Record request[decoded]: {} ====", uri);
     }

@@ -2,26 +2,31 @@ package com.catas.wicked.server.handler.client;
 
 import com.catas.wicked.common.bean.ProxyRequestInfo;
 import com.catas.wicked.common.config.ApplicationConfig;
+import com.catas.wicked.common.constant.ProxyConstant;
 import com.catas.wicked.common.pipeline.MessageQueue;
+import com.catas.wicked.server.handler.RearHttpAggregator;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
 import io.netty.handler.codec.http.HttpClientCodec;
-import io.netty.handler.codec.http.HttpObjectAggregator;
+import io.netty.util.AttributeKey;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.List;
 import java.util.NoSuchElementException;
 
-import static com.catas.wicked.common.common.NettyConstant.*;
+import static com.catas.wicked.common.constant.NettyConstant.*;
 
 /**
  * decide which handlers to use when sending new request
  * remote <-<-<- this
  * [Normal]: [externalProxyHandler] - [sslHandler] - httpCodec - [httpAggregator] - responseRecorder - (strategyHandler) - proxyClientHandler
  * [Tunnel]: [externalProxyHandler] - (strategyHandler) - proxyClientHandler
+ *
+ * [Normal]: [externalProxyHandler] - [sslHandler] - [httpCodec] - strategyHandler - proxyClientHandler -
+ *           [aggregator] - postRecorder
+ * [Tunnel]: [externalProxyHandler] - strategyHandler - proxyClientHandler - postRecorder
  */
 @Slf4j
 public class ClientStrategyHandler extends ChannelDuplexHandler {
@@ -33,6 +38,8 @@ public class ClientStrategyHandler extends ChannelDuplexHandler {
     private MessageQueue messageQueue;
 
     private String currentRequestId;
+
+    private final AttributeKey<ProxyRequestInfo> requestInfoKey = AttributeKey.valueOf(ProxyConstant.REQUEST_INFO);
 
     public ClientStrategyHandler(ApplicationConfig appConfig,
                                  MessageQueue messageQueue,
@@ -72,9 +79,11 @@ public class ClientStrategyHandler extends ChannelDuplexHandler {
     public void refreshStrategy(ChannelHandlerContext ctx) throws Exception {
         if (!StringUtils.equals(currentRequestId, requestInfo.getRequestId())) {
             // new response
+            if (!ctx.channel().hasAttr(requestInfoKey)) {
+                ctx.channel().attr(requestInfoKey).set(requestInfo);
+            }
             currentRequestId = requestInfo.getRequestId();
             Channel ch = ctx.channel();
-            List<String> handlerNames = ch.pipeline().names();
 
             // update external proxy strategy
             if (requestInfo.isUseExternalProxy()) {
@@ -85,31 +94,33 @@ public class ClientStrategyHandler extends ChannelDuplexHandler {
             if (requestInfo.getClientType() == ProxyRequestInfo.ClientType.NORMAL) {
                 // update sslHandler
                 if (requestInfo.isSsl()) {
-                    if (!handlerNames.contains(SSL_HANDLER)) {
+                    try {
                         ch.pipeline().addBefore(CLIENT_STRATEGY, SSL_HANDLER,
                                 appConfig.getClientSslCtx().newHandler(ch.alloc(), appConfig.getHost(), appConfig.getPort()));
-                    }
-                } else if (handlerNames.contains(SSL_HANDLER)){
-                    ch.pipeline().remove(SSL_HANDLER);
+                    } catch (IllegalArgumentException ignored) {}
+                } else {
+                    try {
+                        ch.pipeline().remove(SSL_HANDLER);
+                    } catch (NoSuchElementException ignored) {}
                 }
 
                 // update httpCodec & responseRecorder
                 try {
                     ch.pipeline().addBefore(CLIENT_STRATEGY, HTTP_CODEC, new HttpClientCodec());
-                    ch.pipeline().addBefore(CLIENT_STRATEGY, RESP_RECORDER,
-                            new ResponseRecordHandler(appConfig, messageQueue, requestInfo));
                 } catch (IllegalArgumentException ignored) {}
 
                 // update httpAggregator
-                if (requestInfo.isRecording() && !handlerNames.contains(AGGREGATOR)) {
-                    ch.pipeline().addBefore(RESP_RECORDER, AGGREGATOR,
-                            new HttpObjectAggregator(appConfig.getMaxContentSize()));
+                if (requestInfo.isRecording()) {
+                    try {
+                        ch.pipeline().addBefore(POST_RECORDER, AGGREGATOR,
+                                new RearHttpAggregator(appConfig.getMaxContentSize()));
+                    } catch (IllegalArgumentException ignored) {}
                 }
             } else {
                 try {
                     ch.pipeline().remove(HTTP_CODEC);
                     ch.pipeline().remove(AGGREGATOR);
-                    ch.pipeline().remove(RESP_RECORDER);
+                    ch.pipeline().remove(SSL_HANDLER);
                 } catch (NoSuchElementException ignored) {}
             }
 

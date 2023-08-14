@@ -37,10 +37,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static com.catas.wicked.common.common.ProxyConstant.CERT_FILE_PATTERN;
-import static com.catas.wicked.common.common.ProxyConstant.PRIVATE_FILE_PATTERN;
-import static com.catas.wicked.common.common.ProxyConstant.START_DATE;
-import static com.catas.wicked.common.common.ProxyConstant.SUBJECT;
+import static com.catas.wicked.common.constant.ProxyConstant.CERT_FILE_PATTERN;
+import static com.catas.wicked.common.constant.ProxyConstant.PRIVATE_FILE_PATTERN;
+import static com.catas.wicked.common.constant.ProxyConstant.START_DATE;
+import static com.catas.wicked.common.constant.ProxyConstant.SUBJECT;
 
 @Service
 public class CertService {

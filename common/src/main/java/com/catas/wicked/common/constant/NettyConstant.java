@@ -1,4 +1,4 @@
-package com.catas.wicked.common.common;
+package com.catas.wicked.common.constant;
 
 /**
  * Netty handler names
@@ -16,6 +16,8 @@ public class NettyConstant {
     public static final String REQUEST_RECORDER = "requestRecorder";
 
     public static final String RESP_RECORDER = "responseRecorder";
+
+    public static final String POST_RECORDER = "postRecorder";
 
     public static final String SSL_HANDLER = "sslHandler";
 

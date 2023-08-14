@@ -1,12 +1,13 @@
 package com.catas.wicked.server.handler.server;
 
 import com.catas.wicked.common.bean.ProxyRequestInfo;
-import com.catas.wicked.common.common.ProxyConstant;
-import com.catas.wicked.common.common.ServerStatus;
+import com.catas.wicked.common.constant.ProxyConstant;
+import com.catas.wicked.common.constant.ServerStatus;
 import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.common.util.IdUtil;
 import com.catas.wicked.common.util.WebUtils;
 import com.catas.wicked.server.cert.CertPool;
+import com.catas.wicked.server.handler.RearHttpAggregator;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -14,14 +15,15 @@ import io.netty.handler.codec.DecoderException;
 import io.netty.handler.codec.DecoderResult;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.HttpContent;
+import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpObject;
-import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.codec.http.HttpVersion;
+import io.netty.handler.codec.http.LastHttpContent;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.util.Attribute;
@@ -32,10 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.net.InetSocketAddress;
 import java.util.NoSuchElementException;
 
-import static com.catas.wicked.common.common.NettyConstant.AGGREGATOR;
-import static com.catas.wicked.common.common.NettyConstant.HTTP_CODEC;
-import static com.catas.wicked.common.common.NettyConstant.SERVER_STRATEGY;
-import static com.catas.wicked.common.common.NettyConstant.SSL_HANDLER;
+import static com.catas.wicked.common.constant.NettyConstant.*;
 
 /**
  * Decide which handlers to use for current channel and refresh request-info
@@ -47,9 +46,15 @@ import static com.catas.wicked.common.common.NettyConstant.SSL_HANDLER;
  * http un-record [NORMAL]: httpCodec - strategyHandler - recordHandler - proxyProcessHandler
  * ssl record [NORMAL]:     httpCodec - [sslHandler] - strategyHandler - [aggregator] - recordHandler - proxyProcessHandler
  * ssl un-record [TUNNEL]:  strategyHandler - recordHandler - proxyProcessHandler
+ *
+ *
+ * http record [NORMAL]:    httpCodec - strategyHandler - proxyProcessHandler - [aggregator] - postRecorder
+ * http un-record [NORMAL]: httpCodec - strategyHandler - proxyProcessHandler - postRecorder
+ * ssl record [NORMAL]:     [sslHandler] - httpCodec - strategyHandler - proxyProcessHandler - [aggregator] - postRecorder
+ * ssl un-record [TUNNEL]:  strategyHandler - proxyProcessHandler - postRecorder
  */
 @Slf4j
-public class StrategyHandler extends ChannelInboundHandlerAdapter {
+public class ServerStrategyHandler extends ChannelInboundHandlerAdapter {
 
     private byte[] httpTagBuf;
 
@@ -61,7 +66,7 @@ public class StrategyHandler extends ChannelInboundHandlerAdapter {
 
     private final AttributeKey<ProxyRequestInfo> requestInfoAttributeKey = AttributeKey.valueOf("requestInfo");
 
-    public StrategyHandler(ApplicationConfig applicationConfig, CertPool certPool) {
+    public ServerStrategyHandler(ApplicationConfig applicationConfig, CertPool certPool) {
         this.appConfig = applicationConfig;
         this.certPool = certPool;
         this.status = ServerStatus.INIT;
@@ -72,6 +77,12 @@ public class StrategyHandler extends ChannelInboundHandlerAdapter {
         if (msg instanceof HttpRequest) {
             handleHttpRequest(ctx, msg);
         } else if (msg instanceof HttpContent) {
+            // TODO 处理 head 后的 LastContent
+            if (status == ServerStatus.AFTER_CONNECT && msg instanceof LastHttpContent) {
+                status = ServerStatus.INIT;
+                ReferenceCountUtil.release(msg);
+                return;
+            }
             ctx.fireChannelRead(msg);
         } else if (!(msg instanceof HttpObject)) {
             handleRaw(ctx, msg);
@@ -88,6 +99,7 @@ public class StrategyHandler extends ChannelInboundHandlerAdapter {
             requestInfo = WebUtils.getRequestProto(request);
             attr.set(requestInfo);
         }
+        assert requestInfo != null;
         requestInfo.setNewRequest(true);
         requestInfo.setRequestId(IdUtil.getId());
         requestInfo.setRecording(appConfig.isRecording());
@@ -107,16 +119,21 @@ public class StrategyHandler extends ChannelInboundHandlerAdapter {
             return;
         }
 
+        HttpHeaders headers = request.headers();
+        System.out.println("************ Headers from httpRequest **************");
+        System.out.println(headers);
+        System.out.println("************  **************");
+
         ProxyRequestInfo requestInfo = refreshRequestInfo(ctx, request);
         if (!requestInfo.isRecording()) {
             try {
                 ctx.channel().pipeline().remove(AGGREGATOR);
-            } catch (Exception ignored) {}
+            } catch (NoSuchElementException ignored) {}
             // requestInfo.setClientType(ProxyRequestInfo.ClientType.TUNNEL);
         } else {
             try {
-                ctx.channel().pipeline().addAfter(SERVER_STRATEGY, AGGREGATOR,
-                        new HttpObjectAggregator(appConfig.getMaxContentSize()));
+                ctx.channel().pipeline().addAfter(
+                        SERVER_PROCESSOR, AGGREGATOR, new RearHttpAggregator(appConfig.getMaxContentSize()));
             } catch (IllegalArgumentException ignore) {}
             // requestInfo.setClientType(ProxyRequestInfo.ClientType.NORMAL);
         }
@@ -124,10 +141,10 @@ public class StrategyHandler extends ChannelInboundHandlerAdapter {
         // attr.set(requestInfo);
 
         if (status.equals(ServerStatus.INIT)) {
-            status = ServerStatus.RUNNING;
             if (HttpMethod.CONNECT.name().equalsIgnoreCase(request.method().name())) {
+                status = ServerStatus.AFTER_CONNECT;
                 // https connect
-                HttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, ProxyConstant.SUCCESS);
+                HttpResponse response = new DefaultFullHttpResponse(request.protocolVersion(), ProxyConstant.SUCCESS);
                 ctx.writeAndFlush(response);
                 try {
                     ctx.channel().pipeline().remove(HTTP_CODEC);

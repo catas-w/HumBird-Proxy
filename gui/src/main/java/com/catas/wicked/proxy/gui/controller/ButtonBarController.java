@@ -30,8 +30,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
-import static com.catas.wicked.common.common.StyleConstant.BTN_ACTIVE;
-import static com.catas.wicked.common.common.StyleConstant.BTN_INACTIVE;
+import static com.catas.wicked.common.constant.StyleConstant.BTN_ACTIVE;
+import static com.catas.wicked.common.constant.StyleConstant.BTN_INACTIVE;
 
 @FXMLController
 public class ButtonBarController implements Initializable {
@@ -96,15 +96,11 @@ public class ButtonBarController implements Initializable {
 
         markerBtn.setOnAction(event -> {
             String url = list.get(index % (list.size() - 1));
-            try {
-                String[] split = url.split(" ");
-                RequestMessage msg = new RequestMessage(split[1]);
-                msg.setMethod(split[0]);
+            String[] split = url.split(" ");
+            RequestMessage msg = new RequestMessage(split[1]);
+            msg.setMethod(split[0]);
 
-                queue.pushMsg(msg);
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            }
+            queue.pushMsg(msg);
             index ++;
         });
     }

@@ -3,6 +3,7 @@ package com.catas.wicked.server.handler.client;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.util.ReferenceCountUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.LinkedList;
@@ -23,12 +24,19 @@ public class ProxyClientHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         if (clientChannel.isOpen()) {
+            ReferenceCountUtil.retain(msg);
+            clientChannel.writeAndFlush(msg);
+            ctx.fireChannelRead(msg);
+
             if (!responseList.isEmpty()) {
                 synchronized (responseList) {
-                    responseList.forEach(resp -> clientChannel.writeAndFlush(msg));
+                    responseList.forEach(resp -> {
+                        ReferenceCountUtil.retain(resp);
+                        clientChannel.writeAndFlush(resp);
+                        ctx.fireChannelRead(resp);
+                    });
                 }
             }
-            clientChannel.writeAndFlush(msg);
         } else {
             synchronized (responseList) {
                 responseList.add(msg);
@@ -47,5 +55,10 @@ public class ProxyClientHandler extends ChannelInboundHandlerAdapter {
         clientChannel.close();
         // TODO: exception handle
         log.error("Error occurred in Proxy client.", cause);
+        if (!responseList.isEmpty()) {
+            synchronized (responseList) {
+                responseList.forEach(ReferenceCountUtil::release);
+            }
+        }
     }
 }

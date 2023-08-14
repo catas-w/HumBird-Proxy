@@ -1,8 +1,13 @@
-package com.catas.wicked.common.common;
+package com.catas.wicked.common.constant;
 
 import io.netty.handler.codec.http.HttpResponseStatus;
 
 public class ProxyConstant {
+
+    /**
+     * shared key of request-info
+     */
+    public static final String REQUEST_INFO = "requestInfo";
 
     public static final String SIGNATURE = "SHA256WithRSAEncryption";
 

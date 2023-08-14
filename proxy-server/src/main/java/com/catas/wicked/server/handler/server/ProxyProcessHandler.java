@@ -2,20 +2,20 @@ package com.catas.wicked.server.handler.server;
 
 import com.catas.wicked.common.bean.ProxyRequestInfo;
 import com.catas.wicked.common.config.ApplicationConfig;
+import com.catas.wicked.common.constant.ProxyConstant;
 import com.catas.wicked.common.pipeline.MessageQueue;
 import com.catas.wicked.server.handler.ClientInitializerFactory;
+import com.catas.wicked.server.handler.client.ClientPostRecorder;
 import com.catas.wicked.server.handler.client.ClientStrategyHandler;
 import com.catas.wicked.server.handler.client.ProxyClientHandler;
-import com.catas.wicked.server.handler.client.ProxyClientInitializer;
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.http.HttpObject;
+import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.util.AttributeKey;
@@ -25,19 +25,24 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.LinkedList;
 import java.util.List;
 
-import static com.catas.wicked.common.common.NettyConstant.CLIENT_PROCESSOR;
-import static com.catas.wicked.common.common.NettyConstant.CLIENT_STRATEGY;
+import static com.catas.wicked.common.constant.NettyConstant.CLIENT_PROCESSOR;
+import static com.catas.wicked.common.constant.NettyConstant.CLIENT_STRATEGY;
+import static com.catas.wicked.common.constant.NettyConstant.POST_RECORDER;
 
+/**
+ * send data to target server
+ */
 @Slf4j
 public class ProxyProcessHandler extends ChannelInboundHandlerAdapter {
 
     private boolean isConnected;
 
-    private ApplicationConfig applicationConfig;
+    private ApplicationConfig appConfig;
 
     private ChannelFuture channelFuture;
 
-    private List<Object> requestList;
+    // TODO: ConcurrentLinkedQueue
+    private final List<Object> requestList;
 
     private ClientInitializerFactory initializerFactory;
 
@@ -45,14 +50,16 @@ public class ProxyProcessHandler extends ChannelInboundHandlerAdapter {
 
     private final MessageQueue messageQueue;
 
-    private final AttributeKey<ProxyRequestInfo> requestInfoAttributeKey = AttributeKey.valueOf("requestInfo");
+    private final AttributeKey<ProxyRequestInfo> requestInfoAttributeKey =
+            AttributeKey.valueOf(ProxyConstant.REQUEST_INFO);
 
     public ProxyProcessHandler(ApplicationConfig applicationConfig,
                                ClientInitializerFactory initializerFactory,
                                MessageQueue messageQueue) {
-        this.applicationConfig = applicationConfig;
+        this.appConfig = applicationConfig;
         this.initializerFactory = initializerFactory;
         this.messageQueue = messageQueue;
+        requestList = new LinkedList<>();
     }
 
     @Override
@@ -63,55 +70,66 @@ public class ProxyProcessHandler extends ChannelInboundHandlerAdapter {
             ReferenceCountUtil.release(msg);
             return;
         }
-
-        handleProxyData(ctx.channel(), msg, curRequestInfo);
+        handleProxyData(ctx, msg, curRequestInfo);
     }
 
-    private void handleProxyData(Channel channel, Object msg, ProxyRequestInfo requestInfo) {
+    private void handleProxyData(ChannelHandlerContext ctx, Object msg, ProxyRequestInfo requestInfo) {
         if (channelFuture == null) {
             if (requestInfo.getClientType() == ProxyRequestInfo.ClientType.NORMAL
-                    && (!(msg instanceof HttpObject))) {
+                    && (!(msg instanceof HttpRequest))) {
                 return;
             }
 
             Bootstrap bootstrap = new Bootstrap();
-            bootstrap.group(channel.eventLoop())
+            bootstrap.group(ctx.channel().eventLoop())
                     .channel(NioSocketChannel.class)
                     .handler(new LoggingHandler(LogLevel.INFO))
                     .handler(new ChannelInitializer<NioSocketChannel>() {
                         @Override
                         protected void initChannel(NioSocketChannel ch) throws Exception {
-                            ch.pipeline().addLast(CLIENT_STRATEGY, new ClientStrategyHandler(applicationConfig, messageQueue, requestInfo));
-                            ch.pipeline().addLast(CLIENT_PROCESSOR, new ProxyClientHandler(channel));
+                            ch.pipeline().addLast(CLIENT_STRATEGY,
+                                    new ClientStrategyHandler(appConfig, messageQueue, requestInfo));
+                            ch.pipeline().addLast(CLIENT_PROCESSOR, new ProxyClientHandler(ctx.channel()));
+                            ch.pipeline().addLast(POST_RECORDER, new ClientPostRecorder(appConfig, messageQueue));
                         }
                     });
 
             // bootstrap.resolver(NoopAddressResolverGroup.INSTANCE);
-            requestList = new LinkedList<>();
             channelFuture = bootstrap.connect(requestInfo.getHost(), requestInfo.getPort());
             channelFuture.addListener((ChannelFutureListener) future -> {
                 if (future.isSuccess()) {
+                    ReferenceCountUtil.retain(msg);
                     future.channel().writeAndFlush(msg);
-                    synchronized (requestList) {
-                        requestList.forEach(obj -> future.channel().writeAndFlush(obj));
-                        requestList.clear();
-                        isConnected = true;
+                    ctx.fireChannelRead(msg);
+
+                    if (!requestList.isEmpty()) {
+                        synchronized (requestList) {
+                            requestList.forEach(obj -> {
+                                ReferenceCountUtil.retain(obj);
+                                future.channel().writeAndFlush(obj);
+                                ctx.fireChannelRead(obj);
+                            });
+                            requestList.clear();
+                            isConnected = true;
+                        }
                     }
                 } else {
                     synchronized (requestList) {
                         requestList.forEach(ReferenceCountUtil::release);
                         requestList.clear();
                     }
-                    // TODO
-                    // getExceptionHandle().beforeCatch(channel, future.cause());
+                    // TODO 添加错误记录
+                    Throwable cause = future.cause();
                     future.channel().close();
-                    channel.close();
+                    ctx.channel().close();
                 }
             });
         } else {
             synchronized (requestList) {
                 if (isConnected) {
+                    ReferenceCountUtil.retain(msg);
                     channelFuture.channel().writeAndFlush(msg);
+                    ctx.fireChannelRead(msg);
                 } else {
                     requestList.add(msg);
                 }

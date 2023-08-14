@@ -19,7 +19,9 @@ public class BaseMessage implements Serializable {
 
     public enum MessageType {
         REQUEST,
+        REQUEST_CONTENT,
         RESPONSE,
+        RESPONSE_CONTENT,
         POISON
     }
 }

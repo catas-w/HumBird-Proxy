@@ -80,6 +80,14 @@ public class MessageTree {
                 data.setResponse(respMessage);
                 requestCache.put(data.getRequestId(), data);
             }
+        }  else if (msg.getType() == BaseMessage.MessageType.REQUEST_CONTENT) {
+            // 添加请求体
+            RequestMessage contentMsg = (RequestMessage) msg;
+            RequestMessage data = requestCache.get(contentMsg.getRequestId());
+            if (data != null) {
+                data.setBody(contentMsg.getBody());
+                requestCache.put(data.getRequestId(), data);
+            }
         }
     }
 
@@ -87,7 +95,7 @@ public class MessageTree {
      * 根据 path 添加节点到树中
      * @param msg request/response entity
      */
-    private void add(RequestMessage msg) {
+    public void add(RequestMessage msg) {
         // put to cache
         if (StringUtils.isNotBlank(msg.getRequestId())) {
             requestCache.put(msg.getRequestId(), msg);
