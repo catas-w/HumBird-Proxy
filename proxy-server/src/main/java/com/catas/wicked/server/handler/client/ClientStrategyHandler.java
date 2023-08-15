@@ -50,6 +50,12 @@ public class ClientStrategyHandler extends ChannelDuplexHandler {
     }
 
     @Override
+    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        // System.out.println("** Client inactive **");
+        super.channelInactive(ctx);
+    }
+
+    @Override
     public void disconnect(ChannelHandlerContext ctx, ChannelPromise promise) throws Exception {
         super.disconnect(ctx, promise);
     }
@@ -123,9 +129,8 @@ public class ClientStrategyHandler extends ChannelDuplexHandler {
                     ch.pipeline().remove(SSL_HANDLER);
                 } catch (NoSuchElementException ignored) {}
             }
-
-            requestInfo.setResponseStartTime(System.currentTimeMillis());
         }
+        log.info(">> Client send data: {} >>", requestInfo.getRequestId());
     }
 
 }

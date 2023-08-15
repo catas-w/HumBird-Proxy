@@ -119,11 +119,6 @@ public class ServerStrategyHandler extends ChannelInboundHandlerAdapter {
             return;
         }
 
-        HttpHeaders headers = request.headers();
-        System.out.println("************ Headers from httpRequest **************");
-        System.out.println(headers);
-        System.out.println("************  **************");
-
         ProxyRequestInfo requestInfo = refreshRequestInfo(ctx, request);
         if (!requestInfo.isRecording()) {
             try {

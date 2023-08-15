@@ -81,6 +81,6 @@ public class ClientPostRecorder extends ChannelInboundHandlerAdapter {
 
         responseMessage.setRequestId(requestInfo.getRequestId());
         messageQueue.pushMsg(responseMessage);
-        // log.info("-- RequestId: " + requestInfo.getRequestId());
+        log.info("<<<< Response received: {} <<<<", requestInfo.getRequestId());
     }
 }

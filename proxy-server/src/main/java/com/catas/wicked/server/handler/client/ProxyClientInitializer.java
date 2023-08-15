@@ -10,6 +10,7 @@ import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.proxy.ProxyHandler;
 import lombok.Setter;
 
+@Deprecated
 @Setter
 public class ProxyClientInitializer extends ChannelInitializer {
 

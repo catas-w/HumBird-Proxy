@@ -4,7 +4,6 @@ import com.catas.wicked.common.bean.ProxyRequestInfo;
 import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.common.constant.ProxyConstant;
 import com.catas.wicked.common.pipeline.MessageQueue;
-import com.catas.wicked.server.handler.ClientInitializerFactory;
 import com.catas.wicked.server.handler.client.ClientPostRecorder;
 import com.catas.wicked.server.handler.client.ClientStrategyHandler;
 import com.catas.wicked.server.handler.client.ProxyClientHandler;
@@ -44,20 +43,14 @@ public class ProxyProcessHandler extends ChannelInboundHandlerAdapter {
     // TODO: ConcurrentLinkedQueue
     private final List<Object> requestList;
 
-    private ClientInitializerFactory initializerFactory;
-
-    private ProxyRequestInfo requestInfo;
-
     private final MessageQueue messageQueue;
 
     private final AttributeKey<ProxyRequestInfo> requestInfoAttributeKey =
             AttributeKey.valueOf(ProxyConstant.REQUEST_INFO);
 
     public ProxyProcessHandler(ApplicationConfig applicationConfig,
-                               ClientInitializerFactory initializerFactory,
                                MessageQueue messageQueue) {
         this.appConfig = applicationConfig;
-        this.initializerFactory = initializerFactory;
         this.messageQueue = messageQueue;
         requestList = new LinkedList<>();
     }
@@ -74,7 +67,7 @@ public class ProxyProcessHandler extends ChannelInboundHandlerAdapter {
     }
 
     private void handleProxyData(ChannelHandlerContext ctx, Object msg, ProxyRequestInfo requestInfo) {
-        if (channelFuture == null) {
+        if (channelFuture == null || channelFuture.isDone()) {
             if (requestInfo.getClientType() == ProxyRequestInfo.ClientType.NORMAL
                     && (!(msg instanceof HttpRequest))) {
                 return;
@@ -95,6 +88,7 @@ public class ProxyProcessHandler extends ChannelInboundHandlerAdapter {
                     });
 
             // bootstrap.resolver(NoopAddressResolverGroup.INSTANCE);
+            requestList.clear();
             channelFuture = bootstrap.connect(requestInfo.getHost(), requestInfo.getPort());
             channelFuture.addListener((ChannelFutureListener) future -> {
                 if (future.isSuccess()) {
@@ -110,9 +104,9 @@ public class ProxyProcessHandler extends ChannelInboundHandlerAdapter {
                                 ctx.fireChannelRead(obj);
                             });
                             requestList.clear();
-                            isConnected = true;
                         }
                     }
+                    isConnected = true;
                 } else {
                     synchronized (requestList) {
                         requestList.forEach(ReferenceCountUtil::release);

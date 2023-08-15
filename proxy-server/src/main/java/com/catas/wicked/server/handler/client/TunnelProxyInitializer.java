@@ -4,7 +4,7 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import io.netty.handler.proxy.ProxyHandler;
 
-
+@Deprecated
 public class TunnelProxyInitializer extends ChannelInitializer {
 
     private final Channel clientChannel;

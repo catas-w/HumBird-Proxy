@@ -39,7 +39,6 @@ public class ServerPostRecorder extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         ProxyRequestInfo requestInfo = ctx.channel().attr(requestInfoKey).get();
-        System.out.println("---- Handlers: " + ctx.channel().pipeline().names());
         if (!requestInfo.isRecording()) {
             ReferenceCountUtil.release(msg);
             return;
@@ -96,8 +95,7 @@ public class ServerPostRecorder extends ChannelInboundHandlerAdapter {
         requestMessage.setEndTime(System.currentTimeMillis());
         messageQueue.pushMsg(requestMessage);
 
-        // log.info("RequestId: " + requestInfo.getRequestId());
-        log.info("==== Record request[encrypted]: {} ====", url);
+        log.info(">>>> Request send[encrypted]: {} ID: {} >>>>", url, requestInfo.getRequestId());
     }
 
     /**
@@ -148,6 +146,6 @@ public class ServerPostRecorder extends ChannelInboundHandlerAdapter {
         requestMessage.setEndTime(System.currentTimeMillis());
         messageQueue.pushMsg(requestMessage);
 
-        log.info("==== Record request[decoded]: {} ====", uri);
+        log.info(">>>> Request send[decoded]: {} ID: {} >>>>", uri, requestInfo.getRequestId());
     }
 }

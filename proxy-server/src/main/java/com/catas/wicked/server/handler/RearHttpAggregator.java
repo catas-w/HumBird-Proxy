@@ -27,7 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class RearHttpAggregator extends HttpObjectAggregator {
 
-    private static final String DEFAULT_MSG = "<Content Oversize, Unable to show.>";
+    private static final String DEFAULT_MSG = "<Content Oversize, Unable to show>";
 
     private static final ByteBuf OVERSIZE_BUF = Unpooled.wrappedBuffer(DEFAULT_MSG.getBytes());
 
