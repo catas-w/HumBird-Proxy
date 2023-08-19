@@ -15,7 +15,6 @@ import io.netty.handler.codec.DecoderException;
 import io.netty.handler.codec.DecoderResult;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.HttpContent;
-import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpObject;
 import io.netty.handler.codec.http.HttpRequest;
@@ -100,10 +99,11 @@ public class ServerStrategyHandler extends ChannelInboundHandlerAdapter {
             attr.set(requestInfo);
         }
         assert requestInfo != null;
+        requestInfo.setUsingExternalProxy(appConfig.getExternalProxyConfig().isUsingExternalProxy());
         requestInfo.setNewRequest(true);
         requestInfo.setRequestId(IdUtil.getId());
         requestInfo.setRecording(appConfig.isRecording());
-        requestInfo.setRequestStartTime(System.currentTimeMillis());
+        requestInfo.setRequestTime();
         return requestInfo;
     }
 

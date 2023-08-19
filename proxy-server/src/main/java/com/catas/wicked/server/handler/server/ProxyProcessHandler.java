@@ -2,8 +2,10 @@ package com.catas.wicked.server.handler.server;
 
 import com.catas.wicked.common.bean.ProxyRequestInfo;
 import com.catas.wicked.common.config.ApplicationConfig;
+import com.catas.wicked.common.config.ExternalProxyConfig;
 import com.catas.wicked.common.constant.ProxyConstant;
 import com.catas.wicked.common.pipeline.MessageQueue;
+import com.catas.wicked.common.util.ProxyHandlerFactory;
 import com.catas.wicked.server.handler.client.ClientPostRecorder;
 import com.catas.wicked.server.handler.client.ClientStrategyHandler;
 import com.catas.wicked.server.handler.client.ProxyClientHandler;
@@ -14,9 +16,15 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.HttpRequest;
+import io.netty.handler.codec.http.HttpResponse;
+import io.netty.handler.codec.http.HttpResponseStatus;
+import io.netty.handler.codec.http.HttpVersion;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import io.netty.handler.proxy.ProxyHandler;
+import io.netty.resolver.NoopAddressResolverGroup;
 import io.netty.util.AttributeKey;
 import io.netty.util.ReferenceCountUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +34,7 @@ import java.util.List;
 
 import static com.catas.wicked.common.constant.NettyConstant.CLIENT_PROCESSOR;
 import static com.catas.wicked.common.constant.NettyConstant.CLIENT_STRATEGY;
+import static com.catas.wicked.common.constant.NettyConstant.EXTERNAL_PROXY;
 import static com.catas.wicked.common.constant.NettyConstant.POST_RECORDER;
 
 /**
@@ -66,7 +75,7 @@ public class ProxyProcessHandler extends ChannelInboundHandlerAdapter {
         handleProxyData(ctx, msg, curRequestInfo);
     }
 
-    private void handleProxyData(ChannelHandlerContext ctx, Object msg, ProxyRequestInfo requestInfo) {
+    private void handleProxyData(ChannelHandlerContext ctx, Object msg, ProxyRequestInfo requestInfo)  throws Exception {
         if (channelFuture == null || channelFuture.isDone()) {
             if (requestInfo.getClientType() == ProxyRequestInfo.ClientType.NORMAL
                     && (!(msg instanceof HttpRequest))) {
@@ -80,6 +89,13 @@ public class ProxyProcessHandler extends ChannelInboundHandlerAdapter {
                     .handler(new ChannelInitializer<NioSocketChannel>() {
                         @Override
                         protected void initChannel(NioSocketChannel ch) throws Exception {
+                            if (requestInfo.isUsingExternalProxy()) {
+                                // add external proxy handler
+                                ExternalProxyConfig externalProxyConfig = appConfig.getExternalProxyConfig();
+                                ProxyHandler httpProxyHandler = ProxyHandlerFactory.getExternalProxyHandler(externalProxyConfig);
+                                ch.pipeline().addFirst(EXTERNAL_PROXY, httpProxyHandler);
+                                bootstrap.resolver(NoopAddressResolverGroup.INSTANCE);
+                            }
                             ch.pipeline().addLast(CLIENT_STRATEGY,
                                     new ClientStrategyHandler(appConfig, messageQueue, requestInfo));
                             ch.pipeline().addLast(CLIENT_PROCESSOR, new ProxyClientHandler(ctx.channel()));
@@ -114,6 +130,10 @@ public class ProxyProcessHandler extends ChannelInboundHandlerAdapter {
                     }
                     // TODO 添加错误记录
                     Throwable cause = future.cause();
+                    log.error("Error in creating proxy client channel: {}", cause.getMessage());
+                    HttpResponse response = new DefaultFullHttpResponse(
+                            HttpVersion.HTTP_1_1, HttpResponseStatus.GATEWAY_TIMEOUT);
+                    ctx.writeAndFlush(response);
                     future.channel().close();
                     ctx.channel().close();
                 }

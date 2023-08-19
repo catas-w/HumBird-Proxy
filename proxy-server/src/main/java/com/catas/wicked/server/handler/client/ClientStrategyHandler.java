@@ -92,9 +92,18 @@ public class ClientStrategyHandler extends ChannelDuplexHandler {
             Channel ch = ctx.channel();
 
             // update external proxy strategy
-            if (requestInfo.isUseExternalProxy()) {
-                // TODO: add external proxy handler
-            }
+            // if (requestInfo.isUsingExternalProxy()) {
+            //     // add external proxy handler
+            //     ExternalProxyConfig externalProxyConfig = appConfig.getExternalProxyConfig();
+            //     ProxyHandler httpProxyHandler = ProxyHandlerFactory.getExternalProxyHandler(externalProxyConfig);
+            //     try {
+            //         ctx.pipeline().addFirst(EXTERNAL_PROXY, httpProxyHandler);
+            //     } catch (IllegalArgumentException ignored) {}
+            // } else {
+            //     try {
+            //         ctx.pipeline().remove(EXTERNAL_PROXY);
+            //     } catch (NoSuchElementException ignored ) {}
+            // }
 
             // update record strategy
             if (requestInfo.getClientType() == ProxyRequestInfo.ClientType.NORMAL) {

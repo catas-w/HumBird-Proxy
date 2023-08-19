@@ -24,10 +24,14 @@ public class ProxyRequestInfo {
 
     private long requestStartTime;
 
+    private long requestEndTime;
+
     private long responseStartTime;
+
+    private long responseEndTime;
     private boolean isNewRequest;
 
-    private boolean useExternalProxy;
+    private boolean usingExternalProxy;
 
     private boolean isOversize;
 
@@ -35,6 +39,22 @@ public class ProxyRequestInfo {
         boolean res = this.isNewRequest;
         this.isNewRequest = false;
         return res;
+    }
+
+    public synchronized void setRequestTime() {
+        long timestamp = System.currentTimeMillis();
+        if (requestStartTime == 0L) {
+            requestStartTime = timestamp;
+        }
+        requestEndTime = timestamp;
+    }
+
+    public synchronized void setResponseTime() {
+        long timestamp = System.currentTimeMillis();
+        if (responseStartTime == 0L) {
+            responseStartTime = timestamp;
+        }
+        responseEndTime = timestamp;
     }
 
     public enum ClientType {

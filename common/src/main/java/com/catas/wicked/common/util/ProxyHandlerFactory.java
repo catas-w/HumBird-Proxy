@@ -1,33 +1,57 @@
 package com.catas.wicked.common.util;
 
-import com.catas.wicked.common.config.ApplicationConfig;
+import com.catas.wicked.common.config.ExternalProxyConfig;
 import io.netty.handler.proxy.HttpProxyHandler;
 import io.netty.handler.proxy.ProxyHandler;
 import io.netty.handler.proxy.Socks4ProxyHandler;
 import io.netty.handler.proxy.Socks5ProxyHandler;
 
-import java.net.InetSocketAddress;
 
+/**
+ * To create external proxy handler for http-clients
+ */
 public class ProxyHandlerFactory {
 
-    private ApplicationConfig config;
-
-    public ProxyHandler build() {
-        ProxyHandler proxyHandler = null;
-        if (config != null) {
-            InetSocketAddress inetSocketAddress = new InetSocketAddress(config.getHost(),
-                    config.getPort());
-            switch (config.getProxyType()) {
-                case HTTP:
-                    proxyHandler = new HttpProxyHandler(inetSocketAddress);
-                    break;
-                case SOCKS4:
-                    proxyHandler = new Socks4ProxyHandler(inetSocketAddress);
-                    break;
-                case SOCKS5:
-                    proxyHandler = new Socks5ProxyHandler(inetSocketAddress);
+    public static ProxyHandler getExternalProxyHandler(ExternalProxyConfig proxyConfig) {
+        if (proxyConfig != null) {
+            switch (proxyConfig.getProtocol()) {
+                case HTTP -> {
+                    HttpProxyHandler httpProxyHandler = null;
+                    if (proxyConfig.isProxyAuth()) {
+                        httpProxyHandler = new HttpProxyHandler(
+                                proxyConfig.getSocketAddress(),
+                                proxyConfig.getUsername(),
+                                proxyConfig.getPassword());
+                    } else {
+                        httpProxyHandler = new HttpProxyHandler(proxyConfig.getSocketAddress());
+                    }
+                    return httpProxyHandler;
+                }
+                case SOCKS4 -> {
+                    Socks4ProxyHandler socks4ProxyHandler = null;
+                    if (proxyConfig.isProxyAuth()) {
+                        socks4ProxyHandler = new Socks4ProxyHandler(
+                                proxyConfig.getSocketAddress(),
+                                proxyConfig.getUsername());
+                    } else {
+                        socks4ProxyHandler = new Socks4ProxyHandler(proxyConfig.getSocketAddress());
+                    }
+                    return socks4ProxyHandler;
+                }
+                case SOCKS5 -> {
+                    Socks5ProxyHandler socks5ProxyHandler = null;
+                    if (proxyConfig.isProxyAuth()) {
+                        socks5ProxyHandler = new Socks5ProxyHandler(
+                                proxyConfig.getSocketAddress(),
+                                proxyConfig.getUsername(),
+                                proxyConfig.getPassword());
+                    } else {
+                        socks5ProxyHandler = new Socks5ProxyHandler(proxyConfig.getSocketAddress());
+                    }
+                    return socks5ProxyHandler;
+                }
             }
         }
-        return proxyHandler;
+        return null;
     }
 }

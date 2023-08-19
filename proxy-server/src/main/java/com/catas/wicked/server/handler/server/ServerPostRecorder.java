@@ -5,7 +5,6 @@ import com.catas.wicked.common.bean.RequestMessage;
 import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.common.constant.ProxyConstant;
 import com.catas.wicked.common.pipeline.MessageQueue;
-import com.catas.wicked.common.util.WebUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -134,11 +133,11 @@ public class ServerPostRecorder extends ChannelInboundHandlerAdapter {
             log.error("Error recording request content.", e);
         }
 
-        boolean isFormRequest = WebUtils.isFormRequest(headerMap.get("Content-Type"));
-        if (isFormRequest) {
-            byte[] body = requestMessage.getBody();
-            System.out.println(new String(body));
-        }
+        // boolean isFormRequest = WebUtils.isFormRequest(headerMap.get("Content-Type"));
+        // if (isFormRequest) {
+        //     byte[] body = requestMessage.getBody();
+        //     System.out.println(new String(body));
+        // }
 
         // save to request tree
         requestMessage.setRequestId(requestInfo.getRequestId());

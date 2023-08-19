@@ -1,7 +1,7 @@
 package com.catas.wicked.common.config;
 
 import com.catas.wicked.common.bean.PoisonMessage;
-import com.catas.wicked.common.constant.ProxyType;
+import com.catas.wicked.common.constant.ProxyProtocol;
 import com.catas.wicked.common.pipeline.MessageQueue;
 import com.catas.wicked.common.util.AppContextUtil;
 import com.catas.wicked.common.util.ThreadPoolService;
@@ -25,8 +25,6 @@ public class ApplicationConfig {
 
     private int port = 9999;
 
-    private ProxyType proxyType = ProxyType.HTTP;
-
     private boolean handleSsl = true;
 
     private boolean recording = true;
@@ -34,6 +32,8 @@ public class ApplicationConfig {
     private int throttleLevel = 0;
 
     private int maxContentSize = 1 * 1024 * 1024;
+
+    private ExternalProxyConfig externalProxyConfig;
 
     private SslContext clientSslCtx;
     private String issuer;
@@ -46,6 +46,13 @@ public class ApplicationConfig {
     @PostConstruct
     private void init() {
         this.shutDownFlag = new AtomicBoolean(false);
+        this.externalProxyConfig = new ExternalProxyConfig();
+
+        System.setProperty("https.protocols", "TLSv1,TLSv1.1,TLSv1.2");
+        // test
+        externalProxyConfig.setProtocol(ProxyProtocol.SOCKS4);
+        externalProxyConfig.setProxyAddress("127.0.01", 10808);
+        externalProxyConfig.setUsingExternalProxy(false);
     }
 
     public void shutDownApplication() {

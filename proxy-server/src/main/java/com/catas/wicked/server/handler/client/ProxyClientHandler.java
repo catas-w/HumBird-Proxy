@@ -21,6 +21,8 @@ public class ProxyClientHandler extends ChannelInboundHandlerAdapter {
         responseList = new LinkedList<>();
     }
 
+
+
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         if (clientChannel.isOpen()) {
@@ -53,7 +55,7 @@ public class ProxyClientHandler extends ChannelInboundHandlerAdapter {
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         ctx.channel().close();
         clientChannel.close();
-        // TODO: exception handle
+        // TODO: https://i.pinimg.com/564x/67/6c/ee/676cee55deb99942ef3c46e499fec44f.jpg
         log.error("Error occurred in Proxy client.", cause);
         if (!responseList.isEmpty()) {
             synchronized (responseList) {
