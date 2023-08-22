@@ -24,10 +24,12 @@ import io.netty.handler.codec.http.HttpVersion;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.proxy.ProxyHandler;
+import io.netty.resolver.DefaultAddressResolverGroup;
 import io.netty.resolver.NoopAddressResolverGroup;
 import io.netty.util.AttributeKey;
 import io.netty.util.ReferenceCountUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -57,6 +59,7 @@ public class ProxyProcessHandler extends ChannelInboundHandlerAdapter {
     private final AttributeKey<ProxyRequestInfo> requestInfoAttributeKey =
             AttributeKey.valueOf(ProxyConstant.REQUEST_INFO);
 
+    private String curRequestId;
     public ProxyProcessHandler(ApplicationConfig applicationConfig,
                                MessageQueue messageQueue) {
         this.appConfig = applicationConfig;
@@ -76,14 +79,17 @@ public class ProxyProcessHandler extends ChannelInboundHandlerAdapter {
     }
 
     private void handleProxyData(ChannelHandlerContext ctx, Object msg, ProxyRequestInfo requestInfo)  throws Exception {
-        if (channelFuture == null || channelFuture.isDone()) {
+        if (channelFuture == null || !StringUtils.equals(curRequestId, requestInfo.getRequestId())) {
             if (requestInfo.getClientType() == ProxyRequestInfo.ClientType.NORMAL
                     && (!(msg instanceof HttpRequest))) {
                 return;
             }
 
+            curRequestId = requestInfo.getRequestId();
+            isConnected = false;
+            requestInfo.setClientConnected(false);
             Bootstrap bootstrap = new Bootstrap();
-            bootstrap.group(ctx.channel().eventLoop())
+            bootstrap.group(appConfig.getProxyLoopGroup())
                     .channel(NioSocketChannel.class)
                     .handler(new LoggingHandler(LogLevel.INFO))
                     .handler(new ChannelInitializer<NioSocketChannel>() {
@@ -95,6 +101,8 @@ public class ProxyProcessHandler extends ChannelInboundHandlerAdapter {
                                 ProxyHandler httpProxyHandler = ProxyHandlerFactory.getExternalProxyHandler(externalProxyConfig);
                                 ch.pipeline().addFirst(EXTERNAL_PROXY, httpProxyHandler);
                                 bootstrap.resolver(NoopAddressResolverGroup.INSTANCE);
+                            } else {
+                                bootstrap.resolver(DefaultAddressResolverGroup.INSTANCE);
                             }
                             ch.pipeline().addLast(CLIENT_STRATEGY,
                                     new ClientStrategyHandler(appConfig, messageQueue, requestInfo));
@@ -103,7 +111,6 @@ public class ProxyProcessHandler extends ChannelInboundHandlerAdapter {
                         }
                     });
 
-            // bootstrap.resolver(NoopAddressResolverGroup.INSTANCE);
             requestList.clear();
             channelFuture = bootstrap.connect(requestInfo.getHost(), requestInfo.getPort());
             channelFuture.addListener((ChannelFutureListener) future -> {

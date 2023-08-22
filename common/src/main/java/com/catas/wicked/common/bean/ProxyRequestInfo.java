@@ -35,6 +35,8 @@ public class ProxyRequestInfo {
 
     private boolean isOversize;
 
+    private boolean isClientConnected;
+
     public boolean isNewAndReset() {
         boolean res = this.isNewRequest;
         this.isNewRequest = false;

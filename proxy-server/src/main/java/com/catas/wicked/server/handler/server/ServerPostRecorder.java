@@ -91,7 +91,7 @@ public class ServerPostRecorder extends ChannelInboundHandlerAdapter {
         requestMessage.setMethod("UNKNOWN");
         requestMessage.setHeaders(new HashMap<>());
         requestMessage.setStartTime(requestInfo.getRequestStartTime());
-        requestMessage.setEndTime(System.currentTimeMillis());
+        requestMessage.setEndTime(requestInfo.getRequestEndTime());
         messageQueue.pushMsg(requestMessage);
 
         log.info(">>>> Request send[encrypted]: {} ID: {} >>>>", url, requestInfo.getRequestId());
@@ -142,7 +142,7 @@ public class ServerPostRecorder extends ChannelInboundHandlerAdapter {
         // save to request tree
         requestMessage.setRequestId(requestInfo.getRequestId());
         requestMessage.setStartTime(requestInfo.getRequestStartTime());
-        requestMessage.setEndTime(System.currentTimeMillis());
+        requestMessage.setEndTime(requestInfo.getRequestEndTime());
         messageQueue.pushMsg(requestMessage);
 
         log.info(">>>> Request send[decoded]: {} ID: {} >>>>", uri, requestInfo.getRequestId());

@@ -89,4 +89,22 @@ public class RearHttpAggregator extends HttpObjectAggregator {
     public boolean acceptInboundMessage(Object msg) throws Exception {
         return super.acceptInboundMessage(msg);
     }
+
+    @Override
+    protected FullHttpMessage beginAggregation(HttpMessage start, ByteBuf content) throws Exception {
+        // Bug-fix: HttpAggregator removes Transfer-Encoding header
+        // boolean isChunked = HttpUtil.isTransferEncodingChunked(start);
+        // FullHttpMessage res = super.beginAggregation(start, content);
+        // if (isChunked) {
+        //     HttpUtil.setTransferEncodingChunked(start, true);
+        // }
+        // return res;
+        return super.beginAggregation(start, content);
+    }
+
+    @Override
+    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+        System.out.println(33);
+        super.channelRead(ctx, msg);
+    }
 }

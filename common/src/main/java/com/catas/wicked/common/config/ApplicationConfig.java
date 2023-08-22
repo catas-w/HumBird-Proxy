@@ -1,10 +1,11 @@
 package com.catas.wicked.common.config;
 
 import com.catas.wicked.common.bean.PoisonMessage;
-import com.catas.wicked.common.constant.ProxyProtocol;
 import com.catas.wicked.common.pipeline.MessageQueue;
 import com.catas.wicked.common.util.AppContextUtil;
 import com.catas.wicked.common.util.ThreadPoolService;
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.handler.ssl.SslContext;
 import lombok.Data;
 import org.springframework.context.annotation.Configuration;
@@ -35,6 +36,11 @@ public class ApplicationConfig {
 
     private ExternalProxyConfig externalProxyConfig;
 
+    private EventLoopGroup proxyLoopGroup;
+
+    /**
+     * ssl configs
+     */
     private SslContext clientSslCtx;
     private String issuer;
     private Date caNotBefore;
@@ -47,12 +53,13 @@ public class ApplicationConfig {
     private void init() {
         this.shutDownFlag = new AtomicBoolean(false);
         this.externalProxyConfig = new ExternalProxyConfig();
+        this.proxyLoopGroup = new NioEventLoopGroup(2);
 
-        System.setProperty("https.protocols", "TLSv1,TLSv1.1,TLSv1.2");
         // test
-        externalProxyConfig.setProtocol(ProxyProtocol.SOCKS4);
-        externalProxyConfig.setProxyAddress("127.0.01", 10808);
-        externalProxyConfig.setUsingExternalProxy(false);
+        System.setProperty("https.protocols", "TLSv1,TLSv1.1,TLSv1.2");
+        // externalProxyConfig.setProtocol(ProxyProtocol.SOCKS4);
+        // externalProxyConfig.setProxyAddress("127.0.0.1", 10808);
+        // externalProxyConfig.setUsingExternalProxy(true);
     }
 
     public void shutDownApplication() {

@@ -21,9 +21,6 @@ import static com.catas.wicked.common.constant.NettyConstant.*;
 /**
  * decide which handlers to use when sending new request
  * remote <-<-<- this
- * [Normal]: [externalProxyHandler] - [sslHandler] - httpCodec - [httpAggregator] - responseRecorder - (strategyHandler) - proxyClientHandler
- * [Tunnel]: [externalProxyHandler] - (strategyHandler) - proxyClientHandler
- *
  * [Normal]: [externalProxyHandler] - [sslHandler] - [httpCodec] - strategyHandler - proxyClientHandler -
  *           [aggregator] - postRecorder
  * [Tunnel]: [externalProxyHandler] - strategyHandler - proxyClientHandler - postRecorder
@@ -51,7 +48,10 @@ public class ClientStrategyHandler extends ChannelDuplexHandler {
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        // System.out.println("** Client inactive **");
+        if (ctx.channel().hasAttr(requestInfoKey)) {
+            log.info("** Client inactive: {} **", ctx.channel().attr(requestInfoKey).get().getRequestId());
+            ctx.channel().attr(requestInfoKey).get().setClientConnected(true);
+        }
         super.channelInactive(ctx);
     }
 
@@ -81,6 +81,13 @@ public class ClientStrategyHandler extends ChannelDuplexHandler {
         super.write(ctx, msg, promise);
     }
 
+    @Override
+    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+        if (ctx.channel().hasAttr(requestInfoKey)) {
+            ctx.channel().attr(requestInfoKey).get().setResponseTime();
+        }
+        super.channelRead(ctx, msg);
+    }
 
     public void refreshStrategy(ChannelHandlerContext ctx) throws Exception {
         if (!StringUtils.equals(currentRequestId, requestInfo.getRequestId())) {
@@ -90,20 +97,6 @@ public class ClientStrategyHandler extends ChannelDuplexHandler {
             }
             currentRequestId = requestInfo.getRequestId();
             Channel ch = ctx.channel();
-
-            // update external proxy strategy
-            // if (requestInfo.isUsingExternalProxy()) {
-            //     // add external proxy handler
-            //     ExternalProxyConfig externalProxyConfig = appConfig.getExternalProxyConfig();
-            //     ProxyHandler httpProxyHandler = ProxyHandlerFactory.getExternalProxyHandler(externalProxyConfig);
-            //     try {
-            //         ctx.pipeline().addFirst(EXTERNAL_PROXY, httpProxyHandler);
-            //     } catch (IllegalArgumentException ignored) {}
-            // } else {
-            //     try {
-            //         ctx.pipeline().remove(EXTERNAL_PROXY);
-            //     } catch (NoSuchElementException ignored ) {}
-            // }
 
             // update record strategy
             if (requestInfo.getClientType() == ProxyRequestInfo.ClientType.NORMAL) {

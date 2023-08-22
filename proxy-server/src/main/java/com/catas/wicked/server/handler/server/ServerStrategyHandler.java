@@ -9,8 +9,9 @@ import com.catas.wicked.common.util.WebUtils;
 import com.catas.wicked.server.cert.CertPool;
 import com.catas.wicked.server.handler.RearHttpAggregator;
 import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.channel.ChannelPromise;
 import io.netty.handler.codec.DecoderException;
 import io.netty.handler.codec.DecoderResult;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
@@ -22,7 +23,6 @@ import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.codec.http.HttpVersion;
-import io.netty.handler.codec.http.LastHttpContent;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.util.Attribute;
@@ -41,19 +41,13 @@ import static com.catas.wicked.common.constant.NettyConstant.*;
  * Http: 全部解码
  * Https: 仅在 isRecord && handleSSl && certOK 时解码，其他情况均发送原始数据块
  * ---
- * http record [NORMAL]:    httpCodec - strategyHandler - [aggregator] - recordHandler - proxyProcessHandler
- * http un-record [NORMAL]: httpCodec - strategyHandler - recordHandler - proxyProcessHandler
- * ssl record [NORMAL]:     httpCodec - [sslHandler] - strategyHandler - [aggregator] - recordHandler - proxyProcessHandler
- * ssl un-record [TUNNEL]:  strategyHandler - recordHandler - proxyProcessHandler
- *
- *
  * http record [NORMAL]:    httpCodec - strategyHandler - proxyProcessHandler - [aggregator] - postRecorder
  * http un-record [NORMAL]: httpCodec - strategyHandler - proxyProcessHandler - postRecorder
  * ssl record [NORMAL]:     [sslHandler] - httpCodec - strategyHandler - proxyProcessHandler - [aggregator] - postRecorder
  * ssl un-record [TUNNEL]:  strategyHandler - proxyProcessHandler - postRecorder
  */
 @Slf4j
-public class ServerStrategyHandler extends ChannelInboundHandlerAdapter {
+public class ServerStrategyHandler extends ChannelDuplexHandler {
 
     private byte[] httpTagBuf;
 
@@ -72,12 +66,22 @@ public class ServerStrategyHandler extends ChannelInboundHandlerAdapter {
     }
 
     @Override
+    public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
+        // Bug-fix: HttpAggregator removes Transfer-Encoding header
+        // if (msg instanceof HttpMessage httpMessage) {
+        //     HttpHeaders headers = httpMessage.headers();
+        //     log.info("Resp headers: {}", headers.entries().size());
+        // }
+        super.write(ctx, msg, promise);
+    }
+
+    @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         if (msg instanceof HttpRequest) {
             handleHttpRequest(ctx, msg);
         } else if (msg instanceof HttpContent) {
-            // TODO 处理 head 后的 LastContent
-            if (status == ServerStatus.AFTER_CONNECT && msg instanceof LastHttpContent) {
+            // 处理 head 后的 LastContent
+            if (status == ServerStatus.AFTER_CONNECT) {
                 status = ServerStatus.INIT;
                 ReferenceCountUtil.release(msg);
                 return;
