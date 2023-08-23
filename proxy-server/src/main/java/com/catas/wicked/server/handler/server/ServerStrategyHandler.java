@@ -159,8 +159,9 @@ public class ServerStrategyHandler extends ChannelDuplexHandler {
         // 判断是否为新请求
         ByteBuf byteBuf = (ByteBuf) msg;
         if (byteBuf.getByte(0) == 22) {
-            // new request
-            ProxyRequestInfo requestInfo = refreshRequestInfo(ctx, null);
+            // TODO process new request
+            ProxyRequestInfo requestInfo = ctx.channel().attr(requestInfoAttributeKey).get();
+            assert requestInfo != null;
             requestInfo.setSsl(true);
             if (requestInfo.isRecording() && appConfig.isHandleSsl()) {
                 int port = ((InetSocketAddress) ctx.channel().localAddress()).getPort();

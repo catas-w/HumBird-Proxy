@@ -56,7 +56,7 @@ public class ApplicationConfig {
         this.proxyLoopGroup = new NioEventLoopGroup(2);
 
         // test
-        System.setProperty("https.protocols", "TLSv1,TLSv1.1,TLSv1.2");
+        // System.setProperty("https.protocols", "TLSv1,TLSv1.1,TLSv1.2");
         // externalProxyConfig.setProtocol(ProxyProtocol.SOCKS4);
         // externalProxyConfig.setProxyAddress("127.0.0.1", 10808);
         // externalProxyConfig.setUsingExternalProxy(true);
