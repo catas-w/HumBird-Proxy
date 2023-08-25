@@ -49,7 +49,7 @@ public class ClientStrategyHandler extends ChannelDuplexHandler {
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         if (ctx.channel().hasAttr(requestInfoKey)) {
-            log.info("** Client inactive: {} **", ctx.channel().attr(requestInfoKey).get().getRequestId());
+            // log.info("** Client inactive: {} **", ctx.channel().attr(requestInfoKey).get().getRequestId());
             ctx.channel().attr(requestInfoKey).get().setClientConnected(true);
         }
         super.channelInactive(ctx);

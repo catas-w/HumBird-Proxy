@@ -157,4 +157,22 @@ public class ProxyProcessHandler extends ChannelInboundHandlerAdapter {
             }
         }
     }
+
+    @Override
+    public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
+        log.info("Server channel closing.");
+        if (channelFuture != null) {
+            channelFuture.channel().close();
+        }
+        ctx.channel().close();
+    }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        log.error("Server channel unexpected error, closing...");
+        if (channelFuture != null) {
+            channelFuture.channel().close();
+        }
+        ctx.channel().close();
+    }
 }

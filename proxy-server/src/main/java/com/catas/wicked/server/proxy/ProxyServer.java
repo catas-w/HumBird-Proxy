@@ -8,6 +8,7 @@ import com.catas.wicked.server.handler.server.ProxyServerInitializer;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
+import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
@@ -62,8 +63,17 @@ public class ProxyServer {
         } catch (InterruptedException e) {
             log.info("Proxy server interrupt: {}", e.getMessage());
         } finally {
-            bossGroup.shutdownGracefully();
-            workGroup.shutdownGracefully();
+            EventLoopGroup proxyLoopGroup = applicationConfig.getProxyLoopGroup();
+            if (!(proxyLoopGroup.isShutdown() || proxyLoopGroup.isShuttingDown())) {
+                proxyLoopGroup.shutdownGracefully();
+            }
+            if (!(bossGroup.isShutdown() || bossGroup.isShuttingDown())) {
+                bossGroup.shutdownGracefully();
+            }
+            if (!(workGroup.isShutdown() || workGroup.isShuttingDown())) {
+                workGroup.shutdownGracefully();
+            }
+
         }
     }
 
@@ -76,7 +86,6 @@ public class ProxyServer {
             applicationConfig.setClientSslCtx(contextBuilder.build());
             caCert = certService.loadCert((new ClassPathResource("/cert/cert.crt").getInputStream()));
             caPriKey = certService.loadPriKey((new ClassPathResource("/cert/private.key").getInputStream()));
-            //读取CA证书使用者信息
             applicationConfig.setIssuer(certService.getSubject(caCert));
             applicationConfig.setCaNotBefore(caCert.getNotBefore());
             applicationConfig.setCaNotAfter(caCert.getNotAfter());
