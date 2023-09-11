@@ -1,44 +1,58 @@
 package com.catas.wicked.proxy;
 
+import app.supernaut.fx.ApplicationDelegate;
+import app.supernaut.fx.FxLauncher;
+import app.supernaut.fx.fxml.FxmlLoaderFactory;
 import com.catas.wicked.common.config.ApplicationConfig;
-import com.catas.wicked.common.util.AppContextUtil;
-import com.catas.wicked.proxy.gui.ApplicationView;
-import com.catas.wicked.proxy.gui.CustomLoadingView;
-import de.felixroske.jfxsupport.AbstractJavaFxApplicationSupport;
-import javafx.scene.image.Image;
+import com.catas.wicked.proxy.message.MessageTree;
+import com.catas.wicked.server.proxy.ProxyServer;
+import io.micronaut.context.annotation.Import;
+import jakarta.inject.Inject;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ConfigurableApplicationContext;
-
-import java.util.Collection;
+import jakarta.inject.Singleton;
 
 @Slf4j
-@SpringBootApplication(scanBasePackages = {"com.catas.wicked.proxy", "com.catas.wicked.common", "com.catas.wicked.server"})
-//@SpringBootApplication(scanBasePackages = {"com.catas.wicked.proxy", "com.catas.wicked.common"})
-public class WickedProxyApplication extends AbstractJavaFxApplicationSupport {
+@Import(packages = {
+        "com.catas.wicked.server.proxy",
+        "com.catas.wicked.server.cert",
+        "com.catas.wicked.server.cert.spi",
+        "com.catas.wicked.server.handler.server"
+})
+@Singleton
+public class WickedProxyApplication implements ApplicationDelegate {
 
+    @Inject
+    private ApplicationConfig applicationConfig;
+
+    @Inject
+    private FxmlLoaderFactory loaderFactory;
+
+    @Inject
+    private MessageTree messageTree;
+
+    @Inject
+    private ProxyServer proxyServer;
 
     public static void main(String[] args) {
-        launch(WickedProxyApplication.class, ApplicationView.class, new CustomLoadingView(), args);
-    }
-
-
-    @Override
-    public void beforeInitialView(Stage stage, ConfigurableApplicationContext ctx) {
-        stage.initStyle(StageStyle.DECORATED);
+        FxLauncher.find().launch(args, WickedProxyApplication.class);
     }
 
     @Override
-    public Collection<Image> loadDefaultIcons() {
-        return super.loadDefaultIcons();
+    public void start(Stage primaryStage) throws Exception {
+        FXMLLoader loader = loaderFactory.get(WickedProxyApplication.class.getResource("/fxml/application.fxml"));
+        Parent root = loader.load();
+        Scene scene = new Scene(root, 900, 650);
+        primaryStage.setScene(scene);
+        primaryStage.show();
     }
 
     @Override
     public void stop() throws Exception {
-        log.info("---- Stopping ----");
-        ApplicationConfig appConfig = AppContextUtil.getBean(ApplicationConfig.class);
-        appConfig.shutDownApplication();
+        log.info("---- Stopping Application ----");
+        applicationConfig.shutDownApplication();
     }
 }

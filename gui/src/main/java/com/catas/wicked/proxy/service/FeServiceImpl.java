@@ -1,15 +1,15 @@
 package com.catas.wicked.proxy.service;
 
 import com.catas.wicked.common.bean.FeRequestInfo;
+import jakarta.inject.Singleton;
 import javafx.scene.web.WebEngine;
 import lombok.extern.slf4j.Slf4j;
 import netscape.javascript.JSObject;
-import org.springframework.stereotype.Service;
 
 import java.util.Base64;
 
 @Slf4j
-@Service("feService")
+@Singleton
 public class FeServiceImpl implements FeService{
 
     private WebEngine engine;

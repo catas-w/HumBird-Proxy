@@ -4,7 +4,8 @@ import com.catas.wicked.common.bean.RequestMessage;
 import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.common.pipeline.MessageQueue;
 import com.jfoenix.controls.JFXButton;
-import de.felixroske.jfxsupport.FXMLController;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -23,9 +24,7 @@ import javafx.stage.Window;
 import lombok.SneakyThrows;
 import org.kordamp.ikonli.javafx.FontIcon;
 
-import javax.annotation.Resource;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
@@ -33,7 +32,7 @@ import java.util.ResourceBundle;
 import static com.catas.wicked.common.constant.StyleConstant.BTN_ACTIVE;
 import static com.catas.wicked.common.constant.StyleConstant.BTN_INACTIVE;
 
-@FXMLController
+@Singleton
 public class ButtonBarController implements Initializable {
 
     public JFXButton markerBtn;
@@ -47,15 +46,15 @@ public class ButtonBarController implements Initializable {
 
     private Dialog proxyConfigDialog;
 
-    @Resource
+    @Inject
     private MessageQueue queue;
 
-    @Resource
+    @Inject
     private ApplicationConfig appConfig;
 
     private int index = 0;
 
-    @Resource
+    @Inject
     private DetailWebViewController webViewController;
 
     @SneakyThrows

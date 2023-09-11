@@ -1,14 +1,19 @@
 package com.catas.wicked.server;
 
+import com.catas.wicked.server.proxy.ProxyServer;
+// import io.micronaut.runtime.Micronaut;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @Slf4j
-@SpringBootApplication(scanBasePackages = {"com.catas.wicked.server", "com.catas.wicked.common"})
+@Singleton
 public class HttpProxyApplication {
 
+    @Inject
+    private static ProxyServer proxyServer;
+
     public static void main(String[] args) {
-        SpringApplication.run(HttpProxyApplication.class, args);
+        // Micronaut.run(HttpProxyApplication.class, args);
     }
 }

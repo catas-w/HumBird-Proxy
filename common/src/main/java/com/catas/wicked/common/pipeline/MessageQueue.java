@@ -1,12 +1,12 @@
 package com.catas.wicked.common.pipeline;
 
 import com.catas.wicked.common.bean.BaseMessage;
-import org.springframework.stereotype.Component;
+import jakarta.inject.Singleton;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-@Component
+@Singleton
 public class MessageQueue {
 
     private final BlockingQueue<BaseMessage> queue;

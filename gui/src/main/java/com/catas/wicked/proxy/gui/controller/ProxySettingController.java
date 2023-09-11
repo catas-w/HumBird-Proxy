@@ -1,14 +1,14 @@
 package com.catas.wicked.proxy.gui.controller;
 
 import com.jfoenix.controls.JFXButton;
-import de.felixroske.jfxsupport.FXMLController;
+import jakarta.inject.Singleton;
 import javafx.application.Platform;
 import javafx.fxml.Initializable;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
-@FXMLController
+@Singleton
 public class ProxySettingController implements Initializable {
 
     public JFXButton proxyCancelBtn;

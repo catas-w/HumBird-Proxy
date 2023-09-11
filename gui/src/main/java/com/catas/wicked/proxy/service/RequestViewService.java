@@ -7,14 +7,14 @@ import com.catas.wicked.common.util.BrotliUtils;
 import com.catas.wicked.common.util.GzipUtils;
 import com.catas.wicked.proxy.gui.controller.DetailTabController;
 import com.catas.wicked.proxy.gui.controller.DetailWebViewController;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import javafx.scene.web.WebEngine;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.entity.ContentType;
 import org.ehcache.Cache;
-import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -25,21 +25,21 @@ import java.util.Map;
  * Update gui of tab-pane
  */
 @Slf4j
-@Service
+@Singleton
 public class RequestViewService {
 
-    @Resource
+    @Inject
     private DetailTabController detailTabController;
 
-    @Resource
+    @Inject
     private DetailWebViewController detailWebViewController;
 
-    @Resource
+    @Inject
     private Cache<String, RequestMessage> requestCache;
 
     private String currentRequestId;
 
-    @Resource
+    @Inject
     private FeService feService;
 
     private static final String REQ_HEADER = "requestHeaders";

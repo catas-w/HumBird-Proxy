@@ -2,23 +2,24 @@ package com.catas.wicked.common.config;
 
 import com.catas.wicked.common.bean.PoisonMessage;
 import com.catas.wicked.common.pipeline.MessageQueue;
-import com.catas.wicked.common.util.AppContextUtil;
 import com.catas.wicked.common.util.ThreadPoolService;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.handler.ssl.SslContext;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import lombok.Data;
-import org.springframework.context.annotation.Configuration;
 
-import javax.annotation.PostConstruct;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Data
-@Configuration
-public class ApplicationConfig {
+@Singleton
+public class ApplicationConfig implements AutoCloseable {
 
     private AtomicBoolean shutDownFlag;
 
@@ -49,6 +50,9 @@ public class ApplicationConfig {
     private PrivateKey serverPriKey;
     private PublicKey serverPubKey;
 
+    @Inject
+    private MessageQueue messageQueue;
+
     @PostConstruct
     private void init() {
         this.shutDownFlag = new AtomicBoolean(false);
@@ -64,8 +68,14 @@ public class ApplicationConfig {
 
     public void shutDownApplication() {
         shutDownFlag.compareAndSet(false, true);
-        MessageQueue messageQueue = AppContextUtil.getBean(MessageQueue.class);
+        // MessageQueue messageQueue = AppContextUtil.getBean(MessageQueue.class);
         messageQueue.pushMsg(new PoisonMessage());
         ThreadPoolService.getInstance().shutdown();
+    }
+
+    @PreDestroy
+    @Override
+    public void close() throws Exception {
+        shutDownApplication();
     }
 }

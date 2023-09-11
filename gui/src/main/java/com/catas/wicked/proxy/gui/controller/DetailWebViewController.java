@@ -1,6 +1,7 @@
 package com.catas.wicked.proxy.gui.controller;
 
-import de.felixroske.jfxsupport.FXMLController;
+import com.catas.wicked.proxy.WickedProxyApplication;
+import jakarta.inject.Singleton;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Worker.State;
@@ -12,9 +13,8 @@ import javafx.scene.web.WebView;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import static org.apache.commons.lang3.Validate.notNull;
 
-@FXMLController
+@Singleton
 public class DetailWebViewController implements Initializable {
 
     @FXML
@@ -36,8 +36,7 @@ public class DetailWebViewController implements Initializable {
             }
         });
 
-        URL link = getClass().getResource("/html/request-detail.html");
-        notNull(link);
+        URL link = WickedProxyApplication.class.getResource("/html/request-detail.html");
         engine.load(link.toExternalForm());
     }
 }

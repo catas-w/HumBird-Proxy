@@ -2,7 +2,8 @@ package com.catas.wicked.proxy.gui.controller;
 
 import com.catas.wicked.proxy.gui.componet.RequestCell;
 import com.catas.wicked.proxy.gui.componet.ViewCellFactory;
-import de.felixroske.jfxsupport.FXMLController;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -14,12 +15,11 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.paint.Color;
 import org.kordamp.ikonli.javafx.FontIcon;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
-@FXMLController
+@Singleton
 public class RequestViewController implements Initializable {
 
     @FXML
@@ -39,7 +39,7 @@ public class RequestViewController implements Initializable {
     @FXML
     private TreeItem root;
 
-    @Autowired
+    @Inject
     private ViewCellFactory cellFactory;
 
     public TreeItem getTreeRoot() {

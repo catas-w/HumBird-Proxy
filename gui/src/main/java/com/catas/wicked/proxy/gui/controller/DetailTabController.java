@@ -2,7 +2,7 @@ package com.catas.wicked.proxy.gui.controller;
 
 import com.catas.wicked.common.constant.DetailArea;
 import com.jfoenix.controls.JFXTextArea;
-import de.felixroske.jfxsupport.FXMLController;
+import jakarta.inject.Singleton;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-@FXMLController
+@Singleton
 public class DetailTabController implements Initializable {
 
     @FXML

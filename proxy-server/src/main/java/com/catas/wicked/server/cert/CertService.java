@@ -1,10 +1,10 @@
 package com.catas.wicked.server.cert;
 
 import com.catas.wicked.server.cert.spi.CertGenerator;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -42,14 +42,14 @@ import static com.catas.wicked.common.constant.ProxyConstant.PRIVATE_FILE_PATTER
 import static com.catas.wicked.common.constant.ProxyConstant.START_DATE;
 import static com.catas.wicked.common.constant.ProxyConstant.SUBJECT;
 
-@Service
+@Singleton
 public class CertService {
 
     private final KeyFactory keyFactory;
 
     private CertGenerator certGenerator;
 
-    @Autowired
+    @Inject
     public void setCertGenerator(CertGenerator certGenerator) {
         this.certGenerator = certGenerator;
     }

@@ -11,22 +11,19 @@ import com.catas.wicked.proxy.gui.controller.RequestViewController;
 import com.catas.wicked.common.util.ThreadPoolService;
 import com.catas.wicked.common.util.WebUtils;
 import io.netty.handler.codec.http.HttpMethod;
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import javafx.application.Platform;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TreeItem;
-import javafx.scene.paint.Color;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.ehcache.Cache;
-import org.kordamp.ikonli.javafx.FontIcon;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import javax.annotation.PostConstruct;
 import java.util.List;
 
 @Slf4j
-@Component
+@Singleton
 public class MessageTree {
 
     private final TreeNode root = new TreeNode();
@@ -35,20 +32,20 @@ public class MessageTree {
 
     private Thread worker;
 
-    @Autowired
+    @Inject
     private ApplicationConfig appConfig;
 
-    @Autowired
+    @Inject
     private MessageQueue messageQueue;
 
-    @Autowired
+    @Inject
     private RequestViewController requestViewController;
 
-    @Autowired
+    @Inject
     private Cache<String, RequestMessage> requestCache;
 
     @PostConstruct
-    public void init() {
+    private void init() {
         // fetch data from queue and add to message tree
         latestNode = root;
         worker = new Thread(() -> {

@@ -1,12 +1,12 @@
 package com.catas.wicked.proxy.gui.controller;
 
-import de.felixroske.jfxsupport.FXMLController;
+import jakarta.inject.Singleton;
 import javafx.fxml.Initializable;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
-@FXMLController
+@Singleton
 public class AppController implements Initializable {
 
     @Override

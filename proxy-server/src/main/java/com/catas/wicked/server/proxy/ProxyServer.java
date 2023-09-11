@@ -1,6 +1,7 @@
 package com.catas.wicked.server.proxy;
 
 import com.catas.wicked.common.util.ThreadPoolService;
+import com.catas.wicked.server.HttpProxyApplication;
 import com.catas.wicked.server.cert.CertPool;
 import com.catas.wicked.server.cert.CertService;
 import com.catas.wicked.common.config.ApplicationConfig;
@@ -17,31 +18,29 @@ import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import io.netty.util.internal.logging.InternalLoggerFactory;
 import io.netty.util.internal.logging.JdkLoggerFactory;
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.stereotype.Component;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 
 
 @Slf4j
-@Component
+@Singleton
 public class ProxyServer {
 
-    @Resource
+    @Inject
     private ApplicationConfig applicationConfig;
 
-    @Resource
+    @Inject
     private CertService certService;
 
-    @Resource
+    @Inject
     private CertPool certPool;
 
-    @Resource
+    @Inject
     private ProxyServerInitializer proxyServerInitializer;
 
     public ProxyServer() {
@@ -87,8 +86,8 @@ public class ProxyServer {
         PrivateKey caPriKey;
         try {
             applicationConfig.setClientSslCtx(contextBuilder.build());
-            caCert = certService.loadCert((new ClassPathResource("/cert/cert.crt").getInputStream()));
-            caPriKey = certService.loadPriKey((new ClassPathResource("/cert/private.key").getInputStream()));
+            caCert = certService.loadCert(HttpProxyApplication.class.getResource("/cert/cert.crt").openStream());
+            caPriKey = certService.loadPriKey(HttpProxyApplication.class.getResource("/cert/private.key").openStream());
             applicationConfig.setIssuer(certService.getSubject(caCert));
             applicationConfig.setCaNotBefore(caCert.getNotBefore());
             applicationConfig.setCaNotAfter(caCert.getNotAfter());

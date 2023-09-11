@@ -1,22 +1,22 @@
 package com.catas.wicked.server.cert;
 
 import com.catas.wicked.common.config.ApplicationConfig;
-import org.springframework.stereotype.Component;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 
-import javax.annotation.Resource;
 import java.security.cert.X509Certificate;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-@Component
+@Singleton
 public class CertPool {
     private final Map<Integer, Map<String, X509Certificate>> certCache = new WeakHashMap<>();
 
-    @Resource
+    @Inject
     private ApplicationConfig applicationConfig;
 
-    @Resource
+    @Inject
     private CertService certService;
 
     public X509Certificate getCert(Integer port, String host)

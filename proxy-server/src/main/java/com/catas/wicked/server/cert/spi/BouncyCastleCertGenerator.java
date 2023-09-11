@@ -1,5 +1,6 @@
 package com.catas.wicked.server.cert.spi;
 
+import jakarta.inject.Singleton;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x509.BasicConstraints;
 import org.bouncycastle.asn1.x509.Extension;
@@ -12,7 +13,6 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
-import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
 import java.security.KeyPair;
@@ -27,7 +27,7 @@ import java.util.stream.Stream;
 
 import static com.catas.wicked.common.constant.ProxyConstant.SIGNATURE;
 
-@Service("certGenerator")
+@Singleton
 public class BouncyCastleCertGenerator implements CertGenerator{
 
 

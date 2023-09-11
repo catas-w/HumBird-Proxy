@@ -6,25 +6,24 @@ import com.catas.wicked.server.cert.CertPool;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import io.netty.handler.codec.http.HttpServerCodec;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
-
-import javax.annotation.Resource;
 
 import static com.catas.wicked.common.constant.NettyConstant.*;
 
 
 @Slf4j
-@Component
+@Singleton
 public class ProxyServerInitializer extends ChannelInitializer {
 
-    @Resource(name = "applicationConfig")
+    @Inject
     private ApplicationConfig appConfig;
 
-    @Resource
+    @Inject
     private CertPool certPool;
 
-    @Resource
+    @Inject
     private MessageQueue messageQueue;
 
     @Override

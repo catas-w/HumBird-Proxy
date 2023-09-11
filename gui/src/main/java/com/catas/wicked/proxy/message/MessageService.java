@@ -7,27 +7,26 @@ import com.catas.wicked.common.bean.ResponseMessage;
 import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.common.pipeline.MessageQueue;
 import com.catas.wicked.common.util.ThreadPoolService;
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 import org.ehcache.Cache;
-import org.springframework.stereotype.Component;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
 
 @Slf4j
-@Component
+@Singleton
 public class MessageService {
 
-    @Resource(name = "applicationConfig")
+    @Inject
     private ApplicationConfig appConfig;
 
-    @Resource
+    @Inject
     private MessageQueue messageQueue;
 
-    @Resource
+    @Inject
     private Cache<String, RequestMessage> requestCache;
 
-    @Resource
+    @Inject
     private MessageTree messageTree;
 
     @PostConstruct
