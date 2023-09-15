@@ -1,8 +1,8 @@
 package com.catas.wicked.proxy.service;
 
 import com.catas.wicked.common.bean.FeRequestInfo;
-import com.catas.wicked.common.bean.RequestMessage;
-import com.catas.wicked.common.bean.ResponseMessage;
+import com.catas.wicked.common.bean.message.RequestMessage;
+import com.catas.wicked.common.bean.message.ResponseMessage;
 import com.catas.wicked.common.util.BrotliUtils;
 import com.catas.wicked.common.util.GzipUtils;
 import com.catas.wicked.proxy.gui.controller.DetailTabController;

@@ -1,4 +1,4 @@
-package com.catas.wicked.common.bean;
+package com.catas.wicked.common.bean.message;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;

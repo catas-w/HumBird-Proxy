@@ -1,7 +1,7 @@
 package com.catas.wicked.server.handler.server;
 
 import com.catas.wicked.common.bean.ProxyRequestInfo;
-import com.catas.wicked.common.bean.RequestMessage;
+import com.catas.wicked.common.bean.message.RequestMessage;
 import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.common.pipeline.MessageQueue;
 import com.catas.wicked.common.util.ThreadPoolService;

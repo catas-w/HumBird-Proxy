@@ -60,6 +60,14 @@
             <TreeItem fx:id="root" expanded="true" value="path"/>
         </TreeView>
         <ListView fx:id="reqListView" prefHeight="200.0" prefWidth="200.0" visible="false"/>
+        <fx:define>
+            <ContextMenu fx:id="contextMenu">
+                <items>
+                    <MenuItem onAction="#removeItem" text="Remove"/>
+                    <MenuItem text="Resend"/>
+                </items>
+            </ContextMenu>
+        </fx:define>
     </StackPane>
 
 </VBox>

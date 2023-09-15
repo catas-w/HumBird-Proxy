@@ -1,6 +1,6 @@
 package com.catas.wicked.common.config;
 
-import com.catas.wicked.common.bean.RequestMessage;
+import com.catas.wicked.common.bean.message.RequestMessage;
 import com.catas.wicked.common.util.WebUtils;
 import io.micronaut.context.annotation.Bean;
 import io.micronaut.context.annotation.Factory;

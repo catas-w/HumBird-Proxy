@@ -1,8 +1,9 @@
 package com.catas.wicked.proxy.gui.controller;
 
-import com.catas.wicked.common.bean.RequestMessage;
+import com.catas.wicked.common.bean.message.RequestMessage;
 import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.common.pipeline.MessageQueue;
+import com.catas.wicked.common.util.IdUtil;
 import com.jfoenix.controls.JFXButton;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
@@ -79,6 +80,8 @@ public class ButtonBarController implements Initializable {
 
     private void testTreeItem() {
         ArrayList<String> list = new ArrayList<>();
+        list.add("GET https://www.google.com/index/1");
+        list.add("GET https://www.google.com/index/2");
         list.add("GET https://www.google.com/index/page/1");
         list.add("GET https://www.google.com/index/page/2");
         list.add("POST https://www.google.com/index/page/3");
@@ -97,6 +100,7 @@ public class ButtonBarController implements Initializable {
             String url = list.get(index % (list.size() - 1));
             String[] split = url.split(" ");
             RequestMessage msg = new RequestMessage(split[1]);
+            msg.setRequestId(IdUtil.getId());
             msg.setMethod(split[0]);
 
             queue.pushMsg(msg);

@@ -1,5 +1,6 @@
 package com.catas.wicked.proxy.gui.componet;
 
+import com.catas.wicked.common.bean.RequestCell;
 import com.catas.wicked.proxy.service.RequestViewService;
 import javafx.animation.FadeTransition;
 import javafx.beans.InvalidationListener;
@@ -58,7 +59,7 @@ public class RequestViewTreeCell<T> extends TreeCell<T> {
             TreeItem<T> treeItem = getTreeItem();
             if (treeItem != null && requestViewService != null) {
                 RequestCell cell = (RequestCell) treeItem.getValue();
-                // System.out.println("Clicked " + cell.getPath());
+                System.out.println("Clicked " + cell.getFullPath());
                 requestViewService.updateView(cell.getRequestId());
             }
         });

@@ -1,5 +1,6 @@
 package com.catas.wicked.proxy.gui.componet;
 
+import com.catas.wicked.common.bean.RequestCell;
 import com.catas.wicked.proxy.service.RequestViewService;
 import javafx.animation.FadeTransition;
 import javafx.scene.control.Label;
@@ -27,7 +28,7 @@ public class RequestViewListCell<T> extends ListCell<T> {
 
         this.setOnMouseClicked(e -> {
             if (this.requestCell != null && requestViewService != null) {
-                // System.out.println("clicked list cell: " + requestCell.getPath());
+                System.out.println("clicked list cell: " + requestCell.getFullPath());
                 requestViewService.updateView(requestCell.getRequestId());
             }
         });

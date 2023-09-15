@@ -1,4 +1,4 @@
-package com.catas.wicked.common.bean;
+package com.catas.wicked.common.bean.message;
 
 import lombok.Data;
 
@@ -22,6 +22,7 @@ public class BaseMessage implements Serializable {
         REQUEST_CONTENT,
         RESPONSE,
         RESPONSE_CONTENT,
-        POISON
+        POISON,
+        DELETE,
     }
 }

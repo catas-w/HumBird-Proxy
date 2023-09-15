@@ -1,4 +1,4 @@
-package com.catas.wicked.proxy.gui.componet;
+package com.catas.wicked.common.bean;
 
 import io.netty.handler.codec.http.HttpMethod;
 import lombok.Data;
@@ -13,6 +13,8 @@ public class RequestCell {
     private String requestId;
 
     private String path;
+
+    private String fullPath;
 
     private String method;
 

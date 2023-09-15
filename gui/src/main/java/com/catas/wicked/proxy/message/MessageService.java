@@ -1,9 +1,10 @@
 package com.catas.wicked.proxy.message;
 
-import com.catas.wicked.common.bean.BaseMessage;
-import com.catas.wicked.common.bean.PoisonMessage;
-import com.catas.wicked.common.bean.RequestMessage;
-import com.catas.wicked.common.bean.ResponseMessage;
+import com.catas.wicked.common.bean.message.BaseMessage;
+import com.catas.wicked.common.bean.message.DeleteMessage;
+import com.catas.wicked.common.bean.message.PoisonMessage;
+import com.catas.wicked.common.bean.message.RequestMessage;
+import com.catas.wicked.common.bean.message.ResponseMessage;
 import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.common.pipeline.MessageQueue;
 import com.catas.wicked.common.util.ThreadPoolService;
@@ -52,31 +53,49 @@ public class MessageService {
             throw new InterruptedException();
         }
 
-        if (msg.getType() == BaseMessage.MessageType.REQUEST) {
-            messageTree.add((RequestMessage) msg);
-        } else if (msg.getType() == BaseMessage.MessageType.REQUEST_CONTENT) {
-            // 添加请求体
-            RequestMessage contentMsg = (RequestMessage) msg;
-            RequestMessage data = requestCache.get(contentMsg.getRequestId());
-            if (data != null) {
-                data.setBody(contentMsg.getBody());
-                requestCache.put(data.getRequestId(), data);
+        if (msg instanceof RequestMessage requestMessage) {
+            switch (requestMessage.getType()) {
+                case REQUEST -> {
+                    // put to cache
+                    requestCache.put(requestMessage.getRequestId(), requestMessage);
+                    messageTree.add(requestMessage);
+                }
+                case REQUEST_CONTENT -> {
+                    // 添加请求体
+                    RequestMessage contentMsg = (RequestMessage) msg;
+                    RequestMessage data = requestCache.get(contentMsg.getRequestId());
+                    if (data != null) {
+                        data.setBody(contentMsg.getBody());
+                        requestCache.put(data.getRequestId(), data);
+                    }
+                }
             }
-        } else if (msg.getType() == BaseMessage.MessageType.RESPONSE) {
-            ResponseMessage respMessage = (ResponseMessage) msg;
-            RequestMessage data = requestCache.get(respMessage.getRequestId());
-            if (data != null) {
-                data.setResponse(respMessage);
-                requestCache.put(data.getRequestId(), data);
+        }
+
+        if (msg instanceof ResponseMessage responseMessage) {
+            switch (responseMessage.getType()) {
+                case RESPONSE -> {
+                    ResponseMessage respMessage = (ResponseMessage) msg;
+                    RequestMessage data = requestCache.get(respMessage.getRequestId());
+                    if (data != null) {
+                        data.setResponse(respMessage);
+                        requestCache.put(data.getRequestId(), data);
+                    }
+                }
+                case RESPONSE_CONTENT -> {
+                    // 添加响应体
+                    ResponseMessage respMessage = (ResponseMessage) msg;
+                    RequestMessage data = requestCache.get(respMessage.getRequestId());
+                    if (data != null && data.getResponse() != null) {
+                        data.getResponse().setContent(respMessage.getContent());
+                        requestCache.put(data.getRequestId(), data);
+                    }
+                }
             }
-        } else if (msg.getType() == BaseMessage.MessageType.RESPONSE_CONTENT) {
-            // 添加响应体
-            ResponseMessage respMessage = (ResponseMessage) msg;
-            RequestMessage data = requestCache.get(respMessage.getRequestId());
-            if (data != null && data.getResponse() != null) {
-                data.getResponse().setContent(respMessage.getContent());
-                requestCache.put(data.getRequestId(), data);
-            }
+        }
+
+        if (msg instanceof DeleteMessage deleteMessage) {
+            messageTree.delete(deleteMessage.getRequestCell());
         }
     }
 }

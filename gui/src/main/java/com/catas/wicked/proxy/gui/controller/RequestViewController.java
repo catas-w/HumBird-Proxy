@@ -1,12 +1,16 @@
 package com.catas.wicked.proxy.gui.controller;
 
-import com.catas.wicked.proxy.gui.componet.RequestCell;
+import com.catas.wicked.common.bean.RequestCell;
+import com.catas.wicked.common.bean.message.DeleteMessage;
+import com.catas.wicked.common.pipeline.MessageQueue;
 import com.catas.wicked.proxy.gui.componet.ViewCellFactory;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
@@ -38,9 +42,12 @@ public class RequestViewController implements Initializable {
     private ListView<RequestCell> reqListView;
     @FXML
     private TreeItem root;
-
+    @FXML
+    private ContextMenu contextMenu;
     @Inject
     private ViewCellFactory cellFactory;
+    @Inject
+    private MessageQueue messageQueue;
 
     public TreeItem getTreeRoot() {
         return root;
@@ -59,6 +66,9 @@ public class RequestViewController implements Initializable {
 
         reqTreeView.setCellFactory(treeView -> cellFactory.createTreeCell(treeView));
         reqListView.setCellFactory(listView -> cellFactory.createListCell(listView));
+
+        reqTreeView.setContextMenu(contextMenu);
+        // reqListView.setCellFactory(contextMenu);
     }
 
 
@@ -96,4 +106,10 @@ public class RequestViewController implements Initializable {
         });
     }
 
+    public void removeItem(ActionEvent event) {
+        TreeItem<RequestCell> selectedItem = reqTreeView.getSelectionModel().getSelectedItem();
+        RequestCell requestCell = selectedItem.getValue();
+        selectedItem.getParent().getChildren().remove(selectedItem);
+        messageQueue.pushMsg(new DeleteMessage(requestCell));
+    }
 }

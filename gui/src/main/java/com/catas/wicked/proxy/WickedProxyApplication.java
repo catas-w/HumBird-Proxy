@@ -4,7 +4,7 @@ import app.supernaut.fx.ApplicationDelegate;
 import app.supernaut.fx.FxLauncher;
 import app.supernaut.fx.fxml.FxmlLoaderFactory;
 import com.catas.wicked.common.config.ApplicationConfig;
-import com.catas.wicked.proxy.message.MessageTree;
+import com.catas.wicked.proxy.message.MessageService;
 import com.catas.wicked.server.proxy.ProxyServer;
 import io.micronaut.context.annotation.Import;
 import jakarta.inject.Inject;
@@ -32,7 +32,7 @@ public class WickedProxyApplication implements ApplicationDelegate {
     private FxmlLoaderFactory loaderFactory;
 
     @Inject
-    private MessageTree messageTree;
+    private MessageService messageService;
 
     @Inject
     private ProxyServer proxyServer;
@@ -45,7 +45,7 @@ public class WickedProxyApplication implements ApplicationDelegate {
     public void start(Stage primaryStage) throws Exception {
         FXMLLoader loader = loaderFactory.get(WickedProxyApplication.class.getResource("/fxml/application.fxml"));
         Parent root = loader.load();
-        Scene scene = new Scene(root, 900, 650);
+        Scene scene = new Scene(root, 900, 600);
         primaryStage.setScene(scene);
         primaryStage.show();
     }

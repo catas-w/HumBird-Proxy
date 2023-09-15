@@ -1,6 +1,6 @@
 package com.catas.wicked.common.pipeline;
 
-import com.catas.wicked.common.bean.BaseMessage;
+import com.catas.wicked.common.bean.message.BaseMessage;
 import jakarta.inject.Singleton;
 
 import java.util.concurrent.BlockingQueue;

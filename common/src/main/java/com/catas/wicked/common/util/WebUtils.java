@@ -33,6 +33,10 @@ public class WebUtils {
     }
 
     public static List<String> getPathSplits(String url) {
+        return getPathSplits(url, true);
+    }
+
+    public static List<String> getPathSplits(String url, boolean addDefault) {
         List<String> list = new ArrayList<>();
         int len = url.length();
         int slashCount = 0;
@@ -57,7 +61,7 @@ public class WebUtils {
         if (left <= url.length() - 1) {
             list.add(url.substring(left));
         }
-        if (list.size() == 1) {
+        if (addDefault && list.size() == 1) {
             list.add("<Default>");
         }
         return list;

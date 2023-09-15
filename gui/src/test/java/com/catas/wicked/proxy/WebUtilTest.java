@@ -18,6 +18,12 @@ public class WebUtilTest {
                 WebUtils.getPathSplits("http://google.com/"),
                 Arrays.asList("http://google.com", "<Default>"));
         Assert.assertEquals(
+                WebUtils.getPathSplits("http://google.com", false),
+                Arrays.asList("http://google.com"));
+        Assert.assertEquals(
+                WebUtils.getPathSplits("http://google.com/", false),
+                Arrays.asList("http://google.com"));
+        Assert.assertEquals(
                 WebUtils.getPathSplits("http://google.com/?page=1"),
                 Arrays.asList("http://google.com", "?page=1"));
         Assert.assertEquals(

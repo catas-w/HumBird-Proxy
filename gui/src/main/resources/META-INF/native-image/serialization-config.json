@@ -4,16 +4,16 @@
       "name":"byte[]"
     },
     {
-      "name":"com.catas.wicked.common.bean.BaseMessage"
+      "name":"com.catas.wicked.common.bean.message.BaseMessage"
     },
     {
-      "name":"com.catas.wicked.common.bean.BaseMessage$MessageType"
+      "name":"com.catas.wicked.common.bean.message.BaseMessage$MessageType"
     },
     {
-      "name":"com.catas.wicked.common.bean.RequestMessage"
+      "name":"com.catas.wicked.common.bean.message.RequestMessage"
     },
     {
-      "name":"com.catas.wicked.common.bean.ResponseMessage"
+      "name":"com.catas.wicked.common.bean.message.ResponseMessage"
     },
     {
       "name":"java.lang.Enum"

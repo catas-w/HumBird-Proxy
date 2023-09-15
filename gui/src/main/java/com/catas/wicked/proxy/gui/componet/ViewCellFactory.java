@@ -1,5 +1,6 @@
 package com.catas.wicked.proxy.gui.componet;
 
+import com.catas.wicked.common.bean.RequestCell;
 import com.catas.wicked.proxy.service.RequestViewService;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
