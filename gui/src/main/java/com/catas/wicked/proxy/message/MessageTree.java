@@ -13,8 +13,8 @@ import javafx.scene.control.TreeItem;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 @Slf4j
@@ -42,12 +42,13 @@ public class MessageTree {
         node.setLeaf(true);
 
         // add node to its position
-        List<String> pathSplits = WebUtils.getPathSplits(msg.getUrl().toString());
+        List<String> pathSplits = WebUtils.getPathSplits(msg.getRequestUrl());
         node.setPath(pathSplits.get(pathSplits.size() - 1));
         pathSplits.remove(pathSplits.size() - 1);
 
         TreeNode parent = findAndCreatParentNode(root, pathSplits, 0);
         parent.getLeafChildren().add(node);
+        node.setParent(parent);
 
         // 创建 UI
         createTreeItemUI(parent, node);
@@ -109,6 +110,7 @@ public class MessageTree {
         TreeNode node = parent.getPathChildren().get(curPath);
         if (node == null) {
             node = new TreeNode();
+            node.setParent(parent);
             node.setPath(curPath);
             node.setFullPath(parent == root ? curPath : parent.getFullPath() + '/' + curPath);
             parent.getPathChildren().put(curPath, node);
@@ -127,9 +129,12 @@ public class MessageTree {
         if (node == null || !node.isLeaf()) {
             return;
         }
-        RequestCell requestCell = new RequestCell(node.getUrl(), node.getMethod() == null ? "" : node.getMethod().name());
+        RequestCell requestCell = new RequestCell(node.getUrl(),
+                node.getMethod() == null ? "" : node.getMethod().name());
         requestCell.setRequestId(node.getRequestId());
         requestCell.setFullPath(node.getFullPath());
+        requestCell.setLeaf(node.isLeaf());
+        node.setListItem(requestCell);
         ListView<RequestCell> reqListView = requestViewController.getReqListView();
         Platform.runLater(() -> {
             reqListView.getItems().add(requestCell);
@@ -138,31 +143,48 @@ public class MessageTree {
 
     /**
      * delete request by path and id
-     * @param requestCell requestCell hold by tree-view or list-view
      */
-    public void delete(RequestCell requestCell) {
-        if (requestCell == null || StringUtils.isBlank(requestCell.getFullPath())) {
+    public void delete(TreeNode node) {
+        if (node == null) {
             return;
         }
-        // find node to delete
-        String requestId = requestCell.isLeaf() ? requestCell.getRequestId() : null;
-        TreeNode nodeToDelete = findNodeByPath(requestCell.getFullPath(), requestId);
-        System.out.println("Node to delete: " + nodeToDelete.getFullPath());
-
-        ArrayList<String> list = new ArrayList<>();
-        travel(nodeToDelete, treeNode -> list.add(treeNode.getRequestId()));
+        if (node.isLeaf()) {
+            node.getParent().getLeafChildren().remove(node);
+        } else {
+            node.getParent().getPathChildren().remove(node.getPath());
+        }
     }
 
     /**
      * travel tree from specified treeNode
      * @param node start point
+     * @param action function to perform for each leaf-node
      */
     public void travel(TreeNode node, Consumer<? super TreeNode> action) {
         if (node == null) {
             return;
         }
 
+        if (node.isLeaf()) {
+            action.accept(node);
+            return;
+        }
+        // perform action for each leaf-child node
+        if (node.getLeafChildren() != null && !node.getLeafChildren().isEmpty()) {
+            for (TreeNode leafChild : node.getLeafChildren()) {
+                action.accept(leafChild);
+            }
+        }
 
+        if (node.getPathChildren() != null && !node.getPathChildren().isEmpty()) {
+            for (Map.Entry<String, TreeNode> entry : node.getPathChildren().entrySet()) {
+                travel(entry.getValue(), action);
+            }
+        }
+    }
+
+    public void travelRoot(Consumer<? super TreeNode> action) {
+        travel(root, action);
     }
 
     /**

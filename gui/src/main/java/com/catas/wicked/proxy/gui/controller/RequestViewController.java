@@ -18,11 +18,13 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.paint.Color;
+import lombok.extern.slf4j.Slf4j;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
+@Slf4j
 @Singleton
 public class RequestViewController implements Initializable {
 
@@ -49,6 +51,11 @@ public class RequestViewController implements Initializable {
     @Inject
     private MessageQueue messageQueue;
 
+    /**
+     * current request-view type, 0=tree 1=list
+     */
+    private int curViewType = 0;
+
     public TreeItem getTreeRoot() {
         return root;
     }
@@ -61,16 +68,30 @@ public class RequestViewController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         // req-view
         filterInputEventBind();
-        listViewEventBind(listViewMenuItem);
-        listViewEventBind(treeViewMenuItem);
+        // listViewEventBind(listViewMenuItem);
+        // listViewEventBind(treeViewMenuItem);
 
         reqTreeView.setCellFactory(treeView -> cellFactory.createTreeCell(treeView));
         reqListView.setCellFactory(listView -> cellFactory.createListCell(listView));
 
         reqTreeView.setContextMenu(contextMenu);
-        // reqListView.setCellFactory(contextMenu);
+        reqListView.setContextMenu(contextMenu);
     }
 
+    public void bindViewChange(ActionEvent event) {
+        MenuItem source = (MenuItem) event.getSource();
+        listViewMenuBtn.setGraphic(source.getGraphic());
+
+        if (source.getId().contains("list")) {
+            reqTreeView.setVisible(false);
+            reqListView.setVisible(true);
+            curViewType = 1;
+        } else {
+            reqTreeView.setVisible(true);
+            reqListView.setVisible(false);
+            curViewType = 0;
+        }
+    }
 
     private void listViewEventBind(MenuItem menuItem) {
         menuItem.setOnAction(e -> {
@@ -93,11 +114,7 @@ public class RequestViewController implements Initializable {
     private void filterInputEventBind() {
         filterInput.setOnKeyTyped(e -> {
             CharSequence characters = filterInput.getText();
-            if (characters.length() > 0) {
-                filterCancelBtn.setVisible(true);
-            } else {
-                filterCancelBtn.setVisible(false);
-            }
+            filterCancelBtn.setVisible(characters.length() > 0);
         });
 
         filterCancelBtn.setOnMouseClicked(e -> {
@@ -106,10 +123,31 @@ public class RequestViewController implements Initializable {
         });
     }
 
+    /**
+     * remove item from listView or treeView
+     */
     public void removeItem(ActionEvent event) {
-        TreeItem<RequestCell> selectedItem = reqTreeView.getSelectionModel().getSelectedItem();
-        RequestCell requestCell = selectedItem.getValue();
-        selectedItem.getParent().getChildren().remove(selectedItem);
-        messageQueue.pushMsg(new DeleteMessage(requestCell));
+        TreeItem<RequestCell> selectedItem = null;
+        RequestCell requestCell = null;
+        DeleteMessage deleteMessage = new DeleteMessage();
+
+        if (curViewType == 0) {
+            // from tree view
+            selectedItem = reqTreeView.getSelectionModel().getSelectedItem();
+            selectedItem.getParent().getChildren().remove(selectedItem);
+            requestCell = selectedItem.getValue();
+            deleteMessage.setSource(DeleteMessage.Source.TREE_VIEW);
+        } else {
+            // from list view
+            requestCell = reqListView.getSelectionModel().getSelectedItem();
+            reqListView.getItems().remove(requestCell);
+            deleteMessage.setSource(DeleteMessage.Source.LIST_VIEW);
+        }
+
+        if (requestCell == null) {
+            log.error("Unable to delete request, request cell is null.");
+        }
+        deleteMessage.setRequestCell(requestCell);
+        messageQueue.pushMsg(deleteMessage);
     }
 }

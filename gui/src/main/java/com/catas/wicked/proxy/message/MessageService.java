@@ -1,5 +1,6 @@
 package com.catas.wicked.proxy.message;
 
+import com.catas.wicked.common.bean.RequestCell;
 import com.catas.wicked.common.bean.message.BaseMessage;
 import com.catas.wicked.common.bean.message.DeleteMessage;
 import com.catas.wicked.common.bean.message.PoisonMessage;
@@ -8,11 +9,19 @@ import com.catas.wicked.common.bean.message.ResponseMessage;
 import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.common.pipeline.MessageQueue;
 import com.catas.wicked.common.util.ThreadPoolService;
+import com.catas.wicked.proxy.gui.controller.RequestViewController;
 import jakarta.annotation.PostConstruct;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
+import javafx.application.Platform;
+import javafx.scene.control.ListView;
+import javafx.scene.control.TreeItem;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.ehcache.Cache;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 @Singleton
@@ -29,6 +38,9 @@ public class MessageService {
 
     @Inject
     private MessageTree messageTree;
+
+    @Inject
+    private RequestViewController requestViewController;
 
     @PostConstruct
     public void init() {
@@ -95,7 +107,51 @@ public class MessageService {
         }
 
         if (msg instanceof DeleteMessage deleteMessage) {
-            messageTree.delete(deleteMessage.getRequestCell());
+            deleteRequest(deleteMessage);
         }
+    }
+
+    private void deleteRequest(DeleteMessage deleteMessage) {
+        RequestCell requestCell = deleteMessage.getRequestCell();
+        if (requestCell == null || StringUtils.isBlank(requestCell.getFullPath())) {
+            return;
+        }
+
+        // find node to delete
+        String requestId = requestCell.isLeaf() ? requestCell.getRequestId() : null;
+        TreeNode nodeToDelete = messageTree.findNodeByPath(requestCell.getFullPath(), requestId);
+        if (nodeToDelete == null) {
+            return;
+        }
+        log.info("Node to delete: {}", nodeToDelete.getFullPath());
+
+        if (deleteMessage.getSource() == DeleteMessage.Source.LIST_VIEW) {
+            // delete treeItem
+            // 直接删除 treeView 中对应的叶子节点
+            TreeItem<RequestCell> treeItemToDelete = nodeToDelete.getTreeItem();
+            Platform.runLater(() -> {
+                treeItemToDelete.getParent().getChildren().remove(treeItemToDelete);
+            });
+        }
+
+        List<String> requestIdList = new ArrayList<>();
+        List<RequestCell> listItemList = new ArrayList<>();
+        messageTree.travel(nodeToDelete, treeNode -> {
+            requestIdList.add(treeNode.getRequestId());
+            listItemList.add(treeNode.getListItem());
+        });
+
+        if (deleteMessage.getSource() == DeleteMessage.Source.TREE_VIEW) {
+            // delete listItem
+            // 若删除来自 treeView 需删除子结点中关联的 listItem
+            ListView<RequestCell> reqListView = requestViewController.getReqListView();
+            Platform.runLater(() -> {
+                reqListView.getItems().removeAll(listItemList);
+            });
+        }
+        // System.out.println("Travel result: " + requestIdList);
+        // TODO remove requestId from ehcache
+
+        messageTree.delete(nodeToDelete);
     }
 }

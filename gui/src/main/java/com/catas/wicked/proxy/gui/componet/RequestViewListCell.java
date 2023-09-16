@@ -28,8 +28,8 @@ public class RequestViewListCell<T> extends ListCell<T> {
 
         this.setOnMouseClicked(e -> {
             if (this.requestCell != null && requestViewService != null) {
-                System.out.println("clicked list cell: " + requestCell.getFullPath());
-                requestViewService.updateView(requestCell.getRequestId());
+                System.out.println("clicked list: " + requestCell.getFullPath() + " " + requestCell.getRequestId());
+                // requestViewService.updateView(requestCell.getRequestId());
             }
         });
     }
@@ -82,59 +82,38 @@ public class RequestViewListCell<T> extends ListCell<T> {
         setMouseTransparent(item == null || empty);
     }
 
-    private HBox createHBox(RequestCell cell) {
-        HBox hBox = new HBox(3);
+    private void createHBox(RequestCell cell) {
+        hbox = new HBox(3);
         if (cell.isOnCreated()) {
             triggerFade();
-            // System.out.println("Refresh: created: " + requestCell.getPath());
         }
         if (this.requestCell == null) {
             this.requestCell = cell;
         }
-        return hBox;
     }
 
     private void updateDisplay(T item, boolean empty) {
         if (item == null || empty) {
-            hbox = null;
+            // hbox = null;
             setText(null);
             setGraphic(null);
         } else {
-            T listItem = getItem();
-            if (listItem != null) {
-                if (item instanceof RequestCell) {
-                    RequestCell requestCell = (RequestCell) item;
-                    if (hbox == null) {
-                        hbox = createHBox((RequestCell) item);
-                        setText(((RequestCell) item).getPath());
-                    }
-                    if (methodLabel == null) {
-                        methodLabel = new Label(requestCell.getMethod());
-                        methodLabel.getStyleClass().add("req-method-label");
-                        methodLabel.getStyleClass().add(requestCell.getStyleClass());
-                    }
-                    hbox.getChildren().setAll(methodLabel);
-                    setGraphic(hbox);
-                } else {
-                    hbox = null;
-                    setText(item.toString());
-                }
-            } else {
-                hbox = null;
-                methodLabel = null;
-                if (item instanceof RequestCell) {
-                    RequestCell requestCell = (RequestCell) item;
-                    setText(requestCell.getPath());
-                    hbox = createHBox(requestCell);
+            if (item instanceof RequestCell requestCell) {
+                if (methodLabel == null) {
                     methodLabel = new Label(requestCell.getMethod());
                     methodLabel.getStyleClass().add("req-method-label");
-                    methodLabel.getStyleClass().add(requestCell.getStyleClass());
-                    hbox.getChildren().setAll(methodLabel);
-                    setGraphic(hbox);
                 } else {
-                    setText(item.toString());
-                    setGraphic(null);
+                    methodLabel.setText(requestCell.getMethod());
+                    methodLabel.getStyleClass().removeIf(styleClass -> styleClass.startsWith("method-label"));
                 }
+                methodLabel.getStyleClass().add(requestCell.getStyleClass());
+
+                if (hbox == null) {
+                    createHBox(requestCell);
+                    hbox.getChildren().setAll(methodLabel);
+                }
+                setText(requestCell.getPath());
+                setGraphic(hbox);
             }
         }
     }

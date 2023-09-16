@@ -6,9 +6,12 @@ import lombok.Data;
 @Data
 public class DeleteMessage extends BaseMessage{
 
-    private RequestCell requestCell;
-
-    public DeleteMessage(RequestCell requestCell) {
-        this.requestCell = requestCell;
+    public enum Source {
+        TREE_VIEW,
+        LIST_VIEW
     }
+
+    private Source source;
+
+    private RequestCell requestCell;
 }

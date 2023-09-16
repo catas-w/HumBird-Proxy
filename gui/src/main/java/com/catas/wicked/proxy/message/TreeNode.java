@@ -42,6 +42,10 @@ class TreeNode {
      */
     private TreeItem<RequestCell> treeItem;
     /**
+     * related list item
+     */
+    private RequestCell listItem;
+    /**
      * children: path-nodes
      */
     private Map<String, TreeNode> pathChildren;
@@ -49,6 +53,7 @@ class TreeNode {
      * children: leaf-nodes
      */
     private List<TreeNode> leafChildren;
+    private TreeNode parent;
     private TreeNode next;
     private TreeNode prev;
 
