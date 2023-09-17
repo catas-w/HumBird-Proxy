@@ -33,7 +33,6 @@ public class RequestViewListCell<T> extends ListCell<T> {
                 // requestViewService.updateView(requestCell.getRequestId());
             }
         });
-        // this.setContextMenu();
     }
 
     public void setRequestViewService(RequestViewService requestViewService) {
