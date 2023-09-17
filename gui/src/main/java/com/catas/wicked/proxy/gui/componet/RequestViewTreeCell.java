@@ -13,6 +13,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
+import org.apache.commons.lang3.StringUtils;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.lang.ref.WeakReference;
@@ -106,11 +107,11 @@ public class RequestViewTreeCell<T> extends TreeCell<T> {
         this.fadeTransition.play();
     }
 
-    private HBox createOrUpdateHBox(RequestCell requestCell) {
-        HBox box = new HBox(3);
+    private void createOrUpdateHBox(RequestCell requestCell) {
+        hbox = new HBox(3);
 
         if (requestCell.isLeaf()) {
-            box.getStyleClass().add("req-leaf");
+            hbox.getStyleClass().add("req-leaf");
         } else {
             FontIcon icon = new FontIcon();
             icon.getStyleClass().add("req-icon");
@@ -122,12 +123,12 @@ public class RequestViewTreeCell<T> extends TreeCell<T> {
             }
             icon.setIconSize(14);
             // icon.getStyleClass().add("request-path-icon");
-            box.getChildren().add(icon);
+            hbox.getChildren().add(icon);
         }
         if (requestCell.isOnCreated()) {
             triggerFade();
         }
-        return box;
+        // return box;
     }
 
     private void updateDisplay(T item, boolean empty) {
@@ -148,14 +149,19 @@ public class RequestViewTreeCell<T> extends TreeCell<T> {
                 if (methodLabel == null) {
                     methodLabel = new Label(requestCell.getMethod());
                     methodLabel.getStyleClass().add("req-method-label");
+                    methodLabel.getStyleClass().add(requestCell.getStyleClass());
                 } else {
-                    methodLabel.setText(requestCell.getMethod());
-                    methodLabel.getStyleClass().removeIf(styleClass -> styleClass.startsWith("method-label"));
+                    if (!StringUtils.equals(requestCell.getMethod(), methodLabel.getText())) {
+                        methodLabel.setText(requestCell.getMethod());
+                    }
+                    if (!methodLabel.getStyleClass().contains(requestCell.getStyleClass())) {
+                        methodLabel.getStyleClass().removeIf(styleClass -> styleClass.startsWith("method-label"));
+                        methodLabel.getStyleClass().add(requestCell.getStyleClass());
+                    }
                 }
-                methodLabel.getStyleClass().add(requestCell.getStyleClass());
 
                 if (hbox == null) {
-                    hbox = createOrUpdateHBox(requestCell);
+                    createOrUpdateHBox(requestCell);
                     hbox.getChildren().add(methodLabel);
                 }
                 setGraphic(hbox);

@@ -9,6 +9,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.util.Duration;
+import org.apache.commons.lang3.StringUtils;
 
 public class RequestViewListCell<T> extends ListCell<T> {
 
@@ -32,6 +33,7 @@ public class RequestViewListCell<T> extends ListCell<T> {
                 // requestViewService.updateView(requestCell.getRequestId());
             }
         });
+        // this.setContextMenu();
     }
 
     public void setRequestViewService(RequestViewService requestViewService) {
@@ -102,11 +104,16 @@ public class RequestViewListCell<T> extends ListCell<T> {
                 if (methodLabel == null) {
                     methodLabel = new Label(requestCell.getMethod());
                     methodLabel.getStyleClass().add("req-method-label");
+                    methodLabel.getStyleClass().add(requestCell.getStyleClass());
                 } else {
-                    methodLabel.setText(requestCell.getMethod());
-                    methodLabel.getStyleClass().removeIf(styleClass -> styleClass.startsWith("method-label"));
+                    if (!StringUtils.equals(requestCell.getMethod(), methodLabel.getText())) {
+                        methodLabel.setText(requestCell.getMethod());
+                    }
+                    if (!methodLabel.getStyleClass().contains(requestCell.getStyleClass())) {
+                        methodLabel.getStyleClass().removeIf(styleClass -> styleClass.startsWith("method-label"));
+                        methodLabel.getStyleClass().add(requestCell.getStyleClass());
+                    }
                 }
-                methodLabel.getStyleClass().add(requestCell.getStyleClass());
 
                 if (hbox == null) {
                     createHBox(requestCell);

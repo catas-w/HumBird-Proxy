@@ -24,7 +24,7 @@ public class CacheConfiguration implements AutoCloseable {
     @Bean(preDestroy = "close")
     @Singleton
     public CacheManager cacheManager() throws IOException {
-        PersistentCacheManager persistentCacheManager = CacheManagerBuilder.newCacheManagerBuilder()
+        CacheManager persistentCacheManager = CacheManagerBuilder.newCacheManagerBuilder()
                 .with(CacheManagerBuilder.persistence(new File(WebUtils.getStoragePath(), "cache")))
                 .withCache("requestCache",
                         CacheConfigurationBuilder.newCacheConfigurationBuilder(String.class, RequestMessage.class,

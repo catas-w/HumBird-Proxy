@@ -80,7 +80,11 @@ public class RequestViewController implements Initializable {
 
     public void bindViewChange(ActionEvent event) {
         MenuItem source = (MenuItem) event.getSource();
-        listViewMenuBtn.setGraphic(source.getGraphic());
+        FontIcon icon = (FontIcon) source.getGraphic();
+        FontIcon fontIcon = new FontIcon(icon.getIconCode());
+        fontIcon.setIconSize(18);
+        fontIcon.setIconColor(Color.web("#616161"));
+        listViewMenuBtn.setGraphic(fontIcon);
 
         if (source.getId().contains("list")) {
             reqTreeView.setVisible(false);

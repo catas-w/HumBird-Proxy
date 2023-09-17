@@ -19,9 +19,12 @@ import javafx.scene.control.TreeItem;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.ehcache.Cache;
+import org.ehcache.spi.loaderwriter.BulkCacheWritingException;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Slf4j
 @Singleton
@@ -111,12 +114,17 @@ public class MessageService {
         }
     }
 
+    /**
+     * delete request from gui and cache
+     * @param deleteMessage deleteMessage
+     */
     private void deleteRequest(DeleteMessage deleteMessage) {
         RequestCell requestCell = deleteMessage.getRequestCell();
         if (requestCell == null || StringUtils.isBlank(requestCell.getFullPath())) {
             return;
         }
 
+        // TODO update requestDetailView
         // find node to delete
         String requestId = requestCell.isLeaf() ? requestCell.getRequestId() : null;
         TreeNode nodeToDelete = messageTree.findNodeByPath(requestCell.getFullPath(), requestId);
@@ -134,7 +142,7 @@ public class MessageService {
             });
         }
 
-        List<String> requestIdList = new ArrayList<>();
+        Set<String> requestIdList = new HashSet<>();
         List<RequestCell> listItemList = new ArrayList<>();
         messageTree.travel(nodeToDelete, treeNode -> {
             requestIdList.add(treeNode.getRequestId());
@@ -149,9 +157,14 @@ public class MessageService {
                 reqListView.getItems().removeAll(listItemList);
             });
         }
-        // System.out.println("Travel result: " + requestIdList);
-        // TODO remove requestId from ehcache
-
         messageTree.delete(nodeToDelete);
+
+        // remove requestId from ehcache
+        // System.out.println("Travel result: " + requestIdList);
+        try {
+            requestCache.removeAll(requestIdList);
+        } catch (BulkCacheWritingException e) {
+            log.error("Error in deleting in cache.", e);
+        }
     }
 }
