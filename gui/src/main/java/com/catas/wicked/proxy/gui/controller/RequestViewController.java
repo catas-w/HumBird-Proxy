@@ -68,8 +68,6 @@ public class RequestViewController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         // req-view
         filterInputEventBind();
-        // listViewEventBind(listViewMenuItem);
-        // listViewEventBind(treeViewMenuItem);
 
         reqTreeView.setCellFactory(treeView -> cellFactory.createTreeCell(treeView));
         reqListView.setCellFactory(listView -> cellFactory.createListCell(listView));
