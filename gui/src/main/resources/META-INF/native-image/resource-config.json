@@ -60,6 +60,12 @@
     }, 
     {
       "pattern":"\\Qfxml/proxy-settings.fxml\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/fxmisc/richtext/code-area.css\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/fxmisc/richtext/styled-text-area.css\\E"
     }
   ]},
   "bundles":[

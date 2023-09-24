@@ -79,6 +79,7 @@
   "fields":[
     {"name":"applicationConfig"}, 
     {"name":"loaderFactory"}, 
+    {"name":"messageService"}, 
     {"name":"messageTree"}, 
     {"name":"proxyServer"}
   ]
@@ -135,7 +136,12 @@
 },
 {
   "name":"com.catas.wicked.proxy.gui.controller.RequestViewController",
-  "allDeclaredFields":true
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "methods":[
+    {"name":"bindViewChange","parameterTypes":["javafx.event.ActionEvent"] }, 
+    {"name":"removeItem","parameterTypes":["javafx.event.ActionEvent"] }
+  ]
 },
 {
   "name":"com.catas.wicked.proxy.message.$MessageService$Definition$Reference",
@@ -144,6 +150,16 @@
 {
   "name":"com.catas.wicked.proxy.message.$MessageTree$Definition$Reference",
   "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"com.catas.wicked.proxy.message.MessageService",
+  "fields":[
+    {"name":"appConfig"}, 
+    {"name":"messageQueue"}, 
+    {"name":"messageTree"}, 
+    {"name":"requestCache"}, 
+    {"name":"requestViewController"}
+  ]
 },
 {
   "name":"com.catas.wicked.proxy.message.MessageTree",
@@ -859,6 +875,15 @@
   "methods":[{"name":"valueOf","parameterTypes":["java.lang.String"] }]
 },
 {
+  "name":"javafx.scene.control.ContextMenu",
+  "queryAllDeclaredMethods":true,
+  "queryAllPublicConstructors":true,
+  "methods":[
+    {"name":"<init>","parameterTypes":[] }, 
+    {"name":"getItems","parameterTypes":[] }
+  ]
+},
+{
   "name":"javafx.scene.control.Control",
   "queryAllDeclaredMethods":true
 },
@@ -907,12 +932,23 @@
     {"name":"getId","parameterTypes":[] }, 
     {"name":"setGraphic","parameterTypes":["javafx.scene.Node"] }, 
     {"name":"setId","parameterTypes":["java.lang.String"] }, 
+    {"name":"setOnAction","parameterTypes":["javafx.event.EventHandler"] }, 
     {"name":"setText","parameterTypes":["java.lang.String"] }
   ]
 },
 {
   "name":"javafx.scene.control.OverrunStyle",
   "methods":[{"name":"valueOf","parameterTypes":["java.lang.String"] }]
+},
+{
+  "name":"javafx.scene.control.PopupControl",
+  "queryAllDeclaredMethods":true,
+  "methods":[
+    {"name":"getId","parameterTypes":[] }, 
+    {"name":"getStyleClass","parameterTypes":[] }, 
+    {"name":"setId","parameterTypes":["java.lang.String"] }, 
+    {"name":"setPrefWidth","parameterTypes":["double"] }
+  ]
 },
 {
   "name":"javafx.scene.control.SplitPane",
@@ -1178,13 +1214,15 @@
   "name":"javafx.scene.web.WebView"
 },
 {
-  "name":"javafx.stage.PopupWindow"
+  "name":"javafx.stage.PopupWindow",
+  "queryAllDeclaredMethods":true
 },
 {
   "name":"javafx.stage.Stage"
 },
 {
-  "name":"javafx.stage.Window"
+  "name":"javafx.stage.Window",
+  "queryAllDeclaredMethods":true
 },
 {
   "name":"javax.security.auth.x500.X500Principal",
@@ -1695,6 +1733,25 @@
   "name":"org.ehcache.shadow.org.terracotta.statistics.PassThroughStatistic",
   "allDeclaredFields":true,
   "queryAllPublicMethods":true
+},
+{
+  "name":"org.fxmisc.richtext.CodeArea",
+  "queryAllDeclaredMethods":true,
+  "queryAllPublicMethods":true,
+  "queryAllPublicConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.fxmisc.richtext.GenericStyledArea",
+  "queryAllDeclaredMethods":true
+},
+{
+  "name":"org.fxmisc.richtext.StyleClassedTextArea",
+  "queryAllDeclaredMethods":true
+},
+{
+  "name":"org.fxmisc.richtext.StyledTextArea",
+  "queryAllDeclaredMethods":true
 },
 {
   "name":"org.kordamp.ikonli.javafx.FontIcon",

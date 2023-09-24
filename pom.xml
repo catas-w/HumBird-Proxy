@@ -34,6 +34,9 @@
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.plgin.version>3.8.1</maven.compiler.plgin.version>
+        <maven.jar.plugin.version>3.2.2</maven.jar.plugin.version>
+        <maven.dependency.plugin.version>3.1.2</maven.dependency.plugin.version>
         <javafx.version>19.0.2.12</javafx.version>
         <javafx.maven.plugin.version>0.0.8</javafx.maven.plugin.version>
         <gluonfx.maven.plugin.version>1.0.16</gluonfx.maven.plugin.version>
@@ -47,6 +50,12 @@
         <lombok.version>1.18.26</lombok.version>
         <maven.sureplugin.version>3.0.0-M5</maven.sureplugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <jfoenix.version>9.0.10</jfoenix.version>
+        <ikonli.version>12.3.1</ikonli.version>
+        <netty.version>4.1.90.Final</netty.version>
+        <jakarta.version>2.0.1</jakarta.version>
+        <ehcache.version>3.10.8</ehcache.version>
+        <richtextfx.version>0.11.1</richtextfx.version>
     </properties>
 
     <dependencies>

@@ -1,7 +1,9 @@
 package com.catas.wicked.proxy.gui.controller;
 
 import com.catas.wicked.common.constant.DetailArea;
+import com.catas.wicked.proxy.render.RequestRenderer;
 import com.jfoenix.controls.JFXTextArea;
+import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -9,6 +11,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TitledPane;
+import org.fxmisc.richtext.CodeArea;
 
 import java.net.URL;
 import java.util.HashMap;
@@ -19,27 +22,55 @@ import java.util.ResourceBundle;
 public class DetailTabController implements Initializable {
 
     @FXML
-    private TitledPane reqOtherPane;
+    private CodeArea overviewArea;
     @FXML
     private TitledPane reqPayloadPane;
     @FXML
     private TitledPane respHeaderPane;
     @FXML
+    private TitledPane reqParamPane;
+    @FXML
     private TitledPane respDataPane;
     @FXML
     private TitledPane reqHeaderPane;
     @FXML
-    private JFXTextArea reqHeaderArea;
+    private CodeArea reqHeaderArea;
     @FXML
-    private JFXTextArea reqPayloadArea;
+    private CodeArea reqParamArea;
+    @FXML
+    private CodeArea reqPayloadArea;
     @FXML
     private JFXTextArea reqTimingArea;
     @FXML
-    private JFXTextArea respHeaderArea;
+    private CodeArea respHeaderArea;
     @FXML
-    private JFXTextArea respContentArea;
+    private CodeArea respContentArea;
+
+    @Inject
+    private RequestRenderer requestRenderer;
 
     private final Map<DetailArea, Node> detailAreaMap = new HashMap<>();
+
+    private static final String sampleCode = String.join("\n", new String[] {
+            "Request Url:    http://google.com/path/index/1?query=aa&time=bb",
+            "Request Method:    POST",
+            "Status Code:    200",
+            "Remote Address:    192.168.1.234:80",
+            "Refer Policy:   cross-origin boolean",
+    });
+
+    private static final String sampleQueryParams = """
+            name: Jack
+            age: 32
+            from: Google Chrome""";
+
+    private static final String sampleJson = """
+            {
+                "key1": "Val1",
+                "key2": "Val2",
+                "key3": 334,
+                "key4": 23
+            }""";
 
     private void initAreaMap() {
         detailAreaMap.put(DetailArea.REQUEST_HEADER, reqHeaderArea);
@@ -52,12 +83,15 @@ public class DetailTabController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         addTitleListener(reqHeaderPane);
         addTitleListener(reqPayloadPane);
-        addTitleListener(reqOtherPane);
-
+        addTitleListener(reqParamPane);
         addTitleListener(respHeaderPane);
         addTitleListener(respDataPane);
 
         initAreaMap();
+
+        requestRenderer.renderHeaders(sampleCode, reqHeaderArea);
+        requestRenderer.renderHeaders(sampleQueryParams, reqParamArea);
+        requestRenderer.renderContent(sampleJson, reqPayloadArea);
     }
 
     private void addTitleListener(TitledPane pane) {

@@ -14,9 +14,9 @@
     -fx-border-width: 0 0 0 0;
     -fx-border-color: #efefef;
     -fx-font-weight: BOLD;
-    -fx-background-insets: 0, 1, 2;
+    /*-fx-background-insets: 0, 1, 2;*/
     /*-fx-background-radius: 5 5 5 5, 5 5 5 5, 5 5 5 5;*/
-    -fx-padding: 0.166667em 0.833333em 0.25em 0.833333em; /* 2 10 3 10 */
+    -fx-padding: 0.1em 0.5em 0.25em 0.25em; /* 2 10 3 10 */
 }
 
 .titled-pane:focused > .title
@@ -68,4 +68,38 @@
 
 .jfx-text-area > .input-focused-line {
     -fx-pref-height: 0px;
+}
+.code-anchor-pane {
+    -fx-padding: 0;
+}
+
+
+/*************** Rich text ***************/
+.styled-text-area {
+    /* set the entire area's font size to the given size */
+    /*-fx-font: 13px "Impact";*/
+    -fx-font-weight: 500;
+    -fx-font-size: 12px;
+    /*-fx-font-family: "Comic Sans MS";*/
+    -fx-padding: 0.2em 0.2em 0.1em 0.2em;
+}
+
+.styled-text-area .text {
+    -fx-font-family: "System";
+}
+
+.styled-text-area .selection {
+    -fx-fill: #ccd2d0;
+}
+
+.keyword {
+    -fx-fill: #792f22;
+    -fx-font-weight: bold;
+}
+
+/* line-number */
+.lineno {
+    -fx-background-color: white;
+    -fx-padding: 0.0em, 0.2em, 0.0em, 0.0em;
+    -fx-text-fill: #226c5c;
 }
