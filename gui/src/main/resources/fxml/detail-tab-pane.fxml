@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.*?>
 <?import org.fxmisc.richtext.*?>
 
-<VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.catas.wicked.proxy.gui.controller.DetailTabController">
+<VBox alignment="TOP_CENTER" prefHeight="600.0" prefWidth="850.0" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.catas.wicked.proxy.gui.controller.DetailTabController">
     <stylesheets>
         <URL value="@../css/tabpane.css" />
         <URL value="@../css/titlepane.css" />
@@ -28,11 +28,15 @@
                 <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <TitledPane fx:id="reqHeaderPane" animated="false" maxHeight="Infinity" text="Headers" VBox.vgrow="ALWAYS">
                         <AnchorPane minHeight="0.0" minWidth="0.0" styleClass="code-anchor-pane">
-                            <CodeArea fx:id="reqHeaderArea" disable="false" editable="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                            <CodeArea fx:id="reqHeaderArea" visible="false" editable="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                 <cursor>
                                     <Cursor fx:constant="TEXT" />
                                 </cursor>
                             </CodeArea>
+                            <TableView fx:id="reqHeaderTable" visible="true"
+                                       AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                                       AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                            </TableView>
                          <!-- <effect> -->
                          <!--    <InnerShadow blurType="TWO_PASS_BOX" height="20" offsetY="2.5" radius="2.9" width="0.0"> -->
                          <!--       <color> -->
@@ -43,7 +47,7 @@
                         </AnchorPane>
                     </TitledPane>
                     <!-- <Pane prefHeight="1" maxHeight="1" maxWidth="Infinity" style="-fx-background-color: #cecece"/> -->
-                    <Separator orientation="HORIZONTAL" prefHeight="0.5" style="-fx-background-color: #eaeaea"/>
+                    <Separator orientation="HORIZONTAL" prefHeight="0.5" style="-fx-background-color: #eaeaea" />
                     <TitledPane fx:id="reqParamPane" animated="false" maxHeight="Infinity" text="Query Params" VBox.vgrow="ALWAYS">
                         <AnchorPane minHeight="0.0" minWidth="0.0" styleClass="code-anchor-pane">
                             <CodeArea fx:id="reqParamArea" editable="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -53,7 +57,7 @@
                             </CodeArea>
                         </AnchorPane>
                     </TitledPane>
-                    <Separator orientation="HORIZONTAL" prefHeight="0.5" style="-fx-background-color: #eaeaea"/>
+                    <Separator orientation="HORIZONTAL" prefHeight="0.5" style="-fx-background-color: #eaeaea" />
                     <TitledPane fx:id="reqPayloadPane" animated="false" maxHeight="Infinity" text="Payload" VBox.vgrow="ALWAYS">
                         <AnchorPane minHeight="0.0" minWidth="0.0" styleClass="code-anchor-pane">
                             <CodeArea fx:id="reqPayloadArea" editable="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -71,13 +75,28 @@
                 <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <TitledPane fx:id="respHeaderPane" animated="false" maxHeight="Infinity" text="Headers" VBox.vgrow="ALWAYS">
                         <AnchorPane minHeight="0.0" minWidth="0.0" styleClass="code-anchor-pane">
-                            <CodeArea fx:id="respHeaderArea" disable="true" editable="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                            <CodeArea fx:id="respHeaderArea" editable="false" visible="false"
+                                      AnchorPane.bottomAnchor="0.0"
+                                      AnchorPane.leftAnchor="0.0"
+                                      AnchorPane.rightAnchor="0.0"
+                                      AnchorPane.topAnchor="0.0" />
+                            <TableView fx:id="respHeaderTable" visible="true"
+                                       AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                                       AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
                         </AnchorPane>
                     </TitledPane>
                     <Separator orientation="HORIZONTAL" prefHeight="1" style="-fx-background-color: #eaeaea" />
                     <TitledPane fx:id="respDataPane" animated="false" maxHeight="Infinity" text="Preview" VBox.vgrow="ALWAYS">
                         <AnchorPane minHeight="0.0" minWidth="0.0" styleClass="code-anchor-pane">
                             <CodeArea fx:id="respContentArea" disable="true" editable="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                            <HBox prefHeight="36.0" prefWidth="226.0" AnchorPane.rightAnchor="35.0" AnchorPane.topAnchor="15.0">
+                                <children>
+                                   <Button mnemonicParsing="false" text="Button" />
+                                   <Button mnemonicParsing="false" text="Button" />
+                                   <Button mnemonicParsing="false" text="Button" />
+                                   <ChoiceBox prefHeight="23.0" prefWidth="62.0" />
+                                </children>
+                            </HBox>
                         </AnchorPane>
                     </TitledPane>
                 </VBox>

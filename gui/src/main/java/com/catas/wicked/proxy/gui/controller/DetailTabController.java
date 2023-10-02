@@ -1,5 +1,6 @@
 package com.catas.wicked.proxy.gui.controller;
 
+import com.catas.wicked.common.bean.HeaderEntry;
 import com.catas.wicked.common.constant.DetailArea;
 import com.catas.wicked.proxy.render.RequestRenderer;
 import com.jfoenix.controls.JFXTextArea;
@@ -9,6 +10,7 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TitledPane;
 import org.fxmisc.richtext.CodeArea;
@@ -34,6 +36,8 @@ public class DetailTabController implements Initializable {
     @FXML
     private TitledPane reqHeaderPane;
     @FXML
+    private TableView<HeaderEntry> reqHeaderTable;
+    @FXML
     private CodeArea reqHeaderArea;
     @FXML
     private CodeArea reqParamArea;
@@ -45,6 +49,8 @@ public class DetailTabController implements Initializable {
     private CodeArea respHeaderArea;
     @FXML
     private CodeArea respContentArea;
+    @FXML
+    private TableView<HeaderEntry> respHeaderTable;
 
     @Inject
     private RequestRenderer requestRenderer;
@@ -92,6 +98,14 @@ public class DetailTabController implements Initializable {
         requestRenderer.renderHeaders(sampleCode, reqHeaderArea);
         requestRenderer.renderHeaders(sampleQueryParams, reqParamArea);
         requestRenderer.renderContent(sampleJson, reqPayloadArea);
+
+        HashMap<String, String> map = new HashMap<>();
+        map.put("aa", "bb");
+        map.put("aa2", "bb");
+        map.put("aa3", "bb");
+        map.put("aa4", "bb");
+        requestRenderer.renderHeaders(map, reqHeaderTable);
+        requestRenderer.renderHeaders(map, respHeaderTable);
     }
 
     private void addTitleListener(TitledPane pane) {
