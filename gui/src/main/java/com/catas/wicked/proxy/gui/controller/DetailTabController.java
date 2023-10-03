@@ -104,6 +104,13 @@ public class DetailTabController implements Initializable {
         map.put("aa2", "bb");
         map.put("aa3", "bb");
         map.put("aa4", "bb");
+        map.put("aa5", "bb");
+        map.put("aa6", "bb");
+        map.put("aa7", "bb");
+        map.put("aa8", "bb");
+        map.put("aa9", "bb");
+        map.put("aa10", "bb");
+        map.put("aa411", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36");
         requestRenderer.renderHeaders(map, reqHeaderTable);
         requestRenderer.renderHeaders(map, respHeaderTable);
     }

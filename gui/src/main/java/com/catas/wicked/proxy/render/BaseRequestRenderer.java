@@ -5,15 +5,10 @@ import com.catas.wicked.common.util.TableUtils;
 import jakarta.inject.Singleton;
 import javafx.beans.binding.Bindings;
 import javafx.collections.ObservableList;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Control;
 import javafx.scene.control.SelectionMode;
-import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.paint.Paint;
-import javafx.scene.text.Text;
 import lombok.extern.slf4j.Slf4j;
 import org.fxmisc.richtext.GenericStyledArea;
 import org.fxmisc.richtext.LineNumberFactory;
@@ -48,11 +43,11 @@ public class BaseRequestRenderer implements RequestRenderer{
                     + "|(?<JSONKEY>" + JSON_KEY_PATTERN + ")"
     );
 
-    private static final ContextMenu defaultContextMenu = new DefaultContextMenu();
+    // private static final ContextMenu defaultContextMenu = new DefaultRichTextContextMenu();
 
     @Override
     public void renderHeaders(String text, GenericStyledArea area) {
-        area.setContextMenu(defaultContextMenu);
+        area.setContextMenu(ContextMenuFactory.getRichTextContextMenu());
         area.textProperty().addListener((obs, oldText, newText) -> {
             area.setStyleSpans(0, computeHighlighting((String) newText));
         });
@@ -72,30 +67,12 @@ public class BaseRequestRenderer implements RequestRenderer{
         keyColumn.setCellValueFactory(new PropertyValueFactory<>("key"));
         keyColumn.setPrefWidth(120);
         keyColumn.setMaxWidth(200);
-        keyColumn.setCellFactory(tableColumn -> {
-            TableCell<HeaderEntry, String> cell = new TableCell<>();
-            Text text = new Text();
-            cell.setGraphic(text);
-            cell.setPrefHeight(Control.USE_COMPUTED_SIZE);
-            text.getStyleClass().add("headers-key");
-            text.setFill(Paint.valueOf("#792f22"));
-            text.wrappingWidthProperty().bind(keyColumn.widthProperty());
-            text.textProperty().bind(cell.itemProperty());
-            return cell ;
-        });
+        TableUtils.setTableCellFactory(keyColumn, true);
 
         // set value column
         TableColumn<HeaderEntry, String> valColumn = new TableColumn<>();
         valColumn.setCellValueFactory(new PropertyValueFactory<>("value"));
-        valColumn.setCellFactory(tableColumn -> {
-            TableCell<HeaderEntry, String> cell = new TableCell<>();
-            Text text = new Text();
-            cell.setGraphic(text);
-            cell.setPrefHeight(Control.USE_COMPUTED_SIZE);
-            text.wrappingWidthProperty().bind(valColumn.widthProperty());
-            text.textProperty().bind(cell.itemProperty());
-            return cell ;
-        });
+        TableUtils.setTableCellFactory(valColumn, false);
 
         tableView.getColumns().setAll(keyColumn, valColumn);
 
@@ -104,11 +81,20 @@ public class BaseRequestRenderer implements RequestRenderer{
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
         // tableView.setFixedCellSize(20);
         tableView.prefHeightProperty()
-                .bind(Bindings.size(tableView.getItems()).multiply(tableView.getFixedCellSize()).add(10));
+                .bind(Bindings.size(tableView.getItems()).multiply(tableView.getFixedCellSize()));
 
         // selection
-        tableView.getSelectionModel().setCellSelectionEnabled(true);
+        // tableView.getSelectionModel().setCellSelectionEnabled(true);
         tableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        // tableView.getSelectionModel().clearAndSelect(0);
+
+        tableView.setContextMenu(ContextMenuFactory.getTableViewContextMenu(tableView));
+        // clearSelection when lose focus
+        tableView.focusedProperty().addListener((obs, oldVal, newVal) -> {
+            if (!newVal) {
+                tableView.getSelectionModel().clearSelection();
+            }
+        });
         TableUtils.installCopyPasteHandler(tableView);
     }
 
@@ -120,7 +106,7 @@ public class BaseRequestRenderer implements RequestRenderer{
     @Override
     public void renderContent(String text, GenericStyledArea area) {
         area.setParagraphGraphicFactory(LineNumberFactory.get(area));
-        area.setContextMenu(defaultContextMenu);
+        area.setContextMenu(ContextMenuFactory.getRichTextContextMenu());
         area.textProperty().addListener((obs, oldText, newText) -> {
             area.setStyleSpans(0, computeHighlighting((String) newText));
         });

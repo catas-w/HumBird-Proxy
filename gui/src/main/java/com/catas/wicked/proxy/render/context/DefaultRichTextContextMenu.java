@@ -1,16 +1,15 @@
-package com.catas.wicked.proxy.render;
+package com.catas.wicked.proxy.render.context;
 
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import org.fxmisc.richtext.CodeArea;
 
-class DefaultContextMenu extends ContextMenu {
+public class DefaultRichTextContextMenu extends ContextMenu {
 
     private MenuItem fold, unfold, print;
 
-    public DefaultContextMenu()
+    public DefaultRichTextContextMenu()
     {
-        // TODO singleton
         fold = new MenuItem( "Fold selected text" );
         fold.setOnAction( AE -> { hide(); fold(); } );
 
@@ -21,6 +20,7 @@ class DefaultContextMenu extends ContextMenu {
         print.setOnAction( AE -> { hide(); print(); } );
 
         getItems().addAll( fold, unfold, print );
+        getStyleClass().add("req-context-menu");
     }
 
     /**
