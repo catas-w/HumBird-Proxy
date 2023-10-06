@@ -3,8 +3,7 @@ package com.catas.wicked.proxy.service;
 import com.catas.wicked.common.bean.FeRequestInfo;
 import com.catas.wicked.common.bean.message.RequestMessage;
 import com.catas.wicked.common.bean.message.ResponseMessage;
-import com.catas.wicked.common.util.BrotliUtils;
-import com.catas.wicked.common.util.GzipUtils;
+import com.catas.wicked.common.util.WebUtils;
 import com.catas.wicked.proxy.gui.controller.DetailTabController;
 import com.catas.wicked.proxy.gui.controller.DetailWebViewController;
 import jakarta.inject.Inject;
@@ -15,7 +14,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.http.entity.ContentType;
 import org.ehcache.Cache;
 
-import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
@@ -96,7 +94,7 @@ public class RequestViewService {
 
         try {
             // render request body
-            byte[] content = parseContent(request.getHeaders(), request.getBody());
+            byte[] content = WebUtils.parseContent(request.getHeaders(), request.getBody());
 
             // String encoding = charset == null ? "UTF-8": charset.name();
             String contentStr = "";
@@ -130,7 +128,7 @@ public class RequestViewService {
                 charset = contentType.getCharset();
             }
 
-            byte[] parseContent = parseContent(response.getHeaders(), response.getContent());
+            byte[] parseContent = WebUtils.parseContent(response.getHeaders(), response.getContent());
             if (StringUtils.isNotBlank(mimeType) && mimeType.startsWith("image/")) {
                 feService.renderImage(RESP_DETAIL, parseContent);
             } else {
@@ -152,34 +150,5 @@ public class RequestViewService {
         StringBuffer buffer = new StringBuffer();
         headers.forEach((key, value) -> buffer.append(key).append(":\s").append(value).append("\n"));
         return buffer.toString();
-    }
-
-    private byte[] parseContent(Map<String, String> headers, byte[] content) {
-        if (content == null || content.length == 0) {
-            return new byte[0];
-        }
-        String contentEncoding = null;
-        for (Map.Entry<String, String> entry : headers.entrySet()) {
-            if ("content-encoding".equals(entry.getKey().toLowerCase().strip())) {
-                contentEncoding = entry.getValue().toLowerCase().strip();
-                break;
-            }
-        }
-
-        // content-encoding gzip,compress,deflate,br
-        if (StringUtils.isNotBlank(contentEncoding)) {
-            try {
-                switch (contentEncoding) {
-                    case "gzip" -> content = GzipUtils.decompress(content);
-                    case "br" -> content = BrotliUtils.decompress(content);
-                    case "deflate" -> content = GzipUtils.inflate(content);
-                    default -> {
-                    }
-                }
-            } catch (IOException e) {
-                log.error("Content decompressFailed; {}", contentEncoding);
-            }
-        }
-        return content;
     }
 }

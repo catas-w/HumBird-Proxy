@@ -66,3 +66,19 @@
 .jfx-tab-pane .headers-region .tab {
 
 }
+
+/******** request payload *********/
+.hide-tab-header .tab  {
+    -fx-pref-height: 0px !important;
+}
+.payload-tab-pane .tab  {
+    -fx-pref-height: 20px;
+}
+.payload-tab-pane .headers-region .tab-selected-line {
+    /*-fx-background-color: #6e7070;*/
+    -fx-background-color: TRANSPARENT;
+}
+.payload-tab-pane .headers-region .tab:selected .tab-container .tab-label {
+    -fx-text-fill: #1e1e1e;
+    /*-fx-font-weight: 400;*/
+}

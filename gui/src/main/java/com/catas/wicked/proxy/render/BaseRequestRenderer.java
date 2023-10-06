@@ -21,6 +21,9 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * render request/response data to detail pane
+ */
 @Slf4j
 @Singleton
 public class BaseRequestRenderer implements RequestRenderer{

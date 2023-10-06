@@ -25,17 +25,15 @@
         </Tab>
         <Tab text="  Request  ">
             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="388.0" prefWidth="584.0" style="-fx-background-color: #ffffff;">
-                <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                <SplitPane fx:id="reqSplitPane" dividerPositions="0.333333" orientation="VERTICAL" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <TitledPane fx:id="reqHeaderPane" animated="false" maxHeight="Infinity" text="Headers" VBox.vgrow="ALWAYS">
                         <AnchorPane minHeight="0.0" minWidth="0.0" styleClass="code-anchor-pane">
-                            <CodeArea fx:id="reqHeaderArea" visible="false" editable="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                            <CodeArea fx:id="reqHeaderArea" editable="false" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                 <cursor>
                                     <Cursor fx:constant="TEXT" />
                                 </cursor>
                             </CodeArea>
-                            <TableView fx:id="reqHeaderTable" visible="true"
-                                       AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
-                                       AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                            <TableView fx:id="reqHeaderTable" visible="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                             </TableView>
                          <!-- <effect> -->
                          <!--    <InnerShadow blurType="TWO_PASS_BOX" height="20" offsetY="2.5" radius="2.9" width="0.0"> -->
@@ -46,46 +44,42 @@
                          <!-- </effect> -->
                         </AnchorPane>
                     </TitledPane>
-                    <!-- <Pane prefHeight="1" maxHeight="1" maxWidth="Infinity" style="-fx-background-color: #cecece"/> -->
-                    <Separator orientation="HORIZONTAL" prefHeight="0.5" style="-fx-background-color: #eaeaea" />
-                    <TitledPane fx:id="reqParamPane" animated="false" maxHeight="Infinity" text="Query Params" VBox.vgrow="ALWAYS">
-                        <AnchorPane minHeight="0.0" minWidth="0.0" styleClass="code-anchor-pane">
-                            <CodeArea fx:id="reqParamArea" editable="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                <cursor>
-                                    <Cursor fx:constant="TEXT" />
-                                </cursor>
-                            </CodeArea>
-                        </AnchorPane>
-                    </TitledPane>
-                    <Separator orientation="HORIZONTAL" prefHeight="0.5" style="-fx-background-color: #eaeaea" />
                     <TitledPane fx:id="reqPayloadPane" animated="false" maxHeight="Infinity" text="Payload" VBox.vgrow="ALWAYS">
                         <AnchorPane minHeight="0.0" minWidth="0.0" styleClass="code-anchor-pane">
-                            <CodeArea fx:id="reqPayloadArea" editable="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                <cursor>
-                                    <Cursor fx:constant="TEXT" />
-                                </cursor>
-                            </CodeArea>
+                            <JFXTabPane fx:id="reqPayloadTabPane" styleClass="payload-tab-pane, hide-tab-header" tabClosingPolicy="UNAVAILABLE">
+                                <Tab text="Content">
+                                    <AnchorPane minHeight="0.0" minWidth="0.0" styleClass="code-anchor-pane">
+                                        <CodeArea fx:id="reqPayloadArea" editable="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                            <cursor>
+                                                <Cursor fx:constant="TEXT" />
+                                            </cursor>
+                                        </CodeArea>
+                                    </AnchorPane>
+                                </Tab>
+                                <Tab text="Query Params">
+                                    <AnchorPane minHeight="0.0" minWidth="0.0" styleClass="code-anchor-pane">
+                                        <CodeArea fx:id="reqParamArea" editable="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                            <cursor>
+                                                <Cursor fx:constant="TEXT" />
+                                            </cursor>
+                                        </CodeArea>
+                                    </AnchorPane>
+                                </Tab>
+                            </JFXTabPane>
                         </AnchorPane>
                     </TitledPane>
-                </VBox>
+                </SplitPane>
             </AnchorPane>
         </Tab>
         <Tab text="  Response  ">
             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: #ffffff;">
-                <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                <SplitPane fx:id="respSplitPane" dividerPositions="0.333333" orientation="VERTICAL" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <TitledPane fx:id="respHeaderPane" animated="false" maxHeight="Infinity" text="Headers" VBox.vgrow="ALWAYS">
                         <AnchorPane minHeight="0.0" minWidth="0.0" styleClass="code-anchor-pane">
-                            <CodeArea fx:id="respHeaderArea" editable="false" visible="false"
-                                      AnchorPane.bottomAnchor="0.0"
-                                      AnchorPane.leftAnchor="0.0"
-                                      AnchorPane.rightAnchor="0.0"
-                                      AnchorPane.topAnchor="0.0" />
-                            <TableView fx:id="respHeaderTable" visible="true"
-                                       AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
-                                       AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
+                            <CodeArea fx:id="respHeaderArea" editable="false" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                            <TableView fx:id="respHeaderTable" visible="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                         </AnchorPane>
                     </TitledPane>
-                    <Separator orientation="HORIZONTAL" prefHeight="1" style="-fx-background-color: #eaeaea" />
                     <TitledPane fx:id="respDataPane" animated="false" maxHeight="Infinity" text="Preview" VBox.vgrow="ALWAYS">
                         <AnchorPane minHeight="0.0" minWidth="0.0" styleClass="code-anchor-pane">
                             <CodeArea fx:id="respContentArea" disable="true" editable="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
@@ -99,7 +93,7 @@
                             </HBox>
                         </AnchorPane>
                     </TitledPane>
-                </VBox>
+                </SplitPane>
             </AnchorPane>
         </Tab>
         <Tab text="   Timing   ">

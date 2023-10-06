@@ -177,3 +177,9 @@
     -fx-text-fill: #792f22 !important;
     -fx-font-weight: 700;
 }
+
+
+.split-pane {
+    -fx-border-width: 0px;
+    -fx-padding: 0 0 0 0;
+}

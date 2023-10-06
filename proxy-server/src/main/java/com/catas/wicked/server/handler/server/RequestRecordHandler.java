@@ -18,6 +18,7 @@ import io.netty.util.AttributeKey;
 import lombok.extern.slf4j.Slf4j;
 import java.net.MalformedURLException;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 @Deprecated
@@ -126,7 +127,7 @@ public class RequestRecordHandler extends ChannelInboundHandlerAdapter {
             uri = getHostname(requestInfo) + uri;
         }
         RequestMessage requestMessage = new RequestMessage(uri);
-        Map<String, String> headerMap = new HashMap<>();
+        Map<String, String> headerMap = new LinkedHashMap<>();
         headers.entries().forEach(entry -> {
             headerMap.put(entry.getKey(), entry.getValue());
         });

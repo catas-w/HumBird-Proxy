@@ -4,14 +4,21 @@ import com.catas.wicked.common.bean.ProxyRequestInfo;
 import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpRequest;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
+@Slf4j
 public class WebUtils {
 
     public static ProxyRequestInfo getRequestProto(HttpRequest httpRequest) {
@@ -90,4 +97,54 @@ public class WebUtils {
                         contentType.contains("multipart/form-data"));
     }
 
+    /**
+     * parse content when encrypted
+     * @param headers headers
+     * @param content content
+     */
+    public static byte[] parseContent(Map<String, String> headers, byte[] content) {
+        if (content == null || content.length == 0) {
+            return new byte[0];
+        }
+        String contentEncoding = null;
+        for (Map.Entry<String, String> entry : headers.entrySet()) {
+            if ("content-encoding".equals(entry.getKey().toLowerCase().strip())) {
+                contentEncoding = entry.getValue().toLowerCase().strip();
+                break;
+            }
+        }
+
+        // content-encoding gzip,compress,deflate,br
+        if (StringUtils.isNotBlank(contentEncoding)) {
+            try {
+                switch (contentEncoding) {
+                    case "gzip" -> content = GzipUtils.decompress(content);
+                    case "br" -> content = BrotliUtils.decompress(content);
+                    case "deflate" -> content = GzipUtils.inflate(content);
+                    default -> {
+                    }
+                }
+            } catch (IOException e) {
+                log.error("Content decompressFailed; {}", contentEncoding);
+            }
+        }
+        return content;
+    }
+
+    public static Map<String, String> parseQueryParams(String query) {
+        LinkedHashMap<String, String> map = new LinkedHashMap<>();
+        if (StringUtils.isEmpty(query)) {
+            return map;
+        }
+        String[] queryParamsArray = query.split("&");
+        for (String param : queryParamsArray) {
+            String[] keyValue = param.split("=");
+            if (keyValue.length == 2) {
+                String key = URLDecoder.decode(keyValue[0], StandardCharsets.UTF_8);
+                String value = URLDecoder.decode(keyValue[1], StandardCharsets.UTF_8);
+                map.put(key, value);
+            }
+        }
+        return map;
+    }
 }

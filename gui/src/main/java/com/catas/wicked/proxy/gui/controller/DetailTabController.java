@@ -1,22 +1,26 @@
 package com.catas.wicked.proxy.gui.controller;
 
 import com.catas.wicked.common.bean.HeaderEntry;
-import com.catas.wicked.common.constant.DetailArea;
+import com.catas.wicked.common.bean.message.RequestMessage;
+import com.catas.wicked.common.util.WebUtils;
 import com.catas.wicked.proxy.render.RequestRenderer;
+import com.jfoenix.controls.JFXTabPane;
 import com.jfoenix.controls.JFXTextArea;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
-import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.control.SplitPane;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.TitledPane;
 import org.fxmisc.richtext.CodeArea;
 
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
 
@@ -24,9 +28,15 @@ import java.util.ResourceBundle;
 public class DetailTabController implements Initializable {
 
     @FXML
+    private SplitPane respSplitPane;
+    @FXML
+    private SplitPane reqSplitPane;
+    @FXML
     private CodeArea overviewArea;
     @FXML
     private TitledPane reqPayloadPane;
+    @FXML
+    private JFXTabPane reqPayloadTabPane;
     @FXML
     private TitledPane respHeaderPane;
     @FXML
@@ -55,7 +65,11 @@ public class DetailTabController implements Initializable {
     @Inject
     private RequestRenderer requestRenderer;
 
-    private final Map<DetailArea, Node> detailAreaMap = new HashMap<>();
+    private final Map<SplitPane, double[]> dividerPositionMap =new HashMap<>();
+
+    private boolean dividerUpdating;
+
+    private boolean midTitleCollapse;
 
     private static final String sampleCode = String.join("\n", new String[] {
             "Request Url:    http://google.com/path/index/1?query=aa&time=bb",
@@ -78,28 +92,18 @@ public class DetailTabController implements Initializable {
                 "key4": 23
             }""";
 
-    private void initAreaMap() {
-        detailAreaMap.put(DetailArea.REQUEST_HEADER, reqHeaderArea);
-        detailAreaMap.put(DetailArea.REQUEST_PAYLOAD, reqPayloadArea);
-        detailAreaMap.put(DetailArea.RESP_HEADER, respHeaderArea);
-        detailAreaMap.put(DetailArea.RESP_CONTENT, respContentArea);
-    }
-
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        addTitleListener(reqHeaderPane);
-        addTitleListener(reqPayloadPane);
-        addTitleListener(reqParamPane);
-        addTitleListener(respHeaderPane);
-        addTitleListener(respDataPane);
+        dividerPositionMap.put(reqSplitPane, reqSplitPane.getDividerPositions().clone());
+        dividerPositionMap.put(respSplitPane, respSplitPane.getDividerPositions().clone());
 
-        initAreaMap();
+        addTitleListener(reqHeaderPane, reqSplitPane);
+        addTitleListener(reqPayloadPane, reqSplitPane);
+        addTitleListener(respHeaderPane, respSplitPane);
+        addTitleListener(respDataPane, respSplitPane);
 
-        requestRenderer.renderHeaders(sampleCode, reqHeaderArea);
-        requestRenderer.renderHeaders(sampleQueryParams, reqParamArea);
-        requestRenderer.renderContent(sampleJson, reqPayloadArea);
 
-        HashMap<String, String> map = new HashMap<>();
+        Map<String, String> map = new LinkedHashMap<>();
         map.put("aa", "bb");
         map.put("aa2", "bb");
         map.put("aa3", "bb");
@@ -111,33 +115,143 @@ public class DetailTabController implements Initializable {
         map.put("aa9", "bb");
         map.put("aa10", "bb");
         map.put("aa411", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36");
-        requestRenderer.renderHeaders(map, reqHeaderTable);
-        requestRenderer.renderHeaders(map, respHeaderTable);
-    }
 
-    private void addTitleListener(TitledPane pane) {
-        pane.expandedProperty().addListener((observable, oldValue, newValue) -> {
-            //make it fill space when expanded but not reserve space when collapsed
-            if (newValue) {
-                pane.maxHeightProperty().set(Double.POSITIVE_INFINITY);
-            } else {
-                pane.maxHeightProperty().set(Double.NEGATIVE_INFINITY);
-            }
-        });
+        RequestMessage requestMessage = new RequestMessage("http://google.com/page?name=aa&age=22");
+        requestMessage.setHeaders(map);
+        requestMessage.setBody(sampleJson.getBytes(StandardCharsets.UTF_8));
+
+        displayRequest(requestMessage);
     }
 
     /**
-     * set request/response detail
+     * synchronized dividers
+     * @deprecated
      */
-    public void setRequestDetail(DetailArea area, String content) {
-        Node node = detailAreaMap.get(area);
-        if (node == null) {
+    private void bindDividerPosition(SplitPane splitPane) {
+        if (splitPane.getDividers().size() < 2) {
             return;
         }
-        TextArea textArea = (TextArea) node;
-        Platform.runLater(() -> {
-            textArea.setText(content);
-            textArea.setEditable(false);
+        ObservableList<SplitPane.Divider> dividers = splitPane.getDividers();
+        dividers.get(0).positionProperty().addListener(((observable, oldValue, newValue) -> {
+            if (dividerUpdating || splitPane.getDividers().size() < 2 || reqParamPane.isExpanded()) {
+                return;
+            }
+            // System.out.println("Divider-0: " + newValue);
+            if (newValue.doubleValue() > 0.95) {
+                dividers.get(0).setPosition(0.95);
+                dividers.get(1).setPosition(1.0);
+                return;
+            }
+            dividerUpdating = true;
+            double delta = newValue.doubleValue() - oldValue.doubleValue();
+            dividers.get(1).setPosition(dividers.get(1).positionProperty().doubleValue() + delta);
+            dividerUpdating = false;
+        }));
+
+        dividers.get(1).positionProperty().addListener(((observable, oldValue, newValue) -> {
+            if (dividerUpdating || splitPane.getDividers().size() < 2 || reqParamPane.isExpanded()) {
+                return;
+            }
+            // System.out.println("Divider-1: " + newValue);
+            if (!midTitleCollapse) {
+                return;
+            }
+            if (newValue.doubleValue() < 0.05) {
+                dividers.get(0).setPosition(0.0);
+                dividers.get(1).setPosition(0.05);
+                return;
+            }
+            dividerUpdating = true;
+            double delta = newValue.doubleValue() - oldValue.doubleValue();
+            dividers.get(0).setPosition(dividers.get(0).positionProperty().doubleValue() + delta);
+            dividerUpdating = false;
+        }));
+    }
+
+    private void addTitleListener(TitledPane pane, SplitPane splitPane) {
+        pane.expandedProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue) {
+                // open
+                pane.maxHeightProperty().set(Double.POSITIVE_INFINITY);
+                if (splitPane.getItems().size() == 2) {
+                    splitPane.setDividerPositions(dividerPositionMap.get(splitPane));
+                } else if (splitPane.getItems().size() == 3) {
+                    // TODO bug: titledPane-1 expanded, titledPane-2,3 closed, tiledPane-3 cannot expand
+                    int expandedNum = getExpandedNum(splitPane);
+                    System.out.println("Expanded num: " + expandedNum);
+                    if (expandedNum != 2) {
+                        midTitleCollapse = false;
+                        splitPane.setDividerPositions(0.33333, 0.66666);
+                        return;
+                    }
+                    if (!reqParamPane.isExpanded()) {
+                        ObservableList<SplitPane.Divider> dividers = splitPane.getDividers();
+                        dividers.get(0).setPosition(0.5);
+                        dividers.get(1).setPosition(0.5);
+                    }
+                }
+            } else {
+                // close
+                pane.maxHeightProperty().set(Double.NEGATIVE_INFINITY);
+                dividerPositionMap.put(splitPane, splitPane.getDividerPositions().clone());
+                if (splitPane.getItems().size() == 3) {
+                    if (getExpandedNum(splitPane) == 2 && !reqParamPane.isExpanded()) {
+                        midTitleCollapse = true;
+                    }
+                }
+            }
         });
+    }
+    private int getExpandedNum(SplitPane splitPane) {
+        int res = 0;
+        for (Node item : splitPane.getItems()) {
+            if (item instanceof TitledPane titledPane) {
+                res += titledPane.isExpanded() ? 1 : 0;
+            }
+        }
+        return res;
+    }
+
+    /**
+     * exhibit default info
+     */
+    public void reset() {
+
+    }
+
+    /**
+     * exhibit request info
+     */
+    public void displayRequest(RequestMessage request) {
+        if (request == null) {
+            return;
+        }
+
+        // display headers
+        Map<String, String> headers = request.getHeaders();
+        requestRenderer.renderHeaders(headers, reqHeaderTable);
+
+        // display query-params if exist
+        String query = request.getUrl().getQuery();
+        Map<String, String> queryParams = WebUtils.parseQueryParams(query);
+        if (!queryParams.isEmpty()) {
+            reqPayloadTabPane.getStyleClass().remove("hide-tab-header");
+            StringBuilder queryBuilder = new StringBuilder();
+            for (Map.Entry<String, String> entry : queryParams.entrySet()) {
+                queryBuilder.append(entry.getKey());
+                queryBuilder.append(": ");
+                queryBuilder.append(entry.getValue());
+                queryBuilder.append("\n");
+            }
+            requestRenderer.renderHeaders(queryBuilder.toString(), reqParamArea);
+        } else {
+            reqPayloadTabPane.getStyleClass().add("hide-tab-header");
+        }
+
+        // display request content
+        // TODO images
+        byte[] content = WebUtils.parseContent(request.getHeaders(), request.getBody());
+        String contentStr = new String(content, StandardCharsets.UTF_8);
+        requestRenderer.renderContent(contentStr, reqPayloadArea);
     }
 }

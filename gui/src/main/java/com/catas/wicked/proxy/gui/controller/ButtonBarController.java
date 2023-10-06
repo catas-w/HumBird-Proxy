@@ -83,8 +83,8 @@ public class ButtonBarController implements Initializable {
         list.add("GET https://www.google.com/index/1");
         list.add("GET https://www.google.com/index/2");
         list.add("GET https://www.google.com/index/page/1");
-        list.add("GET https://www.google.com/index/page/2");
-        list.add("POST https://www.google.com/index/page/3");
+        list.add("POST https://www.google.com/index/page/2");
+        list.add("POST https://www.google.com/index/page/3?name=111&age=222&host=333.3");
         list.add("GET https://www.amzaon.com/home");
         list.add("PUT https://www.google.com/page");
         list.add("DELETE https://www.google.com/home/deftail/2");
