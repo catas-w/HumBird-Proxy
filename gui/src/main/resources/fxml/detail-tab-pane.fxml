@@ -4,7 +4,9 @@
 <?import java.net.*?>
 <?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.effect.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
 <?import org.fxmisc.richtext.*?>
 
 <VBox alignment="TOP_CENTER" prefHeight="600.0" prefWidth="850.0" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.catas.wicked.proxy.gui.controller.DetailTabController">
@@ -83,13 +85,21 @@
                     <TitledPane fx:id="respDataPane" animated="false" maxHeight="Infinity" text="Preview" VBox.vgrow="ALWAYS">
                         <AnchorPane minHeight="0.0" minWidth="0.0" styleClass="code-anchor-pane">
                             <CodeArea fx:id="respContentArea" disable="true" editable="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                            <HBox prefHeight="36.0" prefWidth="226.0" AnchorPane.rightAnchor="35.0" AnchorPane.topAnchor="15.0">
+                            <HBox prefHeight="27.0"  styleClass="content-button-bar" AnchorPane.rightAnchor="35.0" AnchorPane.topAnchor="10.0">
                                 <children>
-                                   <Button mnemonicParsing="false" text="Button" />
-                                   <Button mnemonicParsing="false" text="Button" />
-                                   <Button mnemonicParsing="false" text="Button" />
-                                   <ChoiceBox prefHeight="23.0" prefWidth="62.0" />
+                                   <Button styleClass="first-btn" mnemonicParsing="false" text="Pretty"/>
+                                   <Button mnemonicParsing="false" text=" Text "/>
+                                   <Button mnemonicParsing="false" text="Origin"/>
+                                   <Button styleClass="last-btn" mnemonicParsing="false" text=" Hex  "/>
+                                   <ChoiceBox prefHeight="25.0" prefWidth="70.0"/>
                                 </children>
+                                <effect>
+                                   <DropShadow height="15" width="15">
+                                      <color>
+                                         <Color red="0.3" green="0.3" blue="0.3" opacity="0.7" />
+                                      </color>
+                                   </DropShadow>
+                                </effect>
                             </HBox>
                         </AnchorPane>
                     </TitledPane>

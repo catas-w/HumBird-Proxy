@@ -183,3 +183,35 @@
     -fx-border-width: 0px;
     -fx-padding: 0 0 0 0;
 }
+
+
+/*************** Button Bar ***************/
+.content-button-bar {
+    -fx-background-color: #ffffff;
+    /*-fx-border-radius: 5px ;*/
+    -fx-background-radius: 4px;
+    -fx-padding: 1 0 1 0;
+}
+.content-button-bar .button {
+    /*-fx-border-width: 1;*/
+    /*-fx-border-color: #a4a4a4;*/
+    /*-fx-border-radius: 0px ;*/
+    -fx-background-radius: 0px;
+    -fx-pref-height: 25px;
+    -fx-pref-width: 60px;
+    -fx-padding: 0 2 0 2;
+    -fx-background-color: rgba(224, 224, 224, 0.58);
+    -fx-text-fill: #626262;
+}
+.content-button-bar .button:hover {
+    -fx-background-color: white;
+    -fx-text-fill: #000000;
+}
+.content-button-bar .first-btn {
+    -fx-background-radius: 4px 0 0 4px;
+    -fx-start-margin: 2px;
+}
+.content-button-bar .last-btn {
+    -fx-background-radius: 0 4px 4px 0;
+    -fx-end-margin: 2px;
+}

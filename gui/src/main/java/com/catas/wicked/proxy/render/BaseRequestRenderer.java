@@ -41,7 +41,6 @@ public class BaseRequestRenderer implements RequestRenderer{
 
     private static final Pattern PATTERN = Pattern.compile(
             "(?<KEYWORD>" + KEYWORD_PATTERN + ")"
-                    + "|(?<STRING>" + STRING_PATTERN + ")"
                     + "|(?<HEADER>" + HEADER_PATTERN + ")"
                     + "|(?<JSONKEY>" + JSON_KEY_PATTERN + ")"
     );
@@ -139,11 +138,12 @@ public class BaseRequestRenderer implements RequestRenderer{
                 = new StyleSpansBuilder<>();
         while(matcher.find()) {
             String styleClass =
+                    // matcher.group("STRING") != null ? "string" :
                     matcher.group("KEYWORD") != null ? "keyword" :
-                    matcher.group("STRING") != null ? "string" :
                     matcher.group("HEADER") != null ? "keyword" :
                     matcher.group("JSONKEY") != null ? "keyword" :
-                    null; /* never happens */ assert styleClass != null;
+                    null;
+            assert styleClass != null;
             spansBuilder.add(Collections.emptyList(), matcher.start() - lastKwEnd);
             spansBuilder.add(Collections.singleton(styleClass), matcher.end() - matcher.start());
             lastKwEnd = matcher.end();
