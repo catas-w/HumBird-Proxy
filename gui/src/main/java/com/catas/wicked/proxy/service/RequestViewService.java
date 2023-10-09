@@ -53,15 +53,10 @@ public class RequestViewService {
         }
         this.currentRequestId = requestId;
         RequestMessage request = requestCache.get(requestId);
-        ResponseMessage response = request.getResponse();
 
-        // Media-type
-        WebEngine webEngine = detailWebViewController.getDetailWebView().getEngine();
-        feService.setWebEngine(webEngine);
-
-        updateOverviewTab(request, response);
-        updateRequestTab(request);
-        updateResponseTab(response);
+        if (request != null) {
+            detailTabController.displayRequest(request);
+        }
     }
 
     private void updateOverviewTab(RequestMessage request, ResponseMessage response) {

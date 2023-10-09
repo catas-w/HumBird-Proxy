@@ -61,7 +61,7 @@ public class RequestViewTreeCell<T> extends TreeCell<T> {
             if (treeItem != null && requestViewService != null) {
                 RequestCell cell = (RequestCell) treeItem.getValue();
                 System.out.println("Clicked " + cell.getFullPath() + " " + cell.getRequestId());
-                // requestViewService.updateView(cell.getRequestId());
+                requestViewService.updateView(cell.getRequestId());
             }
         });
     }

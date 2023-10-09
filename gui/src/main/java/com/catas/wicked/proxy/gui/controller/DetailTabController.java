@@ -2,6 +2,7 @@ package com.catas.wicked.proxy.gui.controller;
 
 import com.catas.wicked.common.bean.HeaderEntry;
 import com.catas.wicked.common.bean.message.RequestMessage;
+import com.catas.wicked.common.bean.message.ResponseMessage;
 import com.catas.wicked.common.util.WebUtils;
 import com.catas.wicked.proxy.render.RequestRenderer;
 import com.jfoenix.controls.JFXTabPane;
@@ -12,7 +13,9 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.control.SingleSelectionModel;
 import javafx.scene.control.SplitPane;
+import javafx.scene.control.Tab;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TitledPane;
 import org.fxmisc.richtext.CodeArea;
@@ -116,10 +119,18 @@ public class DetailTabController implements Initializable {
         map.put("aa10", "bb");
         map.put("aa411", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36");
 
-        RequestMessage requestMessage = new RequestMessage("http://google.com/page?name=aa&age=22");
+        RequestMessage requestMessage = new RequestMessage("http://google.com/page");
+        // RequestMessage requestMessage = new RequestMessage("http://google.com/page?name=aa&age=22");
+
         requestMessage.setHeaders(map);
         requestMessage.setBody(sampleJson.getBytes(StandardCharsets.UTF_8));
 
+        ResponseMessage responseMessage = new ResponseMessage();
+        responseMessage.setStatus(200);
+        responseMessage.setHeaders(map);
+        responseMessage.setContent(sampleCode.getBytes(StandardCharsets.UTF_8));
+
+        requestMessage.setResponse(responseMessage);
         displayRequest(requestMessage);
     }
 
@@ -235,7 +246,6 @@ public class DetailTabController implements Initializable {
         String query = request.getUrl().getQuery();
         Map<String, String> queryParams = WebUtils.parseQueryParams(query);
         if (!queryParams.isEmpty()) {
-            reqPayloadTabPane.getStyleClass().remove("hide-tab-header");
             StringBuilder queryBuilder = new StringBuilder();
             for (Map.Entry<String, String> entry : queryParams.entrySet()) {
                 queryBuilder.append(entry.getKey());
@@ -244,8 +254,6 @@ public class DetailTabController implements Initializable {
                 queryBuilder.append("\n");
             }
             requestRenderer.renderHeaders(queryBuilder.toString(), reqParamArea);
-        } else {
-            reqPayloadTabPane.getStyleClass().add("hide-tab-header");
         }
 
         // display request content
@@ -253,5 +261,59 @@ public class DetailTabController implements Initializable {
         byte[] content = WebUtils.parseContent(request.getHeaders(), request.getBody());
         String contentStr = new String(content, StandardCharsets.UTF_8);
         requestRenderer.renderContent(contentStr, reqPayloadArea);
+
+        boolean hasQuery = !queryParams.isEmpty();
+        boolean hasContent = content.length > 0;
+        System.out.printf("hasQuery: %s, hasContent: %s\n", hasQuery, hasContent);
+        SingleSelectionModel<Tab> selectionModel = reqPayloadTabPane.getSelectionModel();
+        String title = "";
+        if (hasQuery) {
+            selectionModel.clearAndSelect(1);
+            title = "Query Parameters";
+        }
+        if (hasContent) {
+            selectionModel.clearAndSelect(0);
+            // TODO form-data
+            title = "Content";
+        }
+        if (hasQuery && hasContent) {
+            System.out.println("add Tab header");
+            reqPayloadTabPane.setTabMaxHeight(20);
+            reqPayloadTabPane.setTabMinHeight(20);
+            title = "Payload";
+        } else {
+            System.out.println("hide Tab header");
+            reqPayloadTabPane.setTabMaxHeight(0);
+        }
+        reqPayloadPane.setText(title);
+
+        displayOverView(request);
+        displayResponse(request.getResponse());
+    }
+
+    public void displayResponse(ResponseMessage response) {
+        if (response == null) {
+            requestRenderer.renderContent("<Waiting For Response...>", respContentArea);
+            return;
+        }
+        // headers
+        Map<String, String> headers = response.getHeaders();
+        requestRenderer.renderHeaders(headers, respHeaderTable);
+
+        // content TODO images
+        byte[] content = WebUtils.parseContent(headers, response.getContent());
+        String contentStr = new String(content, StandardCharsets.UTF_8);
+        requestRenderer.renderContent(contentStr, respContentArea);
+    }
+
+    public void displayOverView(RequestMessage request) {
+        String protocol = request.getProtocol();
+        String url = request.getRequestUrl();
+        String method = request.getMethod();
+        String title = String.format("%s %s %s", protocol, url, method);
+        String code = request.getResponse() == null ? "Waiting" : String.valueOf(request.getResponse().getStatus());
+
+        String cont = title + "\n" + code;
+        requestRenderer.renderContent(cont, overviewArea);
     }
 }

@@ -54,7 +54,7 @@ public class BaseRequestRenderer implements RequestRenderer{
             area.setStyleSpans(0, computeHighlighting((String) newText));
         });
 
-        area.replaceText(0, 0, text);
+        area.replaceText(0, area.getLength(), text);
     }
 
     @Override
@@ -113,7 +113,7 @@ public class BaseRequestRenderer implements RequestRenderer{
             area.setStyleSpans(0, computeHighlighting((String) newText));
         });
 
-        area.replaceText(0, 0, text);
+        area.replaceText(0, area.getLength(), text);
     }
 
     @Override

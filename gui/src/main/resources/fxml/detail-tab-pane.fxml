@@ -48,7 +48,7 @@
                     </TitledPane>
                     <TitledPane fx:id="reqPayloadPane" animated="false" maxHeight="Infinity" text="Payload" VBox.vgrow="ALWAYS">
                         <AnchorPane minHeight="0.0" minWidth="0.0" styleClass="code-anchor-pane">
-                            <JFXTabPane fx:id="reqPayloadTabPane" styleClass="payload-tab-pane, hide-tab-header" tabClosingPolicy="UNAVAILABLE">
+                            <JFXTabPane fx:id="reqPayloadTabPane" styleClass="payload-tab-pane" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                 <Tab text="Content">
                                     <AnchorPane minHeight="0.0" minWidth="0.0" styleClass="code-anchor-pane">
                                         <CodeArea fx:id="reqPayloadArea" editable="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -85,13 +85,13 @@
                     <TitledPane fx:id="respDataPane" animated="false" maxHeight="Infinity" text="Preview" VBox.vgrow="ALWAYS">
                         <AnchorPane minHeight="0.0" minWidth="0.0" styleClass="code-anchor-pane">
                             <CodeArea fx:id="respContentArea" disable="true" editable="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                            <HBox prefHeight="27.0"  styleClass="content-button-bar" AnchorPane.rightAnchor="35.0" AnchorPane.topAnchor="10.0">
+                            <HBox prefHeight="27.0" styleClass="content-button-bar" AnchorPane.rightAnchor="35.0" AnchorPane.topAnchor="10.0">
                                 <children>
-                                   <Button styleClass="first-btn" mnemonicParsing="false" text="Pretty"/>
-                                   <Button mnemonicParsing="false" text=" Text "/>
-                                   <Button mnemonicParsing="false" text="Origin"/>
-                                   <Button styleClass="last-btn" mnemonicParsing="false" text=" Hex  "/>
-                                   <ChoiceBox prefHeight="25.0" prefWidth="70.0"/>
+                                   <Button mnemonicParsing="false" styleClass="first-btn" text="Pretty" />
+                                   <Button mnemonicParsing="false" text=" Text " />
+                                   <Button mnemonicParsing="false" text="Origin" />
+                                   <Button mnemonicParsing="false" styleClass="last-btn" text=" Hex  " />
+                                   <ChoiceBox prefHeight="25.0" prefWidth="70.0" />
                                 </children>
                                 <effect>
                                    <DropShadow height="15" width="15">
