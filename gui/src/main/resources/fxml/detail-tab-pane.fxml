@@ -4,10 +4,10 @@
 <?import java.net.*?>
 <?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.effect.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.paint.*?>
 <?import org.fxmisc.richtext.*?>
+
+<?import com.catas.wicked.proxy.gui.componet.SideBar?>
 
 <VBox alignment="TOP_CENTER" prefHeight="600.0" prefWidth="850.0" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.catas.wicked.proxy.gui.controller.DetailTabController">
     <stylesheets>
@@ -18,11 +18,15 @@
     <JFXTabPane minWidth="300.0" prefHeight="567.0" prefWidth="600.0" style="-fx-background-color: TRANSPARENT;" styleClass="jfx-tab-pane" VBox.vgrow="ALWAYS">
         <Tab text="  Overview  ">
             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="388.0" prefWidth="584.0" style="-fx-background-color: #ffffff;">
-                <CodeArea fx:id="overviewArea" disable="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                <CodeArea fx:id="overviewArea" editable="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <cursor>
                         <Cursor fx:constant="TEXT" />
                     </cursor>
                 </CodeArea>
+                <SideBar prefHeight="25" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="10.0">
+                    <JFXButton text="Table" styleClass="selected"/>
+                    <JFXButton text="Text"/>
+                </SideBar>
             </AnchorPane>
         </Tab>
         <Tab text="  Request  ">
@@ -37,13 +41,10 @@
                             </CodeArea>
                             <TableView fx:id="reqHeaderTable" visible="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                             </TableView>
-                         <!-- <effect> -->
-                         <!--    <InnerShadow blurType="TWO_PASS_BOX" height="20" offsetY="2.5" radius="2.9" width="0.0"> -->
-                         <!--       <color> -->
-                         <!--          <Color red="0.6" green="0.6" blue="0.6" opacity="0.5"/> -->
-                         <!--       </color> -->
-                         <!--    </InnerShadow> -->
-                         <!-- </effect> -->
+                            <SideBar prefHeight="25" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="5.0">
+                                <JFXButton text="Table" />
+                                <JFXButton text="Text" styleClass="selected"/>
+                            </SideBar>
                         </AnchorPane>
                     </TitledPane>
                     <TitledPane fx:id="reqPayloadPane" animated="false" maxHeight="Infinity" text="Payload" VBox.vgrow="ALWAYS">
@@ -56,6 +57,11 @@
                                                 <Cursor fx:constant="TEXT" />
                                             </cursor>
                                         </CodeArea>
+                                        <SideBar prefHeight="25" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="5.0">
+                                            <JFXButton text="Text" styleClass="selected"/>
+                                            <JFXButton text="Origin"/>
+                                            <JFXButton text="Hex"/>
+                                        </SideBar>
                                     </AnchorPane>
                                 </Tab>
                                 <Tab text="Query Params">
@@ -65,6 +71,10 @@
                                                 <Cursor fx:constant="TEXT" />
                                             </cursor>
                                         </CodeArea>
+                                        <SideBar prefHeight="25" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="5.0">
+                                            <JFXButton text="Parsed" styleClass="selected"/>
+                                            <JFXButton text="Origin"/>
+                                        </SideBar>
                                     </AnchorPane>
                                 </Tab>
                             </JFXTabPane>
@@ -80,27 +90,36 @@
                         <AnchorPane minHeight="0.0" minWidth="0.0" styleClass="code-anchor-pane">
                             <CodeArea fx:id="respHeaderArea" editable="false" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                             <TableView fx:id="respHeaderTable" visible="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                            <SideBar prefHeight="25" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="5.0">
+                                <JFXButton text="Table" styleClass="selected"/>
+                                <JFXButton text="Text"/>
+                            </SideBar>
                         </AnchorPane>
                     </TitledPane>
                     <TitledPane fx:id="respDataPane" animated="false" maxHeight="Infinity" text="Preview" VBox.vgrow="ALWAYS">
                         <AnchorPane minHeight="0.0" minWidth="0.0" styleClass="code-anchor-pane">
                             <CodeArea fx:id="respContentArea" disable="true" editable="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                            <HBox prefHeight="27.0" styleClass="content-button-bar" AnchorPane.rightAnchor="35.0" AnchorPane.topAnchor="10.0">
-                                <children>
-                                   <Button mnemonicParsing="false" styleClass="first-btn" text="Pretty" />
-                                   <Button mnemonicParsing="false" text=" Text " />
-                                   <Button mnemonicParsing="false" text="Origin" />
-                                   <Button mnemonicParsing="false" styleClass="last-btn" text=" Hex  " />
-                                   <ChoiceBox prefHeight="25.0" prefWidth="70.0" />
-                                </children>
-                                <effect>
-                                   <DropShadow height="15" width="15">
-                                      <color>
-                                         <Color red="0.3" green="0.3" blue="0.3" opacity="0.7" />
-                                      </color>
-                                   </DropShadow>
-                                </effect>
-                            </HBox>
+                            <SideBar prefHeight="25" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="5.0">
+                                <JFXButton text="Text" styleClass="selected"/>
+                                <JFXButton text="Origin"/>
+                                <JFXButton text="Hex"/>
+                            </SideBar>
+                            <!-- <HBox prefHeight="27.0" styleClass="content-button-bar" AnchorPane.rightAnchor="35.0" AnchorPane.topAnchor="10.0"> -->
+                            <!--     <children> -->
+                            <!--        <Button mnemonicParsing="false" styleClass="first-btn" text="Pretty" /> -->
+                            <!--        <Button mnemonicParsing="false" text=" Text " /> -->
+                            <!--        <Button mnemonicParsing="false" text="Origin" /> -->
+                            <!--        <Button mnemonicParsing="false" styleClass="last-btn" text=" Hex  " /> -->
+                            <!--        <ChoiceBox prefHeight="25.0" prefWidth="70.0" /> -->
+                            <!--     </children> -->
+                            <!--     <effect> -->
+                            <!--        <DropShadow height="15" width="15"> -->
+                            <!--           <color> -->
+                            <!--              <Color red="0.3" green="0.3" blue="0.3" opacity="0.7" /> -->
+                            <!--           </color> -->
+                            <!--        </DropShadow> -->
+                            <!--     </effect> -->
+                            <!-- </HBox> -->
                         </AnchorPane>
                     </TitledPane>
                 </SplitPane>

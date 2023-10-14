@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import org.kordamp.ikonli.javafx.*?>
+
+<?import java.net.URL?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.paint.Color?>
+<fx:root styleClass="side-bar" type="javafx.scene.layout.HBox"
+         xmlns="http://javafx.com/javafx/11.0.14-internal"
+         xmlns:fx="http://javafx.com/fxml/1">
+    <stylesheets>
+        <URL value="@/css/component/component.css" />
+    </stylesheets>
+    <Button fx:id="collapseBtn" styleClass="collapse-btn" maxWidth="12.0" minWidth="12.0" textOverrun="CLIP">
+        <graphic>
+            <FontIcon iconColor="#595d5d" iconLiteral="fas-angle-double-right" iconSize="12" />
+        </graphic>
+    </Button>
+    <effect>
+        <DropShadow height="15" width="15" offsetY="2">
+            <color>
+                <Color red="0.3" green="0.3" blue="0.3" opacity="0.5" />
+            </color>
+        </DropShadow>
+    </effect>
+</fx:root>

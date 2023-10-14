@@ -264,7 +264,7 @@ public class DetailTabController implements Initializable {
 
         boolean hasQuery = !queryParams.isEmpty();
         boolean hasContent = content.length > 0;
-        System.out.printf("hasQuery: %s, hasContent: %s\n", hasQuery, hasContent);
+        // System.out.printf("hasQuery: %s, hasContent: %s\n", hasQuery, hasContent);
         SingleSelectionModel<Tab> selectionModel = reqPayloadTabPane.getSelectionModel();
         String title = "";
         if (hasQuery) {
@@ -277,12 +277,10 @@ public class DetailTabController implements Initializable {
             title = "Content";
         }
         if (hasQuery && hasContent) {
-            System.out.println("add Tab header");
             reqPayloadTabPane.setTabMaxHeight(20);
             reqPayloadTabPane.setTabMinHeight(20);
             title = "Payload";
         } else {
-            System.out.println("hide Tab header");
             reqPayloadTabPane.setTabMaxHeight(0);
         }
         reqPayloadPane.setText(title);
