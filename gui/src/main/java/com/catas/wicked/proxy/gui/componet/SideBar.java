@@ -2,6 +2,8 @@ package com.catas.wicked.proxy.gui.componet;
 
 import javafx.animation.Animation;
 import javafx.animation.Transition;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -20,6 +22,8 @@ public class SideBar extends HBox {
     @FXML
     private Button collapseBtn;
 
+    private static final String SELECTED_STYLE = "selected";
+
     public SideBar() {
         URL resource = getClass().getResource("/fxml/component/side_bar.fxml");
         FXMLLoader fxmlLoader = new FXMLLoader(resource);
@@ -33,11 +37,30 @@ public class SideBar extends HBox {
         }
 
         collapseBtn.setOnAction(new SideBarEventHandler(collapseBtn, this));
-    }
 
-    public SideBar(Node... children) {
-        this();
-        getChildren().addAll(children);
+        ObservableList<Node> children = getChildren();
+        children.addListener(new ListChangeListener<Node>() {
+            @Override
+            public void onChanged(Change<? extends Node> c) {
+                while (c.next()) {
+                    if (c.wasAdded()) {
+                        Node node = c.getAddedSubList().get(0);
+                        node.setOnMouseClicked(event -> {
+                            // System.out.println("Clicked!");
+                            if (node.getStyleClass().contains(SELECTED_STYLE)) {
+                                return;
+                            }
+
+                            for (Node sibling : getChildren()) {
+                                sibling.getStyleClass().remove(SELECTED_STYLE);
+                            }
+                            node.getStyleClass().add(SELECTED_STYLE);
+                        });
+
+                    }
+                }
+            }
+        });
     }
 
     static class SideBarEventHandler implements EventHandler<ActionEvent> {

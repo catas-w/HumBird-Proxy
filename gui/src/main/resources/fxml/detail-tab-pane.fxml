@@ -101,6 +101,10 @@
                             <CodeArea fx:id="respContentArea" disable="true" editable="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                             <SideBar prefHeight="25" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="5.0">
                                 <JFXButton text="Text" styleClass="selected"/>
+                                <JFXComboBox>
+                                    <!-- <JFXButton text="JSON"/> -->
+                                    <!-- <JFXButton text="HTML"/> -->
+                                </JFXComboBox>
                                 <JFXButton text="Origin"/>
                                 <JFXButton text="Hex"/>
                             </SideBar>
