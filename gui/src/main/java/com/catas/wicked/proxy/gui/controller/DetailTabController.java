@@ -16,6 +16,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SingleSelectionModel;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
@@ -35,6 +36,8 @@ import java.util.ResourceBundle;
 public class DetailTabController implements Initializable {
 
     public MessageLabel overViewMsgLabel;
+    public ScrollPane respImageScrollPane;
+
     @FXML
     private SplitPane respSplitPane;
     @FXML
@@ -354,6 +357,10 @@ public class DetailTabController implements Initializable {
         }
     }
 
+
+    /**
+     * TODO switch to display parsed query
+     */
     public void displayParsedQuery(ActionEvent event) {
 
     }

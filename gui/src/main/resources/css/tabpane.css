@@ -85,3 +85,8 @@
     -fx-text-fill: #1e1e1e;
     /*-fx-font-weight: 400;*/
 }
+
+/********* image **************/
+.zoom-image-view {
+    -fx-background-color: #ffffff;
+}

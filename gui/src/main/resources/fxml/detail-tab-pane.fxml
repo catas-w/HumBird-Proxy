@@ -10,6 +10,7 @@
 <?import com.catas.wicked.proxy.gui.componet.SideBar?>
 
 <?import com.catas.wicked.proxy.gui.componet.MessageLabel?>
+<?import com.catas.wicked.proxy.gui.componet.ZoomImageView?>
 <VBox alignment="TOP_CENTER" prefHeight="600.0" prefWidth="850.0" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.catas.wicked.proxy.gui.controller.DetailTabController">
     <stylesheets>
         <URL value="@../css/tabpane.css" />
@@ -88,7 +89,7 @@
         </Tab>
         <Tab text="  Response  ">
             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: #ffffff;">
-                <SplitPane fx:id="respSplitPane" dividerPositions="0.333333" orientation="VERTICAL" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                <SplitPane fx:id="respSplitPane" dividerPositions="0.45" orientation="VERTICAL" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <TitledPane fx:id="respHeaderPane" animated="false" maxHeight="Infinity" text="Headers" VBox.vgrow="ALWAYS">
                         <AnchorPane minHeight="0.0" minWidth="0.0" styleClass="code-anchor-pane">
                             <CodeArea fx:id="respHeaderArea" editable="false" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
@@ -101,7 +102,22 @@
                     </TitledPane>
                     <TitledPane fx:id="respDataPane" animated="false" maxHeight="Infinity" text="Preview" VBox.vgrow="ALWAYS">
                         <AnchorPane minHeight="0.0" minWidth="0.0" styleClass="code-anchor-pane">
-                            <CodeArea fx:id="respContentArea" disable="true" editable="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                            <CodeArea fx:id="respContentArea" visible="false" editable="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
+                            <!-- <ScrollPane fx:id="respImageScrollPane" -->
+                            <!--             AnchorPane.bottomAnchor="0.0" -->
+                            <!--             AnchorPane.leftAnchor="0.0" -->
+                            <!--             AnchorPane.rightAnchor="0.0" -->
+                            <!--             AnchorPane.topAnchor="0.0"> -->
+                            <!--     <BorderPane fx:id="respImagePane"> -->
+                            <!--         <center> -->
+                            <!--             <ImageView> -->
+                            <!--                 <Image url="@../image/file.jpg"/> -->
+                            <!--             </ImageView> -->
+                            <!--         </center> -->
+                            <!--     </BorderPane> -->
+                            <!-- </ScrollPane> -->
+                            <ZoomImageView />
+
                             <SideBar prefHeight="25" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="5.0">
                                 <JFXButton text="Text" styleClass="selected"/>
                                 <JFXComboBox>
@@ -111,22 +127,6 @@
                                 <JFXButton text="Origin"/>
                                 <JFXButton text="Hex"/>
                             </SideBar>
-                            <!-- <HBox prefHeight="27.0" styleClass="content-button-bar" AnchorPane.rightAnchor="35.0" AnchorPane.topAnchor="10.0"> -->
-                            <!--     <children> -->
-                            <!--        <Button mnemonicParsing="false" styleClass="first-btn" text="Pretty" /> -->
-                            <!--        <Button mnemonicParsing="false" text=" Text " /> -->
-                            <!--        <Button mnemonicParsing="false" text="Origin" /> -->
-                            <!--        <Button mnemonicParsing="false" styleClass="last-btn" text=" Hex  " /> -->
-                            <!--        <ChoiceBox prefHeight="25.0" prefWidth="70.0" /> -->
-                            <!--     </children> -->
-                            <!--     <effect> -->
-                            <!--        <DropShadow height="15" width="15"> -->
-                            <!--           <color> -->
-                            <!--              <Color red="0.3" green="0.3" blue="0.3" opacity="0.7" /> -->
-                            <!--           </color> -->
-                            <!--        </DropShadow> -->
-                            <!--     </effect> -->
-                            <!-- </HBox> -->
                         </AnchorPane>
                     </TitledPane>
                 </SplitPane>
