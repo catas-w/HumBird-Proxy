@@ -5,6 +5,7 @@ import com.catas.wicked.common.bean.message.RequestMessage;
 import com.catas.wicked.common.bean.message.ResponseMessage;
 import com.catas.wicked.common.util.WebUtils;
 import com.catas.wicked.proxy.gui.componet.MessageLabel;
+import com.catas.wicked.proxy.gui.componet.ZoomImageView;
 import com.catas.wicked.proxy.render.RequestRenderer;
 import com.jfoenix.controls.JFXTabPane;
 import com.jfoenix.controls.JFXTextArea;
@@ -16,16 +17,19 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SingleSelectionModel;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.Pane;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.http.entity.ContentType;
 import org.fxmisc.richtext.CodeArea;
 
+import java.io.ByteArrayInputStream;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -35,9 +39,10 @@ import java.util.ResourceBundle;
 @Singleton
 public class DetailTabController implements Initializable {
 
-    public MessageLabel overViewMsgLabel;
-    public ScrollPane respImageScrollPane;
-
+    @FXML
+    private ZoomImageView respImageView;
+    @FXML
+    private MessageLabel overViewMsgLabel;
     @FXML
     private SplitPane respSplitPane;
     @FXML
@@ -306,10 +311,27 @@ public class DetailTabController implements Initializable {
         Map<String, String> headers = response.getHeaders();
         requestRenderer.renderHeaders(headers, respHeaderTable);
 
-        // content TODO images
-        byte[] content = WebUtils.parseContent(headers, response.getContent());
-        String contentStr = new String(content, StandardCharsets.UTF_8);
-        requestRenderer.renderContent(contentStr, respContentArea);
+        // content
+        String contentTypeHeader = response.getHeaders().get("Content-Type");
+        String mimeType = null;
+        Charset charset = null;
+        if (StringUtils.isNotBlank(contentTypeHeader)) {
+            ContentType contentType = ContentType.parse(contentTypeHeader);
+            mimeType = contentType.getMimeType();
+            charset = contentType.getCharset();
+        }
+
+        byte[] parsedContent = WebUtils.parseContent(response.getHeaders(), response.getContent());
+        if (StringUtils.isNotBlank(mimeType) && mimeType.startsWith("image/")) {
+            respContentArea.setVisible(false);
+            respImageView.setVisible(true);
+            respImageView.setImage(new ByteArrayInputStream(parsedContent));
+        } else {
+            respContentArea.setVisible(true);
+            respImageView.setVisible(false);
+            String contentStr = new String(parsedContent,  charset == null ? StandardCharsets.UTF_8: charset);
+            requestRenderer.renderContent(contentStr, respContentArea);
+        }
     }
 
     public void displayOverView(RequestMessage request) {

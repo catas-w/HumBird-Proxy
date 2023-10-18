@@ -14,6 +14,8 @@ import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 
+import java.io.InputStream;
+
 /**
  * image view support zoom
  */
@@ -39,22 +41,9 @@ public class ZoomImageView extends ScrollPane {
         AnchorPane.setBottomAnchor(this, 0.0);
         setContextMenu(contextMenu);
 
-        init();
-    }
-
-    public void setImage(Image image) {
-        this.image = image;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    private void init() {
-        image = new Image("/image/start.jpg");
-        imageView = new ImageView(image);
+        // image = new Image("/image/start.jpg");
+        imageView = new ImageView();
         imageView.setPreserveRatio(true);
-        // image.getWidth()
 
         borderPane = new BorderPane();
         borderPane.setCenter(imageView);
@@ -62,11 +51,52 @@ public class ZoomImageView extends ScrollPane {
 
         borderPane.prefWidthProperty().bind(this.widthProperty().subtract(4.0));
         borderPane.prefHeightProperty().bind(this.heightProperty().subtract(4.0));
+        // init();
+    }
+
+    public void setImage(Image image) {
+        this.image = image;
+        init();
+    }
+
+    public void setImage(InputStream inputStream) {
+        try {
+            this.image = new Image(inputStream);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        init();
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+        try {
+            this.image = new Image(url);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        init();
+    }
+
+    private void init() {
+        imageView.setImage(image);
+        imageView.setRotate(0);
+        double width = image.getWidth();
+        double height = image.getHeight();
+        double imageRatio = width / height;
+        double parentRatio = this.getWidth() / this.getHeight();
+
+        if (imageRatio > parentRatio && width > this.getWidth()) {
+            imageView.setFitWidth(this.getWidth());
+        } else if (imageRatio < parentRatio && height > this.getHeight()) {
+            imageView.setFitHeight(this.getHeight());
+        }
 
         zoomWithScroll();
     }
 
     private void zoomWithScroll() {
+        // TODO: clean previous listeners
         zoomProperty.addListener(new InvalidationListener() {
             @Override
             public void invalidated(Observable observable) {

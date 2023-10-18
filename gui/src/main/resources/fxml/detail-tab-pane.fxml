@@ -103,20 +103,7 @@
                     <TitledPane fx:id="respDataPane" animated="false" maxHeight="Infinity" text="Preview" VBox.vgrow="ALWAYS">
                         <AnchorPane minHeight="0.0" minWidth="0.0" styleClass="code-anchor-pane">
                             <CodeArea fx:id="respContentArea" visible="false" editable="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
-                            <!-- <ScrollPane fx:id="respImageScrollPane" -->
-                            <!--             AnchorPane.bottomAnchor="0.0" -->
-                            <!--             AnchorPane.leftAnchor="0.0" -->
-                            <!--             AnchorPane.rightAnchor="0.0" -->
-                            <!--             AnchorPane.topAnchor="0.0"> -->
-                            <!--     <BorderPane fx:id="respImagePane"> -->
-                            <!--         <center> -->
-                            <!--             <ImageView> -->
-                            <!--                 <Image url="@../image/file.jpg"/> -->
-                            <!--             </ImageView> -->
-                            <!--         </center> -->
-                            <!--     </BorderPane> -->
-                            <!-- </ScrollPane> -->
-                            <ZoomImageView />
+                            <ZoomImageView fx:id="respImageView" />
 
                             <SideBar prefHeight="25" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="5.0">
                                 <JFXButton text="Text" styleClass="selected"/>
