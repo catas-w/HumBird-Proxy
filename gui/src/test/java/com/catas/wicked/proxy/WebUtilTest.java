@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import java.net.MalformedURLException;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class WebUtilTest {
@@ -43,5 +44,21 @@ public class WebUtilTest {
         Assert.assertEquals("value1", params.get("param1"));
         Assert.assertEquals("value2", params.get("param2"));
         Assert.assertEquals("jack", params.get("name"));
+    }
+
+    @Test
+    public void testHeaderText() {
+        Map<String, String> map = new LinkedHashMap<>();
+        map.put("key1", "value1");
+        map.put("key2", "value2");
+        map.put("key3", "value3");
+
+        String expected = """
+                key1: value1
+                key2: value2
+                key3: value3
+                """;
+        String headerText = WebUtils.getHeaderText(map);
+        Assert.assertEquals(expected.trim(), headerText);
     }
 }

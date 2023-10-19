@@ -254,6 +254,7 @@ public class DetailTabController implements Initializable {
         // display headers
         Map<String, String> headers = request.getHeaders();
         requestRenderer.renderHeaders(headers, reqHeaderTable);
+        requestRenderer.renderHeaders(WebUtils.getHeaderText(headers), reqHeaderArea);
 
         // display query-params if exist
         String query = request.getUrl().getQuery();
@@ -270,16 +271,16 @@ public class DetailTabController implements Initializable {
         }
 
         // display request content
-        // TODO images
         byte[] content = WebUtils.parseContent(request.getHeaders(), request.getBody());
         String contentStr = new String(content, StandardCharsets.UTF_8);
         requestRenderer.renderContent(contentStr, reqPayloadArea);
 
         boolean hasQuery = !queryParams.isEmpty();
         boolean hasContent = content.length > 0;
-        // System.out.printf("hasQuery: %s, hasContent: %s\n", hasQuery, hasContent);
+        // TODO bug-fix
+        System.out.printf("hasQuery: %s, hasContent: %s\n", hasQuery, hasContent);
         SingleSelectionModel<Tab> selectionModel = reqPayloadTabPane.getSelectionModel();
-        String title = "";
+        String title = "Payload";
         if (hasQuery) {
             selectionModel.clearAndSelect(1);
             title = "Query Parameters";
@@ -292,7 +293,7 @@ public class DetailTabController implements Initializable {
         if (hasQuery && hasContent) {
             reqPayloadTabPane.setTabMaxHeight(20);
             reqPayloadTabPane.setTabMinHeight(20);
-            title = "Payload";
+            // title = "Payload";
         } else {
             reqPayloadTabPane.setTabMaxHeight(0);
         }
@@ -310,6 +311,7 @@ public class DetailTabController implements Initializable {
         // headers
         Map<String, String> headers = response.getHeaders();
         requestRenderer.renderHeaders(headers, respHeaderTable);
+        requestRenderer.renderHeaders(WebUtils.getHeaderText(headers), respHeaderArea);
 
         // content
         String contentTypeHeader = response.getHeaders().get("Content-Type");

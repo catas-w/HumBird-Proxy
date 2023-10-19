@@ -147,4 +147,19 @@ public class WebUtils {
         }
         return map;
     }
+
+    public static String getHeaderText(Map<String, String> headers) {
+        if (headers == null || headers.isEmpty()) {
+            return "";
+        }
+        StringBuilder builder = new StringBuilder();
+        for (Map.Entry<String, String> entry : headers.entrySet()) {
+            builder.append(entry.getKey())
+                    .append(": ")
+                    .append(entry.getValue())
+                    .append("\n");
+        }
+        builder.deleteCharAt(builder.length() - 1);
+        return builder.toString();
+    }
 }
