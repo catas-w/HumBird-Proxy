@@ -215,3 +215,26 @@
     -fx-background-radius: 0 4px 4px 0;
     -fx-end-margin: 2px;
 }
+
+/********* Check Box ***********/
+.header-check-box {
+    -jfx-checked-color: #26b1b6;
+    -jfx-unchecked-color: #8f8f8f;
+    -fx-text-fill: #8f8f8f;
+    -fx-font-weight: 700;
+    -fx-font-size: 11;
+    -jfx-disable-visual-focus: true;
+    -fx-translate-x: 15;
+}
+.header-check-box:selected {
+    -fx-text-fill: #26b1b6;
+    -fx-font-weight: 700;
+}
+.header-check-box .box {
+    -fx-pref-height: 12;
+    -fx-pref-width: 12;
+    -fx-translate-y: -1;
+}
+.header-check-box .jfx-rippler {
+    -jfx-rippler-disabled: true;
+}

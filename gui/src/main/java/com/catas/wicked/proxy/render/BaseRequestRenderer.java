@@ -42,12 +42,14 @@ public class BaseRequestRenderer implements RequestRenderer{
     private static final Pattern PATTERN = Pattern.compile(
             "(?<KEYWORD>" + KEYWORD_PATTERN + ")"
                     + "|(?<HEADER>" + HEADER_PATTERN + ")"
-                    + "|(?<JSONKEY>" + JSON_KEY_PATTERN + ")"
+                    + "|(?<JSONKEY>" + JSON_KEY_PATTERN + ")",
+            Pattern.MULTILINE
     );
 
     // private static final ContextMenu defaultContextMenu = new DefaultRichTextContextMenu();
 
     @Override
+    @SuppressWarnings("unchecked")
     public void renderHeaders(String text, GenericStyledArea area) {
         area.setContextMenu(ContextMenuFactory.getRichTextContextMenu());
         area.textProperty().addListener((obs, oldText, newText) -> {

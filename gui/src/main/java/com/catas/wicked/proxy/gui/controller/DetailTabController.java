@@ -25,6 +25,7 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.layout.Pane;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.entity.ContentType;
+import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.fxmisc.richtext.CodeArea;
 
 import java.io.ByteArrayInputStream;
@@ -281,19 +282,25 @@ public class DetailTabController implements Initializable {
         System.out.printf("hasQuery: %s, hasContent: %s\n", hasQuery, hasContent);
         SingleSelectionModel<Tab> selectionModel = reqPayloadTabPane.getSelectionModel();
         String title = "Payload";
-        if (hasQuery) {
-            selectionModel.clearAndSelect(1);
-            title = "Query Parameters";
-        }
-        if (hasContent) {
-            selectionModel.clearAndSelect(0);
-            // TODO form-data
-            title = "Content";
-        }
+        // if (hasQuery) {
+        //     selectionModel.clearAndSelect(1);
+        //     title = "Query Parameters";
+        // }
+        // if (hasContent) {
+        //     selectionModel.clearAndSelect(0);
+        //     // TODO form-data
+        //     title = "Content";
+        // }
         if (hasQuery && hasContent) {
             reqPayloadTabPane.setTabMaxHeight(20);
             reqPayloadTabPane.setTabMinHeight(20);
-            // title = "Payload";
+        } else if (hasQuery) {
+            selectionModel.clearAndSelect(1);
+            title = "Query Parameters";
+        } else if (hasContent) {
+            selectionModel.clearAndSelect(0);
+            // TODO form-data
+            title = "Content";
         } else {
             reqPayloadTabPane.setTabMaxHeight(0);
         }
@@ -355,8 +362,8 @@ public class DetailTabController implements Initializable {
         Parent parent = source.getParent().getParent();
         if (parent instanceof Pane parentPane) {
             for (Node child : parentPane.getChildren()) {
-                if (child instanceof CodeArea codeArea) {
-                    codeArea.setVisible(false);
+                if (child instanceof VirtualizedScrollPane codeArePane) {
+                    codeArePane.setVisible(false);
                 } else if (child instanceof TableView<?> tableView) {
                     tableView.setVisible(true);
                 }
@@ -372,8 +379,8 @@ public class DetailTabController implements Initializable {
         Parent parent = source.getParent().getParent();
         if (parent instanceof Pane parentPane) {
             for (Node child : parentPane.getChildren()) {
-                if (child instanceof CodeArea codeArea) {
-                    codeArea.setVisible(true);
+                if (child instanceof VirtualizedScrollPane codeArePane) {
+                    codeArePane.setVisible(true);
                 } else if (child instanceof TableView<?> tableView) {
                     tableView.setVisible(false);
                 }
