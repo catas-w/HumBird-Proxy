@@ -238,3 +238,46 @@
 .header-check-box .jfx-rippler {
     -jfx-rippler-disabled: true;
 }
+
+/******* comboBox *********/
+.side-bar .jfx-combo-box {
+    -jfx-focus-color: #33cbb9;
+    -jfx-unfocus-color: TRANSPARENT;
+    -fx-prompt-text-fill: #707070;
+}
+.side-bar .jfx-combo-box .label{
+    -fx-text-fill: #707070;
+}
+.side-bar .combo-box-popup .list-view {
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+    -fx-background-color: rgb(255, 255, 255, 0.75);
+}
+.side-bar .combo-box-popup .list-view .jfx-list-cell:odd:selected .jfx-list-cell-container,
+.side-bar .combo-box-popup .list-view .jfx-list-cell:even:selected .jfx-list-cell-container {
+    -fx-background-color: TRANSPARENT;
+    -fx-text-fill: #707070;
+}
+
+.side-bar .combo-box-popup .list-view .jfx-list-cell {
+    -fx-background-insets: 0.0;
+    -fx-text-fill: #707070;
+}
+
+.side-bar .combo-box-popup .list-view .jfx-list-cell:odd,
+.side-bar .combo-box-popup .list-view .jfx-list-cell:even {
+    -fx-background-color: TRANSPARENT;
+    -fx-text-fill: #707070;
+}
+
+.side-bar .combo-box-popup .list-view .jfx-list-cell:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.8);
+}
+.side-bar .combo-box-popup .list-view .jfx-list-cell:hover .label {
+    -fx-text-fill: black;
+}
+
+.side-bar .combo-box-popup .list-view .jfx-list-cell:selected .label {
+    -fx-text-fill: #33cbb9;
+    -fx-font-weight: bold;
+}

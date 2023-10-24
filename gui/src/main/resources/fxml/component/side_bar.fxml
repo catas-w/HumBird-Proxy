@@ -13,13 +13,13 @@
     <stylesheets>
         <URL value="@/css/component/component.css" />
     </stylesheets>
-    <JFXButton fx:id="collapseBtn" styleClass="collapse-btn" maxWidth="12.0" minWidth="12.0" textOverrun="CLIP">
+    <JFXButton fx:id="collapseBtn" styleClass="collapse-btn" maxWidth="24.0" minWidth="24.0" textOverrun="CLIP">
         <graphic>
             <FontIcon iconColor="#808080" iconLiteral="fas-angle-double-right" iconSize="12" />
         </graphic>
     </JFXButton>
     <effect>
-        <DropShadow height="15" width="15" offsetY="2">
+        <DropShadow fx:id="shadow" height="15" width="15" offsetY="2">
             <color>
                 <Color red="0.3" green="0.3" blue="0.3" opacity="0.5" />
             </color>

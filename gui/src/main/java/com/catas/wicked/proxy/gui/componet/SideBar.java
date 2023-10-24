@@ -10,7 +10,9 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.HBox;
+import javafx.scene.shape.Ellipse;
 import javafx.util.Duration;
 import org.kordamp.ikonli.javafx.FontIcon;
 
@@ -21,6 +23,9 @@ public class SideBar extends HBox {
 
     @FXML
     private Button collapseBtn;
+
+    @FXML
+    private DropShadow shadow;
 
     private static final String SELECTED_STYLE = "selected";
 

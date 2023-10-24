@@ -1,39 +1,57 @@
 .side-bar {
-    -fx-background-color: white;
-    -fx-background-radius: 4 0 0 4;
+    -fx-background-color: rgb(255, 255, 255, 0.75);
+    -fx-background-radius: 12 0 0 12;
+    -fx-border-width: 1 0 1 0;
     /*-fx-pref-height: 25px;*/
 }
-.side-bar .button, .side-bar .jfx-combo-box {
-    /*-fx-background-color: #E0E0E093;*/
-    -fx-background-color: #dedede;
-    -fx-border-width: 0 0 2 2;
-    -fx-border-color: #eaeaea #eaeaea #dedede #eaeaea;
+.side-bar .button {
+    -fx-background-color: TRANSPARENT;
+    -fx-border-width: 0 0 2 0;
+    -fx-border-color: TRANSPARENT;
 
-    -fx-pref-height: 25px !important;
+    -fx-pref-height: 24px;
     -fx-background-radius: 0;
     -fx-pref-width: 60px;
-    -fx-text-fill: #626262;
+    -fx-text-fill: #707070;
 }
-.side-bar .button:hover, .side-bar .jfx-combo-box:hover {
-    -fx-background-color: white;
-    -fx-border-width: 0 0 2 2;
-    -fx-border-color: white;
-    -fx-background-radius: 4 0 0 4;
+.side-bar .jfx-combo-box {
+    -fx-background-color: TRANSPARENT;
+    -fx-border-width: 0 0 1 0;
+    -fx-border-color: TRANSPARENT;
+
+    -fx-pref-height: 24px;
+    -fx-background-radius: 0;
+    -fx-pref-width: 80px;
+    -fx-text-fill: #707070;
+}
+.side-bar .jfx-rippler{
+    -jfx-rippler-fill: rgb(101, 218, 218);
+}
+.side-bar .button:hover,
+.side-bar .jfx-combo-box:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.9);
+    /*-fx-border-width: 0 0 2 2;*/
+    -fx-border-color: rgba(255, 255, 255, 0.9);
+    /*-fx-background-radius: 4 0 0 4;*/
     -fx-text-fill: black;
 }
 .collapse-btn {
-    -fx-background-radius: 4 0 0 4;
-    -fx-border-radius: 4 0 0 4;
-    /*-fx-padding: 2 0 2 0;*/
-    -fx-border-width: 1 0 1 0 !important;
-    -fx-border-color: #eaeaea #eaeaea #dedede #eaeaea;
+    -fx-background-radius: 12 0 0 12;
+    -fx-border-radius: 12 0 0 12;
+    -fx-padding: 4 0 2 0;
+    -fx-border-width: 1 0 1 0;
+    -fx-border-color: TRANSPARENT;
 }
-/*.collapse-btn:hover {*/
-/*    -fx-background-color: #dedede !important;*/
-/*    -fx-background-radius: 4 0 0 4;*/
-/*    -fx-border-radius: 4 0 0 4;*/
-/*}*/
-.side-bar .button.selected, .side-bar .button.selected:hover {
-    -fx-border-width: 0 0 2 2;
-    -fx-border-color: #eaeaea #eaeaea #1bc091 #eaeaea;
+.collapse-btn:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.9);
+    -fx-background-radius: 12 0 0 12 !important;
+    -fx-border-radius: 12 0 0 12;
+    -fx-border-width: 1 0 1 0;
+    -fx-border-color: rgba(255, 255, 255, 0.9);
+}
+
+.side-bar .button.selected,
+.side-bar .button.selected:hover {
+    -fx-border-width: 0 0 2 0;
+    -fx-border-color: TRANSPARENT TRANSPARENT #1bc0b2 TRANSPARENT;
 }

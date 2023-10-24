@@ -141,11 +141,8 @@
                             <ZoomImageView fx:id="respImageView" />
 
                             <SideBar prefHeight="25" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="5.0">
-                                <JFXButton text="Text" styleClass="selected"/>
-                                <JFXComboBox>
-                                    <!-- <JFXButton text="JSON"/> -->
-                                    <!-- <JFXButton text="HTML"/> -->
-                                </JFXComboBox>
+                                <!-- <JFXButton text="Text" /> -->
+                                <JFXComboBox fx:id="respComboBox" styleClass="selected"/>
                                 <JFXButton text="Origin"/>
                                 <JFXButton text="Hex"/>
                             </SideBar>

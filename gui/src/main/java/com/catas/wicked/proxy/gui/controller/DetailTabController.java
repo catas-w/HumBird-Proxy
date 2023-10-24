@@ -7,6 +7,7 @@ import com.catas.wicked.common.util.WebUtils;
 import com.catas.wicked.proxy.gui.componet.MessageLabel;
 import com.catas.wicked.proxy.gui.componet.ZoomImageView;
 import com.catas.wicked.proxy.render.RequestRenderer;
+import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXTabPane;
 import com.jfoenix.controls.JFXTextArea;
 import jakarta.inject.Inject;
@@ -16,16 +17,16 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
-import javafx.scene.Parent;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.Labeled;
 import javafx.scene.control.SingleSelectionModel;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TitledPane;
-import javafx.scene.layout.Pane;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.entity.ContentType;
-import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.fxmisc.richtext.CodeArea;
 
 import java.io.ByteArrayInputStream;
@@ -40,6 +41,8 @@ import java.util.ResourceBundle;
 @Singleton
 public class DetailTabController implements Initializable {
 
+    @FXML
+    private JFXComboBox<Labeled> respComboBox;
     @FXML
     private ZoomImageView respImageView;
     @FXML
@@ -96,11 +99,6 @@ public class DetailTabController implements Initializable {
             "Refer Policy:   cross-origin boolean",
     });
 
-    private static final String sampleQueryParams = """
-            name: Jack
-            age: 32
-            from: Google Chrome""";
-
     private static final String sampleJson = """
             {
                 "key1": "Val1",
@@ -119,6 +117,7 @@ public class DetailTabController implements Initializable {
         addTitleListener(respHeaderPane, respSplitPane);
         addTitleListener(respDataPane, respSplitPane);
 
+        resetComboBox(respComboBox);
 
         Map<String, String> map = new LinkedHashMap<>();
         map.put("aa", "bb");
@@ -146,6 +145,17 @@ public class DetailTabController implements Initializable {
 
         requestMessage.setResponse(responseMessage);
         displayRequest(requestMessage);
+    }
+
+    private void resetComboBox(ComboBox<Labeled> comboBox) {
+        if (comboBox.getItems().isEmpty()) {
+            // comboBox.setButtonCell(new Gra);
+            comboBox.getItems().add(new Label("Text"));
+            comboBox.getItems().add(new Label("JSON"));
+            comboBox.getItems().add(new Label("Html"));
+            comboBox.getItems().add(new Label("Xml"));
+        }
+        comboBox.getSelectionModel().selectFirst();
     }
 
     /**
@@ -281,16 +291,8 @@ public class DetailTabController implements Initializable {
         // TODO bug-fix
         System.out.printf("hasQuery: %s, hasContent: %s\n", hasQuery, hasContent);
         SingleSelectionModel<Tab> selectionModel = reqPayloadTabPane.getSelectionModel();
+
         String title = "Payload";
-        // if (hasQuery) {
-        //     selectionModel.clearAndSelect(1);
-        //     title = "Query Parameters";
-        // }
-        // if (hasContent) {
-        //     selectionModel.clearAndSelect(0);
-        //     // TODO form-data
-        //     title = "Content";
-        // }
         if (hasQuery && hasContent) {
             reqPayloadTabPane.setTabMaxHeight(20);
             reqPayloadTabPane.setTabMinHeight(20);
@@ -353,41 +355,6 @@ public class DetailTabController implements Initializable {
         String cont = title + "\n" + code;
         requestRenderer.renderContent(cont, overviewArea);
     }
-
-    /**
-     * switch to display table
-     */
-    public void displayTable(ActionEvent event) {
-        Node source = (Node) event.getSource();
-        Parent parent = source.getParent().getParent();
-        if (parent instanceof Pane parentPane) {
-            for (Node child : parentPane.getChildren()) {
-                if (child instanceof VirtualizedScrollPane codeArePane) {
-                    codeArePane.setVisible(false);
-                } else if (child instanceof TableView<?> tableView) {
-                    tableView.setVisible(true);
-                }
-            }
-        }
-    }
-
-    /**
-     * switch to display text
-     */
-    public void displayText(ActionEvent event) {
-        Node source = (Node) event.getSource();
-        Parent parent = source.getParent().getParent();
-        if (parent instanceof Pane parentPane) {
-            for (Node child : parentPane.getChildren()) {
-                if (child instanceof VirtualizedScrollPane codeArePane) {
-                    codeArePane.setVisible(true);
-                } else if (child instanceof TableView<?> tableView) {
-                    tableView.setVisible(false);
-                }
-            }
-        }
-    }
-
 
     /**
      * TODO switch to display parsed query
