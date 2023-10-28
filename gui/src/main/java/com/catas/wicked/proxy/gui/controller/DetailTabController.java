@@ -6,6 +6,7 @@ import com.catas.wicked.common.bean.message.ResponseMessage;
 import com.catas.wicked.common.util.WebUtils;
 import com.catas.wicked.proxy.gui.componet.MessageLabel;
 import com.catas.wicked.proxy.gui.componet.ZoomImageView;
+import com.catas.wicked.proxy.gui.componet.richtext.DisplayCodeArea;
 import com.catas.wicked.proxy.render.RequestRenderer;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXTabPane;
@@ -41,6 +42,7 @@ import java.util.ResourceBundle;
 @Singleton
 public class DetailTabController implements Initializable {
 
+    public DisplayCodeArea testCodeArea;
     @FXML
     private JFXComboBox<Labeled> respComboBox;
     @FXML
@@ -68,17 +70,17 @@ public class DetailTabController implements Initializable {
     @FXML
     private TableView<HeaderEntry> reqHeaderTable;
     @FXML
-    private CodeArea reqHeaderArea;
+    private DisplayCodeArea reqHeaderArea;
     @FXML
-    private CodeArea reqParamArea;
+    private DisplayCodeArea reqParamArea;
     @FXML
-    private CodeArea reqPayloadArea;
+    private DisplayCodeArea reqPayloadArea;
     @FXML
     private JFXTextArea reqTimingArea;
     @FXML
-    private CodeArea respHeaderArea;
+    private DisplayCodeArea respHeaderArea;
     @FXML
-    private CodeArea respContentArea;
+    private DisplayCodeArea respContentArea;
     @FXML
     private TableView<HeaderEntry> respHeaderTable;
 
@@ -107,6 +109,41 @@ public class DetailTabController implements Initializable {
                 "key4": 23
             }""";
 
+    private static final String sampleXml = String.join("\n", new String[] {
+            "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>",
+            "<!-- Sample XML -->",
+            "< orders >",
+            "	<Order number=\"1\" table=\"center\">",
+            "		<items>",
+            "			<Item>",
+            "				<type>ESPRESSO</type>",
+            "				<shots>2</shots>",
+            "				<iced>false</iced>",
+            "				<orderNumber>1</orderNumber>",
+            "			</Item>",
+            "			<Item>",
+            "				<type>CAPPUCCINO</type>",
+            "				<shots>1</shots>",
+            "				<iced>false</iced>",
+            "				<orderNumber>1</orderNumber>",
+            "			</Item>",
+            "			<Item>",
+            "			<type>LATTE</type>",
+            "				<shots>2</shots>",
+            "				<iced>false</iced>",
+            "				<orderNumber>1</orderNumber>",
+            "			</Item>",
+            "			<Item>",
+            "				<type>MOCHA</type>",
+            "				<shots>3</shots>",
+            "				<iced>true</iced>",
+            "				<orderNumber>1</orderNumber>",
+            "			</Item>",
+            "		</items>",
+            "	</Order>",
+            "</orders>"
+    });
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         dividerPositionMap.put(reqSplitPane, reqSplitPane.getDividerPositions().clone());
@@ -118,6 +155,8 @@ public class DetailTabController implements Initializable {
         addTitleListener(respDataPane, respSplitPane);
 
         resetComboBox(respComboBox);
+
+        testCodeArea.replaceText(sampleXml);
 
         Map<String, String> map = new LinkedHashMap<>();
         map.put("aa", "bb");
@@ -265,7 +304,8 @@ public class DetailTabController implements Initializable {
         // display headers
         Map<String, String> headers = request.getHeaders();
         requestRenderer.renderHeaders(headers, reqHeaderTable);
-        requestRenderer.renderHeaders(WebUtils.getHeaderText(headers), reqHeaderArea);
+        // requestRenderer.renderHeaders(WebUtils.getHeaderText(headers), reqHeaderArea);
+        reqHeaderArea.replaceText(WebUtils.getHeaderText(headers));
 
         // display query-params if exist
         String query = request.getUrl().getQuery();
@@ -278,13 +318,15 @@ public class DetailTabController implements Initializable {
                 queryBuilder.append(entry.getValue());
                 queryBuilder.append("\n");
             }
-            requestRenderer.renderHeaders(queryBuilder.toString(), reqParamArea);
+            // requestRenderer.renderHeaders(queryBuilder.toString(), reqParamArea);
+            reqParamArea.replaceText(queryBuilder.toString());
         }
 
         // display request content
         byte[] content = WebUtils.parseContent(request.getHeaders(), request.getBody());
         String contentStr = new String(content, StandardCharsets.UTF_8);
-        requestRenderer.renderContent(contentStr, reqPayloadArea);
+        // requestRenderer.renderContent(contentStr, reqPayloadArea);
+        reqPayloadArea.replaceText(contentStr);
 
         boolean hasQuery = !queryParams.isEmpty();
         boolean hasContent = content.length > 0;
@@ -314,13 +356,15 @@ public class DetailTabController implements Initializable {
 
     public void displayResponse(ResponseMessage response) {
         if (response == null) {
-            requestRenderer.renderContent("<Waiting For Response...>", respContentArea);
+            // requestRenderer.renderContent("<Waiting For Response...>", respContentArea);
+            respContentArea.replaceText("<Waiting For Response...>");
             return;
         }
         // headers
         Map<String, String> headers = response.getHeaders();
         requestRenderer.renderHeaders(headers, respHeaderTable);
-        requestRenderer.renderHeaders(WebUtils.getHeaderText(headers), respHeaderArea);
+        // requestRenderer.renderHeaders(WebUtils.getHeaderText(headers), respHeaderArea);
+        respHeaderArea.replaceText(WebUtils.getHeaderText(headers));
 
         // content
         String contentTypeHeader = response.getHeaders().get("Content-Type");
@@ -341,7 +385,8 @@ public class DetailTabController implements Initializable {
             respContentArea.setVisible(true);
             respImageView.setVisible(false);
             String contentStr = new String(parsedContent,  charset == null ? StandardCharsets.UTF_8: charset);
-            requestRenderer.renderContent(contentStr, respContentArea);
+            // requestRenderer.renderContent(contentStr, respContentArea);
+            respContentArea.replaceText(contentStr);
         }
     }
 

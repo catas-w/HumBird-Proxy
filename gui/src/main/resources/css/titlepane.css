@@ -73,30 +73,6 @@
     -fx-padding: 0;
 }
 
-
-/*************** Rich text ***************/
-.styled-text-area {
-    /* set the entire area's font size to the given size */
-    /*-fx-font: 13px "Impact";*/
-    -fx-font-weight: 500;
-    -fx-font-size: 12px;
-    /*-fx-font-family: "Comic Sans MS";*/
-    -fx-padding: 0.2em 0.2em 0.1em 0.2em;
-}
-
-.styled-text-area .text {
-    -fx-font-family: "System";
-}
-
-.styled-text-area .selection {
-    -fx-fill: #ccd2d0;
-}
-
-.keyword {
-    -fx-fill: #792f22;
-    -fx-font-weight: bold;
-}
-
 /* line-number */
 .lineno {
     -fx-background-color: white;

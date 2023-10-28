@@ -25,8 +25,10 @@ public class HeaderTitledPane extends TitledPane {
     private HBox hBox;
     private CheckBox checkBox;
     private StringProperty checkBoxTitle = new SimpleStringProperty("Raw");
+
     /**
      * which child to display when checked
+     * 选中时展示第 checkIndex 个元素
      */
     private IntegerProperty checkIndex = new SimpleIntegerProperty(0);
     private static final String STYLE = "header-titled-pane";

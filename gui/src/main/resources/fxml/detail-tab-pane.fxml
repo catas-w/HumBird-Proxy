@@ -13,11 +13,13 @@
 <?import com.catas.wicked.proxy.gui.componet.ZoomImageView?>
 <?import org.fxmisc.flowless.VirtualizedScrollPane?>
 <?import com.catas.wicked.proxy.gui.componet.HeaderTitledPane?>
+<?import com.catas.wicked.proxy.gui.componet.richtext.DisplayCodeArea?>
 <VBox alignment="TOP_CENTER" prefHeight="600.0" prefWidth="850.0" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.catas.wicked.proxy.gui.controller.DetailTabController">
     <stylesheets>
         <URL value="@../css/tabpane.css" />
         <URL value="@../css/titlepane.css" />
         <URL value="@../css/common-design.css" />
+        <URL value="@../css/component/richtext.css" />
     </stylesheets>
     <JFXTabPane minWidth="300.0" prefHeight="567.0" prefWidth="600.0" style="-fx-background-color: TRANSPARENT;" styleClass="jfx-tab-pane" VBox.vgrow="ALWAYS">
         <Tab text="  Overview  ">
@@ -40,22 +42,10 @@
                 <SplitPane fx:id="reqSplitPane" dividerPositions="0.333333" orientation="VERTICAL" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <HeaderTitledPane fx:id="reqHeaderPane" animated="true" maxHeight="Infinity" text="Headers" VBox.vgrow="ALWAYS">
                         <AnchorPane minHeight="0.0" minWidth="0.0" styleClass="code-anchor-pane">
-                            <VirtualizedScrollPane visible="false"
-                                                   AnchorPane.bottomAnchor="0.0"
-                                                   AnchorPane.leftAnchor="0.0"
-                                                   AnchorPane.rightAnchor="0.0"
-                                                   AnchorPane.topAnchor="0.0">
-                                <content>
-                                    <CodeArea fx:id="reqHeaderArea" editable="true" wrapText="true"/>
-                                </content>
-                            </VirtualizedScrollPane>
+                            <DisplayCodeArea fx:id="reqHeaderArea" codeStyle="HEADER" visible="false"/>
 
                             <TableView fx:id="reqHeaderTable" visible="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                             </TableView>
-                            <!-- <SideBar prefHeight="25" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="5.0"> -->
-                            <!--     <JFXButton text="Table" onAction="#displayTable" /> -->
-                            <!--     <JFXButton text="Text" onAction="#displayText" styleClass="selected"/> -->
-                            <!-- </SideBar> -->
                         </AnchorPane>
                     </HeaderTitledPane>
                     <TitledPane fx:id="reqPayloadPane" animated="false" maxHeight="Infinity" text="Payload" VBox.vgrow="ALWAYS">
@@ -63,18 +53,7 @@
                             <JFXTabPane fx:id="reqPayloadTabPane" styleClass="payload-tab-pane" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                 <Tab text="Content">
                                     <AnchorPane minHeight="0.0" minWidth="0.0" styleClass="code-anchor-pane">
-                                        <VirtualizedScrollPane AnchorPane.bottomAnchor="0.0"
-                                                               AnchorPane.leftAnchor="0.0"
-                                                               AnchorPane.rightAnchor="0.0"
-                                                               AnchorPane.topAnchor="0.0">
-                                            <content>
-                                                <CodeArea fx:id="reqPayloadArea" editable="false">
-                                                    <cursor>
-                                                        <Cursor fx:constant="TEXT" />
-                                                    </cursor>
-                                                </CodeArea>
-                                            </content>
-                                        </VirtualizedScrollPane>
+                                        <DisplayCodeArea fx:id="reqPayloadArea" codeStyle="JSON" />
 
                                         <SideBar prefHeight="25" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="5.0">
                                             <JFXButton text="Text" styleClass="selected"/>
@@ -85,14 +64,7 @@
                                 </Tab>
                                 <Tab text="Query Params">
                                     <AnchorPane minHeight="0.0" minWidth="0.0" styleClass="code-anchor-pane">
-                                        <VirtualizedScrollPane AnchorPane.bottomAnchor="0.0"
-                                                               AnchorPane.leftAnchor="0.0"
-                                                               AnchorPane.rightAnchor="0.0"
-                                                               AnchorPane.topAnchor="0.0">
-                                            <content>
-                                                <CodeArea fx:id="reqParamArea" editable="false" wrapText="true"/>
-                                            </content>
-                                        </VirtualizedScrollPane>
+                                        <DisplayCodeArea fx:id="reqParamArea" codeStyle="HEADER" />
 
                                         <SideBar prefHeight="25" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="5.0">
                                             <JFXButton text="Parsed" onAction="#displayParsedQuery" styleClass="selected"/>
@@ -111,33 +83,22 @@
                 <SplitPane fx:id="respSplitPane" dividerPositions="0.45" orientation="VERTICAL" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <HeaderTitledPane fx:id="respHeaderPane" checkBoxTitle="Origin" checkIndex="0" animated="false" maxHeight="Infinity" text="Headers" VBox.vgrow="ALWAYS">
                         <AnchorPane minHeight="0.0" minWidth="0.0" styleClass="code-anchor-pane">
-                            <VirtualizedScrollPane visible="false"
-                                                   AnchorPane.bottomAnchor="0.0"
-                                                   AnchorPane.leftAnchor="0.0"
-                                                   AnchorPane.rightAnchor="0.0"
-                                                   AnchorPane.topAnchor="0.0">
-                                <content>
-                                    <CodeArea fx:id="respHeaderArea" editable="false"/>
-                                </content>
-                            </VirtualizedScrollPane>
+                            <DisplayCodeArea fx:id="respHeaderArea" codeStyle="HEADER" visible="false"/>
 
                             <TableView fx:id="respHeaderTable" visible="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                            <!-- <SideBar prefHeight="25" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="5.0"> -->
-                            <!--     <JFXButton text="Table" onAction="#displayTable" /> -->
-                            <!--     <JFXButton text="Text" onAction="#displayText" styleClass="selected"/> -->
-                            <!-- </SideBar> -->
                         </AnchorPane>
                     </HeaderTitledPane>
                     <TitledPane fx:id="respDataPane" animated="false" maxHeight="Infinity" text="Preview" VBox.vgrow="ALWAYS">
                         <AnchorPane minHeight="0.0" minWidth="0.0" styleClass="code-anchor-pane">
-                            <VirtualizedScrollPane AnchorPane.bottomAnchor="0.0"
-                                                   AnchorPane.leftAnchor="0.0"
-                                                   AnchorPane.rightAnchor="0.0"
-                                                   AnchorPane.topAnchor="0.0">
-                                <content>
-                                    <CodeArea fx:id="respContentArea" editable="false"/>
-                                </content>
-                            </VirtualizedScrollPane>
+                            <!-- <VirtualizedScrollPane AnchorPane.bottomAnchor="0.0" -->
+                            <!--                        AnchorPane.leftAnchor="0.0" -->
+                            <!--                        AnchorPane.rightAnchor="0.0" -->
+                            <!--                        AnchorPane.topAnchor="0.0"> -->
+                            <!--     <content> -->
+                            <!--         <CodeArea fx:id="respContentArea" editable="false"/> -->
+                            <!--     </content> -->
+                            <!-- </VirtualizedScrollPane> -->
+                            <DisplayCodeArea fx:id="respContentArea" codeStyle="JSON" />
                             <ZoomImageView fx:id="respImageView" />
 
                             <SideBar prefHeight="25" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="5.0">
@@ -155,9 +116,10 @@
             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: #ffffff;">
                 <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <HeaderTitledPane animated="true" maxHeight="Infinity" text="Header" VBox.vgrow="ALWAYS">
-                        <AnchorPane minHeight="0.0" minWidth="0.0">
-                            <JFXTextArea editable="true" focusColor="#3dc4b1" promptText="Data" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                        </AnchorPane>
+                        <!-- <AnchorPane minHeight="0.0" minWidth="0.0"> -->
+                        <!--     <JFXTextArea editable="true" focusColor="#3dc4b1" promptText="Data" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" /> -->
+                        <!-- </AnchorPane> -->
+                        <DisplayCodeArea codeStyle="XML" fx:id="testCodeArea" />
                     </HeaderTitledPane>
                     <!-- <TitledPane animated="false" maxHeight="Infinity" text="untitled" VBox.vgrow="ALWAYS"> -->
                     <!--     <AnchorPane minHeight="0.0" minWidth="0.0"> -->
