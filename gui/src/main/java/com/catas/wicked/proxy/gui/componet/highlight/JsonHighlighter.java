@@ -1,49 +1,98 @@
 package com.catas.wicked.proxy.gui.componet.highlight;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.util.DefaultIndenter;
+import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class JsonHighlighter implements Highlighter<Collection<String>> {
+/**
+ * JSON highlighter by regular expression
+ */
+public class JsonHighlighter implements Highlighter<Collection<String>>, Formatter {
 
     private static final String STRING_PATTERN = "\"([^\"\\\\]|\\\\.)*\"";
-    private static final String KEY_PATTERN = "\".+\":";
-    private static final String VAL_STR_PATTERN = ":\s*(.+)";
-    private static final String VAL_NUM_PATTERN = ":\s*(\\d+)";
-    private static final String BRACKET_PATTERN = "[{}]";
+    private static final String KEY_PATTERN = "\"(?<KEY>\\w+?)\"\\s*?:";
+    private static final String VAL_STR_PATTERN = "\"(?<STR>.+)\",{0,1}$";
+    private static final String VAL_NUM_PATTERN = "(?<NUM>\\d+),{0,1}$";
+    private static final String BOOLEAN_PATTERN = "(?<BOOL>true|false|null),{0,1}$";
+    private static final String BRACE_PATTERN = "(?<BRACE>\\{|\\})";
+    private static final String BRACKET_PATTERN = "(?<BRACKET>\\[|\\])";
 
     private static final Pattern PATTERN = Pattern.compile(
-                    "(?<KEY>" + KEY_PATTERN + ")"
-                    + "|(?<NUM>" + VAL_NUM_PATTERN + ")"
-                    + "|(?<STR>" + VAL_STR_PATTERN + ")"
-                    + "|(?<BRACKET>" + BRACKET_PATTERN + ")",
-            Pattern.MULTILINE
-    );
+            String.join("|", KEY_PATTERN, VAL_NUM_PATTERN, VAL_STR_PATTERN,
+                    BOOLEAN_PATTERN, BRACE_PATTERN, BRACKET_PATTERN),
+            Pattern.MULTILINE);
+
+    private final ObjectMapper objectMapper;
+    private final DefaultPrettyPrinter printer;
+    private final Map<String, String> styleMap;
+
+    public JsonHighlighter() {
+        objectMapper = new ObjectMapper();
+        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+        styleMap = new HashMap<>();
+        styleMap.put("KEY", "keyword");
+        styleMap.put("NUM", "number");
+        styleMap.put("BOOL", "bool");
+        styleMap.put("STR", "string");
+        styleMap.put("BRACE", "brace");
+        styleMap.put("BRACKET", "bracket");
+
+        DefaultPrettyPrinter.Indenter indenter =
+                new DefaultIndenter("\t", DefaultIndenter.SYS_LF);
+        printer = new DefaultPrettyPrinter();
+        printer.indentObjectsWith(indenter);
+        printer.indentArraysWith(indenter);
+    }
 
     @Override
     public StyleSpans<Collection<String>> computeHighlight(String text) {
         Matcher matcher = PATTERN.matcher(text);
         int lastKwEnd = 0;
-        StyleSpansBuilder<Collection<String>> spansBuilder
-                = new StyleSpansBuilder<>();
+        StyleSpansBuilder<Collection<String>> spansBuilder = new StyleSpansBuilder<>();
         while(matcher.find()) {
-            String styleClass =
-                    // matcher.group("STRING") != null ? "string" :
-                    matcher.group("KEY") != null ? "keyword" :
-                    matcher.group("STR") != null ? "keyword" :
-                    matcher.group("NUM") != null ? "keyword" :
-                    matcher.group("BRACKET") != null ? "keyword" :
+            String group =
+                    matcher.group("KEY") != null ? "KEY" :
+                    matcher.group("STR") != null ? "STR" :
+                    matcher.group("NUM") != null ? "NUM" :
+                    matcher.group("BOOL") != null ? "BOOL" :
+                    matcher.group("BRACE") != null ? "BRACE" :
+                    matcher.group("BRACKET") != null ? "BRACKET" :
                     null;
-            assert styleClass != null;
-            spansBuilder.add(Collections.emptyList(), matcher.start() - lastKwEnd);
-            spansBuilder.add(Collections.singleton(styleClass), matcher.end() - matcher.start());
-            lastKwEnd = matcher.end();
+            if (group == null) {
+                continue;
+            }
+
+            String styleClass = styleMap.getOrDefault(group, "");
+            spansBuilder.add(Collections.emptyList(), matcher.start(group) - lastKwEnd);
+            spansBuilder.add(Collections.singleton(styleClass), matcher.end(group) - matcher.start(group));
+            lastKwEnd = matcher.end(group);
         }
         spansBuilder.add(Collections.emptyList(), text.length() - lastKwEnd);
         return spansBuilder.create();
+    }
+
+    @Override
+    public String format(String text) {
+        if (text == null || text.isEmpty()) {
+            return "";
+        }
+        try {
+            Object json = objectMapper.readValue(text, Object.class);
+            return objectMapper.writer(printer).writeValueAsString(json);
+        } catch (JsonProcessingException e) {
+            System.out.println("Json format error");
+            return text;
+        }
     }
 }

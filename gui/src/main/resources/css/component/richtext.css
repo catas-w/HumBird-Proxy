@@ -38,7 +38,28 @@
     -fx-fill: #ccd2d0;
 }
 
+.display-code-area .text {
+    -fx-font-family: "JetBrains Mono";
+    -fx-font-weight: 500;
+    -fx-font-size: 12px;
+    /*-fx-spacing: 4;*/
+}
 .keyword {
-    -fx-fill: #792f22;
-    -fx-font-weight: bold;
+    -fx-fill: #8f2614;
+    /*-fx-font-weight: bold;*/
+}
+.number {
+    -fx-fill: #128c27;
+}
+.bool {
+    -fx-fill: #005eb9;
+}
+.string {
+    -fx-fill: #676767;
+}
+.brace {
+    -fx-fill: #0067b2;
+}
+.bracket {
+    -fx-fill: #0067b2;
 }

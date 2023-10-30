@@ -101,13 +101,7 @@ public class DetailTabController implements Initializable {
             "Refer Policy:   cross-origin boolean",
     });
 
-    private static final String sampleJson = """
-            {
-                "key1": "Val1",
-                "key2": "Val2",
-                "key3": 334,
-                "key4": 23
-            }""";
+    private static final String sampleJson = "{\"resource_response\":{\"status\":true,\"code\":0,\"message\":\"确定\",\"endpoint_name\":\"v3_get_user_handler\",\"data\":\"{\\\"is_name_eligible_for_lead_form_autofill\\\":true,\\\"full_name\\\":\\\"铁柱 王\\\",\\\"email\\\":\\\"cvn78f35c@gmail.com\\\",\\\"fields\\\":[\\\"name\\\",\\\".email\\\",\\\"ss\\\"]}\",\"x_pinterest_sli_endpoint_name\":\"v3_get_user_handler\",\"http_status\":200},\"resource\":{\"name\":\"{\\\"name\\\":\\\"jack\\\"}\",\"options\":{\"bookmarks\":[\"-end-\"],\"url\":\"/v3/users/me/\",\"data\":{\"fields\":[\"user.full_name\",\"user.email\",\"user.is_name_eligible_for_lead_form_autofill\",\"useraaa\"]}}},\"request_identifier\":\"2547094186404461\"}";
 
     private static final String sampleXml = String.join("\n", new String[] {
             "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>",
