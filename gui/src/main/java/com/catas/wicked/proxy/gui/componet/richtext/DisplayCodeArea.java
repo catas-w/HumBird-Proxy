@@ -7,6 +7,8 @@ import com.catas.wicked.proxy.gui.componet.highlight.HighlighterFactory;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
@@ -30,9 +32,11 @@ public class DisplayCodeArea extends VirtualizedScrollPane<CodeArea> {
 
     private VisibleParagraphStyler<Collection<String>, String, Collection<String>> visibleParagraphStyler;
 
+    private TextStyler textStyler;
+
     private CodeArea codeArea;
 
-    private StringProperty codeStyle = new SimpleStringProperty("PLAIN");
+    private StringProperty codeStyle = new SimpleStringProperty(CodeStyle.PLAIN.name());
 
     private static final String STYLE = "display-code-area";
 
@@ -68,9 +72,8 @@ public class DisplayCodeArea extends VirtualizedScrollPane<CodeArea> {
     public void setCodeStyle(CodeStyle codeStyle) {
         this.codeStyle.set(codeStyle.name());
         Highlighter<Collection<String>> highlighter = HighlighterFactory.getHighlightComputer(codeStyle);
-        this.visibleParagraphStyler.setHighlightComputer(highlighter);
-        // TODO refresh style
-        // this.codeArea.setStyleSpans(0, highlighter.computeHighlight(codeArea.getText()));
+        // this.visibleParagraphStyler.setHighlightComputer(highlighter);
+        this.textStyler.setHighlightComputer(highlighter);
     }
 
     public void replaceText(int start, int end, String text) {
@@ -108,8 +111,11 @@ public class DisplayCodeArea extends VirtualizedScrollPane<CodeArea> {
         codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
         codeArea.setContextMenu(new CodeAreaContextMenu());
 
-        this.visibleParagraphStyler =new VisibleParagraphStyler<>(codeArea, getCurrentHighlighter());
-        codeArea.getVisibleParagraphs().addModificationObserver(visibleParagraphStyler);
+        // this.visibleParagraphStyler =new VisibleParagraphStyler<>(codeArea, getCurrentHighlighter());
+        // codeArea.getVisibleParagraphs().addModificationObserver(visibleParagraphStyler);
+
+        this.textStyler = new TextStyler(codeArea, getCurrentHighlighter());
+        codeArea.textProperty().addListener(textStyler);
 
         // auto-indent: insert previous line's indents on enter
         final Pattern whiteSpace = Pattern.compile( "^\\s+" );
@@ -124,7 +130,36 @@ public class DisplayCodeArea extends VirtualizedScrollPane<CodeArea> {
         });
     }
 
-    private static class VisibleParagraphStyler<PS, SEG, S> implements Consumer<ListModification<? extends Paragraph<PS, SEG, S>>>
+    /**
+     * set style by listener
+     */
+    private static class TextStyler implements ChangeListener<String> {
+
+        private final CodeArea area;
+
+        private Highlighter<Collection<String>> highlightComputer;
+
+        public TextStyler(CodeArea area, Highlighter<Collection<String>> highlightComputer) {
+            this.area = area;
+            this.highlightComputer = highlightComputer;
+        }
+
+        public void setHighlightComputer(Highlighter<Collection<String>> highlightComputer) {
+            this.highlightComputer = highlightComputer;
+        }
+
+        @Override
+        public void changed(ObservableValue observable, String oldValue, String newValue) {
+            // TODO efficiency
+            area.setStyleSpans(0, highlightComputer.computeHighlight(newValue));
+        }
+    }
+
+    /**
+     * set style for visible paragraph
+     */
+    private static class VisibleParagraphStyler<PS, SEG, S> implements
+            Consumer<ListModification<? extends Paragraph<PS, SEG, S>>>
     {
         private final GenericStyledArea<PS, SEG, S> area;
 

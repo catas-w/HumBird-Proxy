@@ -90,15 +90,7 @@
                     </HeaderTitledPane>
                     <TitledPane fx:id="respDataPane" animated="false" maxHeight="Infinity" text="Preview" VBox.vgrow="ALWAYS">
                         <AnchorPane minHeight="0.0" minWidth="0.0" styleClass="code-anchor-pane">
-                            <!-- <VirtualizedScrollPane AnchorPane.bottomAnchor="0.0" -->
-                            <!--                        AnchorPane.leftAnchor="0.0" -->
-                            <!--                        AnchorPane.rightAnchor="0.0" -->
-                            <!--                        AnchorPane.topAnchor="0.0"> -->
-                            <!--     <content> -->
-                            <!--         <CodeArea fx:id="respContentArea" editable="false"/> -->
-                            <!--     </content> -->
-                            <!-- </VirtualizedScrollPane> -->
-                            <DisplayCodeArea fx:id="respContentArea" codeStyle="JSON" />
+                            <DisplayCodeArea fx:id="respContentArea" codeStyle="XML" />
                             <ZoomImageView fx:id="respImageView" />
 
                             <SideBar prefHeight="25" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="5.0">

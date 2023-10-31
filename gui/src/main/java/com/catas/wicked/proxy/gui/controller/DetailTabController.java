@@ -174,7 +174,7 @@ public class DetailTabController implements Initializable {
         ResponseMessage responseMessage = new ResponseMessage();
         responseMessage.setStatus(200);
         responseMessage.setHeaders(map);
-        responseMessage.setContent(sampleCode.getBytes(StandardCharsets.UTF_8));
+        responseMessage.setContent(sampleXml.getBytes(StandardCharsets.UTF_8));
 
         requestMessage.setResponse(responseMessage);
         displayRequest(requestMessage);
