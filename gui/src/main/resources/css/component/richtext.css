@@ -46,3 +46,10 @@
 .bracket {
     -fx-fill: #0067b2;
 }
+
+
+/******** line number *********/
+.lineno {
+    -fx-font-family: "JetBrains Mono";
+    /*-fx-text-fill: red;*/
+}

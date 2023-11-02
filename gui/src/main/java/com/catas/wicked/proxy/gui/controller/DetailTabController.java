@@ -42,7 +42,12 @@ import java.util.ResourceBundle;
 @Singleton
 public class DetailTabController implements Initializable {
 
+    @FXML
     public DisplayCodeArea testCodeArea;
+    @FXML
+    public MessageLabel reqMsgLabel;
+    @FXML
+    public MessageLabel respMsgLabel;
     @FXML
     private JFXComboBox<Labeled> respComboBox;
     @FXML
@@ -56,7 +61,7 @@ public class DetailTabController implements Initializable {
     @FXML
     private CodeArea overviewArea;
     @FXML
-    private TitledPane reqPayloadPane;
+    private TitledPane reqPayloadTitlePane;
     @FXML
     private JFXTabPane reqPayloadTabPane;
     @FXML
@@ -144,7 +149,7 @@ public class DetailTabController implements Initializable {
         dividerPositionMap.put(respSplitPane, respSplitPane.getDividerPositions().clone());
 
         addTitleListener(reqHeaderPane, reqSplitPane);
-        addTitleListener(reqPayloadPane, reqSplitPane);
+        addTitleListener(reqPayloadTitlePane, reqSplitPane);
         addTitleListener(respHeaderPane, respSplitPane);
         addTitleListener(respDataPane, respSplitPane);
 
@@ -165,16 +170,16 @@ public class DetailTabController implements Initializable {
         map.put("aa10", "bb");
         map.put("aa411", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36");
 
-        // RequestMessage requestMessage = new RequestMessage("http://google.com/page");
-        RequestMessage requestMessage = new RequestMessage("http://google.com/page?name=aa&age=22");
+        RequestMessage requestMessage = new RequestMessage("http://google.com/page");
+        // RequestMessage requestMessage = new RequestMessage("http://google.com/page?name=aa&age=22");
 
         requestMessage.setHeaders(map);
-        requestMessage.setBody(sampleJson.getBytes(StandardCharsets.UTF_8));
+        // requestMessage.setBody(sampleJson.getBytes(StandardCharsets.UTF_8));
 
         ResponseMessage responseMessage = new ResponseMessage();
         responseMessage.setStatus(200);
         responseMessage.setHeaders(map);
-        responseMessage.setContent(sampleXml.getBytes(StandardCharsets.UTF_8));
+        // responseMessage.setContent(sampleXml.getBytes(StandardCharsets.UTF_8));
 
         requestMessage.setResponse(responseMessage);
         displayRequest(requestMessage);
@@ -260,8 +265,10 @@ public class DetailTabController implements Initializable {
                 }
             } else {
                 // close
+                if (getExpandedNum(splitPane) > 1) {
+                    dividerPositionMap.put(splitPane, splitPane.getDividerPositions().clone());
+                }
                 pane.maxHeightProperty().set(Double.NEGATIVE_INFINITY);
-                dividerPositionMap.put(splitPane, splitPane.getDividerPositions().clone());
                 if (splitPane.getItems().size() == 3) {
                     if (getExpandedNum(splitPane) == 2 && !reqParamPane.isExpanded()) {
                         midTitleCollapse = true;
@@ -329,20 +336,26 @@ public class DetailTabController implements Initializable {
         SingleSelectionModel<Tab> selectionModel = reqPayloadTabPane.getSelectionModel();
 
         String title = "Payload";
+        reqMsgLabel.setVisible(false);
         if (hasQuery && hasContent) {
             reqPayloadTabPane.setTabMaxHeight(20);
             reqPayloadTabPane.setTabMinHeight(20);
         } else if (hasQuery) {
             selectionModel.clearAndSelect(1);
+            reqPayloadTabPane.setTabMaxHeight(0);
             title = "Query Parameters";
         } else if (hasContent) {
             selectionModel.clearAndSelect(0);
+            reqPayloadTabPane.setTabMaxHeight(0);
             // TODO form-data
             title = "Content";
         } else {
-            reqPayloadTabPane.setTabMaxHeight(0);
+            // TODO set default-msg
+            reqPayloadTitlePane.setExpanded(false);
+            reqMsgLabel.setVisible(true);
         }
-        reqPayloadPane.setText(title);
+        // reqPayloadPane.setVisible(hasQuery || hasContent);
+        reqPayloadTitlePane.setText(title);
 
         displayOverView(request);
         displayResponse(request.getResponse());
@@ -371,6 +384,12 @@ public class DetailTabController implements Initializable {
         }
 
         byte[] parsedContent = WebUtils.parseContent(response.getHeaders(), response.getContent());
+        if (parsedContent.length == 0) {
+            respMsgLabel.setVisible(true);
+            respDataPane.setExpanded(false);
+            return;
+        }
+        respMsgLabel.setVisible(false);
         if (StringUtils.isNotBlank(mimeType) && mimeType.startsWith("image/")) {
             respContentArea.setVisible(false);
             respImageView.setVisible(true);

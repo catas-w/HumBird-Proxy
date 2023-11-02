@@ -11,9 +11,9 @@
 
 <?import com.catas.wicked.proxy.gui.componet.MessageLabel?>
 <?import com.catas.wicked.proxy.gui.componet.ZoomImageView?>
-<?import org.fxmisc.flowless.VirtualizedScrollPane?>
 <?import com.catas.wicked.proxy.gui.componet.HeaderTitledPane?>
 <?import com.catas.wicked.proxy.gui.componet.richtext.DisplayCodeArea?>
+
 <VBox alignment="TOP_CENTER" prefHeight="600.0" prefWidth="850.0" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.catas.wicked.proxy.gui.controller.DetailTabController">
     <stylesheets>
         <URL value="@../css/tabpane.css" />
@@ -34,12 +34,12 @@
                     <JFXButton text="Table" styleClass="selected"/>
                     <JFXButton text="Text"/>
                 </SideBar>
-                <MessageLabel fx:id="overViewMsgLabel" text="Empty"/>
+                <MessageLabel fx:id="overViewMsgLabel" visible="false" text="Empty"/>
             </AnchorPane>
         </Tab>
         <Tab text="  Request  ">
             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="388.0" prefWidth="584.0" style="-fx-background-color: #ffffff;">
-                <SplitPane fx:id="reqSplitPane" dividerPositions="0.333333" orientation="VERTICAL" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                <SplitPane fx:id="reqSplitPane" dividerPositions="0.45" orientation="VERTICAL" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <HeaderTitledPane fx:id="reqHeaderPane" animated="true" maxHeight="Infinity" text="Headers" VBox.vgrow="ALWAYS">
                         <AnchorPane minHeight="0.0" minWidth="0.0" styleClass="code-anchor-pane">
                             <DisplayCodeArea fx:id="reqHeaderArea" codeStyle="HEADER" visible="false"/>
@@ -48,7 +48,7 @@
                             </TableView>
                         </AnchorPane>
                     </HeaderTitledPane>
-                    <TitledPane fx:id="reqPayloadPane" animated="false" maxHeight="Infinity" text="Payload" VBox.vgrow="ALWAYS">
+                    <TitledPane fx:id="reqPayloadTitlePane" animated="false" maxHeight="Infinity" text="Payload" VBox.vgrow="ALWAYS">
                         <AnchorPane minHeight="0.0" minWidth="0.0" styleClass="code-anchor-pane">
                             <JFXTabPane fx:id="reqPayloadTabPane" styleClass="payload-tab-pane" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                 <Tab text="Content">
@@ -73,6 +73,7 @@
                                     </AnchorPane>
                                 </Tab>
                             </JFXTabPane>
+                            <MessageLabel fx:id="reqMsgLabel" text="Empty"/>
                         </AnchorPane>
                     </TitledPane>
                 </SplitPane>
@@ -88,7 +89,7 @@
                             <TableView fx:id="respHeaderTable" visible="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                         </AnchorPane>
                     </HeaderTitledPane>
-                    <TitledPane fx:id="respDataPane" animated="false" maxHeight="Infinity" text="Preview" VBox.vgrow="ALWAYS">
+                    <TitledPane fx:id="respDataPane" animated="false" maxHeight="Infinity" text="Content" VBox.vgrow="ALWAYS">
                         <AnchorPane minHeight="0.0" minWidth="0.0" styleClass="code-anchor-pane">
                             <DisplayCodeArea fx:id="respContentArea" codeStyle="XML" />
                             <ZoomImageView fx:id="respImageView" />
@@ -99,6 +100,7 @@
                                 <JFXButton text="Origin"/>
                                 <JFXButton text="Hex"/>
                             </SideBar>
+                            <MessageLabel fx:id="respMsgLabel" text="Empty"/>
                         </AnchorPane>
                     </TitledPane>
                 </SplitPane>
