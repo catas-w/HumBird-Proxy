@@ -39,7 +39,7 @@
         </Tab>
         <Tab text="  Request  ">
             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="388.0" prefWidth="584.0" style="-fx-background-color: #ffffff;">
-                <SplitPane fx:id="reqSplitPane" dividerPositions="0.45" orientation="VERTICAL" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                <SplitPane fx:id="reqSplitPane" styleClass="vertical-split-pane" dividerPositions="0.45" orientation="VERTICAL" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <HeaderTitledPane fx:id="reqHeaderPane" animated="true" maxHeight="Infinity" text="Headers" VBox.vgrow="ALWAYS">
                         <AnchorPane minHeight="0.0" minWidth="0.0" styleClass="code-anchor-pane">
                             <DisplayCodeArea fx:id="reqHeaderArea" codeStyle="HEADER" visible="false"/>
@@ -81,7 +81,7 @@
         </Tab>
         <Tab text="  Response  ">
             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: #ffffff;">
-                <SplitPane fx:id="respSplitPane" dividerPositions="0.45" orientation="VERTICAL" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                <SplitPane fx:id="respSplitPane" styleClass="vertical-split-pane" dividerPositions="0.45" orientation="VERTICAL" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <HeaderTitledPane fx:id="respHeaderPane" checkBoxTitle="Origin" checkIndex="0" animated="false" maxHeight="Infinity" text="Headers" VBox.vgrow="ALWAYS">
                         <AnchorPane minHeight="0.0" minWidth="0.0" styleClass="code-anchor-pane">
                             <DisplayCodeArea fx:id="respHeaderArea" codeStyle="HEADER" visible="false"/>

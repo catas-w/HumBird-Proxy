@@ -170,16 +170,16 @@ public class DetailTabController implements Initializable {
         map.put("aa10", "bb");
         map.put("aa411", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36");
 
-        RequestMessage requestMessage = new RequestMessage("http://google.com/page");
-        // RequestMessage requestMessage = new RequestMessage("http://google.com/page?name=aa&age=22");
+        // RequestMessage requestMessage = new RequestMessage("http://google.com/page");
+        RequestMessage requestMessage = new RequestMessage("http://google.com/page?name=aa&age=22");
 
         requestMessage.setHeaders(map);
-        // requestMessage.setBody(sampleJson.getBytes(StandardCharsets.UTF_8));
+        requestMessage.setBody(sampleJson.getBytes(StandardCharsets.UTF_8));
 
         ResponseMessage responseMessage = new ResponseMessage();
         responseMessage.setStatus(200);
         responseMessage.setHeaders(map);
-        // responseMessage.setContent(sampleXml.getBytes(StandardCharsets.UTF_8));
+        responseMessage.setContent(sampleXml.getBytes(StandardCharsets.UTF_8));
 
         requestMessage.setResponse(responseMessage);
         displayRequest(requestMessage);

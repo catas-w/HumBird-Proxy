@@ -73,14 +73,6 @@
     -fx-padding: 0;
 }
 
-/* line-number */
-.lineno {
-    -fx-background-color: white;
-    -fx-padding: 0.0em, 0.2em, 0.0em, 0.0em;
-    -fx-text-fill: #226c5c;
-}
-
-
 /*************** Table view ***************/
 .table-view{
     -fx-background-color: transparent;
@@ -153,13 +145,6 @@
     -fx-text-fill: #792f22 !important;
     -fx-font-weight: 700;
 }
-
-
-.split-pane {
-    -fx-border-width: 0px;
-    -fx-padding: 0 0 0 0;
-}
-
 
 /*************** Button Bar ***************/
 .content-button-bar {

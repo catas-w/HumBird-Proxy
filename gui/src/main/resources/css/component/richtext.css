@@ -51,5 +51,9 @@
 /******** line number *********/
 .lineno {
     -fx-font-family: "JetBrains Mono";
+    -fx-font-size: 10px;
+    -fx-background-color: white;
+    -fx-padding: 0.0em, 0.2em, 0.0em, 0.0em;
+    -fx-text-fill: #226c5c;
     /*-fx-text-fill: red;*/
 }
