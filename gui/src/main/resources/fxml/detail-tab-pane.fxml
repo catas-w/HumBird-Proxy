@@ -53,10 +53,12 @@
                             <JFXTabPane fx:id="reqPayloadTabPane" styleClass="payload-tab-pane" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                 <Tab text="Content">
                                     <AnchorPane minHeight="0.0" minWidth="0.0" styleClass="code-anchor-pane">
-                                        <DisplayCodeArea fx:id="reqPayloadArea" codeStyle="JSON" />
+                                        <DisplayCodeArea fx:id="reqPayloadCodeArea" codeStyle="JSON" />
+                                        <TableView fx:id="reqContentTable" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
+                                        <ZoomImageView fx:id="reqImageView" visible="false" />
 
                                         <SideBar prefHeight="25" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="5.0">
-                                            <JFXButton text="Text" styleClass="selected"/>
+                                            <JFXButton text="Table" styleClass="selected"/>
                                             <JFXButton text="Origin"/>
                                             <JFXButton text="Hex"/>
                                         </SideBar>

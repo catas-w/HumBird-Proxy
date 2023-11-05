@@ -56,6 +56,11 @@
             <artifactId>httpclient</artifactId>
             <version>4.5.14</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.tomcat.embed</groupId>
+            <artifactId>tomcat-embed-core</artifactId>
+            <version>10.1.12</version>
+        </dependency>
 
         <dependency>
             <groupId>org.kordamp.ikonli</groupId>

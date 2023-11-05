@@ -5,6 +5,7 @@ import com.catas.wicked.common.bean.message.RequestMessage;
 import com.catas.wicked.common.bean.message.ResponseMessage;
 import com.catas.wicked.common.util.WebUtils;
 import com.catas.wicked.proxy.gui.componet.MessageLabel;
+import com.catas.wicked.proxy.gui.componet.SideBar;
 import com.catas.wicked.proxy.gui.componet.ZoomImageView;
 import com.catas.wicked.proxy.gui.componet.richtext.DisplayCodeArea;
 import com.catas.wicked.proxy.render.RequestRenderer;
@@ -18,6 +19,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Labeled;
@@ -26,11 +28,14 @@ import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TitledPane;
+import javafx.scene.layout.AnchorPane;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.entity.ContentType;
 import org.fxmisc.richtext.CodeArea;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -39,6 +44,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
 
+@Slf4j
 @Singleton
 public class DetailTabController implements Initializable {
 
@@ -48,6 +54,10 @@ public class DetailTabController implements Initializable {
     public MessageLabel reqMsgLabel;
     @FXML
     public MessageLabel respMsgLabel;
+    @FXML
+    public TableView<HeaderEntry> reqContentTable;
+    @FXML
+    public ZoomImageView reqImageView;
     @FXML
     private JFXComboBox<Labeled> respComboBox;
     @FXML
@@ -79,7 +89,7 @@ public class DetailTabController implements Initializable {
     @FXML
     private DisplayCodeArea reqParamArea;
     @FXML
-    private DisplayCodeArea reqPayloadArea;
+    private DisplayCodeArea reqPayloadCodeArea;
     @FXML
     private JFXTextArea reqTimingArea;
     @FXML
@@ -305,7 +315,6 @@ public class DetailTabController implements Initializable {
         // display headers
         Map<String, String> headers = request.getHeaders();
         requestRenderer.renderHeaders(headers, reqHeaderTable);
-        // requestRenderer.renderHeaders(WebUtils.getHeaderText(headers), reqHeaderArea);
         reqHeaderArea.replaceText(WebUtils.getHeaderText(headers));
 
         // display query-params if exist
@@ -319,20 +328,27 @@ public class DetailTabController implements Initializable {
                 queryBuilder.append(entry.getValue());
                 queryBuilder.append("\n");
             }
-            // requestRenderer.renderHeaders(queryBuilder.toString(), reqParamArea);
             reqParamArea.replaceText(queryBuilder.toString());
         }
 
         // display request content
+        ContentType contentType = WebUtils.getContentType(headers);
         byte[] content = WebUtils.parseContent(request.getHeaders(), request.getBody());
-        String contentStr = new String(content, StandardCharsets.UTF_8);
-        // requestRenderer.renderContent(contentStr, reqPayloadArea);
-        reqPayloadArea.replaceText(contentStr);
+        Node target = null;
+        if (contentType != null && (ContentType.MULTIPART_FORM_DATA.getMimeType().equals(contentType.getMimeType()) ||
+                ContentType.APPLICATION_FORM_URLENCODED.getMimeType().equals(contentType.getMimeType()))) {
+            target = reqContentTable;
+        } else if (contentType != null && contentType.getMimeType().startsWith("image/")) {
+            target = reqImageView;
+        } else {
+            target = reqPayloadCodeArea;
+        }
+        renderRequestContent(content, contentType, target);
+
 
         boolean hasQuery = !queryParams.isEmpty();
         boolean hasContent = content.length > 0;
-        // TODO bug-fix
-        System.out.printf("hasQuery: %s, hasContent: %s\n", hasQuery, hasContent);
+        // System.out.printf("hasQuery: %s, hasContent: %s\n", hasQuery, hasContent);
         SingleSelectionModel<Tab> selectionModel = reqPayloadTabPane.getSelectionModel();
 
         String title = "Payload";
@@ -361,28 +377,55 @@ public class DetailTabController implements Initializable {
         displayResponse(request.getResponse());
     }
 
+    private void renderRequestContent(byte[] content, ContentType contentType, Node target) {
+        if (target == null) {
+            return;
+        }
+        target.setVisible(true);
+        Parent parent = target.getParent();
+        for (Node child : ((AnchorPane) parent).getChildren()) {
+            if (!(child instanceof SideBar) && child != target) {
+                child.setVisible(false);
+            }
+        }
+
+        Charset charset = contentType != null && contentType.getCharset() != null ?
+                contentType.getCharset() : StandardCharsets.UTF_8;
+        if (target == reqPayloadCodeArea) {
+            String contentStr = new String(content, charset);
+            reqPayloadCodeArea.replaceText(contentStr);
+        } else if (target == reqContentTable) {
+            assert contentType != null;
+            if (StringUtils.equals(ContentType.APPLICATION_FORM_URLENCODED.getMimeType(), contentType.getMimeType())) {
+                // parse url-encode
+                Map<String, String> formData = WebUtils.parseQueryParams(new String(content, charset));
+                requestRenderer.renderHeaders(formData, reqContentTable);
+            } else {
+                // parse multipart-form
+                try {
+                    Map<String, String> formData = WebUtils.parseMultipartForm(
+                            content, contentType.getParameter("boundary"), charset);
+                    requestRenderer.renderHeaders(formData, reqContentTable);
+                } catch (IOException e) {
+                    log.error("Error in parsing multipart-form data.", e);
+                }
+            }
+        } else if (target == reqImageView) {
+            reqImageView.setImage(new ByteArrayInputStream(content));
+        }
+    }
+
     public void displayResponse(ResponseMessage response) {
         if (response == null) {
-            // requestRenderer.renderContent("<Waiting For Response...>", respContentArea);
             respContentArea.replaceText("<Waiting For Response...>");
             return;
         }
         // headers
         Map<String, String> headers = response.getHeaders();
         requestRenderer.renderHeaders(headers, respHeaderTable);
-        // requestRenderer.renderHeaders(WebUtils.getHeaderText(headers), respHeaderArea);
         respHeaderArea.replaceText(WebUtils.getHeaderText(headers));
 
-        // content
-        String contentTypeHeader = response.getHeaders().get("Content-Type");
-        String mimeType = null;
-        Charset charset = null;
-        if (StringUtils.isNotBlank(contentTypeHeader)) {
-            ContentType contentType = ContentType.parse(contentTypeHeader);
-            mimeType = contentType.getMimeType();
-            charset = contentType.getCharset();
-        }
-
+        ContentType contentType = WebUtils.getContentType(headers);
         byte[] parsedContent = WebUtils.parseContent(response.getHeaders(), response.getContent());
         if (parsedContent.length == 0) {
             respMsgLabel.setVisible(true);
@@ -390,15 +433,16 @@ public class DetailTabController implements Initializable {
             return;
         }
         respMsgLabel.setVisible(false);
-        if (StringUtils.isNotBlank(mimeType) && mimeType.startsWith("image/")) {
+        if (contentType != null && contentType.getMimeType().startsWith("image/")) {
             respContentArea.setVisible(false);
             respImageView.setVisible(true);
             respImageView.setImage(new ByteArrayInputStream(parsedContent));
         } else {
             respContentArea.setVisible(true);
             respImageView.setVisible(false);
-            String contentStr = new String(parsedContent,  charset == null ? StandardCharsets.UTF_8: charset);
-            // requestRenderer.renderContent(contentStr, respContentArea);
+            Charset charset = contentType != null && contentType.getCharset() != null ?
+                    contentType.getCharset() : StandardCharsets.UTF_8;
+            String contentStr = new String(parsedContent, charset);
             respContentArea.replaceText(contentStr);
         }
     }

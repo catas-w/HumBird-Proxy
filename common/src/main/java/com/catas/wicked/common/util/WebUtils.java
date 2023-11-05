@@ -6,17 +6,24 @@ import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.entity.ContentType;
+import org.apache.tomcat.util.http.fileupload.MultipartStream;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Slf4j
 public class WebUtils {
@@ -161,5 +168,61 @@ public class WebUtils {
         }
         builder.deleteCharAt(builder.length() - 1);
         return builder.toString();
+    }
+
+    public static ContentType getContentType(Map<String, String> headers) {
+        String contentTypeHeader = headers.getOrDefault("Content-Type", "");
+        try {
+            return ContentType.parse(contentTypeHeader);
+        } catch (Exception e) {
+            log.warn("Content-type parsed error: {}", contentTypeHeader);
+            return null;
+        }
+    }
+
+    /**
+     * convert multipart-form data to map
+     */
+    public static Map<String, String> parseMultipartForm(byte[] content, String boundary, Charset charset)
+            throws IOException {
+        LinkedHashMap<String, String> map = new LinkedHashMap<>();
+        if (content == null || content.length == 0) {
+            return map;
+        }
+
+        MultipartStream multipartStream = new MultipartStream(
+                new ByteArrayInputStream(content),
+                boundary.getBytes(),
+                1024,
+                null);
+
+        boolean nextPart = multipartStream.skipPreamble();
+
+        Pattern namePattern = Pattern.compile("name=\"(.+?)\"");
+        Pattern filenamePattern = Pattern.compile("filename=\"(.+?)\"");
+        while (nextPart) {
+            String partHeaders = multipartStream.readHeaders();
+            Matcher nameMatcher = namePattern.matcher(partHeaders);
+            if (nameMatcher.find()) {
+                String name = nameMatcher.group(1);
+                String value = "";
+
+                Matcher filenameMatcher = filenamePattern.matcher(partHeaders);
+                if (filenameMatcher.find()) {
+                    value = String.format("<%s>", filenameMatcher.group(1));
+                    multipartStream.discardBodyData();
+
+                } else {
+                    ByteArrayOutputStream output = new ByteArrayOutputStream();
+                    multipartStream.readBodyData(output);
+                    value = output.toString(charset);
+                }
+                map.put(name, value);
+            } else {
+                multipartStream.discardBodyData();
+            }
+            nextPart = multipartStream.readBoundary();
+        }
+        return map;
     }
 }

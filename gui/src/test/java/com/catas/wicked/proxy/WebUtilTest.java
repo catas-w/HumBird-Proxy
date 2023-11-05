@@ -4,7 +4,9 @@ import com.catas.wicked.common.util.WebUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -60,5 +62,33 @@ public class WebUtilTest {
                 """;
         String headerText = WebUtils.getHeaderText(map);
         Assert.assertEquals(expected.trim(), headerText);
+    }
+
+    @Test
+    public void testParseMultiForm() throws IOException {
+        String boundary = "--------------------------233744180039889815384832";
+        String data = "----------------------------233744180039889815384832\r\n" +
+                "Content-Disposition: form-data; name=\"name\"\r\n" +
+                "\r\n" +
+                "Elon Musk\r\n" +
+                "----------------------------233744180039889815384832\r\n" +
+                "Content-Disposition: form-data; name=\"age\"\r\n" +
+                "\r\n" +
+                "33\r\n" +
+                "----------------------------233744180039889815384832\r\n" +
+                "Content-Disposition: form-data; name=\"Job\"\r\n" +
+                "\r\n" +
+                "pirate\r\n" +
+                "----------------------------233744180039889815384832\r\n" +
+                "Content-Disposition: form-data; name=\"file\"; filename=\"pic.png\"; filename*=UTF-8''2345%E6%88%AA%E5%9B%BE20230304221554.png\r\n" +
+                "Content-Type: image/png\r\n" +
+                "\r\n" +
+                "�PNG\r\n" +
+                "----------------------------233744180039889815384832--\r\n";
+        Map<String, String> map = WebUtils.parseMultipartForm(data.getBytes(), boundary, StandardCharsets.UTF_8);
+
+        Assert.assertNotNull(map);
+        Assert.assertEquals("Elon Musk", map.get("name"));
+        Assert.assertEquals("<pic.png>", map.get("file"));
     }
 }
