@@ -23,14 +23,14 @@
     </stylesheets>
     <JFXTabPane minWidth="300.0" prefHeight="567.0" prefWidth="600.0" style="-fx-background-color: TRANSPARENT;" styleClass="jfx-tab-pane" VBox.vgrow="ALWAYS">
         <Tab text="  Overview  ">
-            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="388.0" prefWidth="584.0" style="-fx-background-color: #ffffff;">
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="388.0" prefWidth="584.0">
                 <CodeArea fx:id="overviewArea" editable="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <cursor>
                         <Cursor fx:constant="TEXT" />
                     </cursor>
                 </CodeArea>
                 <TableView visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
-                <SideBar prefHeight="25" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="10.0">
+                <SideBar prefHeight="25" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="15.0">
                     <JFXButton text="Table" styleClass="selected"/>
                     <JFXButton text="Text"/>
                 </SideBar>
@@ -38,7 +38,7 @@
             </AnchorPane>
         </Tab>
         <Tab text="  Request  ">
-            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="388.0" prefWidth="584.0" style="-fx-background-color: #ffffff;">
+            <AnchorPane>
                 <SplitPane fx:id="reqSplitPane" styleClass="vertical-split-pane" dividerPositions="0.45" orientation="VERTICAL" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <HeaderTitledPane fx:id="reqHeaderPane" animated="true" maxHeight="Infinity" text="Headers" VBox.vgrow="ALWAYS">
                         <AnchorPane minHeight="0.0" minWidth="0.0" styleClass="code-anchor-pane">
@@ -57,7 +57,7 @@
                                         <TableView fx:id="reqContentTable" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
                                         <ZoomImageView fx:id="reqImageView" visible="false" />
 
-                                        <SideBar prefHeight="25" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="5.0">
+                                        <SideBar prefHeight="25" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="15.0">
                                             <JFXButton text="Table" styleClass="selected"/>
                                             <JFXButton text="Origin"/>
                                             <JFXButton text="Hex"/>
@@ -68,7 +68,7 @@
                                     <AnchorPane minHeight="0.0" minWidth="0.0" styleClass="code-anchor-pane">
                                         <DisplayCodeArea fx:id="reqParamArea" codeStyle="HEADER" />
 
-                                        <SideBar prefHeight="25" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="5.0">
+                                        <SideBar prefHeight="25" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="15.0">
                                             <JFXButton text="Parsed" onAction="#displayParsedQuery" styleClass="selected"/>
                                             <JFXButton text="Origin" onAction="#displayOriginQuery"/>
                                         </SideBar>
@@ -82,7 +82,7 @@
             </AnchorPane>
         </Tab>
         <Tab text="  Response  ">
-            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: #ffffff;">
+            <AnchorPane minHeight="0.0" minWidth="0.0">
                 <SplitPane fx:id="respSplitPane" styleClass="vertical-split-pane" dividerPositions="0.45" orientation="VERTICAL" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <HeaderTitledPane fx:id="respHeaderPane" checkBoxTitle="Origin" checkIndex="0" animated="false" maxHeight="Infinity" text="Headers" VBox.vgrow="ALWAYS">
                         <AnchorPane minHeight="0.0" minWidth="0.0" styleClass="code-anchor-pane">
@@ -96,7 +96,7 @@
                             <DisplayCodeArea fx:id="respContentArea" codeStyle="XML" />
                             <ZoomImageView fx:id="respImageView" />
 
-                            <SideBar prefHeight="25" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="5.0">
+                            <SideBar prefHeight="25" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="15.0">
                                 <!-- <JFXButton text="Text" /> -->
                                 <JFXComboBox fx:id="respComboBox" styleClass="selected"/>
                                 <JFXButton text="Origin"/>
@@ -109,7 +109,7 @@
             </AnchorPane>
         </Tab>
         <Tab text="   Timing   ">
-            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: #ffffff;">
+            <AnchorPane minHeight="0.0" minWidth="0.0">
                 <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <HeaderTitledPane animated="true" maxHeight="Infinity" text="Header" VBox.vgrow="ALWAYS">
                         <!-- <AnchorPane minHeight="0.0" minWidth="0.0"> -->

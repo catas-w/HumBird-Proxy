@@ -45,7 +45,8 @@ public class WickedProxyApplication implements ApplicationDelegate {
     public void start(Stage primaryStage) throws Exception {
         FXMLLoader loader = loaderFactory.get(WickedProxyApplication.class.getResource("/fxml/application.fxml"));
         Parent root = loader.load();
-        Scene scene = new Scene(root, 900, 600);
+        Scene scene = new Scene(root, 1000, 680);
+        // Scene scene = new Scene(root, 1100, 700);
         primaryStage.setScene(scene);
         primaryStage.show();
     }
