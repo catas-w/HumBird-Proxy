@@ -16,6 +16,7 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Data
 @Singleton
@@ -50,11 +51,17 @@ public class ApplicationConfig implements AutoCloseable {
     private PrivateKey serverPriKey;
     private PublicKey serverPubKey;
 
+    /**
+     * current requestId in display
+     */
+    private AtomicReference<String> currentRequestId;
+
     @Inject
     private MessageQueue messageQueue;
 
     @PostConstruct
-    private void init() {
+    public void init() {
+        this.currentRequestId = new AtomicReference<>(null);
         this.shutDownFlag = new AtomicBoolean(false);
         this.externalProxyConfig = new ExternalProxyConfig();
         this.proxyLoopGroup = new NioEventLoopGroup(2);

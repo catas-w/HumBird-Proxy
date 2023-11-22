@@ -14,6 +14,7 @@ import com.jfoenix.controls.JFXTabPane;
 import com.jfoenix.controls.JFXTextArea;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -370,11 +371,11 @@ public class DetailTabController implements Initializable {
             reqPayloadTitlePane.setExpanded(false);
             reqMsgLabel.setVisible(true);
         }
-        // reqPayloadPane.setVisible(hasQuery || hasContent);
+        // TODO bug: JFX thread
         reqPayloadTitlePane.setText(title);
 
-        displayOverView(request);
-        displayResponse(request.getResponse());
+        // displayOverView(request);
+        // displayResponse(request.getResponse());
     }
 
     private void renderRequestContent(byte[] content, ContentType contentType, Node target) {
@@ -455,7 +456,10 @@ public class DetailTabController implements Initializable {
         String code = request.getResponse() == null ? "Waiting" : String.valueOf(request.getResponse().getStatus());
 
         String cont = title + "\n" + code;
-        requestRenderer.renderContent(cont, overviewArea);
+
+        Platform.runLater(() -> {
+            requestRenderer.renderContent(cont, overviewArea);
+        });
     }
 
     /**
@@ -467,5 +471,9 @@ public class DetailTabController implements Initializable {
 
     public void displayOriginQuery(ActionEvent event) {
 
+    }
+
+    public String getCurrentRequestTab() {
+        return "REQUEST";
     }
 }

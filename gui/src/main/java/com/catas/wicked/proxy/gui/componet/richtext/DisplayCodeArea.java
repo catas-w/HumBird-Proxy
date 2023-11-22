@@ -81,7 +81,10 @@ public class DisplayCodeArea extends VirtualizedScrollPane<CodeArea> {
         if (highlighter instanceof Formatter) {
             text = ((Formatter) highlighter).format(text);
         }
-        codeArea.replaceText(start, end, text);
+        String finalText = text;
+        Platform.runLater(() -> {
+            codeArea.replaceText(start, end, finalText);
+        });
     }
 
     public void replaceText(String text) {
@@ -89,11 +92,16 @@ public class DisplayCodeArea extends VirtualizedScrollPane<CodeArea> {
         if (highlighter instanceof Formatter) {
             text = ((Formatter) highlighter).format(text);
         }
-        codeArea.replaceText(text);
+        String finalText = text;
+        Platform.runLater(() -> {
+            codeArea.replaceText(finalText);
+        });
     }
 
     public void appendText(String text) {
-        codeArea.appendText(text);
+        Platform.runLater(() -> {
+            codeArea.appendText(text);
+        });
     }
 
     private Highlighter<Collection<String>> getCurrentHighlighter() {
