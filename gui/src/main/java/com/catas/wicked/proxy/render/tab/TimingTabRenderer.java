@@ -9,7 +9,7 @@ import jakarta.inject.Singleton;
 import org.ehcache.Cache;
 
 @Singleton
-public class TimingTabRender extends AbstractTabRender{
+public class TimingTabRenderer extends AbstractTabRenderer {
 
     @Inject
     private DetailTabController detailTabController;

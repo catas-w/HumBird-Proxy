@@ -19,7 +19,7 @@ import java.util.Map;
 
 @Slf4j
 @Singleton
-public class ResponseTabRender extends AbstractTabRender {
+public class ResponseTabRenderer extends AbstractTabRenderer {
 
     @Inject
     private DetailTabController detailTabController;

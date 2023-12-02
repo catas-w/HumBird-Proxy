@@ -26,7 +26,7 @@ import java.util.Map;
 
 @Slf4j
 @Singleton
-public class RequestTabRender extends AbstractTabRender {
+public class RequestTabRenderer extends AbstractTabRenderer {
 
     @Inject
     private DetailTabController detailTabController;

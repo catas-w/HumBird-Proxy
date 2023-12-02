@@ -7,7 +7,7 @@ import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.common.util.ThreadPoolService;
 import com.catas.wicked.proxy.gui.controller.DetailTabController;
 import com.catas.wicked.proxy.gui.controller.DetailWebViewController;
-import com.catas.wicked.proxy.render.TabRender;
+import com.catas.wicked.proxy.render.TabRenderer;
 import jakarta.annotation.PostConstruct;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
@@ -55,21 +55,21 @@ public class RequestViewService {
 
     @Named("request")
     @Inject
-    private TabRender requestTabRender;
+    private TabRenderer requestTabRenderer;
 
     @Named("response")
     @Inject
-    private TabRender responseTabRender;
+    private TabRenderer responseTabRenderer;
 
     @Named("overView")
     @Inject
-    private TabRender overViewTabRender;
+    private TabRenderer overViewTabRenderer;
 
     @Named("timing")
     @Inject
-    private TabRender timingTabRender;
+    private TabRenderer timingTabRenderer;
 
-    private Map<RenderMessage.Tab, TabRender> renderFuncMap;
+    private Map<RenderMessage.Tab, TabRenderer> renderFuncMap;
 
     private static final String REQ_HEADER = "requestHeaders";
     private static final String REQ_DETAIL = "requestDetail";
@@ -90,10 +90,10 @@ public class RequestViewService {
     public void init() {
         this.queue = new LinkedBlockingQueue<>();
         this.renderFuncMap = new HashMap<>();
-        renderFuncMap.put(RenderMessage.Tab.REQUEST, requestTabRender);
-        renderFuncMap.put(RenderMessage.Tab.RESPONSE, responseTabRender);
-        renderFuncMap.put(RenderMessage.Tab.OVERVIEW, overViewTabRender);
-        renderFuncMap.put(RenderMessage.Tab.TIMING, timingTabRender);
+        renderFuncMap.put(RenderMessage.Tab.REQUEST, requestTabRenderer);
+        renderFuncMap.put(RenderMessage.Tab.RESPONSE, responseTabRenderer);
+        renderFuncMap.put(RenderMessage.Tab.OVERVIEW, overViewTabRenderer);
+        renderFuncMap.put(RenderMessage.Tab.TIMING, timingTabRenderer);
 
         ThreadPoolService.getInstance().run(() -> {
             while (!appConfig.getShutDownFlag().get()) {
@@ -101,7 +101,7 @@ public class RequestViewService {
                     BaseMessage msg = getMsg();
                     if (msg instanceof RenderMessage renderMsg) {
                         // System.out.println(renderMsg);
-                        TabRender renderer = renderFuncMap.get(renderMsg.getTab());
+                        TabRenderer renderer = renderFuncMap.get(renderMsg.getTab());
                         if (renderer != null) {
                             renderer.render(renderMsg);
                         } else {

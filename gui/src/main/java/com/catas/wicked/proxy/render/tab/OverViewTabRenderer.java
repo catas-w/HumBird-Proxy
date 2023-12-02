@@ -12,7 +12,7 @@ import org.ehcache.Cache;
 
 @Slf4j
 @Singleton
-public class OverViewTabRender extends AbstractTabRender{
+public class OverViewTabRenderer extends AbstractTabRenderer {
 
     @Inject
     private DetailTabController detailTabController;
