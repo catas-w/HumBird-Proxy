@@ -4,7 +4,8 @@ import com.catas.wicked.common.bean.message.BaseMessage;
 import com.catas.wicked.common.bean.message.RenderMessage;
 import com.catas.wicked.common.bean.message.RequestMessage;
 import com.catas.wicked.common.config.ApplicationConfig;
-import com.catas.wicked.common.util.ThreadPoolService;
+import com.catas.wicked.common.pipeline.MessageQueue;
+import com.catas.wicked.common.pipeline.Topic;
 import com.catas.wicked.proxy.gui.controller.DetailTabController;
 import com.catas.wicked.proxy.gui.controller.DetailWebViewController;
 import com.catas.wicked.proxy.render.TabRenderer;
@@ -51,6 +52,8 @@ public class RequestViewService {
 
     @Inject
     private ApplicationConfig appConfig;
+    @Inject
+    private MessageQueue messageQueue;
     private BlockingQueue<BaseMessage> queue;
 
     @Named("request")
@@ -78,54 +81,45 @@ public class RequestViewService {
 
     private static final String ERROR_DATA = "<Error loading data>";
 
-    public void pushMsg(BaseMessage message) {
-        queue.add(message);
-    }
-
-    public BaseMessage getMsg() throws InterruptedException {
-        return queue.take();
-    }
 
     @PostConstruct
     public void init() {
-        this.queue = new LinkedBlockingQueue<>();
+        // this.queue = new LinkedBlockingQueue<>();
         this.renderFuncMap = new HashMap<>();
         renderFuncMap.put(RenderMessage.Tab.REQUEST, requestTabRenderer);
         renderFuncMap.put(RenderMessage.Tab.RESPONSE, responseTabRenderer);
         renderFuncMap.put(RenderMessage.Tab.OVERVIEW, overViewTabRenderer);
         renderFuncMap.put(RenderMessage.Tab.TIMING, timingTabRenderer);
 
-        ThreadPoolService.getInstance().run(() -> {
-            while (!appConfig.getShutDownFlag().get()) {
-                try {
-                    BaseMessage msg = getMsg();
-                    if (msg instanceof RenderMessage renderMsg) {
-                        // System.out.println(renderMsg);
-                        TabRenderer renderer = renderFuncMap.get(renderMsg.getTab());
-                        if (renderer != null) {
-                            renderer.render(renderMsg);
-                        } else {
-                            log.warn("consumer not exist");
-                        }
-                    }
-                } catch (InterruptedException e) {
-                    log.info("-- quit --");
-                    break;
-                } catch (Exception e) {
-                    log.error("Error occurred in message tree thread", e);
+        messageQueue.subscribe(Topic.RENDER, msg -> {
+            if (msg instanceof RenderMessage renderMsg) {
+                // System.out.println(renderMsg);
+                TabRenderer renderer = renderFuncMap.get(renderMsg.getTab());
+                if (renderer != null) {
+                    renderer.render(renderMsg);
+                } else {
+                    log.warn("consumer not exist");
                 }
+            } else {
+                log.warn("cannot to process message type: {}", msg.getType());
             }
         });
     }
 
+    /**
+     * update request tab by requestId
+     * @param requestId requestId
+     */
     public synchronized void updateRequestTab(String requestId) {
         String curRequestId = appConfig.getCurrentRequestId().get();
         if (StringUtils.equals(curRequestId, requestId)) {
             log.warn("Same requestId");
             return;
         }
-        queue.clear();
-        System.out.println("-----requestId: " + requestId + "-----");
+
+        messageQueue.clearMsg(Topic.RENDER);
+        // queue.clear();
+        // System.out.println("-----requestId: " + requestId + "-----");
 
         // current requestView tab
         String curTab = detailTabController.getCurrentRequestTab();
@@ -148,13 +142,15 @@ public class RequestViewService {
         while (iterator.hasNext()) {
             RenderMessage msg = iterator.next();
             if (msg.getTab() == firstTargetTab) {
-                pushMsg(msg);
+                // pushMsg(msg);
+                messageQueue.pushMsg(Topic.RENDER, msg);
                 iterator.remove();
             }
         }
 
         while (!messages.isEmpty()) {
-            pushMsg(messages.poll());
+            // pushMsg(messages.poll());
+            messageQueue.pushMsg(Topic.RENDER, messages.poll());
         }
         appConfig.getCurrentRequestId().set(requestId);
     }

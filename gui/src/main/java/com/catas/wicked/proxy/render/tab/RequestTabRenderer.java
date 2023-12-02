@@ -8,6 +8,7 @@ import com.catas.wicked.proxy.gui.componet.SideBar;
 import com.catas.wicked.proxy.gui.controller.DetailTabController;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
+import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.SingleSelectionModel;
@@ -111,8 +112,11 @@ public class RequestTabRenderer extends AbstractTabRenderer {
             detailTabController.getReqPayloadTitlePane().setExpanded(false);
             detailTabController.getReqMsgLabel().setVisible(true);
         }
-        // TODO bug: JFX thread
-        detailTabController.getReqPayloadTitlePane().setText(title);
+
+        String finalTitle = title;
+        Platform.runLater(() -> {
+            detailTabController.getReqPayloadTitlePane().setText(finalTitle);
+        });
     }
 
     private void renderRequestContent(byte[] content, ContentType contentType, Node target) {
