@@ -30,10 +30,10 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.AnchorPane;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.entity.ContentType;
-import org.fxmisc.richtext.CodeArea;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -46,6 +46,7 @@ import java.util.Map;
 import java.util.ResourceBundle;
 
 @Slf4j
+@Getter
 @Singleton
 public class DetailTabController implements Initializable {
 
@@ -70,7 +71,7 @@ public class DetailTabController implements Initializable {
     @FXML
     private SplitPane reqSplitPane;
     @FXML
-    private CodeArea overviewArea;
+    private DisplayCodeArea overviewArea;
     @FXML
     private TitledPane reqPayloadTitlePane;
     @FXML
@@ -193,7 +194,7 @@ public class DetailTabController implements Initializable {
         responseMessage.setContent(sampleXml.getBytes(StandardCharsets.UTF_8));
 
         requestMessage.setResponse(responseMessage);
-        displayRequest(requestMessage);
+        // displayRequest(requestMessage);
     }
 
     private void resetComboBox(ComboBox<Labeled> comboBox) {
@@ -458,7 +459,8 @@ public class DetailTabController implements Initializable {
         String cont = title + "\n" + code;
 
         Platform.runLater(() -> {
-            requestRenderer.renderContent(cont, overviewArea);
+            // requestRenderer.renderContent(cont, overviewArea);
+            overviewArea.replaceText(cont);
         });
     }
 

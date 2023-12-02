@@ -5,7 +5,6 @@
 <?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import org.fxmisc.richtext.*?>
 
 <?import com.catas.wicked.proxy.gui.componet.SideBar?>
 
@@ -24,11 +23,11 @@
     <JFXTabPane minWidth="300.0" prefHeight="567.0" prefWidth="600.0" style="-fx-background-color: TRANSPARENT;" styleClass="jfx-tab-pane" VBox.vgrow="ALWAYS">
         <Tab text="  Overview  ">
             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="388.0" prefWidth="584.0">
-                <CodeArea fx:id="overviewArea" editable="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                <DisplayCodeArea fx:id="overviewArea" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <cursor>
                         <Cursor fx:constant="TEXT" />
                     </cursor>
-                </CodeArea>
+                </DisplayCodeArea>
                 <TableView visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
                 <SideBar prefHeight="25" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="15.0">
                     <JFXButton text="Table" styleClass="selected"/>

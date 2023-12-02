@@ -1,26 +1,22 @@
 package com.catas.wicked.proxy.service;
 
-import com.catas.wicked.common.bean.FeRequestInfo;
 import com.catas.wicked.common.bean.message.BaseMessage;
 import com.catas.wicked.common.bean.message.RenderMessage;
 import com.catas.wicked.common.bean.message.RequestMessage;
-import com.catas.wicked.common.bean.message.ResponseMessage;
 import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.common.util.ThreadPoolService;
-import com.catas.wicked.common.util.WebUtils;
 import com.catas.wicked.proxy.gui.controller.DetailTabController;
 import com.catas.wicked.proxy.gui.controller.DetailWebViewController;
+import com.catas.wicked.proxy.render.TabRender;
 import jakarta.annotation.PostConstruct;
 import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import jakarta.inject.Singleton;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.entity.ContentType;
 import org.ehcache.Cache;
 
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -29,7 +25,6 @@ import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.function.Consumer;
 
 
 /**
@@ -58,7 +53,23 @@ public class RequestViewService {
     private ApplicationConfig appConfig;
     private BlockingQueue<BaseMessage> queue;
 
-    private Map<RenderMessage.Tab, Consumer<RenderMessage>> renderFuncMap;
+    @Named("request")
+    @Inject
+    private TabRender requestTabRender;
+
+    @Named("response")
+    @Inject
+    private TabRender responseTabRender;
+
+    @Named("overView")
+    @Inject
+    private TabRender overViewTabRender;
+
+    @Named("timing")
+    @Inject
+    private TabRender timingTabRender;
+
+    private Map<RenderMessage.Tab, TabRender> renderFuncMap;
 
     private static final String REQ_HEADER = "requestHeaders";
     private static final String REQ_DETAIL = "requestDetail";
@@ -79,9 +90,10 @@ public class RequestViewService {
     public void init() {
         this.queue = new LinkedBlockingQueue<>();
         this.renderFuncMap = new HashMap<>();
-        renderFuncMap.put(RenderMessage.Tab.REQUEST, this::renderRequest);
-        renderFuncMap.put(RenderMessage.Tab.RESPONSE, this::renderResponse);
-        renderFuncMap.put(RenderMessage.Tab.OVERVIEW, this::renderOverview);
+        renderFuncMap.put(RenderMessage.Tab.REQUEST, requestTabRender);
+        renderFuncMap.put(RenderMessage.Tab.RESPONSE, responseTabRender);
+        renderFuncMap.put(RenderMessage.Tab.OVERVIEW, overViewTabRender);
+        renderFuncMap.put(RenderMessage.Tab.TIMING, timingTabRender);
 
         ThreadPoolService.getInstance().run(() -> {
             while (!appConfig.getShutDownFlag().get()) {
@@ -89,9 +101,9 @@ public class RequestViewService {
                     BaseMessage msg = getMsg();
                     if (msg instanceof RenderMessage renderMsg) {
                         // System.out.println(renderMsg);
-                        Consumer<RenderMessage> consumer = renderFuncMap.get(renderMsg.getTab());
-                        if (consumer != null) {
-                            consumer.accept(renderMsg);
+                        TabRender renderer = renderFuncMap.get(renderMsg.getTab());
+                        if (renderer != null) {
+                            renderer.render(renderMsg);
                         } else {
                             log.warn("consumer not exist");
                         }
@@ -113,7 +125,7 @@ public class RequestViewService {
             return;
         }
         queue.clear();
-        // System.out.println("-----requestId: " + requestId + "-----");
+        System.out.println("-----requestId: " + requestId + "-----");
 
         // current requestView tab
         String curTab = detailTabController.getCurrentRequestTab();
@@ -145,123 +157,5 @@ public class RequestViewService {
             pushMsg(messages.poll());
         }
         appConfig.getCurrentRequestId().set(requestId);
-    }
-
-    private void renderRequest(RenderMessage renderMsg) {
-        System.out.println("-- render request --");
-        RequestMessage request = requestCache.get(renderMsg.getRequestId());
-        detailTabController.displayRequest(request);
-    }
-
-    private void renderResponse(RenderMessage renderMsg) {
-        System.out.println("-- render response --");
-        RequestMessage request = requestCache.get(renderMsg.getRequestId());
-        detailTabController.displayResponse(request.getResponse());
-    }
-
-    private void renderOverview(RenderMessage renderMsg) {
-        System.out.println("-- render overview --");
-        RequestMessage request = requestCache.get(renderMsg.getRequestId());
-        detailTabController.displayOverView(request);
-    }
-
-    public void updateView(String requestId) {
-        if (requestId == null || requestId.equals(currentRequestId)) {
-            return;
-        }
-        this.currentRequestId = requestId;
-        RequestMessage request = requestCache.get(requestId);
-
-        if (request != null) {
-            detailTabController.displayRequest(request);
-        }
-    }
-
-    private void updateOverviewTab(RequestMessage request, ResponseMessage response) {
-        FeRequestInfo info = new FeRequestInfo();
-        info.setUrl(request.getRequestUrl());
-        info.setProtocol("Http1.1");
-        info.setCode(response == null ? "": String.valueOf(response.getStatus()));
-        info.setMethod(request.getMethod());
-
-        feService.setUrlTitle(info);
-    }
-
-    private void updateRequestTab(RequestMessage request) {
-        try {
-            // render request headers
-            String headers = parseHeaders(request.getHeaders());
-            System.out.println("*** Request headers: " + headers);
-            feService.renderData(REQ_HEADER, headers);
-        } catch (Exception e) {
-            log.error("Error rendering request headers.", e);
-            feService.renderData(REQ_HEADER, ERROR_DATA);
-        }
-
-        // String contentTypeHeader = request.getHeaders().get("Content-type");
-        // ContentType contentType = ContentType.parse(contentTypeHeader);
-        // String mimeType = contentType.getMimeType();
-        // Charset charset = contentType.getCharset();
-        // System.out.println("*** Request MimeType: " + mimeType);
-        // System.out.println("*** Request Charset: " + charset);
-
-        try {
-            // render request body
-            byte[] content = WebUtils.parseContent(request.getHeaders(), request.getBody());
-
-            // String encoding = charset == null ? "UTF-8": charset.name();
-            String contentStr = "";
-            contentStr = new String(content, StandardCharsets.UTF_8);
-            feService.renderData(REQ_DETAIL, contentStr);
-        } catch (Exception e) {
-            log.error("Error rendering request body.", e);
-            feService.renderData(REQ_DETAIL, ERROR_DATA);
-        }
-    }
-
-    private void updateResponseTab(ResponseMessage response) {
-        try {
-            // render request headers
-            String headers = parseHeaders(response.getHeaders());
-            System.out.println("*** Response headers: " + headers);
-            feService.renderData(RESP_HEADER, headers);
-        } catch (Exception e) {
-            log.error("Error rendering response headers.", e);
-            feService.renderData(REQ_HEADER, ERROR_DATA);
-        }
-
-        try {
-            // render parseContent
-            String contentTypeHeader = response.getHeaders().get("Content-Type");
-            String mimeType = null;
-            Charset charset = null;
-            if (StringUtils.isNotBlank(contentTypeHeader)) {
-                ContentType contentType = ContentType.parse(contentTypeHeader);
-                mimeType = contentType.getMimeType();
-                charset = contentType.getCharset();
-            }
-
-            byte[] parseContent = WebUtils.parseContent(response.getHeaders(), response.getContent());
-            if (StringUtils.isNotBlank(mimeType) && mimeType.startsWith("image/")) {
-                feService.renderImage(RESP_DETAIL, parseContent);
-            } else {
-                String contentStr = "";
-                contentStr = new String(parseContent, charset == null ? StandardCharsets.UTF_8: charset);
-                feService.renderData(RESP_DETAIL, contentStr);
-            }
-        } catch (Exception e) {
-            log.error("Error rendering response content.", e);
-            feService.renderData(RESP_DETAIL, ERROR_DATA);
-        }
-    }
-
-
-    private String parseHeaders(Map<String, String> headers) {
-        if (headers == null || headers.isEmpty()) {
-            return "";
-        }
-        StringBuffer buffer = new StringBuffer();
-        headers.forEach((key, value) -> buffer.append(key).append(":\s").append(value).append("\n"));
-        return buffer.toString();
     }
 }
