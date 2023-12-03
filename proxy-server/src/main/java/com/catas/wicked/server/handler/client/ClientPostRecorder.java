@@ -6,6 +6,7 @@ import com.catas.wicked.common.bean.message.ResponseMessage;
 import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.common.constant.ProxyConstant;
 import com.catas.wicked.common.pipeline.MessageQueue;
+import com.catas.wicked.common.pipeline.Topic;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -82,7 +83,7 @@ public class ClientPostRecorder extends ChannelInboundHandlerAdapter {
         responseMessage.setRequestId(requestInfo.getRequestId());
         responseMessage.setStartTime(requestInfo.getResponseStartTime());
         responseMessage.setEndTime(requestInfo.getResponseEndTime());
-        messageQueue.pushMsg(responseMessage);
+        messageQueue.pushMsg(Topic.RECORD, responseMessage);
         log.info("<<<< Response received: {} <<<<", requestInfo.getRequestId());
     }
 }

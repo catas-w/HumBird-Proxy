@@ -3,6 +3,7 @@ package com.catas.wicked.proxy.gui.controller;
 import com.catas.wicked.common.bean.RequestCell;
 import com.catas.wicked.common.bean.message.DeleteMessage;
 import com.catas.wicked.common.pipeline.MessageQueue;
+import com.catas.wicked.common.pipeline.Topic;
 import com.catas.wicked.proxy.gui.componet.ViewCellFactory;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
@@ -150,6 +151,6 @@ public class RequestViewController implements Initializable {
             log.error("Unable to delete request, request cell is null.");
         }
         deleteMessage.setRequestCell(requestCell);
-        messageQueue.pushMsg(deleteMessage);
+        messageQueue.pushMsg(Topic.RECORD, deleteMessage);
     }
 }

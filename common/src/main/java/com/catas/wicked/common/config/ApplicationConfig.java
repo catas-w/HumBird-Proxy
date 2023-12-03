@@ -76,7 +76,7 @@ public class ApplicationConfig implements AutoCloseable {
     public void shutDownApplication() {
         shutDownFlag.compareAndSet(false, true);
         // MessageQueue messageQueue = AppContextUtil.getBean(MessageQueue.class);
-        messageQueue.pushMsg(new PoisonMessage());
+        // messageQueue.pushMsg(new PoisonMessage());
         ThreadPoolService.getInstance().shutdown();
     }
 

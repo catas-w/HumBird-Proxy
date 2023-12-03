@@ -5,6 +5,7 @@ import com.catas.wicked.common.bean.message.RequestMessage;
 import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.common.constant.ProxyConstant;
 import com.catas.wicked.common.pipeline.MessageQueue;
+import com.catas.wicked.common.pipeline.Topic;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -93,7 +94,7 @@ public class ServerPostRecorder extends ChannelInboundHandlerAdapter {
         requestMessage.setHeaders(new HashMap<>());
         requestMessage.setStartTime(requestInfo.getRequestStartTime());
         requestMessage.setEndTime(requestInfo.getRequestEndTime());
-        messageQueue.pushMsg(requestMessage);
+        messageQueue.pushMsg(Topic.RECORD, requestMessage);
 
         log.info(">>>> Request send[encrypted]: {} ID: {} >>>>", url, requestInfo.getRequestId());
     }
@@ -144,7 +145,7 @@ public class ServerPostRecorder extends ChannelInboundHandlerAdapter {
         requestMessage.setRequestId(requestInfo.getRequestId());
         requestMessage.setStartTime(requestInfo.getRequestStartTime());
         requestMessage.setEndTime(requestInfo.getRequestEndTime());
-        messageQueue.pushMsg(requestMessage);
+        messageQueue.pushMsg(Topic.RECORD, requestMessage);
 
         log.info(">>>> Request send[decoded]: {} ID: {} >>>>", uri, requestInfo.getRequestId());
     }

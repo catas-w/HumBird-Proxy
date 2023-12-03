@@ -4,6 +4,7 @@ import com.catas.wicked.common.bean.ProxyRequestInfo;
 import com.catas.wicked.common.bean.message.ResponseMessage;
 import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.common.pipeline.MessageQueue;
+import com.catas.wicked.common.pipeline.Topic;
 import com.catas.wicked.common.util.ThreadPoolService;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelDuplexHandler;
@@ -71,7 +72,7 @@ public class ResponseRecordHandler extends ChannelDuplexHandler {
         }
 
         responseMessage.setRequestId(requestInfo.getRequestId());
-        messageQueue.pushMsg(responseMessage);
+        messageQueue.pushMsg(Topic.RECORD, responseMessage);
         resp.release();
         // log.info("-- RequestId: " + requestInfo.getRequestId());
     }

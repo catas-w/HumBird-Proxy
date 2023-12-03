@@ -9,22 +9,15 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.function.Consumer;
 
 @Slf4j
 @Singleton
 public class MessageQueue {
 
-    private final BlockingQueue<BaseMessage> queue;
-
     private final Map<Topic, MessageChannel> channelMap;
 
-    private boolean shutDownFlag;
-
     public MessageQueue() {
-        this.queue = new LinkedBlockingQueue<>();
         this.channelMap = new HashMap<>();
     }
 
@@ -36,7 +29,7 @@ public class MessageQueue {
             // TODO 设置线程名称
             ThreadPoolService.getInstance().run(() -> {
                 log.info("Start listening to topic: {}", messageChannel.getTopic());
-                while (!shutDownFlag) {
+                while (true) {
                     try {
                         BaseMessage msg = messageChannel.getMsg();
                         if (msg instanceof PoisonMessage) {
@@ -81,11 +74,4 @@ public class MessageQueue {
         messageChannel.pushMsg(message);
     }
 
-    public void pushMsg(BaseMessage message) {
-        queue.add(message);
-    }
-
-    public BaseMessage getMsg() throws InterruptedException {
-        return queue.take();
-    }
 }

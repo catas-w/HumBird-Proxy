@@ -3,12 +3,11 @@ package com.catas.wicked.proxy.message;
 import com.catas.wicked.common.bean.RequestCell;
 import com.catas.wicked.common.bean.message.BaseMessage;
 import com.catas.wicked.common.bean.message.DeleteMessage;
-import com.catas.wicked.common.bean.message.PoisonMessage;
 import com.catas.wicked.common.bean.message.RequestMessage;
 import com.catas.wicked.common.bean.message.ResponseMessage;
 import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.common.pipeline.MessageQueue;
-import com.catas.wicked.common.util.ThreadPoolService;
+import com.catas.wicked.common.pipeline.Topic;
 import com.catas.wicked.proxy.gui.controller.RequestViewController;
 import jakarta.annotation.PostConstruct;
 import jakarta.inject.Inject;
@@ -47,27 +46,10 @@ public class MessageService {
 
     @PostConstruct
     public void init() {
-        // fetch data from queue and add to message tree
-        ThreadPoolService.getInstance().run(() -> {
-            while (!appConfig.getShutDownFlag().get()) {
-                try {
-                    BaseMessage msg = messageQueue.getMsg();
-                    processMsg(msg);
-                } catch (InterruptedException e) {
-                    log.info("-- quit --");
-                    break;
-                } catch (Exception e) {
-                    log.error("Error occurred in message tree thread", e);
-                }
-            }
-        });
+        messageQueue.subscribe(Topic.RECORD, this::processMsg);
     }
 
-    private void processMsg(BaseMessage msg) throws Exception {
-        if (msg instanceof PoisonMessage) {
-            throw new InterruptedException();
-        }
-
+    private void processMsg(BaseMessage msg) {
         if (msg instanceof RequestMessage requestMessage) {
             switch (requestMessage.getType()) {
                 case REQUEST -> {

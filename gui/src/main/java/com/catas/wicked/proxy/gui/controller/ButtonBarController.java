@@ -3,6 +3,7 @@ package com.catas.wicked.proxy.gui.controller;
 import com.catas.wicked.common.bean.message.RequestMessage;
 import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.common.pipeline.MessageQueue;
+import com.catas.wicked.common.pipeline.Topic;
 import com.catas.wicked.common.util.IdUtil;
 import com.jfoenix.controls.JFXButton;
 import jakarta.inject.Inject;
@@ -103,7 +104,7 @@ public class ButtonBarController implements Initializable {
             msg.setRequestId(IdUtil.getId());
             msg.setMethod(split[0]);
 
-            queue.pushMsg(msg);
+            queue.pushMsg(Topic.RECORD, msg);
             index ++;
         });
     }

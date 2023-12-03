@@ -4,6 +4,7 @@ import com.catas.wicked.common.bean.ProxyRequestInfo;
 import com.catas.wicked.common.bean.message.RequestMessage;
 import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.common.pipeline.MessageQueue;
+import com.catas.wicked.common.pipeline.Topic;
 import com.catas.wicked.common.util.ThreadPoolService;
 import com.catas.wicked.common.util.WebUtils;
 import io.netty.buffer.ByteBuf;
@@ -85,7 +86,7 @@ public class RequestRecordHandler extends ChannelInboundHandlerAdapter {
         requestMessage.setHeaders(new HashMap<>());
         requestMessage.setStartTime(requestInfo.getRequestStartTime());
         requestMessage.setEndTime(System.currentTimeMillis());
-        messageQueue.pushMsg(requestMessage);
+        messageQueue.pushMsg(Topic.RECORD, requestMessage);
 
         // log.info("RequestId: " + requestInfo.getRequestId());
         log.info("==== Record request[encrypted]: {} ====", url);
@@ -158,7 +159,7 @@ public class RequestRecordHandler extends ChannelInboundHandlerAdapter {
         requestMessage.setRequestId(requestInfo.getRequestId());
         requestMessage.setStartTime(requestInfo.getRequestStartTime());
         requestMessage.setEndTime(System.currentTimeMillis());
-        messageQueue.pushMsg(requestMessage);
+        messageQueue.pushMsg(Topic.RECORD, requestMessage);
         request.release();
 
         log.info("==== Record request[decoded]: {} ====", uri);
