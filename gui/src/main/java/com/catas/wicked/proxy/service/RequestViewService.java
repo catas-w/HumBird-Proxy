@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 
 
 /**
@@ -46,9 +45,6 @@ public class RequestViewService {
     private Cache<String, RequestMessage> requestCache;
 
     private String currentRequestId;
-
-    @Inject
-    private FeService feService;
 
     @Inject
     private ApplicationConfig appConfig;
@@ -94,7 +90,7 @@ public class RequestViewService {
         messageQueue.subscribe(Topic.RENDER, msg -> {
             if (msg instanceof RenderMessage renderMsg) {
                 // System.out.println(renderMsg);
-                TabRenderer renderer = renderFuncMap.get(renderMsg.getTab());
+                TabRenderer renderer = renderFuncMap.get(renderMsg.getTargetTab());
                 if (renderer != null) {
                     renderer.render(renderMsg);
                 } else {
@@ -110,7 +106,7 @@ public class RequestViewService {
      * update request tab by requestId
      * @param requestId requestId
      */
-    public synchronized void updateRequestTab(String requestId) {
+    public void updateRequestTab(String requestId) {
         String curRequestId = appConfig.getCurrentRequestId().get();
         if (StringUtils.equals(curRequestId, requestId)) {
             log.warn("Same requestId");
@@ -125,23 +121,17 @@ public class RequestViewService {
         String curTab = detailTabController.getCurrentRequestTab();
         RenderMessage.Tab firstTargetTab = RenderMessage.Tab.valueOf(curTab);
 
-        Queue<RenderMessage> messages = new PriorityQueue<>(Comparator.comparingInt(o -> o.getTab().getOrder()));
-        if (requestId == null) {
-            // set empty page
-            RenderMessage msg = new RenderMessage(requestId, RenderMessage.Tab.EMPTY);
-            messages.offer(msg);
-        } else {
-            messages.offer(new RenderMessage(requestId, RenderMessage.Tab.OVERVIEW));
-            messages.offer(new RenderMessage(requestId, RenderMessage.Tab.REQUEST));
-            messages.offer(new RenderMessage(requestId, RenderMessage.Tab.RESPONSE));
-            messages.offer(new RenderMessage(requestId, RenderMessage.Tab.TIMING));
-        }
+        Queue<RenderMessage> messages = new PriorityQueue<>(Comparator.comparingInt(o -> o.getTargetTab().getOrder()));
+        messages.offer(new RenderMessage(requestId, RenderMessage.Tab.OVERVIEW));
+        messages.offer(new RenderMessage(requestId, RenderMessage.Tab.REQUEST));
+        messages.offer(new RenderMessage(requestId, RenderMessage.Tab.RESPONSE));
+        messages.offer(new RenderMessage(requestId, RenderMessage.Tab.TIMING));
 
         // render current tab first
         Iterator<RenderMessage> iterator = messages.iterator();
         while (iterator.hasNext()) {
             RenderMessage msg = iterator.next();
-            if (msg.getTab() == firstTargetTab) {
+            if (msg.getTargetTab() == firstTargetTab) {
                 // pushMsg(msg);
                 messageQueue.pushMsg(Topic.RENDER, msg);
                 iterator.remove();

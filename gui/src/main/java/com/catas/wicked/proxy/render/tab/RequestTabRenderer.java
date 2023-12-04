@@ -41,7 +41,13 @@ public class RequestTabRenderer extends AbstractTabRenderer {
 
     @Override
     public void render(RenderMessage renderMsg) {
-        System.out.println("-- render request --");
+        // System.out.println("-- render request --");
+        detailTabController.getReqHeaderMsgLabel().setVisible(renderMsg.isEmpty());
+        detailTabController.getReqContentMsgLabel().setVisible(renderMsg.isEmpty());
+        if (renderMsg.isEmpty()) {
+            System.out.println("--empty request--");
+            return;
+        }
         RequestMessage request = requestCache.get(renderMsg.getRequestId());
         displayRequest(request);
     }
@@ -94,7 +100,7 @@ public class RequestTabRenderer extends AbstractTabRenderer {
         SingleSelectionModel<Tab> selectionModel = detailTabController.getReqPayloadTabPane().getSelectionModel();
 
         String title = "Payload";
-        detailTabController.getReqMsgLabel().setVisible(false);
+        detailTabController.getReqContentMsgLabel().setVisible(false);
         if (hasQuery && hasContent) {
             detailTabController.getReqPayloadTabPane().setTabMaxHeight(20);
             detailTabController.getReqPayloadTabPane().setTabMinHeight(20);
@@ -110,7 +116,7 @@ public class RequestTabRenderer extends AbstractTabRenderer {
         } else {
             // TODO set default-msg
             detailTabController.getReqPayloadTitlePane().setExpanded(false);
-            detailTabController.getReqMsgLabel().setVisible(true);
+            detailTabController.getReqContentMsgLabel().setVisible(true);
         }
 
         String finalTitle = title;

@@ -89,11 +89,16 @@ public class HeaderTitledPane extends TitledPane {
                     }
                     BooleanProperty selected = (BooleanProperty) observable;
                     for (int i = 0; i < children.size(); i++) {
+                        // ignore message label
+                        if (children.get(i) instanceof MessageLabel) {
+                            continue;
+                        }
                         if (i == checkIndex.get()) {
                             children.get(i).setVisible(selected.get());
                         } else {
                             children.get(i).setVisible(!selected.get());
                         }
+
                     }
                 }
 

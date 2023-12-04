@@ -9,6 +9,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -58,10 +59,12 @@ public class RequestViewTreeCell<T> extends TreeCell<T> {
 
         this.setOnMouseClicked(e -> {
             TreeItem<T> treeItem = getTreeItem();
-            if (treeItem != null && requestViewService != null) {
+            if (e.getButton() == MouseButton.PRIMARY && treeItem != null && requestViewService != null) {
                 RequestCell cell = (RequestCell) treeItem.getValue();
-                System.out.println("Clicked " + cell.getFullPath() + " " + cell.getRequestId());
-                requestViewService.updateRequestTab(cell.getRequestId());
+                System.out.println("Clicked " + cell.getFullPath() + " " + cell.getRequestId() + "isLeaf: " + cell.isLeaf());
+                if (cell.isLeaf()) {
+                    requestViewService.updateRequestTab(cell.getRequestId());
+                }
             }
         });
     }

@@ -33,7 +33,7 @@
                     <JFXButton text="Table" styleClass="selected"/>
                     <JFXButton text="Text"/>
                 </SideBar>
-                <MessageLabel fx:id="overViewMsgLabel" visible="false" text="Empty"/>
+                <MessageLabel fx:id="overViewMsgLabel" visible="true" text="Empty"/>
             </AnchorPane>
         </Tab>
         <Tab text="  Request  ">
@@ -45,6 +45,7 @@
 
                             <TableView fx:id="reqHeaderTable" visible="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                             </TableView>
+                            <MessageLabel fx:id="reqHeaderMsgLabel" visible="true" text="Empty"/>
                         </AnchorPane>
                     </HeaderTitledPane>
                     <TitledPane fx:id="reqPayloadTitlePane" animated="false" maxHeight="Infinity" text="Payload" VBox.vgrow="ALWAYS">
@@ -74,7 +75,7 @@
                                     </AnchorPane>
                                 </Tab>
                             </JFXTabPane>
-                            <MessageLabel fx:id="reqMsgLabel" text="Empty"/>
+                            <MessageLabel fx:id="reqContentMsgLabel" visible="true" text="Empty"/>
                         </AnchorPane>
                     </TitledPane>
                 </SplitPane>
@@ -88,6 +89,7 @@
                             <DisplayCodeArea fx:id="respHeaderArea" codeStyle="HEADER" visible="false"/>
 
                             <TableView fx:id="respHeaderTable" visible="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                            <MessageLabel fx:id="respHeaderMsgLabel" visible="true" text="Empty"/>
                         </AnchorPane>
                     </HeaderTitledPane>
                     <TitledPane fx:id="respDataPane" animated="false" maxHeight="Infinity" text="Content" VBox.vgrow="ALWAYS">
@@ -101,7 +103,7 @@
                                 <JFXButton text="Origin"/>
                                 <JFXButton text="Hex"/>
                             </SideBar>
-                            <MessageLabel fx:id="respMsgLabel" text="Empty"/>
+                            <MessageLabel fx:id="respContentMsgLabel" visible="true" text="Empty"/>
                         </AnchorPane>
                     </TitledPane>
                 </SplitPane>
@@ -109,19 +111,10 @@
         </Tab>
         <Tab text="   Timing   ">
             <AnchorPane minHeight="0.0" minWidth="0.0">
-                <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                    <HeaderTitledPane animated="true" maxHeight="Infinity" text="Header" VBox.vgrow="ALWAYS">
-                        <!-- <AnchorPane minHeight="0.0" minWidth="0.0"> -->
-                        <!--     <JFXTextArea editable="true" focusColor="#3dc4b1" promptText="Data" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" /> -->
-                        <!-- </AnchorPane> -->
-                        <DisplayCodeArea codeStyle="XML" fx:id="testCodeArea" />
-                    </HeaderTitledPane>
-                    <!-- <TitledPane animated="false" maxHeight="Infinity" text="untitled" VBox.vgrow="ALWAYS"> -->
-                    <!--     <AnchorPane minHeight="0.0" minWidth="0.0"> -->
-                    <!--         <JFXTextArea disable="true" promptText="Data" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" /> -->
-                    <!--     </AnchorPane> -->
-                    <!-- </TitledPane> -->
-                </VBox>
+                <!-- <HeaderTitledPane animated="true" maxHeight="Infinity" text="Header" VBox.vgrow="ALWAYS"> -->
+                <DisplayCodeArea codeStyle="XML" fx:id="testCodeArea" />
+                <MessageLabel fx:id="timingMsgLabel" visible="true" text="Empty"/>
+                <!-- </HeaderTitledPane> -->
             </AnchorPane>
         </Tab>
 </JFXTabPane>

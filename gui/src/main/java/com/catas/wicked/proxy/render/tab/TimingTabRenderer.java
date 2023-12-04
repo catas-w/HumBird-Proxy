@@ -23,7 +23,11 @@ public class TimingTabRenderer extends AbstractTabRenderer {
 
     @Override
     public void render(RenderMessage renderMsg) {
-        System.out.println("--render timing --");
+        // System.out.println("--render timing --");
+        detailTabController.getTimingMsgLabel().setVisible(renderMsg.isEmpty());
+        if (renderMsg.isEmpty()) {
+            return;
+        }
         RequestMessage request = requestCache.get(renderMsg.getRequestId());
         // TODO
     }

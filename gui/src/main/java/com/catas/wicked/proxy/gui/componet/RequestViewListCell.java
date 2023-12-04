@@ -6,6 +6,7 @@ import javafx.animation.FadeTransition;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.util.Duration;
@@ -28,7 +29,7 @@ public class RequestViewListCell<T> extends ListCell<T> {
         selectedPane.setMouseTransparent(true);
 
         this.setOnMouseClicked(e -> {
-            if (this.requestCell != null && requestViewService != null) {
+            if (e.getButton() == MouseButton.PRIMARY && this.requestCell != null && requestViewService != null) {
                 System.out.println("clicked list: " + requestCell.getFullPath() + " " + requestCell.getRequestId());
                 requestViewService.updateRequestTab(requestCell.getRequestId());
             }

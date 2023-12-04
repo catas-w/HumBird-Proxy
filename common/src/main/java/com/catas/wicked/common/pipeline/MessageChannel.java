@@ -63,7 +63,7 @@ public class MessageChannel {
             try {
                 consumer.accept(baseMessage);
             } catch (Exception e) {
-                log.error("Error occurred in consumer of: {}", topic);
+                log.error("Error occurred in consumer of: {}", topic, e);
             }
         }
     }

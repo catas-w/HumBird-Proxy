@@ -3,12 +3,14 @@ package com.catas.wicked.proxy.message;
 import com.catas.wicked.common.bean.RequestCell;
 import com.catas.wicked.common.bean.message.BaseMessage;
 import com.catas.wicked.common.bean.message.DeleteMessage;
+import com.catas.wicked.common.bean.message.RenderMessage;
 import com.catas.wicked.common.bean.message.RequestMessage;
 import com.catas.wicked.common.bean.message.ResponseMessage;
 import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.common.pipeline.MessageQueue;
 import com.catas.wicked.common.pipeline.Topic;
 import com.catas.wicked.proxy.gui.controller.RequestViewController;
+import com.catas.wicked.proxy.service.RequestViewService;
 import jakarta.annotation.PostConstruct;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
@@ -31,6 +33,9 @@ public class MessageService {
 
     @Inject
     private ApplicationConfig appConfig;
+
+    @Inject
+    private RequestViewService requestViewService;
 
     @Inject
     private MessageQueue messageQueue;
@@ -129,6 +134,10 @@ public class MessageService {
         messageTree.travel(nodeToDelete, treeNode -> {
             requestIdList.add(treeNode.getRequestId());
             listItemList.add(treeNode.getListItem());
+            if (StringUtils.equals(appConfig.getCurrentRequestId().get(), treeNode.getRequestId())) {
+                System.out.println("***** remove reqId: " + treeNode.getRequestId());
+                requestViewService.updateRequestTab(RenderMessage.EMPTY_MSG);
+            }
         });
 
         if (deleteMessage.getSource() == DeleteMessage.Source.TREE_VIEW) {

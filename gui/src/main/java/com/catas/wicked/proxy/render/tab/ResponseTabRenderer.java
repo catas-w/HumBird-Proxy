@@ -33,7 +33,13 @@ public class ResponseTabRenderer extends AbstractTabRenderer {
 
     @Override
     public void render(RenderMessage renderMsg) {
-        System.out.println("-- render response --");
+        // System.out.println("-- render response --");
+        detailTabController.getRespHeaderMsgLabel().setVisible(renderMsg.isEmpty());
+        detailTabController.getRespContentMsgLabel().setVisible(renderMsg.isEmpty());
+        if (renderMsg.isEmpty()) {
+            System.out.println("--Empty response--");
+            return;
+        }
         RequestMessage request = requestCache.get(renderMsg.getRequestId());
         displayResponse(request.getResponse());
     }
@@ -51,11 +57,11 @@ public class ResponseTabRenderer extends AbstractTabRenderer {
         ContentType contentType = WebUtils.getContentType(headers);
         byte[] parsedContent = WebUtils.parseContent(response.getHeaders(), response.getContent());
         if (parsedContent.length == 0) {
-            detailTabController.getRespMsgLabel().setVisible(true);
+            detailTabController.getRespContentMsgLabel().setVisible(true);
             detailTabController.getRespDataPane().setExpanded(false);
             return;
         }
-        detailTabController.getRespMsgLabel().setVisible(false);
+        detailTabController.getRespContentMsgLabel().setVisible(false);
         if (contentType != null && contentType.getMimeType().startsWith("image/")) {
             detailTabController.getRespContentArea().setVisible(false);
             detailTabController.getRespImageView().setVisible(true);
