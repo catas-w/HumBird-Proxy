@@ -17,6 +17,7 @@ import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.GenericStyledArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.model.Paragraph;
+import org.fxmisc.richtext.model.StyleSpans;
 import org.reactfx.collection.ListModification;
 
 import java.util.Collection;
@@ -74,6 +75,22 @@ public class DisplayCodeArea extends VirtualizedScrollPane<CodeArea> {
         Highlighter<Collection<String>> highlighter = HighlighterFactory.getHighlightComputer(codeStyle);
         // this.visibleParagraphStyler.setHighlightComputer(highlighter);
         this.textStyler.setHighlightComputer(highlighter);
+
+        // refresh style
+        if (highlighter == null) {
+            return;
+        }
+        if (highlighter instanceof Formatter formatter) {
+            String formatText = formatter.format(codeArea.getText());
+            Platform.runLater(() -> {
+                codeArea.replaceText(formatText);
+            });
+            // return;
+        }
+        StyleSpans<Collection<String>> styleSpans = highlighter.computeHighlight(codeArea.getText());
+        Platform.runLater(() -> {
+            this.codeArea.setStyleSpans(0, styleSpans);
+        });
     }
 
     public void replaceText(int start, int end, String text) {

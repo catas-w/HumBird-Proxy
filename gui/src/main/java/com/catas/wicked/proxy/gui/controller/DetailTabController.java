@@ -1,8 +1,7 @@
 package com.catas.wicked.proxy.gui.controller;
 
 import com.catas.wicked.common.bean.HeaderEntry;
-import com.catas.wicked.common.bean.message.RequestMessage;
-import com.catas.wicked.common.bean.message.ResponseMessage;
+import com.catas.wicked.common.constant.CodeStyle;
 import com.catas.wicked.proxy.gui.componet.MessageLabel;
 import com.catas.wicked.proxy.gui.componet.ZoomImageView;
 import com.catas.wicked.proxy.gui.componet.richtext.DisplayCodeArea;
@@ -10,6 +9,8 @@ import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXTabPane;
 import com.jfoenix.controls.JFXTextArea;
 import jakarta.inject.Singleton;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -25,9 +26,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
 
@@ -52,6 +51,8 @@ public class DetailTabController implements Initializable {
     public MessageLabel respContentMsgLabel;
     @FXML
     public MessageLabel timingMsgLabel;
+    @FXML
+    public JFXComboBox<Labeled> reqComboBox;
     @FXML
     private JFXComboBox<Labeled> respComboBox;
     @FXML
@@ -99,51 +100,6 @@ public class DetailTabController implements Initializable {
 
     private boolean midTitleCollapse;
 
-    private static final String sampleCode = String.join("\n", new String[] {
-            "Request Url:    http://google.com/path/index/1?query=aa&time=bb",
-            "Request Method:    POST",
-            "Status Code:    200",
-            "Remote Address:    192.168.1.234:80",
-            "Refer Policy:   cross-origin boolean",
-    });
-
-    private static final String sampleJson = "{\"resource_response\":{\"status\":true,\"code\":0,\"message\":\"确定\",\"endpoint_name\":\"v3_get_user_handler\",\"data\":\"{\\\"is_name_eligible_for_lead_form_autofill\\\":true,\\\"full_name\\\":\\\"铁柱 王\\\",\\\"email\\\":\\\"cvn78f35c@gmail.com\\\",\\\"fields\\\":[\\\"name\\\",\\\".email\\\",\\\"ss\\\"]}\",\"x_pinterest_sli_endpoint_name\":\"v3_get_user_handler\",\"http_status\":200},\"resource\":{\"name\":\"{\\\"name\\\":\\\"jack\\\"}\",\"options\":{\"bookmarks\":[\"-end-\"],\"url\":\"/v3/users/me/\",\"data\":{\"fields\":[\"user.full_name\",\"user.email\",\"user.is_name_eligible_for_lead_form_autofill\",\"useraaa\"]}}},\"request_identifier\":\"2547094186404461\"}";
-
-    private static final String sampleXml = String.join("\n", new String[] {
-            "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>",
-            "<!-- Sample XML -->",
-            "< orders >",
-            "	<Order number=\"1\" table=\"center\">",
-            "		<items>",
-            "			<Item>",
-            "				<type>ESPRESSO</type>",
-            "				<shots>2</shots>",
-            "				<iced>false</iced>",
-            "				<orderNumber>1</orderNumber>",
-            "			</Item>",
-            "			<Item>",
-            "				<type>CAPPUCCINO</type>",
-            "				<shots>1</shots>",
-            "				<iced>false</iced>",
-            "				<orderNumber>1</orderNumber>",
-            "			</Item>",
-            "			<Item>",
-            "			<type>LATTE</type>",
-            "				<shots>2</shots>",
-            "				<iced>false</iced>",
-            "				<orderNumber>1</orderNumber>",
-            "			</Item>",
-            "			<Item>",
-            "				<type>MOCHA</type>",
-            "				<shots>3</shots>",
-            "				<iced>true</iced>",
-            "				<orderNumber>1</orderNumber>",
-            "			</Item>",
-            "		</items>",
-            "	</Order>",
-            "</orders>"
-    });
-
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         dividerPositionMap.put(reqSplitPane, reqSplitPane.getDividerPositions().clone());
@@ -154,45 +110,25 @@ public class DetailTabController implements Initializable {
         addTitleListener(respHeaderPane, respSplitPane);
         addTitleListener(respDataPane, respSplitPane);
 
-        resetComboBox(respComboBox);
-
-        testCodeArea.replaceText(sampleXml);
-
-        Map<String, String> map = new LinkedHashMap<>();
-        map.put("aa", "bb");
-        map.put("aa2", "bb");
-        map.put("aa3", "bb");
-        map.put("aa4", "bb");
-        map.put("aa5", "bb");
-        map.put("aa6", "bb");
-        map.put("aa7", "bb");
-        map.put("aa8", "bb");
-        map.put("aa9", "bb");
-        map.put("aa10", "bb");
-        map.put("aa411", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36");
-
-        // RequestMessage requestMessage = new RequestMessage("http://google.com/page");
-        RequestMessage requestMessage = new RequestMessage("http://google.com/page?name=aa&age=22");
-
-        requestMessage.setHeaders(map);
-        requestMessage.setBody(sampleJson.getBytes(StandardCharsets.UTF_8));
-
-        ResponseMessage responseMessage = new ResponseMessage();
-        responseMessage.setStatus(200);
-        responseMessage.setHeaders(map);
-        responseMessage.setContent(sampleXml.getBytes(StandardCharsets.UTF_8));
-
-        requestMessage.setResponse(responseMessage);
-        // displayRequest(requestMessage);
+        resetComboBox(respComboBox, respContentArea);
+        resetComboBox(reqComboBox, reqPayloadCodeArea);
     }
 
-    private void resetComboBox(ComboBox<Labeled> comboBox) {
+    private void resetComboBox(ComboBox<Labeled> comboBox, DisplayCodeArea codeArea) {
         if (comboBox.getItems().isEmpty()) {
             // comboBox.setButtonCell(new Gra);
-            comboBox.getItems().add(new Label("Text"));
-            comboBox.getItems().add(new Label("JSON"));
+            comboBox.getItems().add(new Label("Plain"));
+            comboBox.getItems().add(new Label("Json"));
             comboBox.getItems().add(new Label("Html"));
             comboBox.getItems().add(new Label("Xml"));
+
+            comboBox.valueProperty().addListener(new ChangeListener<Labeled>() {
+                @Override
+                public void changed(ObservableValue<? extends Labeled> observable, Labeled oldValue, Labeled newValue) {
+                    CodeStyle codeStyle = CodeStyle.valueOf(newValue.getText().toUpperCase());
+                    codeArea.setCodeStyle(codeStyle);
+                }
+            });
         }
         comboBox.getSelectionModel().selectFirst();
     }
