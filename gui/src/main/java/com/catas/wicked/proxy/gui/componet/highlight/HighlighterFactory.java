@@ -28,6 +28,7 @@ public class HighlighterFactory {
                 map.put(CodeStyle.JSON, new JsonHighlighter());
                 map.put(CodeStyle.XML, new XmlHighlighter());
                 map.put(CodeStyle.HEADER, new HeaderHighlighter());
+                map.put(CodeStyle.HTML, new HtmlHighlighter());
             }
         }
         return map.get(codeStyle);

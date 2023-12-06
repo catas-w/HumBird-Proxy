@@ -60,7 +60,7 @@
                                         <SideBar prefHeight="25" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="15.0">
                                             <JFXButton text="Table" styleClass="selected"/>
                                             <!-- hide in form-data -->
-                                            <JFXComboBox fx:id="reqComboBox" styleClass="selected"/>
+                                            <JFXComboBox fx:id="reqComboBox"/>
                                             <JFXButton text="Origin"/>
                                             <JFXButton text="Hex"/>
                                         </SideBar>

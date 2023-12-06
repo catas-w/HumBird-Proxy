@@ -12,6 +12,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
+import org.apache.commons.lang3.StringUtils;
 import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.GenericStyledArea;
@@ -40,6 +41,8 @@ public class DisplayCodeArea extends VirtualizedScrollPane<CodeArea> {
     private StringProperty codeStyle = new SimpleStringProperty(CodeStyle.PLAIN.name());
 
     private static final String STYLE = "display-code-area";
+
+    private String originText;
 
     public DisplayCodeArea(CodeArea codeArea) {
         super(codeArea);
@@ -77,48 +80,42 @@ public class DisplayCodeArea extends VirtualizedScrollPane<CodeArea> {
         this.textStyler.setHighlightComputer(highlighter);
 
         // refresh style
-        if (highlighter == null) {
-            return;
-        }
-        if (highlighter instanceof Formatter formatter) {
-            String formatText = formatter.format(codeArea.getText());
-            Platform.runLater(() -> {
-                codeArea.replaceText(formatText);
-            });
-            // return;
-        }
-        StyleSpans<Collection<String>> styleSpans = highlighter.computeHighlight(codeArea.getText());
-        Platform.runLater(() -> {
-            this.codeArea.setStyleSpans(0, styleSpans);
-        });
-    }
-
-    public void replaceText(int start, int end, String text) {
-        Highlighter<Collection<String>> highlighter = getCurrentHighlighter();
-        if (highlighter instanceof Formatter) {
-            text = ((Formatter) highlighter).format(text);
-        }
-        String finalText = text;
-        Platform.runLater(() -> {
-            codeArea.replaceText(start, end, finalText);
-        });
+        refreshStyle();
     }
 
     public void replaceText(String text) {
-        Highlighter<Collection<String>> highlighter = getCurrentHighlighter();
-        if (highlighter instanceof Formatter) {
-            text = ((Formatter) highlighter).format(text);
-        }
-        String finalText = text;
-        Platform.runLater(() -> {
-            codeArea.replaceText(finalText);
-        });
+        this.originText = text;
+        refreshStyle();
     }
 
-    public void appendText(String text) {
-        Platform.runLater(() -> {
-            codeArea.appendText(text);
-        });
+    private void refreshStyle() {
+        if (StringUtils.isEmpty(originText)) {
+            return;
+        }
+        Highlighter<Collection<String>> highlighter = getCurrentHighlighter();
+        assert highlighter != null;
+
+        String formatText = originText;
+        if (highlighter instanceof Formatter formatter) {
+            formatText = formatter.format(originText);
+        }
+
+        if (!StringUtils.equals(formatText, codeArea.getText())) {
+            String finalText = formatText;
+            Platform.runLater(() -> {
+                codeArea.replaceText(finalText);
+            });
+        } else {
+            StyleSpans<Collection<String>> styleSpans = highlighter.computeHighlight(formatText);
+            Platform.runLater(() -> {
+                this.codeArea.setStyleSpans(0, styleSpans);
+                // int from = 0;
+                // for(StyleSpan<Collection<String>>  span: styleSpans) {
+                //     codeArea.setStyle(from, from + span.getLength(), span.getStyle());
+                //     from += span.getLength();
+                // }
+            });
+        }
     }
 
     private Highlighter<Collection<String>> getCurrentHighlighter() {

@@ -151,7 +151,12 @@ public class RequestMockService {
         ResponseMessage responseMessage = new ResponseMessage();
         responseMessage.setStatus(200);
         responseMessage.setHeaders(getHeaders(respHeadersList));
-        responseMessage.setContent(sampleXml.getBytes(StandardCharsets.UTF_8));
+
+        if (index % 2 == 0) {
+            responseMessage.setContent(sampleXml.getBytes(StandardCharsets.UTF_8));
+        } else {
+            responseMessage.setContent(sampleJson.getBytes());
+        }
 
         msg.setResponse(responseMessage);
         messageQueue.pushMsg(Topic.RECORD, msg);

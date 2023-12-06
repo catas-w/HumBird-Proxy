@@ -12,7 +12,6 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.HBox;
-import javafx.scene.shape.Ellipse;
 import javafx.util.Duration;
 import org.kordamp.ikonli.javafx.FontIcon;
 
