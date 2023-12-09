@@ -3,6 +3,7 @@ package com.catas.wicked.proxy.gui.controller;
 import com.catas.wicked.common.bean.HeaderEntry;
 import com.catas.wicked.common.constant.CodeStyle;
 import com.catas.wicked.proxy.gui.componet.MessageLabel;
+import com.catas.wicked.proxy.gui.componet.SideBar;
 import com.catas.wicked.proxy.gui.componet.ZoomImageView;
 import com.catas.wicked.proxy.gui.componet.richtext.DisplayCodeArea;
 import com.jfoenix.controls.JFXComboBox;
@@ -53,6 +54,12 @@ public class DetailTabController implements Initializable {
     public MessageLabel timingMsgLabel;
     @FXML
     public JFXComboBox<Labeled> reqComboBox;
+    @FXML
+    public SideBar respSideBar;
+    @FXML
+    public SideBar reqContentSideBar;
+    @FXML
+    public SideBar reqQuerySideBar;
     @FXML
     private JFXComboBox<Labeled> respComboBox;
     @FXML

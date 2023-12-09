@@ -1,5 +1,6 @@
 package com.catas.wicked.proxy.gui.componet;
 
+import com.catas.wicked.common.constant.CodeStyle;
 import javafx.animation.Animation;
 import javafx.animation.Transition;
 import javafx.collections.ListChangeListener;
@@ -10,6 +11,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.HBox;
 import javafx.util.Duration;
@@ -17,14 +19,46 @@ import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Collections;
+import java.util.List;
 
 public class SideBar extends HBox {
+
+    /**
+     * Defines which components to show/hide
+     */
+    public enum Strategy {
+        QUERY_PARAMS(false, CodeStyle.PARSED, List.of(CodeStyle.PARSED, CodeStyle.ORIGIN)),
+        FORM_DATA(false, CodeStyle.PARSED, List.of(CodeStyle.PARSED, CodeStyle.ORIGIN)),
+
+        TEXT(true, CodeStyle.ORIGIN, List.of(CodeStyle.ORIGIN, CodeStyle.HEX)),
+        JSON(true, CodeStyle.JSON, List.of(CodeStyle.ORIGIN, CodeStyle.HEX)),
+        XML(true, CodeStyle.XML, List.of(CodeStyle.ORIGIN, CodeStyle.HEX)),
+        HTML(true, CodeStyle.HTML, List.of(CodeStyle.ORIGIN, CodeStyle.HEX)),
+
+        BINARY(false, CodeStyle.ORIGIN, List.of(CodeStyle.ORIGIN, CodeStyle.HEX)),
+        IMG(false, null, Collections.emptyList());
+
+        private final List<CodeStyle> visibleList;
+        private final boolean showCombo;
+        private final CodeStyle preset;
+
+        Strategy(boolean showCombo, CodeStyle preset, List<CodeStyle> visibleList) {
+            this.showCombo = showCombo;
+            this.preset = preset;
+            this.visibleList = visibleList;
+        }
+    }
 
     @FXML
     private Button collapseBtn;
 
     @FXML
     private DropShadow shadow;
+
+    private CodeStyle codeStyle;
+
+    private Strategy strategy;
 
     private static final String SELECTED_STYLE = "selected";
 
@@ -65,6 +99,29 @@ public class SideBar extends HBox {
                 }
             }
         });
+    }
+
+
+
+    public void setCodeStyle(CodeStyle codeStyle) {
+        this.codeStyle = codeStyle;
+    }
+
+    public void setStrategy(Strategy strategy) {
+        this.strategy = strategy;
+
+        ObservableList<Node> children = getChildren();
+        for (Node child : children) {
+            if (child == collapseBtn) {
+                continue;
+            }
+            if (child instanceof ComboBox<?>) {
+                child.setVisible(strategy.showCombo);
+            } else if (child instanceof Button button) {
+                CodeStyle style = CodeStyle.valueOfIgnoreCase(button.getText());
+                child.setVisible(strategy.visibleList.contains(style));
+            }
+        }
     }
 
     static class SideBarEventHandler implements EventHandler<ActionEvent> {
@@ -111,11 +168,11 @@ public class SideBar extends HBox {
                 @Override public void handle(ActionEvent actionEvent) {
                     collapsed = true;
                     sideBar.setTranslateX(expandedWidth - minWidth);
-                    for (Node child : sideBar.getChildren()) {
-                        if (child != collapseBtn) {
-                            child.setVisible(false);
-                        }
-                    }
+                    // for (Node child : sideBar.getChildren()) {
+                    //     if (child != collapseBtn) {
+                    //         child.setVisible(false);
+                    //     }
+                    // }
                     FontIcon icon = (FontIcon) collapseBtn.getGraphic();
                     icon.setIconLiteral(EXPAND_ICON);
                 }
@@ -149,9 +206,9 @@ public class SideBar extends HBox {
                 if (!collapsed) {
                     hideSidebar.play();
                 } else {
-                    for (Node child : sideBar.getChildren()) {
-                        child.setVisible(true);
-                    }
+                    // for (Node child : sideBar.getChildren()) {
+                    //     child.setVisible(true);
+                    // }
                     collapsed = false;
                     showSidebar.play();
                 }

@@ -5,6 +5,7 @@ import com.catas.wicked.common.bean.message.RequestMessage;
 import com.catas.wicked.common.bean.message.ResponseMessage;
 import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.common.util.WebUtils;
+import com.catas.wicked.proxy.gui.componet.SideBar;
 import com.catas.wicked.proxy.gui.controller.DetailTabController;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
@@ -37,7 +38,7 @@ public class ResponseTabRenderer extends AbstractTabRenderer {
         detailTabController.getRespHeaderMsgLabel().setVisible(renderMsg.isEmpty());
         detailTabController.getRespContentMsgLabel().setVisible(renderMsg.isEmpty());
         if (renderMsg.isEmpty()) {
-            System.out.println("--Empty response--");
+            // System.out.println("--Empty response--");
             return;
         }
         RequestMessage request = requestCache.get(renderMsg.getRequestId());
@@ -61,10 +62,11 @@ public class ResponseTabRenderer extends AbstractTabRenderer {
             detailTabController.getRespDataPane().setExpanded(false);
             return;
         }
-        detailTabController.getRespContentMsgLabel().setVisible(false);
+        // detailTabController.getRespContentMsgLabel().setVisible(false);
         if (contentType != null && contentType.getMimeType().startsWith("image/")) {
             detailTabController.getRespContentArea().setVisible(false);
             detailTabController.getRespImageView().setVisible(true);
+            // TODO webp格式
             detailTabController.getRespImageView().setImage(new ByteArrayInputStream(parsedContent));
         } else {
             detailTabController.getRespContentArea().setVisible(true);
@@ -74,5 +76,8 @@ public class ResponseTabRenderer extends AbstractTabRenderer {
             String contentStr = new String(parsedContent, charset);
             detailTabController.getRespContentArea().replaceText(contentStr);
         }
+        SideBar.Strategy strategy = predictCodeStyle(contentType);
+        log.info("Response predict contentType: {}, strategy: {}", contentType.getMimeType(), strategy);
+        detailTabController.getRespSideBar().setStrategy(strategy);
     }
 }

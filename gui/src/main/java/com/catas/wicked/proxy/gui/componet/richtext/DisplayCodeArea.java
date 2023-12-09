@@ -106,14 +106,10 @@ public class DisplayCodeArea extends VirtualizedScrollPane<CodeArea> {
                 codeArea.replaceText(finalText);
             });
         } else {
+            // TODO 防止在主线程中执行 highlight
             StyleSpans<Collection<String>> styleSpans = highlighter.computeHighlight(formatText);
             Platform.runLater(() -> {
                 this.codeArea.setStyleSpans(0, styleSpans);
-                // int from = 0;
-                // for(StyleSpan<Collection<String>>  span: styleSpans) {
-                //     codeArea.setStyle(from, from + span.getLength(), span.getStyle());
-                //     from += span.getLength();
-                // }
             });
         }
     }

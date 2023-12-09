@@ -145,12 +145,12 @@ public class RequestMockService {
         RequestMessage msg = new RequestMessage(split[1]);
         msg.setRequestId(IdUtil.getId());
         msg.setMethod(split[0]);
-        msg.setHeaders(getHeaders(reqHeadersList));
+        msg.setHeaders(getHeaders(reqHeadersList, index));
         msg.setBody(sampleJson.getBytes(StandardCharsets.UTF_8));
 
         ResponseMessage responseMessage = new ResponseMessage();
         responseMessage.setStatus(200);
-        responseMessage.setHeaders(getHeaders(respHeadersList));
+        responseMessage.setHeaders(getHeaders(respHeadersList, index));
 
         if (index % 2 == 0) {
             responseMessage.setContent(sampleXml.getBytes(StandardCharsets.UTF_8));
@@ -168,7 +168,7 @@ public class RequestMockService {
         }
     }
 
-    private Map<String, String> getHeaders(List<String> headersList) {
+    private Map<String, String> getHeaders(List<String> headersList, int index) {
         HashMap<String, String> map = new HashMap<>();
         for (String line : headersList) {
             int idx = line.indexOf(':');
@@ -176,6 +176,9 @@ public class RequestMockService {
             String val = line.substring(idx);
             map.put(key, val);
         }
+        List<String> ls = List.of("application/json", "application/xml",
+                "application/x-www-form-urlencoded", "text/html");
+        map.put("Content-Type", ls.get(index % 4));
         return map;
     }
 }

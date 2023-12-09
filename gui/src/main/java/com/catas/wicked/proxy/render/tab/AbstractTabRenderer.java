@@ -2,6 +2,7 @@ package com.catas.wicked.proxy.render.tab;
 
 import com.catas.wicked.common.bean.HeaderEntry;
 import com.catas.wicked.common.util.TableUtils;
+import com.catas.wicked.proxy.gui.componet.SideBar;
 import com.catas.wicked.proxy.render.ContextMenuFactory;
 import com.catas.wicked.proxy.render.TabRenderer;
 import javafx.application.Platform;
@@ -11,6 +12,7 @@ import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import org.apache.http.entity.ContentType;
 
 import java.util.Map;
 
@@ -63,5 +65,27 @@ public abstract class AbstractTabRenderer implements TabRenderer {
         // tableView.getSelectionModel().clearAndSelect(0);
 
         tableView.setContextMenu(ContextMenuFactory.getTableViewContextMenu(tableView));
+    }
+
+    protected SideBar.Strategy predictCodeStyle(ContentType contentType) {
+        if (contentType == null) {
+            return SideBar.Strategy.TEXT;
+        }
+        String mimeType = contentType.getMimeType();
+        if (mimeType.contains("json")) {
+            return SideBar.Strategy.JSON;
+        } else if (mimeType.contains("xml")) {
+            return SideBar.Strategy.XML;
+        } else if (mimeType.contains("html")) {
+            return SideBar.Strategy.HTML;
+        } else if (mimeType.contains("form-data") || mimeType.contains("form-urlencode")) {
+            return SideBar.Strategy.FORM_DATA;
+        } else if (mimeType.startsWith("image")) {
+            return SideBar.Strategy.IMG;
+        } else if (mimeType.contains("zip") || mimeType.startsWith("audio") || mimeType.startsWith("video")) {
+            return SideBar.Strategy.BINARY;
+        }
+
+        return SideBar.Strategy.TEXT;
     }
 }

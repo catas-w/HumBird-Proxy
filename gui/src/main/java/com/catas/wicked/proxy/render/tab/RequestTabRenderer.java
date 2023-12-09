@@ -45,7 +45,7 @@ public class RequestTabRenderer extends AbstractTabRenderer {
         detailTabController.getReqHeaderMsgLabel().setVisible(renderMsg.isEmpty());
         detailTabController.getReqContentMsgLabel().setVisible(renderMsg.isEmpty());
         if (renderMsg.isEmpty()) {
-            System.out.println("--empty request--");
+            // System.out.println("--empty request--");
             return;
         }
         RequestMessage request = requestCache.get(renderMsg.getRequestId());
@@ -161,5 +161,9 @@ public class RequestTabRenderer extends AbstractTabRenderer {
         } else if (target == detailTabController.getReqImageView()) {
             detailTabController.getReqImageView().setImage(new ByteArrayInputStream(content));
         }
+
+        SideBar.Strategy strategy = predictCodeStyle(contentType);
+        log.info("Request predict contentType: {}, strategy: {}", contentType.getMimeType(), strategy);
+        detailTabController.getReqContentSideBar().setStrategy(strategy);
     }
 }
