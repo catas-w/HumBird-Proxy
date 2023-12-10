@@ -163,7 +163,7 @@ public class RequestTabRenderer extends AbstractTabRenderer {
         }
 
         SideBar.Strategy strategy = predictCodeStyle(contentType);
-        log.info("Request predict contentType: {}, strategy: {}", contentType.getMimeType(), strategy);
+        // log.info("Request predict contentType: {}, strategy: {}", contentType.getMimeType(), strategy);
         detailTabController.getReqContentSideBar().setStrategy(strategy);
     }
 }

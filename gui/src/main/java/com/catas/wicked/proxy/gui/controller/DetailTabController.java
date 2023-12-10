@@ -53,7 +53,7 @@ public class DetailTabController implements Initializable {
     @FXML
     public MessageLabel timingMsgLabel;
     @FXML
-    public JFXComboBox<Labeled> reqComboBox;
+    public JFXComboBox<Label> reqComboBox;
     @FXML
     public SideBar respSideBar;
     @FXML
@@ -61,7 +61,7 @@ public class DetailTabController implements Initializable {
     @FXML
     public SideBar reqQuerySideBar;
     @FXML
-    private JFXComboBox<Labeled> respComboBox;
+    private JFXComboBox<Label> respComboBox;
     @FXML
     private ZoomImageView respImageView;
     @FXML
@@ -117,11 +117,14 @@ public class DetailTabController implements Initializable {
         addTitleListener(respHeaderPane, respSplitPane);
         addTitleListener(respDataPane, respSplitPane);
 
-        resetComboBox(respComboBox, respContentArea);
-        resetComboBox(reqComboBox, reqPayloadCodeArea);
+        reqQuerySideBar.setTargetCodeArea(reqParamArea);
+        reqContentSideBar.setTargetCodeArea(reqPayloadCodeArea);
+        respSideBar.setTargetCodeArea(respContentArea);
+        initComboBox(respComboBox, respSideBar);
+        initComboBox(reqComboBox, reqContentSideBar);
     }
 
-    private void resetComboBox(ComboBox<Labeled> comboBox, DisplayCodeArea codeArea) {
+    private void initComboBox(ComboBox<Label> comboBox, SideBar sideBar) {
         if (comboBox.getItems().isEmpty()) {
             // comboBox.setButtonCell(new Gra);
             comboBox.getItems().add(new Label("Plain"));
@@ -133,7 +136,8 @@ public class DetailTabController implements Initializable {
                 @Override
                 public void changed(ObservableValue<? extends Labeled> observable, Labeled oldValue, Labeled newValue) {
                     CodeStyle codeStyle = CodeStyle.valueOf(newValue.getText().toUpperCase());
-                    codeArea.setCodeStyle(codeStyle);
+                    // codeArea.setCodeStyle(codeStyle);
+                    sideBar.setCodeStyle(codeStyle, false);
                 }
             });
         }

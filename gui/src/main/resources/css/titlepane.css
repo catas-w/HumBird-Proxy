@@ -202,7 +202,7 @@
 
 /******* comboBox *********/
 .side-bar .jfx-combo-box {
-    -jfx-focus-color: #33cbb9;
+    -jfx-focus-color: TRANSPARENT;
     -jfx-unfocus-color: TRANSPARENT;
     -fx-prompt-text-fill: #707070;
 }

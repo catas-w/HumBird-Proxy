@@ -1,8 +1,10 @@
 package com.catas.wicked.proxy.gui.componet;
 
 import com.catas.wicked.common.constant.CodeStyle;
+import com.catas.wicked.proxy.gui.componet.richtext.DisplayCodeArea;
 import javafx.animation.Animation;
 import javafx.animation.Transition;
+import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -12,6 +14,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.HBox;
 import javafx.util.Duration;
@@ -60,6 +63,8 @@ public class SideBar extends HBox {
 
     private Strategy strategy;
 
+    private DisplayCodeArea targetCodeArea;
+
     private static final String SELECTED_STYLE = "selected";
 
     public SideBar() {
@@ -82,31 +87,49 @@ public class SideBar extends HBox {
             public void onChanged(Change<? extends Node> c) {
                 while (c.next()) {
                     if (c.wasAdded()) {
+                        // add listener when child is added
                         Node node = c.getAddedSubList().get(0);
                         node.setOnMouseClicked(event -> {
-                            // System.out.println("Clicked!");
-                            if (node.getStyleClass().contains(SELECTED_STYLE)) {
+                            if (node == collapseBtn) {
                                 return;
                             }
-
-                            for (Node sibling : getChildren()) {
-                                sibling.getStyleClass().remove(SELECTED_STYLE);
+                            if (node instanceof ComboBox<?> comboBox) {
+                                // System.out.println("Clicked combox");
+                                ComboBox<Label> labelComboBox = (ComboBox<Label>) comboBox;
+                                Label selectedItem = labelComboBox.getSelectionModel().getSelectedItem();
+                                setCodeStyle(CodeStyle.valueOfIgnoreCase(selectedItem.getText()), true);
+                            } else if (node instanceof Button button) {
+                                setCodeStyle(CodeStyle.valueOfIgnoreCase(button.getText()), true);
                             }
-                            node.getStyleClass().add(SELECTED_STYLE);
+                            // if (node.getStyleClass().contains(SELECTED_STYLE)) {
+                            //     return;
+                            // }
+                            //
+                            // for (Node sibling : getChildren()) {
+                            //     sibling.getStyleClass().remove(SELECTED_STYLE);
+                            // }
+                            // node.getStyleClass().add(SELECTED_STYLE);
                         });
 
+                        node.managedProperty().bind(node.visibleProperty());
                     }
                 }
             }
         });
     }
 
-
-
-    public void setCodeStyle(CodeStyle codeStyle) {
-        this.codeStyle = codeStyle;
+    @Override
+    protected double computeMinWidth(double height) {
+        return super.computeMinWidth(height);
     }
 
+    public void setTargetCodeArea(DisplayCodeArea targetCodeArea) {
+        this.targetCodeArea = targetCodeArea;
+    }
+
+    /**
+     * set strategy
+     */
     public void setStrategy(Strategy strategy) {
         this.strategy = strategy;
 
@@ -120,6 +143,56 @@ public class SideBar extends HBox {
             } else if (child instanceof Button button) {
                 CodeStyle style = CodeStyle.valueOfIgnoreCase(button.getText());
                 child.setVisible(strategy.visibleList.contains(style));
+            }
+        }
+
+        setCodeStyle(strategy.preset, true);
+    }
+
+    /**
+     * set codeStyle of related CodeArea
+     * @param codeStyle codeStyle
+     * @param refreshSelectStyle refresh selected styleClass in children
+     */
+    public void setCodeStyle(CodeStyle codeStyle, boolean refreshSelectStyle) {
+        if (codeStyle == null) {
+            return;
+        }
+        this.codeStyle = codeStyle;
+        if (refreshSelectStyle) {
+            refreshSelectStyle();
+        }
+
+        if (targetCodeArea != null) {
+            targetCodeArea.setCodeStyle(codeStyle);
+        }
+    }
+
+    /**
+     * set selected styleClass in children
+     */
+    public void refreshSelectStyle() {
+        // refresh select style
+        for (Node child : getChildren()) {
+            if (child instanceof Button button) {
+                if (this.codeStyle == CodeStyle.valueOfIgnoreCase(button.getText())) {
+                    if (!child.getStyleClass().contains(SELECTED_STYLE)) {
+                        child.getStyleClass().add(SELECTED_STYLE);
+                    }
+                } else {
+                    child.getStyleClass().remove(SELECTED_STYLE);
+                }
+            } else if (child instanceof ComboBox<?> comboBox) {
+                ComboBox<Label> labelComboBox = (ComboBox<Label>) comboBox;
+                comboBox.getStyleClass().remove(SELECTED_STYLE);
+                for (Label item : labelComboBox.getItems()) {
+                    if (this.codeStyle == CodeStyle.valueOfIgnoreCase(item.getText())) {
+                        comboBox.getStyleClass().add(SELECTED_STYLE);
+                        Platform.runLater(() -> {
+                            labelComboBox.getSelectionModel().select(item);
+                        });
+                    }
+                }
             }
         }
     }
