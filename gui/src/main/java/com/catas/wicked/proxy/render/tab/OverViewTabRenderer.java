@@ -29,7 +29,6 @@ public class OverViewTabRenderer extends AbstractTabRenderer {
         // System.out.println("-- render overview --");
         detailTabController.getOverViewMsgLabel().setVisible(renderMsg.isEmpty());
         if (renderMsg.isEmpty()) {
-            System.out.println("--empty overview--");
             return;
         }
         RequestMessage request = requestCache.get(renderMsg.getRequestId());

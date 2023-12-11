@@ -133,6 +133,12 @@ public class SideBar extends HBox {
     public void setStrategy(Strategy strategy) {
         this.strategy = strategy;
 
+        if (strategy.preset == null) {
+            this.setVisible(false);
+            return;
+        }
+        this.setVisible(true);
+
         ObservableList<Node> children = getChildren();
         for (Node child : children) {
             if (child == collapseBtn) {

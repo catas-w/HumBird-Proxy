@@ -44,5 +44,19 @@ public class RenderMessage extends BaseMessage {
         public int getOrder() {
             return order;
         }
+
+        public static Tab valueOfIgnoreCase(String value) {
+            if (value == null) {
+                return null;
+            }
+
+            String strip = value.strip();
+            for (Tab tab : Tab.values()) {
+                if (StringUtils.equalsIgnoreCase(tab.name(), strip)) {
+                    return tab;
+                }
+            }
+            return null;
+        }
     }
 }

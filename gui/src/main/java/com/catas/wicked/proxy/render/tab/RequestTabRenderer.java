@@ -45,7 +45,6 @@ public class RequestTabRenderer extends AbstractTabRenderer {
         detailTabController.getReqHeaderMsgLabel().setVisible(renderMsg.isEmpty());
         detailTabController.getReqContentMsgLabel().setVisible(renderMsg.isEmpty());
         if (renderMsg.isEmpty()) {
-            // System.out.println("--empty request--");
             return;
         }
         RequestMessage request = requestCache.get(renderMsg.getRequestId());
@@ -96,7 +95,7 @@ public class RequestTabRenderer extends AbstractTabRenderer {
 
         boolean hasQuery = !queryParams.isEmpty();
         boolean hasContent = content.length > 0;
-        // System.out.printf("hasQuery: %s, hasContent: %s\n", hasQuery, hasContent);
+        System.out.printf("hasQuery: %s, hasContent: %s\n", hasQuery, hasContent);
         SingleSelectionModel<Tab> selectionModel = detailTabController.getReqPayloadTabPane().getSelectionModel();
 
         String title = "Payload";
@@ -111,10 +110,8 @@ public class RequestTabRenderer extends AbstractTabRenderer {
         } else if (hasContent) {
             selectionModel.clearAndSelect(0);
             detailTabController.getReqPayloadTabPane().setTabMaxHeight(0);
-            // TODO form-data
             title = "Content";
         } else {
-            // TODO set default-msg
             detailTabController.getReqPayloadTitlePane().setExpanded(false);
             detailTabController.getReqContentMsgLabel().setVisible(true);
         }

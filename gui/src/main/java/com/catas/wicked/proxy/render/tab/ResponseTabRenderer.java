@@ -38,7 +38,6 @@ public class ResponseTabRenderer extends AbstractTabRenderer {
         detailTabController.getRespHeaderMsgLabel().setVisible(renderMsg.isEmpty());
         detailTabController.getRespContentMsgLabel().setVisible(renderMsg.isEmpty());
         if (renderMsg.isEmpty()) {
-            // System.out.println("--Empty response--");
             return;
         }
         RequestMessage request = requestCache.get(renderMsg.getRequestId());
@@ -77,7 +76,7 @@ public class ResponseTabRenderer extends AbstractTabRenderer {
             detailTabController.getRespContentArea().replaceText(contentStr);
         }
         SideBar.Strategy strategy = predictCodeStyle(contentType);
-        log.info("Response predict contentType: {}, strategy: {}", contentType.getMimeType(), strategy);
+        // log.info("Response predict contentType: {}, strategy: {}", contentType.getMimeType(), strategy);
         detailTabController.getRespSideBar().setStrategy(strategy);
     }
 }

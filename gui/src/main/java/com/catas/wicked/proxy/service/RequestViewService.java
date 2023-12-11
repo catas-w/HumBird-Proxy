@@ -118,8 +118,8 @@ public class RequestViewService {
         // System.out.println("-----requestId: " + requestId + "-----");
 
         // current requestView tab
-        String curTab = detailTabController.getCurrentRequestTab();
-        RenderMessage.Tab firstTargetTab = RenderMessage.Tab.valueOf(curTab);
+        String curTab = detailTabController.getActiveRequestTab();
+        RenderMessage.Tab firstTargetTab = RenderMessage.Tab.valueOfIgnoreCase(curTab);
 
         Queue<RenderMessage> messages = new PriorityQueue<>(Comparator.comparingInt(o -> o.getTargetTab().getOrder()));
         messages.offer(new RenderMessage(requestId, RenderMessage.Tab.OVERVIEW));

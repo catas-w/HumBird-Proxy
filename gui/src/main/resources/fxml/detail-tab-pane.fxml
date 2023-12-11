@@ -20,7 +20,7 @@
         <URL value="@../css/common-design.css" />
         <URL value="@../css/component/richtext.css" />
     </stylesheets>
-    <JFXTabPane minWidth="300.0" prefHeight="567.0" prefWidth="600.0" style="-fx-background-color: TRANSPARENT;" styleClass="jfx-tab-pane" VBox.vgrow="ALWAYS">
+    <JFXTabPane fx:id="mainTabPane" minWidth="300.0" prefHeight="567.0" prefWidth="600.0" style="-fx-background-color: TRANSPARENT;" styleClass="jfx-tab-pane" VBox.vgrow="ALWAYS">
         <Tab text="  Overview  ">
             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="388.0" prefWidth="584.0">
                 <DisplayCodeArea fx:id="overviewArea" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -71,8 +71,8 @@
                                         <DisplayCodeArea fx:id="reqParamArea" codeStyle="HEADER" />
 
                                         <SideBar fx:id="reqQuerySideBar" prefHeight="25" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="15.0">
-                                            <JFXButton text="Parsed" onAction="#displayParsedQuery" styleClass="selected"/>
-                                            <JFXButton text="Origin" onAction="#displayOriginQuery"/>
+                                            <JFXButton text="Parsed" styleClass="selected"/>
+                                            <JFXButton text="Origin"/>
                                         </SideBar>
                                     </AnchorPane>
                                 </Tab>

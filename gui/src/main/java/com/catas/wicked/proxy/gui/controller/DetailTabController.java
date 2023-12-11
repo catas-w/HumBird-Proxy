@@ -13,7 +13,6 @@ import jakarta.inject.Singleton;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
@@ -21,6 +20,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Labeled;
 import javafx.scene.control.SplitPane;
+import javafx.scene.control.Tab;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TitledPane;
 import lombok.Getter;
@@ -36,6 +36,8 @@ import java.util.ResourceBundle;
 @Singleton
 public class DetailTabController implements Initializable {
 
+    @FXML
+    public JFXTabPane mainTabPane;
     @FXML
     public DisplayCodeArea testCodeArea;
     @FXML
@@ -235,25 +237,8 @@ public class DetailTabController implements Initializable {
         return res;
     }
 
-    /**
-     * exhibit default info
-     */
-    public void reset() {
-
-    }
-
-    /**
-     * TODO switch to display parsed query
-     */
-    public void displayParsedQuery(ActionEvent event) {
-
-    }
-
-    public void displayOriginQuery(ActionEvent event) {
-
-    }
-
-    public String getCurrentRequestTab() {
-        return "REQUEST";
+    public String getActiveRequestTab() {
+        Tab selectedTab = this.mainTabPane.getSelectionModel().getSelectedItem();
+        return selectedTab.getText();
     }
 }

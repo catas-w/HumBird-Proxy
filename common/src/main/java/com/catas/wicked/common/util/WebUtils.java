@@ -171,7 +171,14 @@ public class WebUtils {
     }
 
     public static ContentType getContentType(Map<String, String> headers) {
-        String contentTypeHeader = headers.getOrDefault("Content-Type", "");
+        // String contentTypeHeader = headers.getOrDefault("Content-Type", "");
+        String contentTypeHeader = "";
+        for (Map.Entry<String, String> entry : headers.entrySet()) {
+            if (StringUtils.equalsIgnoreCase("Content-Type", entry.getKey())) {
+                contentTypeHeader = entry.getValue();
+                break;
+            }
+        }
         try {
             return ContentType.parse(contentTypeHeader);
         } catch (Exception e) {
