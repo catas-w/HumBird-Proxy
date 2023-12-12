@@ -5,6 +5,7 @@ import com.catas.wicked.common.constant.CodeStyle;
 import com.catas.wicked.proxy.gui.componet.MessageLabel;
 import com.catas.wicked.proxy.gui.componet.SideBar;
 import com.catas.wicked.proxy.gui.componet.ZoomImageView;
+import com.catas.wicked.proxy.gui.componet.highlight.CodeStyleLabel;
 import com.catas.wicked.proxy.gui.componet.richtext.DisplayCodeArea;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXTabPane;
@@ -17,7 +18,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
 import javafx.scene.control.Labeled;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
@@ -55,7 +55,7 @@ public class DetailTabController implements Initializable {
     @FXML
     public MessageLabel timingMsgLabel;
     @FXML
-    public JFXComboBox<Label> reqComboBox;
+    public JFXComboBox<Labeled> reqComboBox;
     @FXML
     public SideBar respSideBar;
     @FXML
@@ -63,7 +63,7 @@ public class DetailTabController implements Initializable {
     @FXML
     public SideBar reqQuerySideBar;
     @FXML
-    private JFXComboBox<Label> respComboBox;
+    private JFXComboBox<Labeled> respComboBox;
     @FXML
     private ZoomImageView respImageView;
     @FXML
@@ -126,13 +126,14 @@ public class DetailTabController implements Initializable {
         initComboBox(reqComboBox, reqContentSideBar);
     }
 
-    private void initComboBox(ComboBox<Label> comboBox, SideBar sideBar) {
+    private void initComboBox(ComboBox<Labeled> comboBox, SideBar sideBar) {
         if (comboBox.getItems().isEmpty()) {
             // comboBox.setButtonCell(new Gra);
-            comboBox.getItems().add(new Label("Plain"));
-            comboBox.getItems().add(new Label("Json"));
-            comboBox.getItems().add(new Label("Html"));
-            comboBox.getItems().add(new Label("Xml"));
+            comboBox.getItems().add(new CodeStyleLabel("Plain", CodeStyle.PLAIN));
+            comboBox.getItems().add(new CodeStyleLabel("Json", CodeStyle.JSON));
+            comboBox.getItems().add(new CodeStyleLabel("Html", CodeStyle.HTML));
+            comboBox.getItems().add(new CodeStyleLabel("Xml", CodeStyle.XML));
+            comboBox.getItems().add(new CodeStyleLabel("Javascript", CodeStyle.JAVASCRIPT));
 
             comboBox.valueProperty().addListener(new ChangeListener<Labeled>() {
                 @Override

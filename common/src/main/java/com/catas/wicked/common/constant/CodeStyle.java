@@ -12,6 +12,8 @@ public enum CodeStyle {
     JAVASCRIPT,
     CODE,
     PARSED,
+    QUERY_FORM,
+    MULTIPART_FORM,
     ORIGIN,
     HEX;
 

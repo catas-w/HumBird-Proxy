@@ -13,6 +13,7 @@
 <?import com.catas.wicked.proxy.gui.componet.HeaderTitledPane?>
 <?import com.catas.wicked.proxy.gui.componet.richtext.DisplayCodeArea?>
 
+<?import com.catas.wicked.proxy.gui.componet.highlight.CodeStyleButton?>
 <VBox alignment="TOP_CENTER" prefHeight="600.0" prefWidth="850.0" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.catas.wicked.proxy.gui.controller.DetailTabController">
     <stylesheets>
         <URL value="@../css/tabpane.css" />
@@ -61,8 +62,8 @@
                                             <JFXButton text="Parsed" styleClass="selected"/>
                                             <!-- hide in form-data -->
                                             <JFXComboBox fx:id="reqComboBox"/>
-                                            <JFXButton text="Origin"/>
-                                            <JFXButton text="Hex"/>
+                                            <CodeStyleButton text="Origin" codeStyle="origin"/>
+                                            <CodeStyleButton text="Hex" codeStyle="hex"/>
                                         </SideBar>
                                     </AnchorPane>
                                 </Tab>
@@ -71,8 +72,8 @@
                                         <DisplayCodeArea fx:id="reqParamArea" codeStyle="HEADER" />
 
                                         <SideBar fx:id="reqQuerySideBar" prefHeight="25" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="15.0">
-                                            <JFXButton text="Parsed" styleClass="selected"/>
-                                            <JFXButton text="Origin"/>
+                                            <CodeStyleButton text="Parsed" codeStyle="QUERY_FORM" styleClass="selected"/>
+                                            <CodeStyleButton text="Origin" codeStyle="MULTIPART_FORM"/>
                                         </SideBar>
                                     </AnchorPane>
                                 </Tab>
@@ -102,10 +103,10 @@
                             <SideBar fx:id="respSideBar" prefHeight="25" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="15.0">
                                 <!-- <JFXButton text="Text" /> -->
                                 <JFXComboBox fx:id="respComboBox" styleClass="selected"/>
-                                <JFXButton text="Origin"/>
-                                <JFXButton text="Hex"/>
+                                <CodeStyleButton text="Origin" codeStyle="origin"/>
+                                <CodeStyleButton text="Hex" codeStyle="hex"/>
                             </SideBar>
-                            <MessageLabel fx:id="respContentMsgLabel" visible="true" text="Empty"/>
+                            <MessageLabel fx:id="respContentMsgLabel" text="Empty"/>
                         </AnchorPane>
                     </TitledPane>
                 </SplitPane>

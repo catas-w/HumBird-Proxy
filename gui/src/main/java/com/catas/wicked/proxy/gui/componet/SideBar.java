@@ -1,6 +1,7 @@
 package com.catas.wicked.proxy.gui.componet;
 
 import com.catas.wicked.common.constant.CodeStyle;
+import com.catas.wicked.proxy.gui.componet.highlight.CodeStyleLabeled;
 import com.catas.wicked.proxy.gui.componet.richtext.DisplayCodeArea;
 import javafx.animation.Animation;
 import javafx.animation.Transition;
@@ -14,7 +15,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.HBox;
 import javafx.util.Duration;
@@ -94,12 +94,11 @@ public class SideBar extends HBox {
                                 return;
                             }
                             if (node instanceof ComboBox<?> comboBox) {
-                                // System.out.println("Clicked combox");
-                                ComboBox<Label> labelComboBox = (ComboBox<Label>) comboBox;
-                                Label selectedItem = labelComboBox.getSelectionModel().getSelectedItem();
-                                setCodeStyle(CodeStyle.valueOfIgnoreCase(selectedItem.getText()), true);
-                            } else if (node instanceof Button button) {
-                                setCodeStyle(CodeStyle.valueOfIgnoreCase(button.getText()), true);
+                                ComboBox<CodeStyleLabeled> labelComboBox = (ComboBox<CodeStyleLabeled>) comboBox;
+                                CodeStyleLabeled selectedItem = labelComboBox.getSelectionModel().getSelectedItem();
+                                setCodeStyle(selectedItem.targetCodeStyle(), true);
+                            } else if (node instanceof CodeStyleLabeled codeStyleLabeled) {
+                                setCodeStyle(codeStyleLabeled.targetCodeStyle(), true);
                             }
                             // if (node.getStyleClass().contains(SELECTED_STYLE)) {
                             //     return;
@@ -180,8 +179,8 @@ public class SideBar extends HBox {
     public void refreshSelectStyle() {
         // refresh select style
         for (Node child : getChildren()) {
-            if (child instanceof Button button) {
-                if (this.codeStyle == CodeStyle.valueOfIgnoreCase(button.getText())) {
+            if (child instanceof CodeStyleLabeled codeStyleLabeled) {
+                if (this.codeStyle == codeStyleLabeled.targetCodeStyle()) {
                     if (!child.getStyleClass().contains(SELECTED_STYLE)) {
                         child.getStyleClass().add(SELECTED_STYLE);
                     }
@@ -189,10 +188,10 @@ public class SideBar extends HBox {
                     child.getStyleClass().remove(SELECTED_STYLE);
                 }
             } else if (child instanceof ComboBox<?> comboBox) {
-                ComboBox<Label> labelComboBox = (ComboBox<Label>) comboBox;
+                ComboBox<CodeStyleLabeled> labelComboBox = (ComboBox<CodeStyleLabeled>) comboBox;
                 comboBox.getStyleClass().remove(SELECTED_STYLE);
-                for (Label item : labelComboBox.getItems()) {
-                    if (this.codeStyle == CodeStyle.valueOfIgnoreCase(item.getText())) {
+                for (CodeStyleLabeled item : labelComboBox.getItems()) {
+                    if (this.codeStyle == item.targetCodeStyle()) {
                         comboBox.getStyleClass().add(SELECTED_STYLE);
                         Platform.runLater(() -> {
                             labelComboBox.getSelectionModel().select(item);

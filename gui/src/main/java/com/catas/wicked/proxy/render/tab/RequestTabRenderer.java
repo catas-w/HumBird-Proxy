@@ -95,7 +95,7 @@ public class RequestTabRenderer extends AbstractTabRenderer {
 
         boolean hasQuery = !queryParams.isEmpty();
         boolean hasContent = content.length > 0;
-        System.out.printf("hasQuery: %s, hasContent: %s\n", hasQuery, hasContent);
+        // System.out.printf("hasQuery: %s, hasContent: %s\n", hasQuery, hasContent);
         SingleSelectionModel<Tab> selectionModel = detailTabController.getReqPayloadTabPane().getSelectionModel();
 
         String title = "Payload";
