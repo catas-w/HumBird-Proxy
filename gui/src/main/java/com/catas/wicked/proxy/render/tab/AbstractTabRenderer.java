@@ -78,8 +78,10 @@ public abstract class AbstractTabRenderer implements TabRenderer {
             return SideBar.Strategy.XML;
         } else if (mimeType.contains("html")) {
             return SideBar.Strategy.HTML;
-        } else if (mimeType.contains("form-data") || mimeType.contains("form-urlencode")) {
-            return SideBar.Strategy.FORM_DATA;
+        } else if (mimeType.contains("multipart/form-data")) {
+            return SideBar.Strategy.MULTIPART_FORM_DATA;
+        } else if (mimeType.contains("x-www-form-urlencoded")) {
+            return SideBar.Strategy.URLENCODED_FORM_DATA;
         } else if (mimeType.startsWith("image")) {
             return SideBar.Strategy.IMG;
         } else if (mimeType.contains("zip") || mimeType.startsWith("audio") || mimeType.startsWith("video")) {

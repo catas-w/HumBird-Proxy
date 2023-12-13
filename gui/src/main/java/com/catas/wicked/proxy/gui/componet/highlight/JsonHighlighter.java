@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.util.DefaultIndenter;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import org.apache.http.entity.ContentType;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
 
@@ -83,7 +84,7 @@ public class JsonHighlighter implements Highlighter<Collection<String>>, Formatt
     }
 
     @Override
-    public String format(String text) {
+    public String format(String text, ContentType contentType) {
         if (text == null || text.isEmpty()) {
             return "";
         }

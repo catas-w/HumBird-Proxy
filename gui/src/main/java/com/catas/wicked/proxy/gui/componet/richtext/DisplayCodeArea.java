@@ -13,6 +13,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.entity.ContentType;
 import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.GenericStyledArea;
@@ -44,6 +45,8 @@ public class DisplayCodeArea extends VirtualizedScrollPane<CodeArea> {
 
     private String originText;
 
+    private ContentType contentType;
+
     public DisplayCodeArea(CodeArea codeArea) {
         super(codeArea);
         this.codeArea = codeArea;
@@ -69,6 +72,14 @@ public class DisplayCodeArea extends VirtualizedScrollPane<CodeArea> {
         setCodeStyle(CodeStyle.valueOf(codeStyle));
     }
 
+    public ContentType getContentType() {
+        return contentType;
+    }
+
+    public void setContentType(ContentType contentType) {
+        this.contentType = contentType;
+    }
+
     /**
      * switch text highlight
      * @param codeStyle highlightStyle
@@ -84,8 +95,14 @@ public class DisplayCodeArea extends VirtualizedScrollPane<CodeArea> {
     }
 
     public void replaceText(String text) {
+        replaceText(text, false);
+    }
+
+    public void replaceText(String text, boolean refreshStyle) {
         this.originText = text;
-        refreshStyle();
+        if (refreshStyle) {
+            refreshStyle();
+        }
     }
 
     private void refreshStyle() {
@@ -97,7 +114,7 @@ public class DisplayCodeArea extends VirtualizedScrollPane<CodeArea> {
 
         String formatText = originText;
         if (highlighter instanceof Formatter formatter) {
-            formatText = formatter.format(originText);
+            formatText = formatter.format(originText, this.contentType);
         }
 
         if (!StringUtils.equals(formatText, codeArea.getText())) {

@@ -26,6 +26,8 @@ public class HighlighterFactory {
                     map.put(CodeStyle.XML, new XmlHighlighter());
                     map.put(CodeStyle.HEADER, new HeaderHighlighter());
                     map.put(CodeStyle.HTML, new HtmlHighlighter());
+                    map.put(CodeStyle.QUERY_FORM, new QueryHighlighter());
+                    map.put(CodeStyle.MULTIPART_FORM, new MultipartHighlighter());
                 }
             }
         }

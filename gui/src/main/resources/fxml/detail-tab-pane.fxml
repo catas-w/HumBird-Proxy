@@ -59,7 +59,8 @@
                                         <ZoomImageView fx:id="reqImageView" visible="false" />
 
                                         <SideBar fx:id="reqContentSideBar" prefHeight="25" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="15.0">
-                                            <JFXButton text="Parsed" styleClass="selected"/>
+                                            <CodeStyleButton text="Parsed" codeStyle="MULTIPART_FORM" styleClass="selected"/>
+                                            <CodeStyleButton text="Parsed" codeStyle="QUERY_FORM" styleClass="selected"/>
                                             <!-- hide in form-data -->
                                             <JFXComboBox fx:id="reqComboBox"/>
                                             <CodeStyleButton text="Origin" codeStyle="origin"/>
@@ -73,7 +74,8 @@
 
                                         <SideBar fx:id="reqQuerySideBar" prefHeight="25" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="15.0">
                                             <CodeStyleButton text="Parsed" codeStyle="QUERY_FORM" styleClass="selected"/>
-                                            <CodeStyleButton text="Origin" codeStyle="MULTIPART_FORM"/>
+                                            <CodeStyleButton text="Origin" codeStyle="origin"/>
+                                            <CodeStyleButton text="Hex" codeStyle="hex"/>
                                         </SideBar>
                                     </AnchorPane>
                                 </Tab>

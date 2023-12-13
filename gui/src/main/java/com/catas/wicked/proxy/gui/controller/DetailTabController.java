@@ -119,6 +119,7 @@ public class DetailTabController implements Initializable {
         addTitleListener(respHeaderPane, respSplitPane);
         addTitleListener(respDataPane, respSplitPane);
 
+        reqQuerySideBar.setStrategy(SideBar.Strategy.URLENCODED_FORM_DATA);
         reqQuerySideBar.setTargetCodeArea(reqParamArea);
         reqContentSideBar.setTargetCodeArea(reqPayloadCodeArea);
         respSideBar.setTargetCodeArea(respContentArea);

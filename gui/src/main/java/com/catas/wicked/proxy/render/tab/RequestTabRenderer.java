@@ -5,6 +5,7 @@ import com.catas.wicked.common.bean.message.RequestMessage;
 import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.common.util.WebUtils;
 import com.catas.wicked.proxy.gui.componet.SideBar;
+import com.catas.wicked.proxy.gui.componet.richtext.DisplayCodeArea;
 import com.catas.wicked.proxy.gui.controller.DetailTabController;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
@@ -66,26 +67,19 @@ public class RequestTabRenderer extends AbstractTabRenderer {
 
         // display query-params if exist
         String query = request.getUrl().getQuery();
-        Map<String, String> queryParams = WebUtils.parseQueryParams(query);
-        if (!queryParams.isEmpty()) {
-            StringBuilder queryBuilder = new StringBuilder();
-            for (Map.Entry<String, String> entry : queryParams.entrySet()) {
-                queryBuilder.append(entry.getKey());
-                queryBuilder.append(": ");
-                queryBuilder.append(entry.getValue());
-                queryBuilder.append("\n");
-            }
-            detailTabController.getReqParamArea().replaceText(queryBuilder.toString());
-        }
+        detailTabController.getReqParamArea().replaceText(query, true);
+        // TODO
+        detailTabController.getReqContentSideBar().setStrategy(SideBar.Strategy.URLENCODED_FORM_DATA);
 
         // display request content
         ContentType contentType = WebUtils.getContentType(headers);
         byte[] content = WebUtils.parseContent(request.getHeaders(), request.getBody());
         Node target = null;
-        if (contentType != null && (ContentType.MULTIPART_FORM_DATA.getMimeType().equals(contentType.getMimeType()) ||
-                ContentType.APPLICATION_FORM_URLENCODED.getMimeType().equals(contentType.getMimeType()))) {
-            target = detailTabController.getReqContentTable();
-        } else if (contentType != null && contentType.getMimeType().startsWith("image/")) {
+        // if (contentType != null && (ContentType.MULTIPART_FORM_DATA.getMimeType().equals(contentType.getMimeType()) ||
+        //         ContentType.APPLICATION_FORM_URLENCODED.getMimeType().equals(contentType.getMimeType()))) {
+        //     target = detailTabController.getReqContentTable();
+        // } else
+        if (contentType != null && contentType.getMimeType().startsWith("image/")) {
             target = detailTabController.getReqImageView();
         } else {
             target = detailTabController.getReqPayloadCodeArea();
@@ -93,7 +87,7 @@ public class RequestTabRenderer extends AbstractTabRenderer {
         renderRequestContent(content, contentType, target);
 
 
-        boolean hasQuery = !queryParams.isEmpty();
+        boolean hasQuery = !query.isEmpty();
         boolean hasContent = content.length > 0;
         // System.out.printf("hasQuery: %s, hasContent: %s\n", hasQuery, hasContent);
         SingleSelectionModel<Tab> selectionModel = detailTabController.getReqPayloadTabPane().getSelectionModel();
@@ -138,6 +132,8 @@ public class RequestTabRenderer extends AbstractTabRenderer {
                 contentType.getCharset() : StandardCharsets.UTF_8;
         if (target == detailTabController.getReqPayloadCodeArea()) {
             String contentStr = new String(content, charset);
+            // TODO bug-fix codeStyle 是之前的
+            ((DisplayCodeArea) target).setContentType(contentType);
             detailTabController.getReqPayloadCodeArea().replaceText(contentStr);
         } else if (target == detailTabController.getReqContentTable()) {
             assert contentType != null;
@@ -160,7 +156,7 @@ public class RequestTabRenderer extends AbstractTabRenderer {
         }
 
         SideBar.Strategy strategy = predictCodeStyle(contentType);
-        // log.info("Request predict contentType: {}, strategy: {}", contentType.getMimeType(), strategy);
+        log.info("Request predict contentType: {}, strategy: {}", contentType, strategy);
         detailTabController.getReqContentSideBar().setStrategy(strategy);
     }
 }

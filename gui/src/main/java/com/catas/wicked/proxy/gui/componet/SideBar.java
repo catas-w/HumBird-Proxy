@@ -31,8 +31,9 @@ public class SideBar extends HBox {
      * Defines which components to show/hide
      */
     public enum Strategy {
-        QUERY_PARAMS(false, CodeStyle.PARSED, List.of(CodeStyle.PARSED, CodeStyle.ORIGIN)),
-        FORM_DATA(false, CodeStyle.PARSED, List.of(CodeStyle.PARSED, CodeStyle.ORIGIN)),
+        QUERY_PARAMS(false, CodeStyle.QUERY_FORM, List.of(CodeStyle.QUERY_FORM, CodeStyle.ORIGIN)),
+        MULTIPART_FORM_DATA(false, CodeStyle.MULTIPART_FORM, List.of(CodeStyle.MULTIPART_FORM, CodeStyle.ORIGIN)),
+        URLENCODED_FORM_DATA(false, CodeStyle.QUERY_FORM, List.of(CodeStyle.QUERY_FORM, CodeStyle.ORIGIN)),
 
         TEXT(true, CodeStyle.ORIGIN, List.of(CodeStyle.ORIGIN, CodeStyle.HEX)),
         JSON(true, CodeStyle.JSON, List.of(CodeStyle.ORIGIN, CodeStyle.HEX)),
@@ -145,9 +146,8 @@ public class SideBar extends HBox {
             }
             if (child instanceof ComboBox<?>) {
                 child.setVisible(strategy.showCombo);
-            } else if (child instanceof Button button) {
-                CodeStyle style = CodeStyle.valueOfIgnoreCase(button.getText());
-                child.setVisible(strategy.visibleList.contains(style));
+            } else if (child instanceof CodeStyleLabeled labeled) {
+                child.setVisible(strategy.visibleList.contains(labeled.targetCodeStyle()));
             }
         }
 
