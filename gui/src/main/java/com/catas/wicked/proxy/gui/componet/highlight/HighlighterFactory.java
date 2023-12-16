@@ -1,10 +1,7 @@
 package com.catas.wicked.proxy.gui.componet.highlight;
 
 import com.catas.wicked.common.constant.CodeStyle;
-import org.fxmisc.richtext.model.StyleSpansBuilder;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,6 +25,7 @@ public class HighlighterFactory {
                     map.put(CodeStyle.HTML, new HtmlHighlighter());
                     map.put(CodeStyle.QUERY_FORM, new QueryHighlighter());
                     map.put(CodeStyle.MULTIPART_FORM, new MultipartHighlighter());
+                    map.put(CodeStyle.HEX, new HexHighlighter());
                 }
             }
         }

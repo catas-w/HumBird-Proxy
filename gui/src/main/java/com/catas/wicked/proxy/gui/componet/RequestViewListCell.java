@@ -30,7 +30,7 @@ public class RequestViewListCell<T> extends ListCell<T> {
 
         this.setOnMouseClicked(e -> {
             if (e.getButton() == MouseButton.PRIMARY && this.requestCell != null && requestViewService != null) {
-                System.out.println("clicked list: " + requestCell.getFullPath() + " " + requestCell.getRequestId());
+                // System.out.println("clicked list: " + requestCell.getFullPath() + " " + requestCell.getRequestId());
                 requestViewService.updateRequestTab(requestCell.getRequestId());
             }
         });

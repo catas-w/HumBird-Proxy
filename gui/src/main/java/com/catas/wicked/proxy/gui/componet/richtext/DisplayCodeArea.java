@@ -141,6 +141,7 @@ public class DisplayCodeArea extends VirtualizedScrollPane<CodeArea> {
         AnchorPane.setTopAnchor(this, 0.0);
         AnchorPane.setBottomAnchor(this, 0.0);
 
+        codeArea.setWrapText(true);
         this.getStyleClass().add(STYLE);
         codeArea.setEditable(false);
         codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));

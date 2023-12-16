@@ -61,7 +61,7 @@ public class RequestViewTreeCell<T> extends TreeCell<T> {
             TreeItem<T> treeItem = getTreeItem();
             if (e.getButton() == MouseButton.PRIMARY && treeItem != null && requestViewService != null) {
                 RequestCell cell = (RequestCell) treeItem.getValue();
-                System.out.println("Clicked " + cell.getFullPath() + " " + cell.getRequestId() + "isLeaf: " + cell.isLeaf());
+                // System.out.println("Clicked " + cell.getFullPath() + " " + cell.getRequestId() + "isLeaf: " + cell.isLeaf());
                 if (cell.isLeaf()) {
                     requestViewService.updateRequestTab(cell.getRequestId());
                 }

@@ -151,7 +151,7 @@ public class SideBar extends HBox {
             }
         }
 
-        setCodeStyle(strategy.preset, true);
+        setCodeStyle(strategy.preset, false);
     }
 
     /**
