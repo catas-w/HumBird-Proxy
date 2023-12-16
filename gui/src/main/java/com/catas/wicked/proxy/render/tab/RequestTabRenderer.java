@@ -86,7 +86,6 @@ public class RequestTabRenderer extends AbstractTabRenderer {
         }
         renderRequestContent(content, contentType, target);
 
-
         boolean hasQuery = query != null && !query.isEmpty();
         boolean hasContent = content.length > 0;
         // System.out.printf("hasQuery: %s, hasContent: %s\n", hasQuery, hasContent);

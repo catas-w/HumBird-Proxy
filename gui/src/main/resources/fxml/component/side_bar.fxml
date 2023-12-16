@@ -18,6 +18,11 @@
             <FontIcon iconColor="#808080" iconLiteral="fas-angle-double-right" iconSize="12" />
         </graphic>
     </JFXButton>
+    <JFXButton fx:id="wrapBtn" styleClass="" maxWidth="28.0" minWidth="28.0" textOverrun="CLIP">
+        <graphic>
+            <FontIcon iconColor="#808080" iconLiteral="fas-outdent" iconSize="12" />
+        </graphic>
+    </JFXButton>
     <effect>
         <DropShadow fx:id="shadow" height="15" width="15" offsetY="2">
             <color>

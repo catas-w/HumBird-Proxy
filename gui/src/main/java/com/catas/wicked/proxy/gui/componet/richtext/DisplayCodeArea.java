@@ -59,6 +59,10 @@ public class DisplayCodeArea extends VirtualizedScrollPane<CodeArea> {
         initCodeArea();
     }
 
+    public void setWrapText(boolean wrapText) {
+        codeArea.setWrapText(wrapText);
+    }
+
     public String getCodeStyle() {
         return codeStyle.get();
     }
@@ -141,7 +145,6 @@ public class DisplayCodeArea extends VirtualizedScrollPane<CodeArea> {
         AnchorPane.setTopAnchor(this, 0.0);
         AnchorPane.setBottomAnchor(this, 0.0);
 
-        codeArea.setWrapText(true);
         this.getStyleClass().add(STYLE);
         codeArea.setEditable(false);
         codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));

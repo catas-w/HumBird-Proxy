@@ -17,6 +17,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
 import javafx.util.Duration;
 import org.kordamp.ikonli.javafx.FontIcon;
 
@@ -58,6 +59,9 @@ public class SideBar extends HBox {
     private Button collapseBtn;
 
     @FXML
+    private Button wrapBtn;
+
+    @FXML
     private DropShadow shadow;
 
     private CodeStyle codeStyle;
@@ -67,6 +71,8 @@ public class SideBar extends HBox {
     private DisplayCodeArea targetCodeArea;
 
     private static final String SELECTED_STYLE = "selected";
+
+    private boolean wrapText;
 
     public SideBar() {
         URL resource = getClass().getResource("/fxml/component/side_bar.fxml");
@@ -81,6 +87,17 @@ public class SideBar extends HBox {
         }
 
         collapseBtn.setOnAction(new SideBarEventHandler(collapseBtn, this));
+        wrapBtn.setOnAction(event -> {
+            this.wrapText = !wrapText;
+            if (targetCodeArea != null) {
+                targetCodeArea.setWrapText(wrapText);
+            }
+            if (wrapText) {
+                ((FontIcon) wrapBtn.getGraphic()).setIconColor(Color.web("#616161"));
+            } else {
+                ((FontIcon) wrapBtn.getGraphic()).setIconColor(Color.web("#33cbb9"));
+            }
+        });
 
         ObservableList<Node> children = getChildren();
         children.addListener(new ListChangeListener<Node>() {
@@ -90,10 +107,10 @@ public class SideBar extends HBox {
                     if (c.wasAdded()) {
                         // add listener when child is added
                         Node node = c.getAddedSubList().get(0);
+                        if (node == collapseBtn || node == wrapBtn) {
+                            return;
+                        }
                         node.setOnMouseClicked(event -> {
-                            if (node == collapseBtn) {
-                                return;
-                            }
                             if (node instanceof ComboBox<?> comboBox) {
                                 ComboBox<CodeStyleLabeled> labelComboBox = (ComboBox<CodeStyleLabeled>) comboBox;
                                 CodeStyleLabeled selectedItem = labelComboBox.getSelectionModel().getSelectedItem();
@@ -101,17 +118,12 @@ public class SideBar extends HBox {
                             } else if (node instanceof CodeStyleLabeled codeStyleLabeled) {
                                 setCodeStyle(codeStyleLabeled.targetCodeStyle(), true);
                             }
-                            // if (node.getStyleClass().contains(SELECTED_STYLE)) {
-                            //     return;
-                            // }
-                            //
-                            // for (Node sibling : getChildren()) {
-                            //     sibling.getStyleClass().remove(SELECTED_STYLE);
-                            // }
-                            // node.getStyleClass().add(SELECTED_STYLE);
                         });
-
                         node.managedProperty().bind(node.visibleProperty());
+                        Platform.runLater(() -> {
+                            getChildren().remove(wrapBtn);
+                            getChildren().add(wrapBtn);
+                        });
                     }
                 }
             }

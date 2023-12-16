@@ -115,11 +115,22 @@
             </AnchorPane>
         </Tab>
         <Tab text="   Timing   ">
+            <HeaderTitledPane animated="true" maxHeight="Infinity" text="Header" VBox.vgrow="ALWAYS">
+                <AnchorPane minHeight="0.0" minWidth="0.0">
+                    <DisplayCodeArea fx:id="" />
+                    <MessageLabel fx:id="timingMsgLabel" visible="true" text="Empty"/>
+                </AnchorPane>
+            </HeaderTitledPane>
+        </Tab>
+        <Tab text="   Test   ">
             <AnchorPane minHeight="0.0" minWidth="0.0">
-                <!-- <HeaderTitledPane animated="true" maxHeight="Infinity" text="Header" VBox.vgrow="ALWAYS"> -->
                 <DisplayCodeArea codeStyle="XML" fx:id="testCodeArea" />
-                <MessageLabel fx:id="timingMsgLabel" visible="true" text="Empty"/>
-                <!-- </HeaderTitledPane> -->
+
+                <SideBar prefHeight="25" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="15.0">
+                    <CodeStyleButton text="Text" codeStyle="html"/>
+                    <CodeStyleButton text="Origin" codeStyle="origin"/>
+                    <CodeStyleButton text="Hex" codeStyle="hex"/>
+                </SideBar>
             </AnchorPane>
         </Tab>
 </JFXTabPane>
