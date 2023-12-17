@@ -16,6 +16,7 @@ import javafx.scene.paint.Color;
 import javafx.util.Duration;
 import org.apache.commons.lang3.StringUtils;
 import org.kordamp.ikonli.javafx.FontIcon;
+import org.kordamp.ikonli.javafx.Icon;
 
 import java.lang.ref.WeakReference;
 
@@ -23,7 +24,14 @@ public class RequestViewTreeCell<T> extends TreeCell<T> {
 
     private HBox hbox;
     private StackPane selectedPane = new StackPane();
+    /**
+     * display on method
+     */
     private Label methodLabel;
+    /**
+     * display on pathIcon
+     */
+    private FontIcon pathIcon;
     private FadeTransition fadeTransition;
     private FadeTransition showTransition;
     private RequestViewService requestViewService;
@@ -100,43 +108,67 @@ public class RequestViewTreeCell<T> extends TreeCell<T> {
         if (this.fadeTransition == null) {
             this.fadeTransition = new FadeTransition();
             this.fadeTransition.setNode(selectedPane);
-            this.fadeTransition.setDuration(Duration.millis(1000));
+            this.fadeTransition.setDuration(Duration.millis(500));
             this.fadeTransition.setCycleCount(1);
             this.fadeTransition.setAutoReverse(true);
             this.fadeTransition.setFromValue(1.0);
             this.fadeTransition.setToValue(0.0);
         }
-        showTransition.play();
+        // showTransition.play();
         this.fadeTransition.play();
     }
 
     private void createOrUpdateHBox(RequestCell requestCell) {
-        hbox = new HBox(3);
+        if (hbox == null) {
+            hbox = new HBox(3);
+        }
 
         if (requestCell.isLeaf()) {
             hbox.getStyleClass().add("req-leaf");
-        } else {
-            FontIcon icon = new FontIcon();
-            icon.getStyleClass().add("req-icon");
-            icon.setIconColor(Color.valueOf("#8C9C9E"));
-            if (requestCell.getPath().startsWith("http")) {
-                icon.setIconLiteral("fas-globe-africa");
+            if (methodLabel == null) {
+                methodLabel = new Label(requestCell.getMethod());
+                methodLabel.getStyleClass().add("req-method-label");
+                methodLabel.getStyleClass().add(requestCell.getStyleClass());
             } else {
-                icon.setIconLiteral("fas-folder-minus");
+                if (!StringUtils.equals(requestCell.getMethod(), methodLabel.getText())) {
+                    methodLabel.setText(requestCell.getMethod());
+                }
+                if (!methodLabel.getStyleClass().contains(requestCell.getStyleClass())) {
+                    methodLabel.getStyleClass().removeIf(styleClass -> styleClass.startsWith("method-label"));
+                    methodLabel.getStyleClass().add(requestCell.getStyleClass());
+                }
             }
-            icon.setIconSize(14);
+            hbox.getChildren().removeIf(node -> node instanceof Icon);
+            if (!hbox.getChildren().contains(methodLabel)) {
+                hbox.getChildren().add(methodLabel);
+            }
+        } else {
+            if (pathIcon == null) {
+                pathIcon = new FontIcon();
+                pathIcon.getStyleClass().add("req-icon");
+                pathIcon.setIconColor(Color.valueOf("#8C9C9E"));
+                pathIcon.setIconSize(14);
+            }
+            if (requestCell.getPath().startsWith("http")) {
+                pathIcon.setIconLiteral("fas-globe-africa");
+            } else {
+                pathIcon.setIconLiteral("fas-folder-minus");
+            }
             // icon.getStyleClass().add("request-path-icon");
-            hbox.getChildren().add(icon);
+            hbox.getChildren().removeIf(node -> node instanceof Label);
+            if (!hbox.getChildren().contains(pathIcon)) {
+                hbox.getChildren().add(pathIcon);
+            }
         }
         if (requestCell.isOnCreated()) {
+            // TODO efficiency
             triggerFade();
         }
-        // return box;
     }
 
     private void updateDisplay(T item, boolean empty) {
         if (item == null || empty) {
-            hbox = null;
+            // hbox = null;
             setText(null);
             setGraphic(null);
             if (this.showTransition != null) {
@@ -149,24 +181,25 @@ public class RequestViewTreeCell<T> extends TreeCell<T> {
         } else {
             if (item instanceof RequestCell requestCell) {
                 setText(requestCell.getPath());
-                if (methodLabel == null) {
-                    methodLabel = new Label(requestCell.getMethod());
-                    methodLabel.getStyleClass().add("req-method-label");
-                    methodLabel.getStyleClass().add(requestCell.getStyleClass());
-                } else {
-                    if (!StringUtils.equals(requestCell.getMethod(), methodLabel.getText())) {
-                        methodLabel.setText(requestCell.getMethod());
-                    }
-                    if (!methodLabel.getStyleClass().contains(requestCell.getStyleClass())) {
-                        methodLabel.getStyleClass().removeIf(styleClass -> styleClass.startsWith("method-label"));
-                        methodLabel.getStyleClass().add(requestCell.getStyleClass());
-                    }
-                }
+                // if (methodLabel == null) {
+                //     methodLabel = new Label(requestCell.getMethod());
+                //     methodLabel.getStyleClass().add("req-method-label");
+                //     methodLabel.getStyleClass().add(requestCell.getStyleClass());
+                // } else {
+                //     if (!StringUtils.equals(requestCell.getMethod(), methodLabel.getText())) {
+                //         methodLabel.setText(requestCell.getMethod());
+                //     }
+                //     if (!methodLabel.getStyleClass().contains(requestCell.getStyleClass())) {
+                //         methodLabel.getStyleClass().removeIf(styleClass -> styleClass.startsWith("method-label"));
+                //         methodLabel.getStyleClass().add(requestCell.getStyleClass());
+                //     }
+                // }
 
-                if (hbox == null) {
-                    createOrUpdateHBox(requestCell);
-                    hbox.getChildren().add(methodLabel);
-                }
+                // if (hbox == null) {
+                //     createOrUpdateHBox(requestCell);
+                //     hbox.getChildren().add(methodLabel);
+                // }
+                createOrUpdateHBox(requestCell);
                 setGraphic(hbox);
             }
         }

@@ -56,13 +56,13 @@ public class RequestViewListCell<T> extends ListCell<T> {
         if (fadeTransition == null) {
             fadeTransition = new FadeTransition();
             fadeTransition.setNode(selectedPane);
-            fadeTransition.setDuration(Duration.millis(1000));
+            fadeTransition.setDuration(Duration.millis(500));
             fadeTransition.setCycleCount(1);
             fadeTransition.setAutoReverse(true);
             fadeTransition.setFromValue(1.0);
             fadeTransition.setToValue(0.0);
         }
-        showTransition.play();
+        // showTransition.play();
         fadeTransition.play();
     }
 
