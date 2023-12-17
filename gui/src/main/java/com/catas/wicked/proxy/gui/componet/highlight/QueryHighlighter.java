@@ -10,6 +10,9 @@ public class QueryHighlighter extends HeaderHighlighter implements Formatter{
     @Override
     public String format(String text, ContentType contentType) {
         Map<String, String> map = WebUtils.parseQueryParams(text);
+        if (map == null || map.isEmpty()) {
+            return text;
+        }
         StringBuilder builder = new StringBuilder();
         for (Map.Entry<String, String> entry : map.entrySet()) {
             builder.append(entry.getKey())

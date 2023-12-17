@@ -63,13 +63,11 @@ public class RequestTabRenderer extends AbstractTabRenderer {
         // display headers
         Map<String, String> headers = request.getHeaders();
         renderHeaders(headers, detailTabController.getReqHeaderTable());
-        detailTabController.getReqHeaderArea().replaceText(WebUtils.getHeaderText(headers));
+        detailTabController.getReqHeaderArea().replaceText(WebUtils.getHeaderText(headers), true);
 
         // display query-params if exist
         String query = request.getUrl().getQuery();
         detailTabController.getReqParamArea().replaceText(query, true);
-        // TODO
-        detailTabController.getReqContentSideBar().setStrategy(SideBar.Strategy.URLENCODED_FORM_DATA);
 
         // display request content
         ContentType contentType = WebUtils.getContentType(headers);
@@ -84,6 +82,9 @@ public class RequestTabRenderer extends AbstractTabRenderer {
         } else {
             target = detailTabController.getReqPayloadCodeArea();
         }
+        SideBar.Strategy strategy = predictCodeStyle(contentType);
+        // log.info("Request predict contentType: {}, strategy: {}", contentType, strategy);
+        detailTabController.getReqContentSideBar().setStrategy(strategy);
         renderRequestContent(content, contentType, target);
 
         boolean hasQuery = query != null && !query.isEmpty();
@@ -105,7 +106,7 @@ public class RequestTabRenderer extends AbstractTabRenderer {
             detailTabController.getReqPayloadTabPane().setTabMaxHeight(0);
             title = "Content";
         } else {
-            detailTabController.getReqPayloadTitlePane().setExpanded(false);
+            // detailTabController.getReqPayloadTitlePane().setExpanded(false);
             detailTabController.getReqContentMsgLabel().setVisible(true);
         }
 
@@ -133,7 +134,7 @@ public class RequestTabRenderer extends AbstractTabRenderer {
             String contentStr = new String(content, charset);
             // TODO bug-fix codeStyle 是之前的
             ((DisplayCodeArea) target).setContentType(contentType);
-            detailTabController.getReqPayloadCodeArea().replaceText(contentStr);
+            detailTabController.getReqPayloadCodeArea().replaceText(contentStr, true);
         } else if (target == detailTabController.getReqContentTable()) {
             assert contentType != null;
             if (StringUtils.equals(ContentType.APPLICATION_FORM_URLENCODED.getMimeType(), contentType.getMimeType())) {
@@ -153,9 +154,5 @@ public class RequestTabRenderer extends AbstractTabRenderer {
         } else if (target == detailTabController.getReqImageView()) {
             detailTabController.getReqImageView().setImage(new ByteArrayInputStream(content));
         }
-
-        SideBar.Strategy strategy = predictCodeStyle(contentType);
-        log.info("Request predict contentType: {}, strategy: {}", contentType, strategy);
-        detailTabController.getReqContentSideBar().setStrategy(strategy);
     }
 }

@@ -52,17 +52,21 @@ public class ResponseTabRenderer extends AbstractTabRenderer {
         // headers
         Map<String, String> headers = response.getHeaders();
         renderHeaders(headers, detailTabController.getRespHeaderTable());
-        detailTabController.getRespHeaderArea().replaceText(WebUtils.getHeaderText(headers));
+        detailTabController.getRespHeaderArea().replaceText(WebUtils.getHeaderText(headers), true);
 
         ContentType contentType = WebUtils.getContentType(headers);
+        SideBar.Strategy strategy = predictCodeStyle(contentType);
+        // log.info("Response predict contentType: {}, strategy: {}", contentType.getMimeType(), strategy);
+        detailTabController.getRespSideBar().setStrategy(strategy);
+
         byte[] parsedContent = WebUtils.parseContent(response.getHeaders(), response.getContent());
         if (parsedContent.length == 0) {
             detailTabController.getRespContentMsgLabel().setVisible(true);
-            detailTabController.getRespDataPane().setExpanded(false);
+            // detailTabController.getRespDataPane().setExpanded(false);
             return;
         }
-        // detailTabController.getRespContentMsgLabel().setVisible(false);
-        if (contentType != null && contentType.getMimeType().startsWith("image/")) {
+
+        if (strategy == SideBar.Strategy.IMG) {
             detailTabController.getRespContentArea().setVisible(false);
             detailTabController.getRespImageView().setVisible(true);
             // TODO webp格式
@@ -73,10 +77,7 @@ public class ResponseTabRenderer extends AbstractTabRenderer {
             Charset charset = contentType != null && contentType.getCharset() != null ?
                     contentType.getCharset() : StandardCharsets.UTF_8;
             String contentStr = new String(parsedContent, charset);
-            detailTabController.getRespContentArea().replaceText(contentStr);
+            detailTabController.getRespContentArea().replaceText(contentStr, true);
         }
-        SideBar.Strategy strategy = predictCodeStyle(contentType);
-        // log.info("Response predict contentType: {}, strategy: {}", contentType.getMimeType(), strategy);
-        detailTabController.getRespSideBar().setStrategy(strategy);
     }
 }

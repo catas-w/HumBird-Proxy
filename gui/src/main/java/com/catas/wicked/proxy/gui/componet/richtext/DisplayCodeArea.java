@@ -73,7 +73,7 @@ public class DisplayCodeArea extends VirtualizedScrollPane<CodeArea> {
 
     public void setCodeStyle(String codeStyle) {
         // this.codeStyle.set(codeStyle);
-        setCodeStyle(CodeStyle.valueOf(codeStyle));
+        setCodeStyle(CodeStyle.valueOf(codeStyle), false);
     }
 
     public ContentType getContentType() {
@@ -86,16 +86,19 @@ public class DisplayCodeArea extends VirtualizedScrollPane<CodeArea> {
 
     /**
      * switch text highlight
-     * @param codeStyle highlightStyle
+     * @param codeStyle codeStyle
+     * @param refreshStyle force to update codeStyle
      */
-    public void setCodeStyle(CodeStyle codeStyle) {
+    public void setCodeStyle(CodeStyle codeStyle, boolean refreshStyle) {
         this.codeStyle.set(codeStyle.name());
         Highlighter<Collection<String>> highlighter = HighlighterFactory.getHighlightComputer(codeStyle);
         // this.visibleParagraphStyler.setHighlightComputer(highlighter);
-        this.textStyler.setHighlightComputer(highlighter);
+        // this.textStyler.setHighlightComputer(highlighter);
 
         // refresh style
-        refreshStyle();
+        if (refreshStyle) {
+            refreshStyle();
+        }
     }
 
     public void replaceText(String text) {
@@ -106,9 +109,16 @@ public class DisplayCodeArea extends VirtualizedScrollPane<CodeArea> {
         this.originText = text;
         if (refreshStyle) {
             refreshStyle();
+        } else {
+            Platform.runLater(() -> {
+                codeArea.replaceText(text);
+            });
         }
     }
 
+    /**
+     * force to update style
+     */
     private void refreshStyle() {
         if (StringUtils.isEmpty(originText)) {
             return;
@@ -126,13 +136,12 @@ public class DisplayCodeArea extends VirtualizedScrollPane<CodeArea> {
             Platform.runLater(() -> {
                 codeArea.replaceText(finalText);
             });
-        } else {
-            // TODO 防止在主线程中执行 highlight
-            StyleSpans<Collection<String>> styleSpans = highlighter.computeHighlight(formatText);
-            Platform.runLater(() -> {
-                this.codeArea.setStyleSpans(0, styleSpans);
-            });
         }
+        // StyleSpans<Collection<String>> styleSpans = highlighter.computeHighlight(formatText);
+        Platform.runLater(() -> {
+            // TODO 防止在主线程中执行 highlight
+            codeArea.setStyleSpans(0, highlighter.computeHighlight(codeArea.getText()));
+        });
     }
 
     private Highlighter<Collection<String>> getCurrentHighlighter() {
@@ -153,8 +162,9 @@ public class DisplayCodeArea extends VirtualizedScrollPane<CodeArea> {
         // this.visibleParagraphStyler =new VisibleParagraphStyler<>(codeArea, getCurrentHighlighter());
         // codeArea.getVisibleParagraphs().addModificationObserver(visibleParagraphStyler);
 
-        this.textStyler = new TextStyler(codeArea, getCurrentHighlighter());
-        codeArea.textProperty().addListener(textStyler);
+        // 改为手动刷新 code style
+        // this.textStyler = new TextStyler(codeArea, getCurrentHighlighter());
+        // codeArea.textProperty().addListener(textStyler);
 
         // auto-indent: insert previous line's indents on enter
         final Pattern whiteSpace = Pattern.compile( "^\\s+" );

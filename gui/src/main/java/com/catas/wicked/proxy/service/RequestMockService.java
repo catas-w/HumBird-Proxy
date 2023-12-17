@@ -149,14 +149,16 @@ public class RequestMockService {
         msg.setBody(sampleJson.getBytes(StandardCharsets.UTF_8));
 
         ResponseMessage responseMessage = new ResponseMessage();
-        responseMessage.setStatus(200);
-        responseMessage.setHeaders(getHeaders(respHeadersList, index));
-
+        Map<String, String> respHeaders = getHeaders(respHeadersList, index);
         if (index % 2 == 0) {
             responseMessage.setContent(sampleXml.getBytes(StandardCharsets.UTF_8));
+            respHeaders.put("Content-Type", "application/xml");
         } else {
             responseMessage.setContent(sampleJson.getBytes());
+            respHeaders.put("Content-Type", "application/json");
         }
+        responseMessage.setStatus(200);
+        responseMessage.setHeaders(respHeaders);
 
         msg.setResponse(responseMessage);
         messageQueue.pushMsg(Topic.RECORD, msg);

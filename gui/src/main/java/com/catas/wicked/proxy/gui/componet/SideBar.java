@@ -114,9 +114,9 @@ public class SideBar extends HBox {
                             if (node instanceof ComboBox<?> comboBox) {
                                 ComboBox<CodeStyleLabeled> labelComboBox = (ComboBox<CodeStyleLabeled>) comboBox;
                                 CodeStyleLabeled selectedItem = labelComboBox.getSelectionModel().getSelectedItem();
-                                setCodeStyle(selectedItem.targetCodeStyle(), true);
+                                setCodeStyle(selectedItem.targetCodeStyle(), true, true);
                             } else if (node instanceof CodeStyleLabeled codeStyleLabeled) {
-                                setCodeStyle(codeStyleLabeled.targetCodeStyle(), true);
+                                setCodeStyle(codeStyleLabeled.targetCodeStyle(), true, true);
                             }
                         });
                         node.managedProperty().bind(node.visibleProperty());
@@ -163,7 +163,7 @@ public class SideBar extends HBox {
             }
         }
 
-        setCodeStyle(strategy.preset, false);
+        setCodeStyle(strategy.preset, true, false);
     }
 
     /**
@@ -171,7 +171,7 @@ public class SideBar extends HBox {
      * @param codeStyle codeStyle
      * @param refreshSelectStyle refresh selected styleClass in children
      */
-    public void setCodeStyle(CodeStyle codeStyle, boolean refreshSelectStyle) {
+    public void setCodeStyle(CodeStyle codeStyle, boolean refreshSelectStyle, boolean refreshCodeArea) {
         if (codeStyle == null) {
             return;
         }
@@ -181,7 +181,7 @@ public class SideBar extends HBox {
         }
 
         if (targetCodeArea != null) {
-            targetCodeArea.setCodeStyle(codeStyle);
+            targetCodeArea.setCodeStyle(codeStyle, refreshCodeArea);
         }
     }
 

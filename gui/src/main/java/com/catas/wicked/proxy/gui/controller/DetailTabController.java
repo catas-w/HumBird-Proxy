@@ -141,7 +141,7 @@ public class DetailTabController implements Initializable {
                 public void changed(ObservableValue<? extends Labeled> observable, Labeled oldValue, Labeled newValue) {
                     CodeStyle codeStyle = CodeStyle.valueOf(newValue.getText().toUpperCase());
                     // codeArea.setCodeStyle(codeStyle);
-                    sideBar.setCodeStyle(codeStyle, false);
+                    sideBar.setCodeStyle(codeStyle, false, true);
                 }
             });
         }
