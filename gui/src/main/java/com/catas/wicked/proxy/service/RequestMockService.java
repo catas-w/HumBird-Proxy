@@ -81,6 +81,15 @@ public class RequestMockService {
             DELETE https://www.amazon.com
             PUT https://www.bing.com/index
             POST https://www.bing.com/home
+            OPTION https://www.bing.com/home/getUserInfo
+            OPTION https://www.bing.com/home/getUserInfo
+            OPTION https://www.bing.com/home/getUserInfo
+            OPTION https://www.bing.com/home/getUserInfo
+            POST https://www.bing.com/home/getUserInfo
+            POST https://www.bing.com/home/getUserInfo
+            POST https://www.bing.com/home/getUserInfo
+            POST https://www.bing.com/home
+            POST https://www.bing.com/home
             POST https://www.microsoft.com/search
             GET https://www.microsoft.com/lolo
             GET https://www.bing.com

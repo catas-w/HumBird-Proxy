@@ -23,11 +23,19 @@ import java.lang.ref.WeakReference;
 public class RequestViewTreeCell<T> extends TreeCell<T> {
 
     private HBox hbox;
+    private StackPane pathStackPane = new StackPane();
+    /**
+     * display animation
+     */
     private StackPane selectedPane = new StackPane();
     /**
      * display on method
      */
     private Label methodLabel;
+    /**
+     * displayPath
+     */
+    private Label pathLabel;
     /**
      * display on pathIcon
      */
@@ -44,8 +52,8 @@ public class RequestViewTreeCell<T> extends TreeCell<T> {
     private WeakReference<TreeItem<T>> treeItemRef;
 
     public RequestViewTreeCell(TreeView<RequestCell> treeView) {
-        selectedPane.getStyleClass().add("req-cell-bar");
-        selectedPane.setMouseTransparent(true);
+        // selectedPane.getStyleClass().add("req-cell-bar");
+        // selectedPane.setMouseTransparent(true);
 
         final InvalidationListener treeItemInvalidationListener = observable -> {
             TreeItem<T> oldTreeItem = treeItemRef == null ? null : treeItemRef.get();
@@ -84,31 +92,34 @@ public class RequestViewTreeCell<T> extends TreeCell<T> {
     @Override
     protected void layoutChildren() {
         super.layoutChildren();
-        if (!getChildren().contains(selectedPane)) {
-            getChildren().add(0, selectedPane);
-        }
-        selectedPane.resizeRelocate(0, 0, getWidth(), getHeight());
-        selectedPane.setVisible(true);
-        selectedPane.setOpacity(0);
+        // if (!getChildren().contains(selectedPane)) {
+        //     getChildren().add(0, selectedPane);
+        //     selectedPane.resizeRelocate(0, 0, getWidth(), getHeight());
+        //     selectedPane.setVisible(true);
+        //     selectedPane.setOpacity(0);
+        // }
+        // selectedPane.resizeRelocate(0, 0, getWidth(), getHeight());
+        // selectedPane.setVisible(true);
+        // selectedPane.setOpacity(0);
     }
 
     /**
      * play animation
      */
     private void triggerFade() {
-        if (showTransition == null) {
-            showTransition = new FadeTransition();
-            showTransition.setNode(selectedPane);
-            showTransition.setDuration(Duration.millis(500));
-            showTransition.setCycleCount(1);
-            showTransition.setAutoReverse(true);
-            showTransition.setFromValue(0);
-            showTransition.setToValue(1);
-        }
+        // if (showTransition == null) {
+        //     showTransition = new FadeTransition();
+        //     showTransition.setNode(selectedPane);
+        //     showTransition.setDuration(Duration.millis(500));
+        //     showTransition.setCycleCount(1);
+        //     showTransition.setAutoReverse(true);
+        //     showTransition.setFromValue(0);
+        //     showTransition.setToValue(1);
+        // }
         if (this.fadeTransition == null) {
             this.fadeTransition = new FadeTransition();
             this.fadeTransition.setNode(selectedPane);
-            this.fadeTransition.setDuration(Duration.millis(500));
+            this.fadeTransition.setDuration(Duration.millis(750));
             this.fadeTransition.setCycleCount(1);
             this.fadeTransition.setAutoReverse(true);
             this.fadeTransition.setFromValue(1.0);
@@ -121,8 +132,21 @@ public class RequestViewTreeCell<T> extends TreeCell<T> {
     private void createOrUpdateHBox(RequestCell requestCell) {
         if (hbox == null) {
             hbox = new HBox(3);
+            hbox.getStyleClass().add("req-graphic-box");
+
+            pathLabel = new Label();
+            pathLabel.getStyleClass().add("req-path-label");
+
+            selectedPane.getStyleClass().add("req-cell-bar");
+            pathStackPane.getChildren().add(selectedPane);
+            pathStackPane.getChildren().add(pathLabel);
+
+            hbox.getChildren().add(0, pathStackPane);
         }
 
+        if (requestCell.getPath() != null && !StringUtils.equals(requestCell.getPath(), pathLabel.getText())) {
+            pathLabel.setText(requestCell.getPath());
+        }
         if (requestCell.isLeaf()) {
             hbox.getStyleClass().add("req-leaf");
             if (methodLabel == null) {
@@ -132,15 +156,15 @@ public class RequestViewTreeCell<T> extends TreeCell<T> {
             } else {
                 if (!StringUtils.equals(requestCell.getMethod(), methodLabel.getText())) {
                     methodLabel.setText(requestCell.getMethod());
-                }
-                if (!methodLabel.getStyleClass().contains(requestCell.getStyleClass())) {
                     methodLabel.getStyleClass().removeIf(styleClass -> styleClass.startsWith("method-label"));
-                    methodLabel.getStyleClass().add(requestCell.getStyleClass());
+                    if (!methodLabel.getStyleClass().contains(requestCell.getStyleClass())) {
+                        methodLabel.getStyleClass().add(requestCell.getStyleClass());
+                    }
                 }
             }
             hbox.getChildren().removeIf(node -> node instanceof Icon);
             if (!hbox.getChildren().contains(methodLabel)) {
-                hbox.getChildren().add(methodLabel);
+                hbox.getChildren().add(0, methodLabel);
             }
         } else {
             if (pathIcon == null) {
@@ -155,9 +179,9 @@ public class RequestViewTreeCell<T> extends TreeCell<T> {
                 pathIcon.setIconLiteral("fas-folder-minus");
             }
             // icon.getStyleClass().add("request-path-icon");
-            hbox.getChildren().removeIf(node -> node instanceof Label);
+            hbox.getChildren().removeIf(node -> node == methodLabel);
             if (!hbox.getChildren().contains(pathIcon)) {
-                hbox.getChildren().add(pathIcon);
+                hbox.getChildren().add(0, pathIcon);
             }
         }
         if (requestCell.isOnCreated()) {
@@ -177,28 +201,11 @@ public class RequestViewTreeCell<T> extends TreeCell<T> {
             if (this.fadeTransition != null) {
                 this.fadeTransition.stop();
             }
-            selectedPane.setVisible(false);
+            // selectedPane.setVisible(false);
         } else {
             if (item instanceof RequestCell requestCell) {
                 setText(requestCell.getPath());
-                // if (methodLabel == null) {
-                //     methodLabel = new Label(requestCell.getMethod());
-                //     methodLabel.getStyleClass().add("req-method-label");
-                //     methodLabel.getStyleClass().add(requestCell.getStyleClass());
-                // } else {
-                //     if (!StringUtils.equals(requestCell.getMethod(), methodLabel.getText())) {
-                //         methodLabel.setText(requestCell.getMethod());
-                //     }
-                //     if (!methodLabel.getStyleClass().contains(requestCell.getStyleClass())) {
-                //         methodLabel.getStyleClass().removeIf(styleClass -> styleClass.startsWith("method-label"));
-                //         methodLabel.getStyleClass().add(requestCell.getStyleClass());
-                //     }
-                // }
 
-                // if (hbox == null) {
-                //     createOrUpdateHBox(requestCell);
-                //     hbox.getChildren().add(methodLabel);
-                // }
                 createOrUpdateHBox(requestCell);
                 setGraphic(hbox);
             }

@@ -44,19 +44,19 @@ public class RequestViewListCell<T> extends ListCell<T> {
      * play animation
      */
     private void triggerFade() {
-        if (showTransition == null) {
-            showTransition = new FadeTransition();
-            showTransition.setNode(selectedPane);
-            showTransition.setDuration(Duration.millis(500));
-            showTransition.setCycleCount(1);
-            showTransition.setAutoReverse(true);
-            showTransition.setFromValue(0);
-            showTransition.setToValue(1);
-        }
+        // if (showTransition == null) {
+        //     showTransition = new FadeTransition();
+        //     showTransition.setNode(selectedPane);
+        //     showTransition.setDuration(Duration.millis(500));
+        //     showTransition.setCycleCount(1);
+        //     showTransition.setAutoReverse(true);
+        //     showTransition.setFromValue(0);
+        //     showTransition.setToValue(1);
+        // }
         if (fadeTransition == null) {
             fadeTransition = new FadeTransition();
             fadeTransition.setNode(selectedPane);
-            fadeTransition.setDuration(Duration.millis(500));
+            fadeTransition.setDuration(Duration.millis(750));
             fadeTransition.setCycleCount(1);
             fadeTransition.setAutoReverse(true);
             fadeTransition.setFromValue(1.0);
@@ -108,10 +108,10 @@ public class RequestViewListCell<T> extends ListCell<T> {
                 } else {
                     if (!StringUtils.equals(requestCell.getMethod(), methodLabel.getText())) {
                         methodLabel.setText(requestCell.getMethod());
-                    }
-                    if (!methodLabel.getStyleClass().contains(requestCell.getStyleClass())) {
                         methodLabel.getStyleClass().removeIf(styleClass -> styleClass.startsWith("method-label"));
-                        methodLabel.getStyleClass().add(requestCell.getStyleClass());
+                        if (!methodLabel.getStyleClass().contains(requestCell.getStyleClass())) {
+                            methodLabel.getStyleClass().add(requestCell.getStyleClass());
+                        }
                     }
                 }
 
