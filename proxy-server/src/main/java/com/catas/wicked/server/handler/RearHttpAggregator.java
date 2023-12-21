@@ -9,6 +9,7 @@ import io.netty.handler.codec.http.DefaultFullHttpRequest;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.EmptyHttpHeaders;
 import io.netty.handler.codec.http.FullHttpMessage;
+import io.netty.handler.codec.http.HttpContent;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpMessage;
 import io.netty.handler.codec.http.HttpMethod;
@@ -20,6 +21,8 @@ import io.netty.handler.codec.http.HttpVersion;
 import io.netty.util.AttributeKey;
 import lombok.extern.slf4j.Slf4j;
 
+import static io.netty.handler.codec.http.LastHttpContent.EMPTY_LAST_CONTENT;
+
 /**
  * Customized httpObjectAggregator
  * Generate default error message when message oversized
@@ -27,7 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class RearHttpAggregator extends HttpObjectAggregator {
 
-    private static final String DEFAULT_MSG = "<Content Oversize, Unable to show>";
+    private static final String DEFAULT_MSG = "<Content Oversize>";
 
     private static final ByteBuf OVERSIZE_BUF = Unpooled.wrappedBuffer(DEFAULT_MSG.getBytes());
 
@@ -104,6 +107,13 @@ public class RearHttpAggregator extends HttpObjectAggregator {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+        // fix: httpContent unReadable
+        if (msg instanceof HttpContent httpContent) {
+            // System.out.println("Readable " + httpContent.content().isReadable());
+            if (!httpContent.content().isReadable() && httpContent != EMPTY_LAST_CONTENT) {
+                httpContent.content().resetReaderIndex();
+            }
+        }
         super.channelRead(ctx, msg);
     }
 }

@@ -43,7 +43,7 @@
     -fx-background-insets: 0;
 }
 .tree-cell:selected {
-    -fx-background-color: #d4d4d4;
+    -fx-background-color: #7fd9d0;
 }
 
 .tree-cell:selected .req-method-label {
@@ -102,7 +102,7 @@
 }
 
 .req-cell-bar {
-    -fx-background-color: #29c1c1;
+    -fx-background-color: #33cbb9;
     -fx-opacity: 0;
 }
 

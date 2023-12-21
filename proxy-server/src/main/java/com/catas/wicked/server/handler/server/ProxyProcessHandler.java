@@ -75,6 +75,7 @@ public class ProxyProcessHandler extends ChannelInboundHandlerAdapter {
             ReferenceCountUtil.release(msg);
             return;
         }
+        // System.out.println("Handlers: " + ctx.channel().pipeline().names());
         handleProxyData(ctx, msg, curRequestInfo);
     }
 
