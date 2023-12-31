@@ -31,6 +31,7 @@ import io.netty.util.ReferenceCountUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.util.NoSuchElementException;
 
 import static com.catas.wicked.common.constant.NettyConstant.*;
@@ -44,6 +45,7 @@ import static com.catas.wicked.common.constant.NettyConstant.*;
  * http record [NORMAL]:    httpCodec - strategyHandler - proxyProcessHandler - [aggregator] - postRecorder
  * http un-record [NORMAL]: httpCodec - strategyHandler - proxyProcessHandler - postRecorder
  * ssl record [NORMAL]:     [sslHandler] - httpCodec - strategyHandler - proxyProcessHandler - [aggregator] - postRecorder
+ * ssl record [TUNNEL]:     strategyHandler - proxyProcessHandler - postRecorder
  * ssl un-record [TUNNEL]:  strategyHandler - proxyProcessHandler - postRecorder
  */
 @Slf4j
@@ -104,10 +106,19 @@ public class ServerStrategyHandler extends ChannelDuplexHandler {
         }
         assert requestInfo != null;
         requestInfo.setUsingExternalProxy(appConfig.getExternalProxyConfig().isUsingExternalProxy());
-        requestInfo.setNewRequest(true);
         requestInfo.setRequestId(IdUtil.getId());
         requestInfo.setRecording(appConfig.isRecording());
-        requestInfo.setRequestTime();
+        requestInfo.resetBasicInfo();
+
+        SocketAddress remoteAddress = ctx.channel().remoteAddress();
+        SocketAddress localAddress = ctx.channel().localAddress();
+        if (remoteAddress instanceof InetSocketAddress inetRemoteAddress) {
+            requestInfo.setRemoteAddress(inetRemoteAddress.getAddress().getHostAddress());
+        }
+        if (localAddress instanceof InetSocketAddress inetLocalAddress) {
+            requestInfo.setLocalAddress(inetLocalAddress.getAddress().getHostAddress());
+            requestInfo.setLocalPort(inetLocalAddress.getPort());
+        }
         return requestInfo;
     }
 

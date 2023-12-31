@@ -144,6 +144,8 @@
 .table-cell .headers-key {
     -fx-text-fill: #792f22 !important;
     -fx-font-weight: 700;
+    /*-fx-text-alignment: right !important;*/
+    /*-fx-wrap-text: true;*/
 }
 
 /*************** Button Bar ***************/

@@ -20,10 +20,14 @@ import static com.catas.wicked.common.constant.NettyConstant.*;
 
 /**
  * decide which handlers to use when sending new request
- * remote <-<-<- this
+ * remote <-<-<- local
  * [Normal]: [externalProxyHandler] - [sslHandler] - [httpCodec] - strategyHandler - proxyClientHandler -
  *           [aggregator] - postRecorder
  * [Tunnel]: [externalProxyHandler] - strategyHandler - proxyClientHandler - postRecorder
+ *
+ * [Normal]: [externalProxyHandler] - [sslHandler] - [httpCodec] - proxyClientHandler -
+ *           [aggregator] - postRecorder - strategyHandler
+ * [Tunnel]: [externalProxyHandler] - proxyClientHandler - postRecorder - strategyHandler
  */
 @Slf4j
 public class ClientStrategyHandler extends ChannelDuplexHandler {
@@ -48,7 +52,7 @@ public class ClientStrategyHandler extends ChannelDuplexHandler {
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        if (ctx.channel().hasAttr(requestInfoKey)) {
+        if (ctx.channel().hasAttr(requestInfoKey) && ctx.channel().attr(requestInfoKey).get() != null) {
             // log.info("** Client inactive: {} **", ctx.channel().attr(requestInfoKey).get().getRequestId());
             ctx.channel().attr(requestInfoKey).get().setClientConnected(true);
         }
@@ -83,8 +87,8 @@ public class ClientStrategyHandler extends ChannelDuplexHandler {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        if (ctx.channel().hasAttr(requestInfoKey)) {
-            ctx.channel().attr(requestInfoKey).get().setResponseTime();
+        if (ctx.channel().attr(requestInfoKey).get() != null) {
+            ctx.channel().attr(requestInfoKey).get().updateResponseTime();
         }
         super.channelRead(ctx, msg);
     }
@@ -103,7 +107,7 @@ public class ClientStrategyHandler extends ChannelDuplexHandler {
                 // update sslHandler
                 if (requestInfo.isSsl()) {
                     try {
-                        ch.pipeline().addBefore(CLIENT_STRATEGY, SSL_HANDLER,
+                        ch.pipeline().addBefore(CLIENT_PROCESSOR, SSL_HANDLER,
                                 appConfig.getClientSslCtx().newHandler(ch.alloc(), appConfig.getHost(), appConfig.getPort()));
                     } catch (IllegalArgumentException ignored) {}
                 } else {
@@ -114,7 +118,7 @@ public class ClientStrategyHandler extends ChannelDuplexHandler {
 
                 // update httpCodec & responseRecorder
                 try {
-                    ch.pipeline().addBefore(CLIENT_STRATEGY, HTTP_CODEC, new HttpClientCodec());
+                    ch.pipeline().addBefore(CLIENT_PROCESSOR, HTTP_CODEC, new HttpClientCodec());
                 } catch (IllegalArgumentException ignored) {}
 
                 // update httpAggregator

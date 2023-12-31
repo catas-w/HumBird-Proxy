@@ -7,8 +7,9 @@ import com.catas.wicked.common.constant.ProxyConstant;
 import com.catas.wicked.common.pipeline.MessageQueue;
 import com.catas.wicked.common.pipeline.Topic;
 import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.channel.ChannelPromise;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpMethod;
@@ -26,7 +27,7 @@ import java.util.Map;
  * record requests
  */
 @Slf4j
-public class ServerPostRecorder extends ChannelInboundHandlerAdapter {
+public class ServerPostRecorder extends ChannelDuplexHandler {
 
     private ApplicationConfig appConfig;
     private MessageQueue messageQueue;
@@ -35,6 +36,11 @@ public class ServerPostRecorder extends ChannelInboundHandlerAdapter {
     public ServerPostRecorder(ApplicationConfig applicationConfig, MessageQueue messageQueue) {
         this.appConfig = applicationConfig;
         this.messageQueue = messageQueue;
+    }
+
+    @Override
+    public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
+        super.write(ctx, msg, promise);
     }
 
     @Override
@@ -49,7 +55,7 @@ public class ServerPostRecorder extends ChannelInboundHandlerAdapter {
             if (msg instanceof FullHttpRequest fullHttpRequest) {
                 recordHttpRequest(ctx, fullHttpRequest, requestInfo);
             } else if (!(msg instanceof HttpObject)) {
-                recordUnDecodedRequest(ctx, requestInfo);
+                recordUnDecodedRequest(ctx, msg, requestInfo);
             } else {
                 log.error("?????");
             }
@@ -79,23 +85,34 @@ public class ServerPostRecorder extends ChannelInboundHandlerAdapter {
         return builder.toString();
     }
 
+    private void setRequestMsgInfo(ProxyRequestInfo requestInfo, RequestMessage requestMsg) {
+        requestMsg.setRequestId(requestInfo.getRequestId());
+        requestMsg.setStartTime(requestInfo.getRequestStartTime());
+        requestMsg.setEndTime(requestInfo.getRequestEndTime());
+        requestMsg.setSize(requestInfo.getRequestSize());
+        requestMsg.setRemoteHost(requestInfo.getHost());
+        requestMsg.setRemotePort(requestInfo.getPort());
+        requestMsg.setRemoteAddress(requestInfo.getRemoteAddress());
+        requestMsg.setLocalAddress(requestInfo.getLocalAddress());
+        requestMsg.setLocalPort(requestInfo.getLocalPort());
+    }
+
     /**
      * record unparsed http request
      */
-    private void recordUnDecodedRequest(ChannelHandlerContext ctx, ProxyRequestInfo requestInfo) {
+    private void recordUnDecodedRequest(ChannelHandlerContext ctx, Object msg, ProxyRequestInfo requestInfo) {
         if (!requestInfo.isNewAndReset()) {
             return;
         }
 
         String url = getHostname(requestInfo) + "/<Encrypted>";
         RequestMessage requestMessage = new RequestMessage(url);
-        requestMessage.setRequestId(requestInfo.getRequestId());
         requestMessage.setMethod("UNKNOWN");
         requestMessage.setHeaders(new HashMap<>());
-        requestMessage.setStartTime(requestInfo.getRequestStartTime());
-        requestMessage.setEndTime(requestInfo.getRequestEndTime());
+        setRequestMsgInfo(requestInfo, requestMessage);
         messageQueue.pushMsg(Topic.RECORD, requestMessage);
 
+        requestInfo.setHasSentMsg(true);
         log.info(">>>> Request send[encrypted]: {} ID: {} >>>>", url, requestInfo.getRequestId());
     }
 
@@ -135,18 +152,11 @@ public class ServerPostRecorder extends ChannelInboundHandlerAdapter {
             log.error("Error recording request content.", e);
         }
 
-        // boolean isFormRequest = WebUtils.isFormRequest(headerMap.get("Content-Type"));
-        // if (isFormRequest) {
-        //     byte[] body = requestMessage.getBody();
-        //     System.out.println(new String(body));
-        // }
-
         // save to request tree
-        requestMessage.setRequestId(requestInfo.getRequestId());
-        requestMessage.setStartTime(requestInfo.getRequestStartTime());
-        requestMessage.setEndTime(requestInfo.getRequestEndTime());
+        setRequestMsgInfo(requestInfo, requestMessage);
         messageQueue.pushMsg(Topic.RECORD, requestMessage);
 
+        requestInfo.setHasSentMsg(true);
         log.info(">>>> Request send[decoded]: {} ID: {} >>>>", uri, requestInfo.getRequestId());
     }
 }

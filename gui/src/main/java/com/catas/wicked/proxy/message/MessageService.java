@@ -52,6 +52,30 @@ public class MessageService {
     @PostConstruct
     public void init() {
         messageQueue.subscribe(Topic.RECORD, this::processMsg);
+        messageQueue.subscribe(Topic.UPDATE_MSG, this::processUpdate);
+    }
+
+    private void processUpdate(BaseMessage msg) {
+        if (msg instanceof RequestMessage updateMsg) {
+            RequestMessage requestMessage = requestCache.get(updateMsg.getRequestId());
+            if (requestMessage == null) {
+                return;
+            }
+            requestMessage.setSize(updateMsg.getSize());
+            requestMessage.setEndTime(updateMsg.getEndTime());
+            requestCache.put(requestMessage.getRequestId(), requestMessage);
+        } else if (msg instanceof ResponseMessage updateMsg) {
+            RequestMessage requestMessage = requestCache.get(updateMsg.getRequestId());
+            if (requestMessage == null) {
+                return;
+            }
+            // TODO 分开resp
+            requestMessage.getResponse().setSize(updateMsg.getSize());
+            requestMessage.getResponse().setEndTime(updateMsg.getEndTime());
+            requestCache.put(requestMessage.getRequestId(), requestMessage);
+        } else {
+            log.warn("Unrecognized requestMsg");
+        }
     }
 
     private void processMsg(BaseMessage msg) {
@@ -86,6 +110,7 @@ public class MessageService {
                 }
                 case RESPONSE_CONTENT -> {
                     // 添加响应体
+                    // TODO 分开resp
                     ResponseMessage respMessage = (ResponseMessage) msg;
                     RequestMessage data = requestCache.get(respMessage.getRequestId());
                     if (data != null && data.getResponse() != null) {

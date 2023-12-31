@@ -17,6 +17,7 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
+import io.netty.handler.codec.http.HttpContent;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.HttpResponseStatus;
@@ -75,6 +76,10 @@ public class ProxyProcessHandler extends ChannelInboundHandlerAdapter {
             ReferenceCountUtil.release(msg);
             return;
         }
+        if (msg instanceof HttpContent content) {
+            curRequestInfo.updateRequestSize(content.content().readableBytes());
+        }
+        curRequestInfo.updateRequestTime();
         // System.out.println("Handlers: " + ctx.channel().pipeline().names());
         handleProxyData(ctx, msg, curRequestInfo);
     }
@@ -105,10 +110,12 @@ public class ProxyProcessHandler extends ChannelInboundHandlerAdapter {
                             } else {
                                 bootstrap.resolver(DefaultAddressResolverGroup.INSTANCE);
                             }
-                            ch.pipeline().addLast(CLIENT_STRATEGY,
-                                    new ClientStrategyHandler(appConfig, messageQueue, requestInfo));
+                            // ch.pipeline().addLast(CLIENT_STRATEGY,
+                            //         new ClientStrategyHandler(appConfig, messageQueue, requestInfo));
                             ch.pipeline().addLast(CLIENT_PROCESSOR, new ProxyClientHandler(ctx.channel()));
                             ch.pipeline().addLast(POST_RECORDER, new ClientPostRecorder(appConfig, messageQueue));
+                            ch.pipeline().addLast(CLIENT_STRATEGY,
+                                    new ClientStrategyHandler(appConfig, messageQueue, requestInfo));
                         }
                     });
 

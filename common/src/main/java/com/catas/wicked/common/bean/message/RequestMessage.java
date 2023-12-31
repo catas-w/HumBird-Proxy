@@ -21,9 +21,26 @@ public class RequestMessage extends BaseMessage{
 
     private URL url;
 
-    private String host;
-
-    private String path;
+    /**
+     * remote host
+     */
+    private String remoteHost;
+    /**
+     * remote port
+     */
+    private int remotePort;
+    /**
+     * remote ip
+     */
+    private String remoteAddress;
+    /**
+     * local ip
+     */
+    private String localAddress;
+    /**
+     * local port
+     */
+    private int localPort;
 
     private String protocol;
 

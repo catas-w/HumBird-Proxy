@@ -2,14 +2,17 @@ package com.catas.wicked.server.handler.client;
 
 
 import com.catas.wicked.common.bean.ProxyRequestInfo;
+import com.catas.wicked.common.bean.message.BaseMessage;
+import com.catas.wicked.common.bean.message.RequestMessage;
 import com.catas.wicked.common.bean.message.ResponseMessage;
 import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.common.constant.ProxyConstant;
 import com.catas.wicked.common.pipeline.MessageQueue;
 import com.catas.wicked.common.pipeline.Topic;
 import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.channel.ChannelPromise;
 import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpResponseStatus;
@@ -25,7 +28,7 @@ import java.util.Map;
  * record responses
  */
 @Slf4j
-public class ClientPostRecorder extends ChannelInboundHandlerAdapter {
+public class ClientPostRecorder extends ChannelDuplexHandler {
 
     private ApplicationConfig appConfig;
     private MessageQueue messageQueue;
@@ -34,6 +37,22 @@ public class ClientPostRecorder extends ChannelInboundHandlerAdapter {
     public ClientPostRecorder(ApplicationConfig applicationConfig, MessageQueue messageQueue) {
         this.appConfig = applicationConfig;
         this.messageQueue = messageQueue;
+    }
+
+    @Override
+    public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
+        ProxyRequestInfo requestInfo = ctx.channel().attr(requestInfoKey).get();
+        // update request size & time
+        if (requestInfo != null && requestInfo.isHasSentMsg()) {
+            requestInfo.updateRequestTime();
+            RequestMessage requestMessage = new RequestMessage();
+            requestMessage.setRequestId(requestInfo.getRequestId());
+            requestMessage.setType(BaseMessage.MessageType.UPDATE);
+            requestMessage.setEndTime(requestInfo.getRequestEndTime());
+            requestMessage.setSize(requestInfo.getRequestSize());
+            messageQueue.pushMsg(Topic.UPDATE_MSG, requestMessage);
+        }
+        super.write(ctx, msg, promise);
     }
 
     @Override
@@ -55,6 +74,12 @@ public class ClientPostRecorder extends ChannelInboundHandlerAdapter {
             log.error("????????");
             ReferenceCountUtil.release(msg);
         }
+    }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        // ctx.channel().close();
+        log.error("Error occurred in Proxy client.", cause);
     }
 
     private void recordHttpResponse(ChannelHandlerContext ctx, FullHttpResponse resp, ProxyRequestInfo requestInfo) {

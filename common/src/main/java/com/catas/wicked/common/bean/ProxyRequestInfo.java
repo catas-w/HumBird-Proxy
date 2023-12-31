@@ -8,9 +8,26 @@ import lombok.Data;
 @Data
 public class ProxyRequestInfo {
 
+    /**
+     * remote host
+     */
     private String host;
-
+    /**
+     * remote port
+     */
     private int port;
+    /**
+     * remote ip
+     */
+    private String remoteAddress;
+    /**
+     * local ip
+     */
+    private String localAddress;
+    /**
+     * local port
+     */
+    private int localPort;
 
     private boolean ssl;
 
@@ -22,20 +39,20 @@ public class ProxyRequestInfo {
 
     private ClientType clientType;
 
-    private long requestStartTime;
+    private volatile long requestStartTime;
+    private volatile long requestEndTime;
+    private volatile long responseStartTime;
+    private volatile long responseEndTime;
+    private volatile long requestSize;
+    private volatile long respSize;
 
-    private long requestEndTime;
-
-    private long responseStartTime;
-
-    private long responseEndTime;
     private boolean isNewRequest;
 
     private boolean usingExternalProxy;
 
-    private boolean isOversize;
-
     private boolean isClientConnected;
+
+    private boolean hasSentMsg;
 
     public boolean isNewAndReset() {
         boolean res = this.isNewRequest;
@@ -43,7 +60,18 @@ public class ProxyRequestInfo {
         return res;
     }
 
-    public synchronized void setRequestTime() {
+    public void resetBasicInfo() {
+        requestStartTime = 0;
+        requestEndTime = 0;
+        responseStartTime = 0;
+        responseEndTime = 0;
+        requestSize = 0;
+        respSize = 0;
+        hasSentMsg = false;
+        isNewRequest = true;
+    }
+
+    public synchronized void updateRequestTime() {
         long timestamp = System.currentTimeMillis();
         if (requestStartTime == 0L) {
             requestStartTime = timestamp;
@@ -51,12 +79,24 @@ public class ProxyRequestInfo {
         requestEndTime = timestamp;
     }
 
-    public synchronized void setResponseTime() {
+    public synchronized void updateResponseTime() {
         long timestamp = System.currentTimeMillis();
         if (responseStartTime == 0L) {
             responseStartTime = timestamp;
         }
         responseEndTime = timestamp;
+    }
+
+    public synchronized void updateRequestSize(long size) {
+        if (size > 0) {
+            requestSize += size;
+        }
+    }
+
+    public synchronized void updateRespSize(long size) {
+        if (size > 0) {
+            respSize += size;
+        }
     }
 
     public enum ClientType {
