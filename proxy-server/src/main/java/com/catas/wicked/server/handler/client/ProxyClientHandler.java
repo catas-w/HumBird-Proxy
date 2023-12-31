@@ -1,10 +1,14 @@
 package com.catas.wicked.server.handler.client;
 
+import com.catas.wicked.common.bean.ProxyRequestInfo;
+import com.catas.wicked.common.constant.ProxyConstant;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.DefaultHttpResponse;
+import io.netty.handler.codec.http.HttpContent;
 import io.netty.handler.codec.http.HttpResponse;
+import io.netty.util.AttributeKey;
 import io.netty.util.ReferenceCountUtil;
 import lombok.extern.slf4j.Slf4j;
 
@@ -13,6 +17,9 @@ import lombok.extern.slf4j.Slf4j;
 public class ProxyClientHandler extends ChannelInboundHandlerAdapter {
 
     private Channel clientChannel;
+
+    private final AttributeKey<ProxyRequestInfo> requestInfoAttributeKey =
+            AttributeKey.valueOf(ProxyConstant.REQUEST_INFO);
 
     public ProxyClientHandler(Channel clientChannel) {
         this.clientChannel = clientChannel;
@@ -23,6 +30,15 @@ public class ProxyClientHandler extends ChannelInboundHandlerAdapter {
         if (!clientChannel.isOpen()) {
             ReferenceCountUtil.release(msg);
             return;
+        }
+
+        // refresh timing & size
+        ProxyRequestInfo requestInfo = ctx.channel().attr(requestInfoAttributeKey).get();
+        if (requestInfo != null) {
+            requestInfo.updateResponseTime();
+            if ( msg instanceof HttpContent httpContent) {
+                requestInfo.updateRespSize(httpContent.content().readableBytes());
+            }
         }
 
         if (msg instanceof HttpResponse origin) {

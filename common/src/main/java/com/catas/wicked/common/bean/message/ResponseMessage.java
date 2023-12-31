@@ -18,6 +18,8 @@ public class ResponseMessage extends BaseMessage implements Serializable {
 
     private byte[] content;
 
+    private int retryTimes = 3;
+
     public ResponseMessage() {
         this.setType(MessageType.RESPONSE);
     }

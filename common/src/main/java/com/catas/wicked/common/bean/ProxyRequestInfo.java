@@ -52,7 +52,8 @@ public class ProxyRequestInfo {
 
     private boolean isClientConnected;
 
-    private boolean hasSentMsg;
+    private boolean hasSentRequestMsg;
+    private boolean hasSentRespMsg;
 
     public boolean isNewAndReset() {
         boolean res = this.isNewRequest;
@@ -67,7 +68,8 @@ public class ProxyRequestInfo {
         responseEndTime = 0;
         requestSize = 0;
         respSize = 0;
-        hasSentMsg = false;
+        hasSentRequestMsg = false;
+        hasSentRespMsg = false;
         isNewRequest = true;
     }
 
@@ -76,7 +78,9 @@ public class ProxyRequestInfo {
         if (requestStartTime == 0L) {
             requestStartTime = timestamp;
         }
-        requestEndTime = timestamp;
+        if (timestamp > requestEndTime) {
+            requestEndTime = timestamp;
+        }
     }
 
     public synchronized void updateResponseTime() {
@@ -84,7 +88,9 @@ public class ProxyRequestInfo {
         if (responseStartTime == 0L) {
             responseStartTime = timestamp;
         }
-        responseEndTime = timestamp;
+        if (timestamp > responseEndTime) {
+            responseEndTime = timestamp;
+        }
     }
 
     public synchronized void updateRequestSize(long size) {

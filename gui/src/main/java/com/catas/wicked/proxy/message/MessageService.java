@@ -55,7 +55,12 @@ public class MessageService {
         messageQueue.subscribe(Topic.UPDATE_MSG, this::processUpdate);
     }
 
+    /**
+     * update info for existed requestMsg/responseMsg
+     * @param msg updateMsg
+     */
     private void processUpdate(BaseMessage msg) {
+        // TODO 更新 current request
         if (msg instanceof RequestMessage updateMsg) {
             RequestMessage requestMessage = requestCache.get(updateMsg.getRequestId());
             if (requestMessage == null) {
@@ -69,6 +74,15 @@ public class MessageService {
             if (requestMessage == null) {
                 return;
             }
+            if (requestMessage.getResponse() == null ) {
+                if (updateMsg.getRetryTimes() > 0) {
+                    updateMsg.setRetryTimes(updateMsg.getRetryTimes() - 1);
+                    messageQueue.pushMsg(Topic.UPDATE_MSG, updateMsg);
+                } else {
+                    log.warn("Cannot update responseMsg, requestID = {}", requestMessage.getRequestId());
+                }
+                return;
+            }
             // TODO 分开resp
             requestMessage.getResponse().setSize(updateMsg.getSize());
             requestMessage.getResponse().setEndTime(updateMsg.getEndTime());
@@ -78,6 +92,10 @@ public class MessageService {
         }
     }
 
+    /**
+     * record request and response msg
+     * @param msg requestMessage/responseMessage
+     */
     private void processMsg(BaseMessage msg) {
         if (msg instanceof RequestMessage requestMessage) {
             switch (requestMessage.getType()) {
