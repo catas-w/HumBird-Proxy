@@ -6,10 +6,12 @@ import com.catas.wicked.common.config.ExternalProxyConfig;
 import com.catas.wicked.common.constant.ProxyConstant;
 import com.catas.wicked.common.pipeline.MessageQueue;
 import com.catas.wicked.common.util.ProxyHandlerFactory;
+import com.catas.wicked.common.util.WebUtils;
 import com.catas.wicked.server.handler.client.ClientPostRecorder;
 import com.catas.wicked.server.handler.client.ClientStrategyHandler;
 import com.catas.wicked.server.handler.client.ProxyClientHandler;
 import io.netty.bootstrap.Bootstrap;
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
@@ -76,8 +78,18 @@ public class ProxyProcessHandler extends ChannelInboundHandlerAdapter {
             ReferenceCountUtil.release(msg);
             return;
         }
-        if (msg instanceof HttpContent content) {
+
+        if (msg instanceof HttpRequest httpRequest) {
+            curRequestInfo.updateRequestSize(WebUtils.estimateSize(httpRequest));
+        } else if (msg instanceof HttpContent content) {
             curRequestInfo.updateRequestSize(content.content().readableBytes());
+        } else {
+            try {
+                ByteBuf cont = (ByteBuf) msg;
+                curRequestInfo.updateRequestSize(cont.readableBytes());
+            } catch (Exception e) {
+                log.warn("Unable to catch request size.", e);
+            }
         }
         curRequestInfo.updateRequestTime();
         // System.out.println("Handlers: " + ctx.channel().pipeline().names());

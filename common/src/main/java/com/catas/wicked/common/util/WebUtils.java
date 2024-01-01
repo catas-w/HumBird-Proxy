@@ -3,7 +3,10 @@ package com.catas.wicked.common.util;
 import com.catas.wicked.common.bean.ProxyRequestInfo;
 import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.http.HttpHeaderNames;
+import io.netty.handler.codec.http.HttpHeaders;
+import io.netty.handler.codec.http.HttpMessage;
 import io.netty.handler.codec.http.HttpRequest;
+import io.netty.handler.codec.http.HttpResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.entity.ContentType;
@@ -171,6 +174,9 @@ public class WebUtils {
     }
 
     public static ContentType getContentType(Map<String, String> headers) {
+        if (headers == null || headers.isEmpty()) {
+            return null;
+        }
         // String contentTypeHeader = headers.getOrDefault("Content-Type", "");
         String contentTypeHeader = "";
         for (Map.Entry<String, String> entry : headers.entrySet()) {
@@ -231,5 +237,40 @@ public class WebUtils {
             nextPart = multipartStream.readBoundary();
         }
         return map;
+    }
+
+    public static String getHSize(int size) {
+        if (size < 1024) {
+            return String.format("%d B", size);
+        }
+        return String.format("%.2f KB", size / 1024.0);
+    }
+
+    public static int estimateSize(HttpMessage httpMessage) {
+        if (httpMessage == null) {
+            return 0;
+        }
+        HttpHeaders headers = null;
+        int size = 0;
+        if (httpMessage instanceof HttpRequest httpRequest) {
+            size = httpRequest.method().name().length()
+                    + httpRequest.uri().length()
+                    + httpRequest.protocolVersion().protocolName().length()  + 4;
+            headers = httpRequest.headers();
+        } else if (httpMessage instanceof HttpResponse httpResponse) {
+            size = httpResponse.protocolVersion().protocolName().length()
+                    + httpResponse.status().codeAsText().length()
+                    + httpResponse.status().reasonPhrase().length() + 4;
+            headers = httpResponse.headers();
+        }
+
+        if (headers != null && !headers.isEmpty()) {
+            for (Map.Entry<String, String> entry : headers.entries()) {
+                size += entry.getKey().length() + entry.getValue().length() + 3;
+            }
+        }
+
+        System.out.println("Estimated size: " + size);
+        return size;
     }
 }

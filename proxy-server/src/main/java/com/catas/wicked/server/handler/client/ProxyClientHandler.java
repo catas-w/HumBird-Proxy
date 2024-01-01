@@ -2,6 +2,8 @@ package com.catas.wicked.server.handler.client;
 
 import com.catas.wicked.common.bean.ProxyRequestInfo;
 import com.catas.wicked.common.constant.ProxyConstant;
+import com.catas.wicked.common.util.WebUtils;
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -36,8 +38,18 @@ public class ProxyClientHandler extends ChannelInboundHandlerAdapter {
         ProxyRequestInfo requestInfo = ctx.channel().attr(requestInfoAttributeKey).get();
         if (requestInfo != null) {
             requestInfo.updateResponseTime();
-            if ( msg instanceof HttpContent httpContent) {
+
+            if (msg instanceof HttpResponse httpResponse) {
+                requestInfo.updateRespSize(WebUtils.estimateSize(httpResponse));
+            } else if (msg instanceof HttpContent httpContent) {
                 requestInfo.updateRespSize(httpContent.content().readableBytes());
+            } else {
+                try {
+                    ByteBuf cont = (ByteBuf) msg;
+                    requestInfo.updateRespSize(cont.readableBytes());
+                } catch (Exception e) {
+                    log.warn("Unable to catch request size.", e);
+                }
             }
         }
 

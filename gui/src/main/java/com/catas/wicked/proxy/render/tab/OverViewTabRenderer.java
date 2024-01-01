@@ -4,6 +4,7 @@ import com.catas.wicked.common.bean.message.RenderMessage;
 import com.catas.wicked.common.bean.message.RequestMessage;
 import com.catas.wicked.common.bean.message.ResponseMessage;
 import com.catas.wicked.common.config.ApplicationConfig;
+import com.catas.wicked.common.util.WebUtils;
 import com.catas.wicked.proxy.gui.controller.DetailTabController;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
@@ -55,8 +56,8 @@ public class OverViewTabRenderer extends AbstractTabRenderer {
         map.put("Remote Port", String.valueOf(request.getRemotePort()));
         map.put("Local Address", request.getLocalAddress());
         map.put("Local Port", String.valueOf(request.getLocalPort()));
-        map.put("Request Size", String.valueOf(request.getSize()));
-        map.put("Response Size", response == null ? "" : String.valueOf(response.getSize()));
+        map.put("Request Size", WebUtils.getHSize(request.getSize()));
+        map.put("Response Size", response == null ? "" : WebUtils.getHSize(response.getSize()));
         map.put("Request Start", String.valueOf(request.getStartTime()));
         map.put("Request End", String.valueOf(request.getEndTime()));
         map.put("Response Start", response == null ? "" : String.valueOf(response.getStartTime()));

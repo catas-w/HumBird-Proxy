@@ -71,7 +71,8 @@ public class ClientPostRecorder extends ChannelDuplexHandler {
                 response.release();
             }
         } else {
-            log.error("????????");
+            // record un-parsed response
+            recordUnParsedResponse(ctx, requestInfo);
             ReferenceCountUtil.release(msg);
         }
     }
@@ -80,6 +81,18 @@ public class ClientPostRecorder extends ChannelDuplexHandler {
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         // ctx.channel().close();
         log.error("Error occurred in Proxy client.", cause);
+    }
+
+    private void recordUnParsedResponse(ChannelHandlerContext ctx, ProxyRequestInfo requestInfo) {
+        ResponseMessage responseMessage = new ResponseMessage();
+        responseMessage.setRequestId(requestInfo.getRequestId());
+        responseMessage.setStartTime(requestInfo.getResponseStartTime());
+        responseMessage.setEndTime(requestInfo.getResponseEndTime());
+        responseMessage.setSize(requestInfo.getRespSize());
+        messageQueue.pushMsg(Topic.RECORD, responseMessage);
+
+        requestInfo.setHasSentRespMsg(true);
+        log.info("<<<< Response received: {} <<<<", requestInfo.getRequestId());
     }
 
     private void recordHttpResponse(ChannelHandlerContext ctx, FullHttpResponse resp, ProxyRequestInfo requestInfo) {

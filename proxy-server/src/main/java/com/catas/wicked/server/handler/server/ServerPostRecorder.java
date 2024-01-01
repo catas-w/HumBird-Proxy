@@ -51,7 +51,7 @@ public class ServerPostRecorder extends ChannelDuplexHandler {
             responseMsg.setRequestId(requestInfo.getRequestId());
             responseMsg.setType(BaseMessage.MessageType.UPDATE);
             responseMsg.setEndTime(requestInfo.getResponseEndTime());
-            responseMsg.setSize(requestInfo.getRequestSize());
+            responseMsg.setSize(requestInfo.getRespSize());
             messageQueue.pushMsg(Topic.UPDATE_MSG, responseMsg);
         }
         super.write(ctx, msg, promise);
@@ -69,7 +69,7 @@ public class ServerPostRecorder extends ChannelDuplexHandler {
             if (msg instanceof FullHttpRequest fullHttpRequest) {
                 recordHttpRequest(ctx, fullHttpRequest, requestInfo);
             } else if (!(msg instanceof HttpObject)) {
-                recordUnDecodedRequest(ctx, msg, requestInfo);
+                recordUnParsedRequest(ctx, msg, requestInfo);
             } else {
                 log.error("?????");
             }
@@ -114,7 +114,7 @@ public class ServerPostRecorder extends ChannelDuplexHandler {
     /**
      * record unparsed http request
      */
-    private void recordUnDecodedRequest(ChannelHandlerContext ctx, Object msg, ProxyRequestInfo requestInfo) {
+    private void recordUnParsedRequest(ChannelHandlerContext ctx, Object msg, ProxyRequestInfo requestInfo) {
         if (!requestInfo.isNewAndReset()) {
             return;
         }

@@ -43,8 +43,8 @@ public class ProxyRequestInfo {
     private volatile long requestEndTime;
     private volatile long responseStartTime;
     private volatile long responseEndTime;
-    private volatile long requestSize;
-    private volatile long respSize;
+    private volatile int requestSize;
+    private volatile int respSize;
 
     private boolean isNewRequest;
 
