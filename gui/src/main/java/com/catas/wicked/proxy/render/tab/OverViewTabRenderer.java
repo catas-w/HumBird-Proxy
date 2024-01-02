@@ -64,6 +64,7 @@ public class OverViewTabRenderer extends AbstractTabRenderer {
         map.put("Response End", response == null ? "" : String.valueOf(response.getEndTime()));
 
         String cont = title + "\n" + code + getContentStr(map);
+        renderHeaders(map, detailTabController.getOverviewTable());
 
         Platform.runLater(() -> {
             detailTabController.getOverviewArea().replaceText(cont);

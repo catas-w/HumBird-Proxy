@@ -5,15 +5,13 @@
 <?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-
 <?import com.catas.wicked.proxy.gui.componet.SideBar?>
-
 <?import com.catas.wicked.proxy.gui.componet.MessageLabel?>
 <?import com.catas.wicked.proxy.gui.componet.ZoomImageView?>
 <?import com.catas.wicked.proxy.gui.componet.HeaderTitledPane?>
 <?import com.catas.wicked.proxy.gui.componet.richtext.DisplayCodeArea?>
-
 <?import com.catas.wicked.proxy.gui.componet.highlight.CodeStyleButton?>
+
 <VBox alignment="TOP_CENTER" prefHeight="600.0" prefWidth="850.0" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.catas.wicked.proxy.gui.controller.DetailTabController">
     <stylesheets>
         <URL value="@../css/tabpane.css" />
@@ -29,7 +27,7 @@
                         <Cursor fx:constant="TEXT" />
                     </cursor>
                 </DisplayCodeArea>
-                <TableView visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
+                <TableView fx:id="overviewTable" styleClass="overview" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
                 <SideBar prefHeight="25" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="15.0">
                     <JFXButton text="Table" styleClass="selected"/>
                     <JFXButton text="Text"/>
@@ -44,8 +42,7 @@
                         <AnchorPane minHeight="0.0" minWidth="0.0" styleClass="code-anchor-pane">
                             <DisplayCodeArea fx:id="reqHeaderArea" codeStyle="HEADER" visible="false"/>
 
-                            <TableView fx:id="reqHeaderTable" visible="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                            </TableView>
+                            <TableView fx:id="reqHeaderTable" visible="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
                             <MessageLabel fx:id="reqHeaderMsgLabel" visible="true" text="Empty"/>
                         </AnchorPane>
                     </HeaderTitledPane>

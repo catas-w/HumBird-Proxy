@@ -199,7 +199,7 @@ public class TableUtils {
             text.textProperty().bind(cell.itemProperty());
             if (isHeader) {
                 text.getStyleClass().add("headers-key");
-                text.setFill(Paint.valueOf("#792f22"));
+                // text.setFill(Paint.valueOf("#792f22"));
             }
             // cell.setOnMouseClicked(event -> {
             //     Object source = event.getSource();

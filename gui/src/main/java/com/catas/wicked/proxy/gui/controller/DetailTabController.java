@@ -2,15 +2,18 @@ package com.catas.wicked.proxy.gui.controller;
 
 import com.catas.wicked.common.bean.HeaderEntry;
 import com.catas.wicked.common.constant.CodeStyle;
+import com.catas.wicked.common.util.TableUtils;
 import com.catas.wicked.proxy.gui.componet.MessageLabel;
 import com.catas.wicked.proxy.gui.componet.SideBar;
 import com.catas.wicked.proxy.gui.componet.ZoomImageView;
 import com.catas.wicked.proxy.gui.componet.highlight.CodeStyleLabel;
 import com.catas.wicked.proxy.gui.componet.richtext.DisplayCodeArea;
+import com.catas.wicked.proxy.render.ContextMenuFactory;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXTabPane;
 import com.jfoenix.controls.JFXTextArea;
 import jakarta.inject.Singleton;
+import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
@@ -19,10 +22,14 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Labeled;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
+import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TitledPane;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.skin.TableHeaderRow;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -75,6 +82,8 @@ public class DetailTabController implements Initializable {
     @FXML
     private DisplayCodeArea overviewArea;
     @FXML
+    private TableView<HeaderEntry> overviewTable;
+    @FXML
     private TitledPane reqPayloadTitlePane;
     @FXML
     private JFXTabPane reqPayloadTabPane;
@@ -114,17 +123,71 @@ public class DetailTabController implements Initializable {
         dividerPositionMap.put(reqSplitPane, reqSplitPane.getDividerPositions().clone());
         dividerPositionMap.put(respSplitPane, respSplitPane.getDividerPositions().clone());
 
+        // init titlePane collapse
         addTitleListener(reqHeaderPane, reqSplitPane);
         addTitleListener(reqPayloadTitlePane, reqSplitPane);
         addTitleListener(respHeaderPane, respSplitPane);
         addTitleListener(respDataPane, respSplitPane);
 
+        // init sideBar
         reqQuerySideBar.setStrategy(SideBar.Strategy.URLENCODED_FORM_DATA);
         reqQuerySideBar.setTargetCodeArea(reqParamArea);
         reqContentSideBar.setTargetCodeArea(reqPayloadCodeArea);
         respSideBar.setTargetCodeArea(respContentArea);
         initComboBox(respComboBox, respSideBar);
         initComboBox(reqComboBox, reqContentSideBar);
+
+        // init tableView
+        initTableView(overviewTable);
+        initTableView(reqHeaderTable);
+        initTableView(respHeaderTable);
+    }
+
+    private void initTableView(TableView<HeaderEntry> tableView) {
+        // set key column
+        TableColumn<HeaderEntry, String> keyColumn = new TableColumn<>();
+        keyColumn.setText("Name");
+        keyColumn.getStyleClass().add("table-key");
+        keyColumn.setSortable(false);
+        keyColumn.setCellValueFactory(new PropertyValueFactory<>("key"));
+        keyColumn.setPrefWidth(120);
+        keyColumn.setMaxWidth(200);
+        TableUtils.setTableCellFactory(keyColumn, true);
+
+        // set value column
+        TableColumn<HeaderEntry, String> valColumn = new TableColumn<>();
+        valColumn.setText("Value");
+        valColumn.getStyleClass().add("table-value");
+        valColumn.setSortable(false);
+        valColumn.setEditable(true);
+        valColumn.setCellValueFactory(new PropertyValueFactory<>("value"));
+        TableUtils.setTableCellFactory(valColumn, false);
+        tableView.getColumns().setAll(keyColumn, valColumn);
+
+        tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
+        // tableView.setFixedCellSize(20);
+        tableView.prefHeightProperty()
+                .bind(Bindings.size(tableView.getItems()).multiply(tableView.getFixedCellSize()));
+
+        // selection
+        // tableView.getSelectionModel().setCellSelectionEnabled(true);
+        tableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        // tableView.getSelectionModel().clearAndSelect(0);
+
+        tableView.setContextMenu(ContextMenuFactory.getTableViewContextMenu(tableView));
+
+        // clearSelection when lose focus
+        tableView.focusedProperty().addListener((obs, oldVal, newVal) -> {
+            if (!newVal) {
+                tableView.getSelectionModel().clearSelection();
+            }
+        });
+        tableView.widthProperty().addListener((source, oldWidth, newWidth) -> {
+            TableHeaderRow header = (TableHeaderRow) tableView.lookup("TableHeaderRow");
+            header.reorderingProperty().addListener((observable, oldValue, newValue) -> header.setReordering(false));
+        });
+
+        TableUtils.installCopyPasteHandler(tableView);
     }
 
     private void initComboBox(ComboBox<Labeled> comboBox, SideBar sideBar) {
