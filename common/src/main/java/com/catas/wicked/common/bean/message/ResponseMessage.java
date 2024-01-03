@@ -12,7 +12,9 @@ public class ResponseMessage extends BaseMessage implements Serializable {
 
     private String requestId;
 
-    private int status;
+    private Integer status;
+
+    private String reasonPhrase;
 
     private Map<String, String> headers;
 
@@ -22,5 +24,19 @@ public class ResponseMessage extends BaseMessage implements Serializable {
 
     public ResponseMessage() {
         this.setType(MessageType.RESPONSE);
+    }
+
+    public String getReasonPhrase() {
+        if (reasonPhrase == null) {
+            return "";
+        }
+        return reasonPhrase;
+    }
+
+    public String getStatusStr() {
+        if (status == null) {
+            return "-";
+        }
+        return String.valueOf(status);
     }
 }

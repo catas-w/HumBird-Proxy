@@ -113,12 +113,13 @@ public class ServerStrategyHandler extends ChannelDuplexHandler {
         SocketAddress remoteAddress = ctx.channel().remoteAddress();
         SocketAddress localAddress = ctx.channel().localAddress();
         if (remoteAddress instanceof InetSocketAddress inetRemoteAddress) {
-            requestInfo.setRemoteAddress(inetRemoteAddress.getAddress().getHostAddress());
+            requestInfo.setLocalAddress(inetRemoteAddress.getAddress().getHostAddress());
+            requestInfo.setLocalPort(inetRemoteAddress.getPort());
         }
-        if (localAddress instanceof InetSocketAddress inetLocalAddress) {
-            requestInfo.setLocalAddress(inetLocalAddress.getAddress().getHostAddress());
-            requestInfo.setLocalPort(inetLocalAddress.getPort());
-        }
+        // if (localAddress instanceof InetSocketAddress inetLocalAddress) {
+        //     requestInfo.setLocalAddress(inetLocalAddress.getAddress().getHostAddress());
+        //     requestInfo.setLocalPort(inetLocalAddress.getPort());
+        // }
         return requestInfo;
     }
 

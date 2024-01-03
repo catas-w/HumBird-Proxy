@@ -106,7 +106,7 @@ public class ServerPostRecorder extends ChannelDuplexHandler {
         requestMsg.setSize(requestInfo.getRequestSize());
         requestMsg.setRemoteHost(requestInfo.getHost());
         requestMsg.setRemotePort(requestInfo.getPort());
-        requestMsg.setRemoteAddress(requestInfo.getRemoteAddress());
+        // requestMsg.setRemoteAddress(requestInfo.getRemoteAddress());
         requestMsg.setLocalAddress(requestInfo.getLocalAddress());
         requestMsg.setLocalPort(requestInfo.getLocalPort());
     }
@@ -167,6 +167,7 @@ public class ServerPostRecorder extends ChannelDuplexHandler {
         }
 
         // save to request tree
+        requestMessage.setProtocol(request.protocolVersion().protocolName());
         setRequestMsgInfo(requestInfo, requestMessage);
         messageQueue.pushMsg(Topic.RECORD, requestMessage);
 

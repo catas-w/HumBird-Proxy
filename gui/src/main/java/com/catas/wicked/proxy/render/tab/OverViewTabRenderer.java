@@ -12,6 +12,9 @@ import javafx.application.Platform;
 import lombok.extern.slf4j.Slf4j;
 import org.ehcache.Cache;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -29,6 +32,8 @@ public class OverViewTabRenderer extends AbstractTabRenderer {
     @Inject
     private ApplicationConfig appConfig;
 
+    private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
     @Override
     public void render(RenderMessage renderMsg) {
         // System.out.println("-- render overview --");
@@ -41,27 +46,41 @@ public class OverViewTabRenderer extends AbstractTabRenderer {
     }
 
     public void displayOverView(RequestMessage request) {
-        String protocol = request.getProtocol();
+        String protocol = request.getProtocol() == null ? "-" : request.getProtocol();
         String url = request.getRequestUrl();
         String method = request.getMethod();
+        if (method.contains("UNK")) {
+            method = "-";
+        }
         String title = String.format("%s %s %s", protocol, url, method);
 
         Map<String, String> map = new LinkedHashMap<>();
         ResponseMessage response = request.getResponse();
-        String code = response == null ? "Waiting" : String.valueOf(response.getStatus());
+        String code = response == null ? "Waiting" : response.getStatusStr() + " " + response.getReasonPhrase();
+        map.put("-- Request --", "");
+        map.put("Url", url);
+        map.put("Method", method);
         map.put("Status", code);
         map.put("Protocol", protocol);
-        map.put("Method", method);
-        map.put("Remote Address", request.getRemoteAddress());
+        // map.put("Host", request.getRemoteHost());
+        map.put("Remote Host", request.getRemoteHost());
         map.put("Remote Port", String.valueOf(request.getRemotePort()));
         map.put("Local Address", request.getLocalAddress());
         map.put("Local Port", String.valueOf(request.getLocalPort()));
+
+        map.put("-- Timing --", "");
+        map.put("Time Cost", response == null ? "-": response.getEndTime() - request.getStartTime() + "ms");
+        map.put("Request Time", request.getStartTime() + "-" + request.getEndTime());
+        map.put("Request Start", dateFormat.format(new Date(request.getStartTime())));
+        map.put("Request End", dateFormat.format(new Date(request.getEndTime())));
+        map.put("Response Time", response == null ? "-": response.getStartTime() + " - " + response.getEndTime());
+        map.put("Response Start", response == null ? "-": dateFormat.format(new Date(response.getStartTime())));
+        map.put("Response End", response == null ? "-": dateFormat.format(new Date(response.getEndTime())));
+
+        map.put("-- Size --", "");
         map.put("Request Size", WebUtils.getHSize(request.getSize()));
-        map.put("Response Size", response == null ? "" : WebUtils.getHSize(response.getSize()));
-        map.put("Request Start", String.valueOf(request.getStartTime()));
-        map.put("Request End", String.valueOf(request.getEndTime()));
-        map.put("Response Start", response == null ? "" : String.valueOf(response.getStartTime()));
-        map.put("Response End", response == null ? "" : String.valueOf(response.getEndTime()));
+        map.put("Response Size", response == null ? "-": WebUtils.getHSize(response.getSize()));
+        map.put("Average Speed", getSpeed(request, response));
 
         String cont = title + "\n" + code + getContentStr(map);
         renderHeaders(map, detailTabController.getOverviewTable());
@@ -69,6 +88,15 @@ public class OverViewTabRenderer extends AbstractTabRenderer {
         Platform.runLater(() -> {
             detailTabController.getOverviewArea().replaceText(cont);
         });
+    }
+
+    private String getSpeed(RequestMessage request, ResponseMessage response) {
+        if (response == null || (request.getSize() == 0 && response.getSize() == 0)) {
+            return "-";
+        }
+        int size = request.getSize() + response.getSize();
+        int time = (int) (response.getEndTime() - request.getStartTime());
+        return String.format("%.2f KB/s", (double) size/(double) time);
     }
 
     private String getContentStr(Map<String, String> map) {

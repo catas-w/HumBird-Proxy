@@ -3,15 +3,10 @@ package com.catas.wicked.proxy.render.tab;
 import com.catas.wicked.common.bean.HeaderEntry;
 import com.catas.wicked.common.util.TableUtils;
 import com.catas.wicked.proxy.gui.componet.SideBar;
-import com.catas.wicked.proxy.render.ContextMenuFactory;
 import com.catas.wicked.proxy.render.TabRenderer;
 import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
 import javafx.collections.ObservableList;
-import javafx.scene.control.SelectionMode;
-import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.cell.PropertyValueFactory;
 import org.apache.http.entity.ContentType;
 
 import java.util.Map;
@@ -21,14 +16,15 @@ public abstract class AbstractTabRenderer implements TabRenderer {
     protected void renderHeaders(Map<String, String> headers, TableView<HeaderEntry> tableView) {
         ObservableList<HeaderEntry> list = TableUtils.headersConvert(headers);
         Platform.runLater(() -> {
-            renderHeaders(list, tableView);
+            if (!tableView.getColumns().isEmpty()) {
+                tableView.setItems(list);
+            }
         });
     }
 
     protected void renderHeaders(ObservableList<HeaderEntry> list, TableView<HeaderEntry> tableView) {
         if (!tableView.getColumns().isEmpty()) {
             tableView.setItems(list);
-            return;
         }
     }
 
