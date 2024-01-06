@@ -169,6 +169,63 @@
 }
 
 
+/*************** TreeTableView ***************/
+.overview.tree-table-view .jfx-text-field {
+    /*-fx-background-color: rgba(196, 255, 196, 0.3);*/
+}
+.tree-table-view{
+    -fx-background-color: transparent;
+    -fx-table-cell-border-color: transparent;
+    /*-fx-selection-bar: transparent;*/
+    /*-fx-selection-bar-non-focused: salmon;*/
+}
+.tree-table-view:focused{
+    /*-fx-background-color: transparent;*/
+    /*outline: none;*/
+}
+.tree-table-view .column-header-background{
+    -fx-background-color: white;
+    -fx-max-height: 20;
+    -fx-pref-height: 20;
+    -fx-min-height: 0;
+}
+.tree-table-view .column-header-background .label{
+    /*-fx-background-color: transparent;*/
+    /*-fx-text-fill: #5443c9;*/
+    /*-fx-font-weight: 800;*/
+}
+.tree-table-view .column-header {
+    /*-fx-table-cell-border-color: transparent;*/
+    -fx-background-color: #ffffff;
+    -fx-border-color: #b7b7b7;
+    -fx-border-width: 0 0 1 0;
+}
+.tree-table-view .column-header .label {
+    -fx-alignment: CENTER-LEFT;
+    -fx-text-fill: gray;
+}
+
+.tree-table-view .tree-table-row-cell {
+    -fx-background-color: -fx-table-cell-border-color, rgba(255, 255, 255, 0);
+    -fx-background-insets: 0, 0 0 1 0;
+    -fx-padding: 0.0em; /* 0 */
+}
+.tree-table-view .tree-table-row-cell:selected {
+    -fx-background-color: #cccccc;
+    -fx-background-insets: 0;
+    -fx-table-cell-border-color: transparent;
+}
+.tree-table-view .tree-table-row-cell:selected > *{
+    -fx-text-fill: black;
+}
+.tree-table-view .jfx-text-field, .jfx-password-field {
+    /*-fx-prompt-text-fill: #808080;*/
+    /*-fx-alignment: top-left;*/
+    -jfx-focus-color: #26b1b6;
+    -jfx-unfocus-color: black;
+    /*-fx-max-width: 300;*/
+}
+
 /*************** Button Bar ***************/
 .content-button-bar {
     -fx-background-color: #ffffff;

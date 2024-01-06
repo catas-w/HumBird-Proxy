@@ -115,13 +115,17 @@
             <HeaderTitledPane animated="true" maxHeight="Infinity" text="Header" VBox.vgrow="ALWAYS">
                 <AnchorPane minHeight="0.0" minWidth="0.0">
                     <DisplayCodeArea fx:id="" />
-                    <MessageLabel fx:id="timingMsgLabel" visible="true" text="Empty"/>
+                    <TreeTableView  fx:id="timingTableView" styleClass="overview"
+                                    AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                                    AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
+                    <MessageLabel fx:id="timingMsgLabel" visible="false" text="Empty"/>
                 </AnchorPane>
             </HeaderTitledPane>
         </Tab>
         <Tab text="   Test   ">
             <AnchorPane minHeight="0.0" minWidth="0.0">
                 <DisplayCodeArea codeStyle="XML" fx:id="testCodeArea" />
+                <JFXTreeTableView fx:id="testTable" styleClass="overview" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
 
                 <SideBar prefHeight="25" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="15.0">
                     <CodeStyleButton text="Text" codeStyle="html"/>
