@@ -271,7 +271,6 @@ public class WebUtils {
             }
         }
 
-        System.out.println("Estimated size: " + size);
         return size;
     }
 }

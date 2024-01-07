@@ -10,6 +10,9 @@ import com.catas.wicked.proxy.gui.componet.ViewCellFactory;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import javafx.beans.binding.Bindings;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -27,6 +30,8 @@ import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.concurrent.Callable;
+import java.util.function.Predicate;
 
 @Slf4j
 @Singleton
@@ -56,6 +61,11 @@ public class RequestViewController implements Initializable {
     private MessageQueue messageQueue;
 
     /**
+     * save requestList in filteredList
+     */
+    private ObservableList<RequestCell> reqSourceList;
+    private FilteredList<RequestCell> filteredList;
+    /**
      * current request-view type, 0=tree 1=list
      */
     private int curViewType = 0;
@@ -68,9 +78,18 @@ public class RequestViewController implements Initializable {
         return reqListView;
     }
 
+    public ObservableList<RequestCell> getReqSourceList() {
+        return reqSourceList;
+    }
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         reqTreeView.setRoot(new FilterableTreeItem<>());
+
+        // make reqListView filterable
+        reqSourceList = FXCollections.observableArrayList();
+        filteredList = new FilteredList<>(reqSourceList);
+        reqListView.setItems(filteredList);
 
         // init filterTextField
         filterInputEventBind();
@@ -101,24 +120,6 @@ public class RequestViewController implements Initializable {
         }
     }
 
-    private void listViewEventBind(MenuItem menuItem) {
-        menuItem.setOnAction(e -> {
-            FontIcon icon = (FontIcon) menuItem.getGraphic();
-            FontIcon fontIcon = new FontIcon(icon.getIconCode());
-            fontIcon.setIconSize(18);
-            fontIcon.setIconColor(Color.web("#616161"));
-            listViewMenuBtn.setGraphic(fontIcon);
-
-            if (menuItem.getId().contains("list")) {
-                reqTreeView.setVisible(false);
-                reqListView.setVisible(true);
-            } else {
-                reqTreeView.setVisible(true);
-                reqListView.setVisible(false);
-            }
-        });
-    }
-
     private void filterInputEventBind() {
         filterInput.setOnKeyTyped(e -> {
             CharSequence characters = filterInput.getText();
@@ -137,6 +138,21 @@ public class RequestViewController implements Initializable {
                 return null;
             return TreeItemPredicate.create(actor -> actor.toString().contains(filterInput.getText()));
         }, filterInput.textProperty()));
+
+        // bind filter listView
+        filteredList.predicateProperty().bind(Bindings.createObjectBinding(new Callable<Predicate<? super RequestCell>>() {
+            @Override
+            public Predicate<? super RequestCell> call() throws Exception {
+                if (filterInput.getText() == null || filterInput.getText().isEmpty())
+                    return null;
+                return new Predicate<RequestCell>() {
+                    @Override
+                    public boolean test(RequestCell requestCell) {
+                        return requestCell.getFullPath().contains(filterInput.getText());
+                    }
+                };
+            }
+        }, filterInput.textProperty()));
     }
 
     /**
@@ -150,13 +166,15 @@ public class RequestViewController implements Initializable {
         if (curViewType == 0) {
             // from tree view
             selectedItem = reqTreeView.getSelectionModel().getSelectedItem();
-            selectedItem.getParent().getChildren().remove(selectedItem);
+            FilterableTreeItem<RequestCell> parent = (FilterableTreeItem<RequestCell>) selectedItem.getParent();
+            parent.getInternalChildren().remove(selectedItem);
             requestCell = selectedItem.getValue();
             deleteMessage.setSource(DeleteMessage.Source.TREE_VIEW);
         } else {
             // from list view
             requestCell = reqListView.getSelectionModel().getSelectedItem();
-            reqListView.getItems().remove(requestCell);
+            // reqListView.getItems().remove(requestCell);
+            reqSourceList.remove(requestCell);
             deleteMessage.setSource(DeleteMessage.Source.LIST_VIEW);
         }
 

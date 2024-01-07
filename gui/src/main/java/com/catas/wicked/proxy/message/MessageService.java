@@ -9,12 +9,14 @@ import com.catas.wicked.common.bean.message.ResponseMessage;
 import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.common.pipeline.MessageQueue;
 import com.catas.wicked.common.pipeline.Topic;
+import com.catas.wicked.proxy.gui.componet.FilterableTreeItem;
 import com.catas.wicked.proxy.gui.controller.RequestViewController;
 import com.catas.wicked.proxy.service.RequestViewService;
 import jakarta.annotation.PostConstruct;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TreeItem;
 import lombok.extern.slf4j.Slf4j;
@@ -168,7 +170,9 @@ public class MessageService {
             // 直接删除 treeView 中对应的叶子节点
             TreeItem<RequestCell> treeItemToDelete = nodeToDelete.getTreeItem();
             Platform.runLater(() -> {
-                treeItemToDelete.getParent().getChildren().remove(treeItemToDelete);
+                // treeItemToDelete.getParent().getChildren().remove(treeItemToDelete);
+                FilterableTreeItem<RequestCell> parent = (FilterableTreeItem<RequestCell>) treeItemToDelete.getParent();
+                parent.getInternalChildren().remove(treeItemToDelete);
             });
         }
 
@@ -187,8 +191,10 @@ public class MessageService {
             // delete listItem
             // 若删除来自 treeView 需删除子结点中关联的 listItem
             ListView<RequestCell> reqListView = requestViewController.getReqListView();
+            ObservableList<RequestCell> reqSourceList = requestViewController.getReqSourceList();
             Platform.runLater(() -> {
-                reqListView.getItems().removeAll(listItemList);
+                // reqListView.getItems().removeAll(listItemList);
+                reqSourceList.removeAll(listItemList);
             });
         }
         messageTree.delete(nodeToDelete);

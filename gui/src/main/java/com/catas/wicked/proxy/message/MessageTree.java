@@ -9,8 +9,7 @@ import io.netty.handler.codec.http.HttpMethod;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import javafx.application.Platform;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TreeItem;
+import javafx.collections.ObservableList;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
@@ -138,9 +137,13 @@ public class MessageTree {
         requestCell.setFullPath(node.getFullPath());
         requestCell.setLeaf(node.isLeaf());
         node.setListItem(requestCell);
-        ListView<RequestCell> reqListView = requestViewController.getReqListView();
+
+        // use filterableList
+        // ListView<RequestCell> reqListView = requestViewController.getReqListView();
+        ObservableList<RequestCell> reqSourceList = requestViewController.getReqSourceList();
         Platform.runLater(() -> {
-            reqListView.getItems().add(requestCell);
+            // reqListView.getItems().add(requestCell);
+            reqSourceList.add(requestCell);
         });
     }
 
