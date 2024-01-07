@@ -4,9 +4,12 @@ import com.catas.wicked.common.bean.RequestCell;
 import com.catas.wicked.common.bean.message.DeleteMessage;
 import com.catas.wicked.common.pipeline.MessageQueue;
 import com.catas.wicked.common.pipeline.Topic;
+import com.catas.wicked.proxy.gui.componet.FilterableTreeItem;
+import com.catas.wicked.proxy.gui.componet.TreeItemPredicate;
 import com.catas.wicked.proxy.gui.componet.ViewCellFactory;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
+import javafx.beans.binding.Bindings;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -57,8 +60,8 @@ public class RequestViewController implements Initializable {
      */
     private int curViewType = 0;
 
-    public TreeItem getTreeRoot() {
-        return root;
+    public FilterableTreeItem getTreeRoot() {
+        return (FilterableTreeItem) reqTreeView.getRoot();
     }
 
     public ListView<RequestCell> getReqListView() {
@@ -67,7 +70,9 @@ public class RequestViewController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        // req-view
+        reqTreeView.setRoot(new FilterableTreeItem<>());
+
+        // init filterTextField
         filterInputEventBind();
 
         reqTreeView.setCellFactory(treeView -> cellFactory.createTreeCell(treeView));
@@ -124,6 +129,14 @@ public class RequestViewController implements Initializable {
             filterInput.clear();
             filterCancelBtn.setVisible(false);
         });
+
+        // bind filter treeView from: JFX
+        getTreeRoot().predicateProperty().bind(Bindings.createObjectBinding(() -> {
+            // System.out.println(filterInput.getText());
+            if (filterInput.getText() == null || filterInput.getText().isEmpty())
+                return null;
+            return TreeItemPredicate.create(actor -> actor.toString().contains(filterInput.getText()));
+        }, filterInput.textProperty()));
     }
 
     /**

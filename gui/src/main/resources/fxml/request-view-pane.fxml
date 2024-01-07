@@ -7,6 +7,7 @@
 <?import javafx.scene.text.*?>
 <?import org.kordamp.ikonli.javafx.*?>
 
+<?import com.catas.wicked.proxy.gui.componet.FilterableTreeItem?>
 <VBox xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.catas.wicked.proxy.gui.controller.RequestViewController">
     <stylesheets>
         <URL value="@/css/common-design.css" />
@@ -57,7 +58,7 @@
     </HBox>
     <StackPane prefWidth="254.0" VBox.vgrow="ALWAYS">
         <TreeView fx:id="reqTreeView" editable="true" prefHeight="553.0" prefWidth="254.0" showRoot="false" visible="true">
-            <TreeItem fx:id="root" expanded="true" value="path"/>
+            <FilterableTreeItem fx:id="root" expanded="true" value="path"/>
         </TreeView>
         <ListView fx:id="reqListView" prefHeight="200.0" prefWidth="200.0" visible="false"/>
         <fx:define>

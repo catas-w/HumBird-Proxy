@@ -1,8 +1,8 @@
 package com.catas.wicked.proxy.message;
 
 import com.catas.wicked.common.bean.RequestCell;
+import com.catas.wicked.proxy.gui.componet.FilterableTreeItem;
 import io.netty.handler.codec.http.HttpMethod;
-import javafx.scene.control.TreeItem;
 import lombok.Data;
 
 import java.util.HashMap;
@@ -40,7 +40,7 @@ class TreeNode {
     /**
      * related tree item
      */
-    private TreeItem<RequestCell> treeItem;
+    private FilterableTreeItem<RequestCell> treeItem;
     /**
      * related list item
      */

@@ -2,6 +2,7 @@ package com.catas.wicked.proxy.message;
 
 import com.catas.wicked.common.bean.message.RequestMessage;
 import com.catas.wicked.common.bean.RequestCell;
+import com.catas.wicked.proxy.gui.componet.FilterableTreeItem;
 import com.catas.wicked.proxy.gui.controller.RequestViewController;
 import com.catas.wicked.common.util.WebUtils;
 import io.netty.handler.codec.http.HttpMethod;
@@ -74,15 +75,17 @@ public class MessageTree {
         if (parent == root && parent.getTreeItem() == null) {
             parent.setTreeItem(requestViewController.getTreeRoot());
         }
-        TreeItem<RequestCell> parentTreeItem = parent.getTreeItem();
-        TreeItem<RequestCell> treeItem = new TreeItem<>();
+        FilterableTreeItem<RequestCell> parentTreeItem = parent.getTreeItem();
+        // TreeItem<RequestCell> treeItem = new TreeItem<>();
 
         RequestCell requestCell = new RequestCell(node.getPath(),
                 node.getMethod() == null ? "": node.getMethod().name());
         requestCell.setFullPath(node.getFullPath());
         requestCell.setLeaf(node.isLeaf());
         requestCell.setRequestId(node.getRequestId());
-        treeItem.setValue(requestCell);
+
+        // treeItem.setValue(requestCell);
+        FilterableTreeItem<RequestCell> treeItem = new FilterableTreeItem<>(requestCell);
         node.setTreeItem(treeItem);
 
         // define tree item order
@@ -93,7 +96,7 @@ public class MessageTree {
             index = parent.getPathChildren().size() - 1;
         }
         Platform.runLater(() -> {
-           parentTreeItem.getChildren().add(index, treeItem);
+           parentTreeItem.getInternalChildren().add(index, treeItem);
         });
     }
 
