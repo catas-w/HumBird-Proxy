@@ -1,5 +1,7 @@
 package com.catas.wicked.proxy.render.tab;
 
+import com.catas.wicked.common.bean.OverviewInfo;
+import com.catas.wicked.common.bean.PairEntry;
 import com.catas.wicked.common.bean.message.RenderMessage;
 import com.catas.wicked.common.bean.message.RequestMessage;
 import com.catas.wicked.common.bean.message.ResponseMessage;
@@ -8,7 +10,7 @@ import com.catas.wicked.common.util.WebUtils;
 import com.catas.wicked.proxy.gui.controller.DetailTabController;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
-import javafx.application.Platform;
+import javafx.scene.control.TreeTableView;
 import lombok.extern.slf4j.Slf4j;
 import org.ehcache.Cache;
 
@@ -28,9 +30,11 @@ public class OverViewTabRenderer extends AbstractTabRenderer {
     @Inject
     private Cache<String, RequestMessage> requestCache;
 
-
     @Inject
     private ApplicationConfig appConfig;
+
+    @Inject
+    private OverviewInfo overviewInfo;
 
     private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -46,6 +50,10 @@ public class OverViewTabRenderer extends AbstractTabRenderer {
     }
 
     public void displayOverView(RequestMessage request) {
+        TreeTableView<PairEntry> overviewTable = detailTabController.getOverviewTable();
+        // if (overviewTable.getColumns() == null || overviewTable.getColumns().isEmpty()) {
+        //     detailTabController.initTreeTable(overviewTable);
+        // }
         String protocol = request.getProtocol() == null ? "-" : request.getProtocol();
         String url = request.getRequestUrl();
         String method = request.getMethod();
@@ -82,12 +90,38 @@ public class OverViewTabRenderer extends AbstractTabRenderer {
         map.put("Response Size", response == null ? "-": WebUtils.getHSize(response.getSize()));
         map.put("Average Speed", getSpeed(request, response));
 
-        String cont = title + "\n" + code + getContentStr(map);
-        renderHeaders(map, detailTabController.getOverviewTable());
+        // basic
+        overviewInfo.getUrl().setVal(url);
+        overviewInfo.getMethod().setVal(method);
+        overviewInfo.getStatus().setVal(code);
+        overviewInfo.getProtocol().setVal(protocol);
+        overviewInfo.getRemoteHost().setVal(request.getRemoteHost());
+        overviewInfo.getRemotePort().setVal(String.valueOf(request.getRemotePort()));
+        overviewInfo.getClientHost().setVal(request.getLocalAddress());
+        overviewInfo.getClientPort().setVal(String.valueOf(request.getLocalPort()));
 
-        Platform.runLater(() -> {
-            detailTabController.getOverviewArea().replaceText(cont);
-        });
+        // timing
+        overviewInfo.getTimeCost().setVal(response == null ? "-": response.getEndTime() - request.getStartTime() + "ms");
+        overviewInfo.getRequestTime().setVal(request.getStartTime() + "-" + request.getEndTime());
+        overviewInfo.getRequestStart().setVal(dateFormat.format(new Date(request.getStartTime())));
+        overviewInfo.getRequestEnd().setVal(dateFormat.format(new Date(request.getEndTime())));
+        overviewInfo.getRespTime().setVal(response == null ? "-": response.getStartTime() + " - " + response.getEndTime());
+        overviewInfo.getRespStart().setVal(response == null ? "-": dateFormat.format(new Date(response.getStartTime())));
+        overviewInfo.getRespEnd().setVal(response == null ? "-": dateFormat.format(new Date(response.getEndTime())));
+
+        // size
+        overviewInfo.getRequestSize().setVal(WebUtils.getHSize(request.getSize()));
+        overviewInfo.getResponseSize().setVal(response == null ? "-": WebUtils.getHSize(response.getSize()));
+        overviewInfo.getAverageSpeed().setVal(getSpeed(request, response));
+
+        overviewTable.refresh();
+
+        // String cont = title + "\n" + code + getContentStr(map);
+        // renderHeaders(map, detailTabController.getOverviewTable());
+
+        // Platform.runLater(() -> {
+        //     detailTabController.getOverviewArea().replaceText(cont);
+        // });
     }
 
     private String getSpeed(RequestMessage request, ResponseMessage response) {

@@ -27,11 +27,11 @@
                         <Cursor fx:constant="TEXT" />
                     </cursor>
                 </DisplayCodeArea>
-                <TableView fx:id="overviewTable" styleClass="overview" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
-                <SideBar prefHeight="25" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="15.0">
-                    <JFXButton text="Table" styleClass="selected"/>
-                    <JFXButton text="Text"/>
-                </SideBar>
+                <TreeTableView fx:id="overviewTable" styleClass="overview" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
+                <!-- <SideBar prefHeight="25" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="15.0"> -->
+                <!--     <JFXButton text="Table" styleClass="selected"/> -->
+                <!--     <JFXButton text="Text"/> -->
+                <!-- </SideBar> -->
                 <MessageLabel fx:id="overViewMsgLabel" visible="true" text="Empty"/>
             </AnchorPane>
         </Tab>

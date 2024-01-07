@@ -5,6 +5,7 @@ import com.jfoenix.controls.cells.editors.base.EditorNodeBuilder;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.event.EventHandler;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Region;
@@ -20,6 +21,9 @@ public class SelectableNodeBuilder implements EditorNodeBuilder<String> {
 
     @Override
     public void startEdit() {
+        if (textField == null || textField.getText().isEmpty()) {
+            return;
+        }
         Platform.runLater(() -> {
             textField.selectAll();
             textField.requestFocus();
@@ -33,6 +37,9 @@ public class SelectableNodeBuilder implements EditorNodeBuilder<String> {
 
     @Override
     public void updateItem(String item, boolean empty) {
+        if (textField == null || textField.getText().isEmpty()) {
+            return;
+        }
         Platform.runLater(() -> {
             textField.selectAll();
             textField.requestFocus();
@@ -41,23 +48,33 @@ public class SelectableNodeBuilder implements EditorNodeBuilder<String> {
 
     @Override
     public Region createNode(String value, EventHandler<KeyEvent> keyEventsHandler, ChangeListener<Boolean> focusChangeListener) {
+        if (value == null || value.length() == 0) {
+            return new Label();
+        }
         textField = value == null ? new JFXTextField() : new JFXTextField(value);
-        // textField = value == null ? new TextField() : new TextField(value);
-
         textField.setEditable(false);
         textField.setOnKeyPressed(keyEventsHandler);
         // textField.getValidators().addAll(validators);
         textField.focusedProperty().addListener(focusChangeListener);
+        // if (value == null) {
+        //     textField.setDisable(true);
+        // }
         return textField;
     }
 
     @Override
     public void setValue(String value) {
+        if (textField == null) {
+            return;
+        }
         textField.setText(value);
     }
 
     @Override
     public String getValue() {
+        if (textField == null) {
+            return "";
+        }
         return textField.getText();
     }
 

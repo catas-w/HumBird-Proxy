@@ -14,6 +14,11 @@ public class PairEntry extends RecursiveTreeObject<PairEntry> {
         this.val = new SimpleStringProperty(val);
     }
 
+    public PairEntry(String key) {
+        this.key = new SimpleStringProperty(key);
+        this.val = new SimpleStringProperty("-");
+    }
+
     public PairEntry() {
     }
 
