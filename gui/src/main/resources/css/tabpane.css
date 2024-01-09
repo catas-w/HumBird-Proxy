@@ -103,3 +103,13 @@
     -fx-border-width: 0 0 0.1em 0;
     -fx-border-color: #e5e5e5;
 }
+
+/********* time-split-pane *********/
+.time-split-pane {
+    -fx-background-color: white;
+    -fx-border-width: 0;
+}
+.time-split-pane .split-pane-divider {
+    -fx-padding: 0;
+    -fx-border-width: 0;
+}

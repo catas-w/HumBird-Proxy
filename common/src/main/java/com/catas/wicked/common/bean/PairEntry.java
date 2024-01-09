@@ -1,13 +1,18 @@
 package com.catas.wicked.common.bean;
 
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
+import javafx.beans.property.FloatProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
+/**
+ * data module for tableView
+ */
 public class PairEntry extends RecursiveTreeObject<PairEntry> {
 
     private StringProperty key;
     private StringProperty val;
+    private FloatProperty time;
 
     public PairEntry(String key, String val) {
         this.key = new SimpleStringProperty(key);

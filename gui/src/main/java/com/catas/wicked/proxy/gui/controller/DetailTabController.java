@@ -80,7 +80,7 @@ public class DetailTabController implements Initializable {
     @FXML
     public SideBar reqQuerySideBar;
     @FXML
-    public TreeTableView<PairEntry> timingTableView;
+    public TableView<PairEntry> timingTableView;
     @FXML
     private JFXComboBox<Labeled> respComboBox;
     @FXML
@@ -155,88 +155,8 @@ public class DetailTabController implements Initializable {
         initComboBox(reqComboBox, reqContentSideBar);
 
         // init tableView
-        // initTableView(overviewTable);
         initTableView(reqHeaderTable);
         initTableView(respHeaderTable);
-
-        initTreeTable(overviewTable);
-    }
-
-    /**
-     * initialize treeTableView
-     * @param tableView treeTableView
-     */
-    public void initTreeTable(TreeTableView<PairEntry> tableView) {
-        TreeTableColumn<PairEntry, String> nameColumn = new TreeTableColumn<>("Name");
-        nameColumn.setPrefWidth(130);
-        nameColumn.setMaxWidth(200);
-        nameColumn.setMinWidth(100);
-        nameColumn.setSortable(false);
-        nameColumn.setCellValueFactory((TreeTableColumn.CellDataFeatures<PairEntry, String> param) ->
-                new ReadOnlyStringWrapper(param.getValue().getValue().getKey()));
-        final String titleStyle = "tree-table-key";
-        nameColumn.getStyleClass().add(titleStyle);
-
-        TreeTableColumn<PairEntry, String> valueColumn = new TreeTableColumn<>("Value");
-        valueColumn.setSortable(false );
-        valueColumn.setCellValueFactory((TreeTableColumn.CellDataFeatures<PairEntry, String> param) ->
-                new ReadOnlyStringWrapper(param.getValue().getValue().getVal()));
-        valueColumn.setCellFactory((TreeTableColumn<PairEntry, String> param) ->
-                new GenericEditableTreeTableCell<>(new SelectableNodeBuilder()));
-
-        TreeItem<PairEntry> root = new TreeItem<>();
-        TreeItem<PairEntry> reqNode = new TreeItem<>(new PairEntry("Request", null));
-        TreeItem<PairEntry> sizeNode = new TreeItem<>(new PairEntry("Size", null));
-        TreeItem<PairEntry> timingNode = new TreeItem<>(new PairEntry("Timing", null));
-
-        // basic info
-        reqNode.getChildren().add(new TreeItem<>(overviewInfo.getUrl()));
-        reqNode.getChildren().add(new TreeItem<>(overviewInfo.getMethod()));
-        reqNode.getChildren().add(new TreeItem<>(overviewInfo.getProtocol()));
-        reqNode.getChildren().add(new TreeItem<>(overviewInfo.getStatus()));
-        reqNode.getChildren().add(new TreeItem<>(overviewInfo.getRemoteHost()));
-        reqNode.getChildren().add(new TreeItem<>(overviewInfo.getRemotePort()));
-        reqNode.getChildren().add(new TreeItem<>(overviewInfo.getClientHost()));
-        reqNode.getChildren().add(new TreeItem<>(overviewInfo.getClientPort()));
-
-        // timing info
-        timingNode.getChildren().add(new TreeItem<>(overviewInfo.getTimeCost()));
-        timingNode.getChildren().add(new TreeItem<>(overviewInfo.getRequestTime()));
-        timingNode.getChildren().add(new TreeItem<>(overviewInfo.getRequestStart()));
-        timingNode.getChildren().add(new TreeItem<>(overviewInfo.getRequestEnd()));
-        timingNode.getChildren().add(new TreeItem<>(overviewInfo.getRespTime()));
-        timingNode.getChildren().add(new TreeItem<>(overviewInfo.getRespStart()));
-        timingNode.getChildren().add(new TreeItem<>(overviewInfo.getRespEnd()));
-
-        // size info
-        sizeNode.getChildren().add(new TreeItem<>(overviewInfo.getRequestSize()));
-        sizeNode.getChildren().add(new TreeItem<>(overviewInfo.getResponseSize()));
-        sizeNode.getChildren().add(new TreeItem<>(overviewInfo.getAverageSpeed()));
-
-        root.setExpanded(true);
-        reqNode.setExpanded(true);
-        sizeNode.setExpanded(true);
-        timingNode.setExpanded(true);
-        root.getChildren().add(reqNode);
-        root.getChildren().add(timingNode);
-        root.getChildren().add(sizeNode);
-
-        tableView.setRoot(root);
-        tableView.setShowRoot(false);
-        tableView.setEditable(true);
-        tableView.getColumns().addAll(nameColumn, valueColumn);
-        tableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        tableView.setColumnResizePolicy(TreeTableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
-
-        tableView.widthProperty().addListener((source, oldWidth, newWidth) -> {
-            TableHeaderRow header = (TableHeaderRow) tableView.lookup("TableHeaderRow");
-            header.reorderingProperty().addListener((observable, oldValue, newValue) -> header.setReordering(false));
-        });
-        tableView.focusedProperty().addListener((obs, oldVal, newVal) -> {
-            if (!newVal) {
-                tableView.getSelectionModel().clearSelection();
-            }
-        });
     }
 
     /**
