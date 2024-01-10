@@ -35,11 +35,10 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TitledPane;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.skin.TableHeaderRow;
+import javafx.scene.layout.GridPane;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -80,7 +79,7 @@ public class DetailTabController implements Initializable {
     @FXML
     public SideBar reqQuerySideBar;
     @FXML
-    public TableView<PairEntry> timingTableView;
+    public GridPane timingGridPane;
     @FXML
     private JFXComboBox<Labeled> respComboBox;
     @FXML

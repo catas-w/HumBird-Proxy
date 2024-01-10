@@ -113,3 +113,7 @@
     -fx-padding: 0;
     -fx-border-width: 0;
 }
+.grid-header {
+    -fx-text-fill: gray;
+    -fx-font-weight: 700;
+}

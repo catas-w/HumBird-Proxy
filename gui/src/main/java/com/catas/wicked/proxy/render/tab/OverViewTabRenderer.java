@@ -81,7 +81,7 @@ public class OverViewTabRenderer extends AbstractTabRenderer {
         overviewInfo.getClientPort().setVal(String.valueOf(request.getLocalPort()));
 
         // timing
-        overviewInfo.getTimeCost().setVal(response == null ? "-": response.getEndTime() - request.getStartTime() + "ms");
+        overviewInfo.getTimeCost().setVal(response == null ? "-": response.getEndTime() - request.getStartTime() + " ms");
         overviewInfo.getRequestTime().setVal(request.getStartTime() + "-" + request.getEndTime());
         overviewInfo.getRequestStart().setVal(dateFormat.format(new Date(request.getStartTime())));
         overviewInfo.getRequestEnd().setVal(dateFormat.format(new Date(request.getEndTime())));

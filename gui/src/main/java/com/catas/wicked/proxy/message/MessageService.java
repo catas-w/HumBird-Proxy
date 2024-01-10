@@ -182,7 +182,7 @@ public class MessageService {
             requestIdList.add(treeNode.getRequestId());
             listItemList.add(treeNode.getListItem());
             if (StringUtils.equals(appConfig.getCurrentRequestId().get(), treeNode.getRequestId())) {
-                System.out.println("***** remove reqId: " + treeNode.getRequestId());
+                // System.out.println("***** remove reqId: " + treeNode.getRequestId());
                 requestViewService.updateRequestTab(RenderMessage.EMPTY_MSG);
             }
         });

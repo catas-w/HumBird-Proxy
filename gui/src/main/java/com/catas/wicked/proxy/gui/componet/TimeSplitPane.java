@@ -26,14 +26,10 @@ public class TimeSplitPane extends SplitPane {
         this.setOrientation(Orientation.HORIZONTAL);
         for (int i = 0; i < 3; i++) {
             AnchorPane anchorPane = new AnchorPane();
-            Pane pane = new Pane();
-            anchorPane.getChildren().add(pane);
-            anchorPane.setPrefHeight(30);
-            AnchorPane.setTopAnchor(pane, 0.0);
-            AnchorPane.setRightAnchor(pane, 0.0);
-            AnchorPane.setLeftAnchor(pane, 0.0);
-            AnchorPane.setBottomAnchor(pane, 0.0);
-            regions[i] = pane;
+            if (i == 0) {
+                anchorPane.setMinWidth(1);
+            }
+            regions[i] = anchorPane;
         }
         getItems().addAll(regions);
         // getChildren().addAll(regions);

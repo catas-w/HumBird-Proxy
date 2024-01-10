@@ -12,6 +12,7 @@
 <?import com.catas.wicked.proxy.gui.componet.richtext.DisplayCodeArea?>
 <?import com.catas.wicked.proxy.gui.componet.highlight.CodeStyleButton?>
 
+<?import com.catas.wicked.proxy.gui.componet.TimeSplitPane?>
 <VBox alignment="TOP_CENTER" prefHeight="600.0" prefWidth="850.0" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.catas.wicked.proxy.gui.controller.DetailTabController">
     <stylesheets>
         <URL value="@../css/tabpane.css" />
@@ -112,15 +113,45 @@
             </AnchorPane>
         </Tab>
         <Tab text="   Timing   ">
-            <HeaderTitledPane animated="true" maxHeight="Infinity" text="Header" VBox.vgrow="ALWAYS">
-                <AnchorPane minHeight="0.0" minWidth="0.0">
-                    <DisplayCodeArea fx:id="" />
-                    <TreeTableView  fx:id="timingTableView" styleClass="overview"
-                                    AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
-                                    AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
-                    <MessageLabel fx:id="timingMsgLabel" visible="false" text="Empty"/>
-                </AnchorPane>
-            </HeaderTitledPane>
+            <!-- <HeaderTitledPane animated="true" maxHeight="Infinity" text="Timing" VBox.vgrow="ALWAYS"> -->
+            <AnchorPane minHeight="0.0" minWidth="0.0">
+                <GridPane fx:id="timingGridPane" hgap="5" vgap="10"
+                          AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="10.0"
+                          AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="5.0">
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="ALWAYS" maxWidth="150.0" prefWidth="150"/>
+                        <ColumnConstraints hgrow="ALWAYS" minWidth="200.0"/>
+                        <ColumnConstraints hgrow="ALWAYS" maxWidth="150.0" prefWidth="100"/>
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints maxHeight="25.0" prefHeight="25.0" vgrow="SOMETIMES" />
+                        <RowConstraints maxHeight="25.0" prefHeight="25.0" vgrow="SOMETIMES" />
+                        <RowConstraints maxHeight="25.0" prefHeight="25.0" vgrow="SOMETIMES" />
+                        <RowConstraints maxHeight="25.0" prefHeight="25.0" vgrow="SOMETIMES" />
+                        <RowConstraints maxHeight="20.0" prefHeight="20.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
+                    <children>
+                        <Label text="Type" styleClass="grid-header" GridPane.rowIndex="0"/>
+                        <Label text="Duration" styleClass="grid-header" GridPane.rowIndex="0" GridPane.columnIndex="2"/>
+                        <Label text="Request send" GridPane.rowIndex="1" />
+                        <Label text="Waiting for response" GridPane.rowIndex="2" />
+                        <Label text="Response accept" GridPane.rowIndex="3" />
+                        <Label text="Total" GridPane.rowIndex="4" />
+
+                        <TimeSplitPane displayOrder="0" displayColor="red" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+                        <TimeSplitPane displayOrder="1" displayColor="cyan" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+                        <TimeSplitPane displayOrder="2" displayColor="yellow" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+                        <Pane style="-fx-background-color: #c2c2c2" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+
+                        <Label text="0 ms" styleClass="duration-label" GridPane.rowIndex="1" GridPane.columnIndex="2"/>
+                        <Label text="0 ms" styleClass="duration-label" GridPane.rowIndex="2" GridPane.columnIndex="2"/>
+                        <Label text="0 ms" styleClass="duration-label" GridPane.rowIndex="3" GridPane.columnIndex="2"/>
+                        <Label text="0 ms" styleClass="duration-label" GridPane.rowIndex="4" GridPane.columnIndex="2"/>
+                    </children>
+                </GridPane>
+                <MessageLabel fx:id="timingMsgLabel" visible="false" text="Empty"/>
+            </AnchorPane>
+            <!-- </HeaderTitledPane> -->
         </Tab>
         <Tab text="   Test   ">
             <AnchorPane minHeight="0.0" minWidth="0.0">
