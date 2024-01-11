@@ -38,7 +38,7 @@
     -fx-padding: 0;
 }
 
-/* tree view */
+/********** tree view **********/
 .tree-view {
     -fx-background-insets: 0;
 }
@@ -80,7 +80,7 @@
     /*-fx-opacity: 0.7;*/
 }
 
-/****** method label ******/
+/********** method label **********/
 .req-method-label {
     -fx-border-radius: 0.5em;
     -fx-opacity: 0.6;
@@ -107,7 +107,7 @@
 }
 
 
-/* List view cell */
+/********** List view cell **********/
 .list-view {
     -fx-background-insets: 0;
 }
@@ -124,4 +124,31 @@
 .list-cell:even {
     -fx-background-color: TRANSPARENT;
 }
+
+
+/********** filter input **********/
+#filterInput {
+    -fx-background-color: #efefef;
+    -fx-background-radius: 12 12 12 12;
+    -fx-border-width: 1;
+    -fx-border-radius: 12;
+    -fx-border-color: #eeeeee;
+    -fx-pref-width: 200;
+    -fx-pref-height: 25;
+    -fx-padding: 0 0 1 5;
+}
+
+/********** filter input **********/
+.toggle-node {
+    -jfx-toggle-color: TRANSPARENT;
+    -jfx-rippler-fill: #33cbb9;
+    -fx-max-width: 25;
+    -fx-min-width: 25;
+    -fx-padding: 5 0 0 0;
+}
+.toggle-node:hover {
+    /*-fx-fill: #a6a6a6;*/
+    -fx-opacity: 0.5;
+}
+
 

@@ -7,6 +7,7 @@ import com.catas.wicked.common.pipeline.Topic;
 import com.catas.wicked.proxy.gui.componet.FilterableTreeItem;
 import com.catas.wicked.proxy.gui.componet.TreeItemPredicate;
 import com.catas.wicked.proxy.gui.componet.ViewCellFactory;
+import com.jfoenix.controls.JFXToggleNode;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import javafx.beans.binding.Bindings;
@@ -19,12 +20,9 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.ListView;
-import javafx.scene.control.MenuButton;
-import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
-import javafx.scene.paint.Color;
 import lombok.extern.slf4j.Slf4j;
 import org.kordamp.ikonli.javafx.FontIcon;
 
@@ -38,11 +36,7 @@ import java.util.function.Predicate;
 public class RequestViewController implements Initializable {
 
     @FXML
-    private MenuButton listViewMenuBtn;
-    @FXML
-    private MenuItem treeViewMenuItem;
-    @FXML
-    private MenuItem listViewMenuItem;
+    public JFXToggleNode viewToggleNode;
     @FXML
     private TextField filterInput;
     @FXML
@@ -99,25 +93,21 @@ public class RequestViewController implements Initializable {
 
         reqTreeView.setContextMenu(contextMenu);
         reqListView.setContextMenu(contextMenu);
+
+        toggleRequestView();
     }
 
-    public void bindViewChange(ActionEvent event) {
-        MenuItem source = (MenuItem) event.getSource();
-        FontIcon icon = (FontIcon) source.getGraphic();
-        FontIcon fontIcon = new FontIcon(icon.getIconCode());
-        fontIcon.setIconSize(18);
-        fontIcon.setIconColor(Color.web("#616161"));
-        listViewMenuBtn.setGraphic(fontIcon);
-
-        if (source.getId().contains("list")) {
-            reqTreeView.setVisible(false);
-            reqListView.setVisible(true);
-            curViewType = 1;
-        } else {
-            reqTreeView.setVisible(true);
-            reqListView.setVisible(false);
-            curViewType = 0;
-        }
+    public void toggleRequestView() {
+        viewToggleNode.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            FontIcon icon = (FontIcon) viewToggleNode.getGraphic();
+            if (newValue) {
+                icon.setIconLiteral("fas-tree");
+            } else {
+                icon.setIconLiteral("fas-list-ul");
+            }
+            reqTreeView.setVisible(!newValue);
+            reqListView.setVisible(newValue);
+        });
     }
 
     private void filterInputEventBind() {

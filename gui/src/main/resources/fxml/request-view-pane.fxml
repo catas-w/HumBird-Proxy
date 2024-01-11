@@ -4,21 +4,20 @@
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
 <?import org.kordamp.ikonli.javafx.*?>
 
 <?import com.catas.wicked.proxy.gui.componet.FilterableTreeItem?>
-<VBox xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.catas.wicked.proxy.gui.controller.RequestViewController">
+<?import com.jfoenix.controls.JFXToggleNode?>
+<VBox xmlns="http://javafx.com/javafx/11.0.14-internal"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.catas.wicked.proxy.gui.controller.RequestViewController">
     <stylesheets>
         <URL value="@/css/common-design.css" />
         <URL value="@/css/request-view-pane.css" />
     </stylesheets>
     <HBox prefHeight="31.0" prefWidth="254.0">
         <StackPane alignment="CENTER_RIGHT" prefHeight="150.0" prefWidth="250.0" HBox.hgrow="ALWAYS">
-            <TextField fx:id="filterInput" prefHeight="28.0" prefWidth="214.0" promptText="Filter" style="-fx-background-color: #efefef; -fx-border-color: #eeeeee; -fx-border-radius: 10;">
-                <padding>
-                    <Insets bottom="1.0" left="2.0" />
-                </padding>
+            <TextField fx:id="filterInput" promptText="Filter">
                 <StackPane.margin>
                     <Insets bottom="2.0" left="5.0" top="2.0" />
                 </StackPane.margin>
@@ -32,29 +31,16 @@
                 </StackPane.margin>
             </Button>
         </StackPane>
-        <MenuButton fx:id="listViewMenuBtn" maxWidth="22.0" mnemonicParsing="false" prefHeight="17.0" prefWidth="17.0" styleClass="view-button" textFill="#363636bd" HBox.hgrow="NEVER">
-            <items>
-                <MenuItem fx:id="treeViewMenuItem" onAction="#bindViewChange" text="Tree view">
-                    <graphic>
-                        <FontIcon iconColor="#616161" iconLiteral="fas-tree" iconSize="18" />
-                    </graphic>
-                </MenuItem>
-                <MenuItem fx:id="listViewMenuItem" onAction="#bindViewChange" text="List view">
-                    <graphic>
-                        <FontIcon iconColor="#616161" iconLiteral="fas-list-ul" iconSize="18" />
-                    </graphic>
-                </MenuItem>
-            </items>
-            <font>
-                <Font name="System Bold" size="12.0" />
-            </font>
-            <graphic>
-                <FontIcon iconColor="#616161" iconLiteral="fas-tree" iconSize="18" />
-            </graphic>
-         <HBox.margin>
-            <Insets bottom="2.0" left="1.0" right="1.0" top="2.0" />
-         </HBox.margin>
-        </MenuButton>
+        <!-- <JFXToggleNode styleClass="toggle-node"> -->
+        <!--     <FontIcon iconColor="#616161" iconLiteral="fas-bookmark" iconSize="18"/> -->
+        <!-- </JFXToggleNode> -->
+        <JFXToggleNode accessibleText=""  fx:id="viewToggleNode" styleClass="toggle-node">
+            <FontIcon iconColor="#616161" iconLiteral="fas-list-ul" iconSize="18"/>
+        </JFXToggleNode>
+
+        <HBox.margin>
+            <Insets right="5.0" />
+        </HBox.margin>
     </HBox>
     <StackPane prefWidth="254.0" VBox.vgrow="ALWAYS">
         <TreeView fx:id="reqTreeView" editable="true" prefHeight="553.0" prefWidth="254.0" showRoot="false" visible="true">
