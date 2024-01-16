@@ -10,6 +10,7 @@ import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
+import javafx.scene.control.TreeItem;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
@@ -85,6 +86,15 @@ public class MessageTree {
 
         // treeItem.setValue(requestCell);
         FilterableTreeItem<RequestCell> treeItem = new FilterableTreeItem<>(requestCell);
+        // expand child if children size = 1
+        treeItem.expandedProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue && treeItem.getChildren().size() == 1) {
+                // System.out.println("Expand");
+                for (TreeItem<RequestCell> child : treeItem.getChildren()) {
+                    child.expandedProperty().set(true);
+                }
+            }
+        });
         node.setTreeItem(treeItem);
 
         // define tree item order

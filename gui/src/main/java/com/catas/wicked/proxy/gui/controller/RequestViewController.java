@@ -101,15 +101,18 @@ public class RequestViewController implements Initializable {
         viewToggleNode.selectedProperty().addListener((observable, oldValue, newValue) -> {
             FontIcon icon = (FontIcon) viewToggleNode.getGraphic();
             if (newValue) {
-                icon.setIconLiteral("fas-tree");
-            } else {
                 icon.setIconLiteral("fas-list-ul");
+            } else {
+                icon.setIconLiteral("fas-tree");
             }
             reqTreeView.setVisible(!newValue);
             reqListView.setVisible(newValue);
         });
     }
 
+    /**
+     * filter requests
+     */
     private void filterInputEventBind() {
         filterInput.setOnKeyTyped(e -> {
             CharSequence characters = filterInput.getText();
@@ -173,5 +176,13 @@ public class RequestViewController implements Initializable {
         }
         deleteMessage.setRequestCell(requestCell);
         messageQueue.pushMsg(Topic.RECORD, deleteMessage);
+    }
+
+    /**
+     * clear all leaf-nodes of treeView
+     */
+    public void clearLeafNode() {
+        System.out.println("clear leaves");
+
     }
 }

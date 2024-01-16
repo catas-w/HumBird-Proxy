@@ -138,9 +138,9 @@
                         <Label text="Response accept" GridPane.rowIndex="3" />
                         <Label text="Total" GridPane.rowIndex="4" />
 
-                        <TimeSplitPane displayOrder="0" displayColor="red" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
-                        <TimeSplitPane displayOrder="1" displayColor="cyan" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
-                        <TimeSplitPane displayOrder="2" displayColor="yellow" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+                        <TimeSplitPane displayOrder="0" displayColor="#0090de" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+                        <TimeSplitPane displayOrder="1" displayColor="#02b250" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+                        <TimeSplitPane displayOrder="2" displayColor="#dc9000" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
                         <Pane style="-fx-background-color: #c2c2c2" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
 
                         <Label text="0 ms" styleClass="duration-label" GridPane.rowIndex="1" GridPane.columnIndex="2"/>

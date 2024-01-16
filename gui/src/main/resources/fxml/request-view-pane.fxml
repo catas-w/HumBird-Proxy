@@ -31,11 +31,14 @@
                 </StackPane.margin>
             </Button>
         </StackPane>
-        <!-- <JFXToggleNode styleClass="toggle-node"> -->
-        <!--     <FontIcon iconColor="#616161" iconLiteral="fas-bookmark" iconSize="18"/> -->
-        <!-- </JFXToggleNode> -->
-        <JFXToggleNode accessibleText=""  fx:id="viewToggleNode" styleClass="toggle-node">
-            <FontIcon iconColor="#616161" iconLiteral="fas-list-ul" iconSize="18"/>
+        <JFXToggleNode styleClass="toggle-node" onAction="#clearLeafNode">
+            <FontIcon iconColor="#616161" iconLiteral="fas-quidditch" iconSize="18"/>
+            <HBox.margin>
+                <Insets left="5.0" />
+            </HBox.margin>
+        </JFXToggleNode>
+        <JFXToggleNode fx:id="viewToggleNode" styleClass="toggle-node">
+            <FontIcon iconColor="#616161" iconLiteral="fas-tree" iconSize="18"/>
         </JFXToggleNode>
 
         <HBox.margin>
