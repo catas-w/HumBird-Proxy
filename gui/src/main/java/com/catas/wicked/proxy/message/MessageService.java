@@ -142,7 +142,11 @@ public class MessageService {
         }
 
         if (msg instanceof DeleteMessage deleteMessage) {
-            deleteRequest(deleteMessage);
+            if (deleteMessage.isCleanLeaves()) {
+                cleanLeaves();
+            } else {
+                deleteRequest(deleteMessage);
+            }
         }
     }
 
@@ -200,7 +204,37 @@ public class MessageService {
         messageTree.delete(nodeToDelete);
 
         // remove requestId from ehcache
-        // System.out.println("Travel result: " + requestIdList);
+        try {
+            requestCache.removeAll(requestIdList);
+        } catch (BulkCacheWritingException e) {
+            log.error("Error in deleting in cache.", e);
+        }
+    }
+
+    /**
+     * delete all leaf-nodes
+     */
+    private void cleanLeaves() {
+        Set<String> requestIdList = new HashSet<>();
+        List<TreeNode> treeNodeList = new ArrayList<>();
+
+        // delete leafNodes in treeView
+        messageTree.travelRoot(treeNode -> {
+            requestIdList.add(treeNode.getRequestId());
+            // delete current leaf-node
+            FilterableTreeItem<RequestCell> nodeParent = treeNode.getParent().getTreeItem();
+            treeNodeList.add(treeNode);
+            Platform.runLater(() -> {
+                nodeParent.getInternalChildren().remove(treeNode.getTreeItem());
+            });
+        });
+        treeNodeList.forEach(messageTree::delete);
+
+        // delete all items in listView
+        ObservableList<RequestCell> reqSourceList = requestViewController.getReqSourceList();
+        Platform.runLater(() -> reqSourceList.remove(0, reqSourceList.size()));
+
+        // delete in cache
         try {
             requestCache.removeAll(requestIdList);
         } catch (BulkCacheWritingException e) {

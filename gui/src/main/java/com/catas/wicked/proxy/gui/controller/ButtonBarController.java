@@ -37,6 +37,8 @@ public class ButtonBarController implements Initializable {
     public JFXButton recordBtn;
     public JFXButton sslBtn;
     @FXML
+    public JFXButton removeAllBtn;
+    @FXML
     private MenuButton mainMenuButton;
     @FXML
     private MenuItem proxySetting;
@@ -62,13 +64,16 @@ public class ButtonBarController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         // proxy setting dialog
         bindProxySettingBtn();
-        testTreeItem();
     }
 
-    private void testTreeItem() {
+    public void mockTreeItem() {
         markerBtn.setOnAction(event -> {
             requestMockService.mockRequest();
         });
+    }
+
+    public void deleteAll() {
+        System.out.println("Delete All");
     }
 
     private void bindProxySettingBtn() {

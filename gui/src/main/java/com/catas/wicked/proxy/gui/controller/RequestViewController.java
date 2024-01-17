@@ -156,7 +156,7 @@ public class RequestViewController implements Initializable {
         RequestCell requestCell = null;
         DeleteMessage deleteMessage = new DeleteMessage();
 
-        if (curViewType == 0) {
+        if (!viewToggleNode.selectedProperty().get()) {
             // from tree view
             selectedItem = reqTreeView.getSelectionModel().getSelectedItem();
             FilterableTreeItem<RequestCell> parent = (FilterableTreeItem<RequestCell>) selectedItem.getParent();
@@ -182,7 +182,8 @@ public class RequestViewController implements Initializable {
      * clear all leaf-nodes of treeView
      */
     public void clearLeafNode() {
-        System.out.println("clear leaves");
-
+        DeleteMessage deleteMessage = new DeleteMessage();
+        deleteMessage.setCleanLeaves(true);
+        messageQueue.pushMsg(Topic.RECORD, deleteMessage);
     }
 }

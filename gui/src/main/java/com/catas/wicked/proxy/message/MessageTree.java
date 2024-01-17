@@ -199,6 +199,10 @@ public class MessageTree {
         }
     }
 
+    /**
+     * travel tree from rootNode
+     * @param action function to perform for each leaf-node
+     */
     public void travelRoot(Consumer<? super TreeNode> action) {
         travel(root, action);
     }

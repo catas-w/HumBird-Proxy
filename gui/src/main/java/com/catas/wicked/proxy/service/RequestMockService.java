@@ -71,6 +71,9 @@ public class RequestMockService {
     private static final String hostStr = """
             GET https://www.google.com/index/1
             GET https://www.google.com/index/2
+            GET https://www.google.com/index/3
+            GET https://www.google.com/index/4
+            GET https://www.google.com/index/5
             GET https://www.google.com/index/page/1
             POST https://www.google.com/index/page/2
             POST https://www.google.com/index/page/3?name=111&age=222&host=333.3
