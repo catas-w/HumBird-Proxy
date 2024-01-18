@@ -38,6 +38,8 @@ public class ResponseTabRenderer extends AbstractTabRenderer {
         detailTabController.getRespHeaderMsgLabel().setVisible(renderMsg.isEmpty());
         detailTabController.getRespContentMsgLabel().setVisible(renderMsg.isEmpty());
         if (renderMsg.isEmpty()) {
+            setEmptyMsgLabel(detailTabController.getRespHeaderMsgLabel());
+            setEmptyMsgLabel(detailTabController.getRespContentMsgLabel());
             return;
         }
         RequestMessage request = requestCache.get(renderMsg.getRequestId());
@@ -47,6 +49,7 @@ public class ResponseTabRenderer extends AbstractTabRenderer {
     public void displayResponse(ResponseMessage response) {
         if (response == null) {
             detailTabController.getRespContentArea().replaceText("<Waiting For Response...>");
+            setMsgLabel(detailTabController.getRespContentMsgLabel(), "<Waiting for response...>");
             return;
         }
         // headers
@@ -70,7 +73,12 @@ public class ResponseTabRenderer extends AbstractTabRenderer {
             detailTabController.getRespContentArea().setVisible(false);
             detailTabController.getRespImageView().setVisible(true);
             // TODO webp格式
-            detailTabController.getRespImageView().setImage(new ByteArrayInputStream(parsedContent));
+            try {
+                detailTabController.getRespImageView().setImage(new ByteArrayInputStream(parsedContent));
+            } catch (Exception e) {
+                setMsgLabel(detailTabController.getRespContentMsgLabel(),
+                        "Image load error, type: " + contentType.getMimeType());
+            }
         } else {
             detailTabController.getRespContentArea().setVisible(true);
             detailTabController.getRespImageView().setVisible(false);

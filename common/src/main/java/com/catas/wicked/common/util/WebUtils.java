@@ -186,6 +186,9 @@ public class WebUtils {
                 break;
             }
         }
+        if (StringUtils.isBlank(contentTypeHeader)) {
+            return null;
+        }
         try {
             return ContentType.parse(contentTypeHeader);
         } catch (Exception e) {

@@ -117,8 +117,6 @@ public class DetailTabController implements Initializable {
     @FXML
     private DisplayCodeArea reqPayloadCodeArea;
     @FXML
-    private JFXTextArea reqTimingArea;
-    @FXML
     private DisplayCodeArea respHeaderArea;
     @FXML
     private DisplayCodeArea respContentArea;

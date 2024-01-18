@@ -95,6 +95,10 @@
     -fx-text-fill: #000000;
     /*-fx-font-weight: 800;*/
 }
+.table-view .column-header-background .filler {
+    -fx-background-color: TRANSPARENT;
+    /*-fx-padding: 1em;*/
+}
 .table-view .column-header {
     -fx-background-color: #ffffff;
 }
@@ -189,6 +193,9 @@
 .tree-table-view .column-header .label {
     -fx-alignment: CENTER;
     -fx-text-fill: gray;
+}
+.tree-table-view .column-header-background .filler {
+    -fx-background-color: TRANSPARENT;
 }
 
 .tree-table-view .tree-table-row-cell {

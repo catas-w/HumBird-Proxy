@@ -2,6 +2,7 @@ package com.catas.wicked.proxy.render.tab;
 
 import com.catas.wicked.common.bean.HeaderEntry;
 import com.catas.wicked.common.util.TableUtils;
+import com.catas.wicked.proxy.gui.componet.MessageLabel;
 import com.catas.wicked.proxy.gui.componet.SideBar;
 import com.catas.wicked.proxy.render.TabRenderer;
 import javafx.application.Platform;
@@ -26,6 +27,17 @@ public abstract class AbstractTabRenderer implements TabRenderer {
         if (!tableView.getColumns().isEmpty()) {
             tableView.setItems(list);
         }
+    }
+
+    protected void setEmptyMsgLabel(MessageLabel msgLabel) {
+        setMsgLabel(msgLabel, "Empty");
+    }
+
+    protected void setMsgLabel(MessageLabel msgLabel, String msg) {
+        Platform.runLater(() -> {
+            msgLabel.setText(msg);
+            msgLabel.setVisible(true);
+        });
     }
 
     protected SideBar.Strategy predictCodeStyle(ContentType contentType) {

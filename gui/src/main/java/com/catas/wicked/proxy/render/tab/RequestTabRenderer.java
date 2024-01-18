@@ -46,6 +46,8 @@ public class RequestTabRenderer extends AbstractTabRenderer {
         detailTabController.getReqHeaderMsgLabel().setVisible(renderMsg.isEmpty());
         detailTabController.getReqContentMsgLabel().setVisible(renderMsg.isEmpty());
         if (renderMsg.isEmpty()) {
+            setEmptyMsgLabel(detailTabController.getReqHeaderMsgLabel());
+            setEmptyMsgLabel(detailTabController.getReqContentMsgLabel());
             return;
         }
         RequestMessage request = requestCache.get(renderMsg.getRequestId());
@@ -152,7 +154,12 @@ public class RequestTabRenderer extends AbstractTabRenderer {
                 }
             }
         } else if (target == detailTabController.getReqImageView()) {
-            detailTabController.getReqImageView().setImage(new ByteArrayInputStream(content));
+            try {
+                detailTabController.getReqImageView().setImage(new ByteArrayInputStream(content));
+            } catch (Exception e) {
+                setMsgLabel(detailTabController.getReqContentMsgLabel(),
+                        "Image load error, type: " + contentType.getMimeType());
+            }
         }
     }
 }

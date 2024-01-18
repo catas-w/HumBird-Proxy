@@ -13,12 +13,14 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.InputStream;
 
 /**
  * image view support zoom
  */
+@Slf4j
 public class ZoomImageView extends ScrollPane {
 
     // @FXML
@@ -60,10 +62,9 @@ public class ZoomImageView extends ScrollPane {
     }
 
     public void setImage(InputStream inputStream) {
-        try {
-            this.image = new Image(inputStream);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        this.image = new Image(inputStream);
+        if (this.image.isError()) {
+            throw new RuntimeException("Image load error.");
         }
         init();
     }
