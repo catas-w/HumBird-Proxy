@@ -1,5 +1,6 @@
 package com.catas.wicked.proxy.gui.componet;
 
+import com.catas.wicked.common.util.ImageUtils;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import javafx.beans.property.DoubleProperty;
@@ -13,8 +14,14 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.stage.FileChooser;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 
 /**
@@ -23,12 +30,12 @@ import java.io.InputStream;
 @Slf4j
 public class ZoomImageView extends ScrollPane {
 
-    // @FXML
     private BorderPane borderPane;
-    // @FXML
     private ImageView imageView;
     private Image image;
     private String url;
+    protected String mimeType;
+    protected InputStream imageData;
     private static final String STYLE = "zoom-image-view";
 
     private final ContextMenu contextMenu = new ImageViewContextMenu(this);
@@ -56,13 +63,24 @@ public class ZoomImageView extends ScrollPane {
         // init();
     }
 
-    public void setImage(Image image) {
+    public void setImage(Image image, String mimeType) {
         this.image = image;
+        this.mimeType = mimeType;
         init();
     }
 
-    public void setImage(InputStream inputStream) {
-        this.image = new Image(inputStream);
+    public void setImage(InputStream inputStream, String mimeType) throws IOException {
+        // webp format
+        if (StringUtils.equals(mimeType, "image/webp")) {
+            BufferedImage encodeWebpImage = ImageUtils.encodeWebpImage(inputStream);
+            this.image = ImageUtils.getJFXImage(encodeWebpImage);
+        } else {
+            this.image = new Image(inputStream);
+        }
+        // this.image = new Image(inputStream);
+        this.mimeType = mimeType;
+        this.imageData = inputStream;
+        this.imageData.reset();
         if (this.image.isError()) {
             throw new RuntimeException("Image load error.");
         }
@@ -121,25 +139,60 @@ public class ZoomImageView extends ScrollPane {
     }
 
     /**
-     * clockwise rotate
+     * rotate
      */
-    private void rotate() {
-        imageView.setRotate(imageView.getRotate() + 90);
+    private void rotate(int angle) {
+        imageView.setRotate(imageView.getRotate() + angle);
     }
 
     private static class ImageViewContextMenu extends ContextMenu {
 
         final ZoomImageView zoomImageView;
 
+        final FileChooser fileChooser;
         public ImageViewContextMenu(ZoomImageView zoomImageView) {
             this.zoomImageView = zoomImageView;
 
-            MenuItem download = new MenuItem("Save as...");
-            MenuItem rotate = new MenuItem("Rotate");
-            rotate.setOnAction(e -> {
-                zoomImageView.rotate();
+            MenuItem download = new MenuItem("Save as..");
+            MenuItem rotateClockwise = new MenuItem("Rotate -90°");
+            MenuItem rotateAntiClock = new MenuItem("Rotate +90°");
+            rotateClockwise.setOnAction(e -> {
+                zoomImageView.rotate(-90);
             });
-            getItems().addAll(download, rotate);
+            rotateAntiClock.setOnAction(e -> {
+                zoomImageView.rotate(90);
+            });
+
+            // save file event
+            fileChooser = new FileChooser();
+            fileChooser.setTitle("Save");
+            // fileChooser.setInitialFileName("image.jpg");
+            fileChooser.getExtensionFilters().addAll(
+                    new FileChooser.ExtensionFilter("All files", "*.*")
+                    );
+
+            download.setOnAction(e -> {
+                String extension = ".jpg";
+                if (!StringUtils.isBlank(zoomImageView.mimeType)) {
+                    String[] split = zoomImageView.mimeType.split("/");
+                    extension = split.length > 1 ? "." + split[1]: "";
+                }
+                fileChooser.setInitialFileName("image" + extension);
+
+                File file = fileChooser.showSaveDialog(getOwnerWindow());
+                if (file == null) {
+                    return;
+                }
+                log.info("saving image to file: " + file.getName());
+                try {
+                    // ImageUtils.saveToFile(zoomImageView.image, file);
+                    // ImageIO.write(ImageUtils.fromJFXImage(zoomImageView.image), extension.substring(1), file);
+                    FileUtils.writeByteArrayToFile(file, zoomImageView.imageData.readAllBytes());
+                } catch (Exception ex) {
+                    log.error("Image save error.", ex);
+                }
+            });
+            getItems().addAll(download, rotateClockwise, rotateAntiClock);
         }
     }
 }

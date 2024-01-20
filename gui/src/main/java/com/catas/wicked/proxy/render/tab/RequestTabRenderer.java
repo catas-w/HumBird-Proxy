@@ -159,14 +159,9 @@ public class RequestTabRenderer extends AbstractTabRenderer {
         } else if (target == detailTabController.getReqImageView()) {
             InputStream inputStream = new ByteArrayInputStream(content);
             try {
-                // webp format
                 assert contentType != null;
-                if (StringUtils.equals(contentType.getMimeType(), "image/webp")) {
-                    BufferedImage encodeWebpImage = ImageUtils.encodeWebpImage(inputStream);
-                    detailTabController.getReqImageView().setImage(ImageUtils.getJFXImage(encodeWebpImage));
-                } else {
-                    detailTabController.getReqImageView().setImage(inputStream);
-                }
+                String mimeType = contentType.getMimeType();
+                detailTabController.getReqImageView().setImage(inputStream, mimeType);
             } catch (Exception e) {
                 setMsgLabel(detailTabController.getReqContentMsgLabel(),
                         "Image load error, type: " + contentType.getMimeType());

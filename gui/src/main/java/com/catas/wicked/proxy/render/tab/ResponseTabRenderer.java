@@ -4,18 +4,15 @@ import com.catas.wicked.common.bean.message.RenderMessage;
 import com.catas.wicked.common.bean.message.RequestMessage;
 import com.catas.wicked.common.bean.message.ResponseMessage;
 import com.catas.wicked.common.config.ApplicationConfig;
-import com.catas.wicked.common.util.ImageUtils;
 import com.catas.wicked.common.util.WebUtils;
 import com.catas.wicked.proxy.gui.componet.SideBar;
 import com.catas.wicked.proxy.gui.controller.DetailTabController;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.entity.ContentType;
 import org.ehcache.Cache;
 
-import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.Charset;
@@ -75,18 +72,12 @@ public class ResponseTabRenderer extends AbstractTabRenderer {
         if (strategy == SideBar.Strategy.IMG) {
             detailTabController.getRespContentArea().setVisible(false);
             detailTabController.getRespImageView().setVisible(true);
+            String mimeType = contentType.getMimeType();
             InputStream inputStream = new ByteArrayInputStream(parsedContent);
             try {
-                // webp format
-                if (StringUtils.equals(contentType.getMimeType(), "image/webp")) {
-                    BufferedImage encodeWebpImage = ImageUtils.encodeWebpImage(inputStream);
-                    detailTabController.getRespImageView().setImage(ImageUtils.getJFXImage(encodeWebpImage));
-                } else {
-                    detailTabController.getRespImageView().setImage(inputStream);
-                }
+                detailTabController.getRespImageView().setImage(inputStream, mimeType);
             } catch (Exception e) {
-                setMsgLabel(detailTabController.getRespContentMsgLabel(),
-                        "Image load error, type: " + contentType.getMimeType());
+                setMsgLabel(detailTabController.getRespContentMsgLabel(), "Image load error, type: " + mimeType);
             }
         } else {
             detailTabController.getRespContentArea().setVisible(true);
