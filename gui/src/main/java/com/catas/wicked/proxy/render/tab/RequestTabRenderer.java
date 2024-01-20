@@ -3,6 +3,7 @@ package com.catas.wicked.proxy.render.tab;
 import com.catas.wicked.common.bean.message.RenderMessage;
 import com.catas.wicked.common.bean.message.RequestMessage;
 import com.catas.wicked.common.config.ApplicationConfig;
+import com.catas.wicked.common.util.ImageUtils;
 import com.catas.wicked.common.util.WebUtils;
 import com.catas.wicked.proxy.gui.componet.SideBar;
 import com.catas.wicked.proxy.gui.componet.richtext.DisplayCodeArea;
@@ -20,8 +21,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.http.entity.ContentType;
 import org.ehcache.Cache;
 
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
@@ -154,8 +157,16 @@ public class RequestTabRenderer extends AbstractTabRenderer {
                 }
             }
         } else if (target == detailTabController.getReqImageView()) {
+            InputStream inputStream = new ByteArrayInputStream(content);
             try {
-                detailTabController.getReqImageView().setImage(new ByteArrayInputStream(content));
+                // webp format
+                assert contentType != null;
+                if (StringUtils.equals(contentType.getMimeType(), "image/webp")) {
+                    BufferedImage encodeWebpImage = ImageUtils.encodeWebpImage(inputStream);
+                    detailTabController.getReqImageView().setImage(ImageUtils.getJFXImage(encodeWebpImage));
+                } else {
+                    detailTabController.getReqImageView().setImage(inputStream);
+                }
             } catch (Exception e) {
                 setMsgLabel(detailTabController.getReqContentMsgLabel(),
                         "Image load error, type: " + contentType.getMimeType());

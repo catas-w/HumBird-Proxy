@@ -129,8 +129,6 @@
             <version>2.15.3</version>
         </dependency>
 
-
-
         <!-- ehcache -->
         <dependency>
             <groupId>org.ehcache</groupId>
@@ -156,10 +154,18 @@
             <version>0.1.2</version>
         </dependency>
 
+        <!-- richTextFx -->
         <dependency>
             <groupId>org.fxmisc.richtext</groupId>
             <artifactId>richtextfx</artifactId>
             <version>${richtextfx.version}</version>
+        </dependency>
+
+        <!-- webp-image -->
+        <dependency>
+            <groupId>org.sejda.imageio</groupId>
+            <artifactId>webp-imageio</artifactId>
+            <version>0.1.6</version>
         </dependency>
     </dependencies>
 
