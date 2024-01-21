@@ -129,7 +129,6 @@ public class WebUtils {
             try {
                 switch (contentEncoding) {
                     case "gzip" -> content = GzipUtils.decompress(content);
-                    // TODO: bug-fix https://cn.bing.com/hp/api/v1/trivia?format=json&id=HPQuiz_20240107_DevilsMarbles&
                     case "br" -> content = BrotliUtils.decompress(content);
                     case "deflate" -> content = GzipUtils.inflate(content);
                     default -> {

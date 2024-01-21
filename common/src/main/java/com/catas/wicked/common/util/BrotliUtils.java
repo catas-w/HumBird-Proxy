@@ -18,7 +18,7 @@ public class BrotliUtils {
         BrotliCompressorInputStream inputStream = new BrotliCompressorInputStream(input);
         byte[] buffer = new byte[1024];
         int n;
-        while ((n = inputStream.read(buffer)) != 0) {
+        while ((n = inputStream.read(buffer)) > 0) {
             outputStream.write(buffer, 0, n);
         }
         return outputStream.toByteArray();
