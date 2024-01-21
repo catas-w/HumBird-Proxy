@@ -75,7 +75,7 @@ public class ProxyClientHandler extends ChannelInboundHandlerAdapter {
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         ctx.channel().close();
         clientChannel.close();
-        // TODO: https://i.pinimg.com/564x/67/6c/ee/676cee55deb99942ef3c46e499fec44f.jpg
+        // TODO: log error
         log.error("Error occurred in Proxy client.", cause);
     }
 }

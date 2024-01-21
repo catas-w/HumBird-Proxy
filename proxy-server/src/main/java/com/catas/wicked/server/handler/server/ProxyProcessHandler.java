@@ -189,6 +189,7 @@ public class ProxyProcessHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        // TODO channel close - log
         log.error("Server channel unexpected error, closing...", cause);
         cause.printStackTrace();
         if (channelFuture != null) {

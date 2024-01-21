@@ -15,6 +15,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.ssl.SslContextBuilder;
+import io.netty.handler.ssl.SslProvider;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import io.netty.util.internal.logging.InternalLoggerFactory;
 import io.netty.util.internal.logging.JdkLoggerFactory;
@@ -81,7 +82,11 @@ public class ProxyServer {
 
     @PostConstruct
     private void init() {
-        SslContextBuilder contextBuilder = SslContextBuilder.forClient().trustManager(InsecureTrustManagerFactory.INSTANCE);
+        SslContextBuilder contextBuilder = SslContextBuilder.forClient()
+                .sslProvider(SslProvider.OPENSSL)
+                .startTls(true)
+                .protocols("TLSv1.1", "TLSv1.2", "TLSv1")
+                .trustManager(InsecureTrustManagerFactory.INSTANCE);
         X509Certificate caCert;
         PrivateKey caPriKey;
         try {

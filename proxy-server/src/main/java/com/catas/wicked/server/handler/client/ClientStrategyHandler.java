@@ -109,7 +109,10 @@ public class ClientStrategyHandler extends ChannelDuplexHandler {
                     try {
                         ch.pipeline().addBefore(CLIENT_PROCESSOR, SSL_HANDLER,
                                 appConfig.getClientSslCtx().newHandler(ch.alloc(), appConfig.getHost(), appConfig.getPort()));
-                    } catch (IllegalArgumentException ignored) {}
+                    } catch (IllegalArgumentException ignored) {
+                    } catch (Exception e) {
+                        log.error("Error establish Ssl context");
+                    }
                 } else {
                     try {
                         ch.pipeline().remove(SSL_HANDLER);
