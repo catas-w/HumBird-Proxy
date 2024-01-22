@@ -47,3 +47,17 @@
 .main-menu-btn  > .arrow-button > .arrow {
     -fx-padding: 0;
 }
+
+/********** toggle-node **********/
+.jfx-toggle-node {
+    -jfx-toggle-color: TRANSPARENT;
+    /*-jfx-rippler-fill: red;*/
+    -jfx-untoggle-color: TRANSPARENT;
+}
+
+.jfx-toggle-node:hover {
+    -fx-opacity: 0.65;
+}
+#recordBtn:focused .jfx-rippler{
+    -jfx-rippler-fill: white;
+}

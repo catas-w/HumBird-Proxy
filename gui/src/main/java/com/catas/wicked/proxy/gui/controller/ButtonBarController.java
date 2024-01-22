@@ -4,14 +4,12 @@ import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.common.pipeline.MessageQueue;
 import com.catas.wicked.proxy.service.RequestMockService;
 import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXToggleNode;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
-import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.DialogPane;
@@ -33,9 +31,8 @@ import static com.catas.wicked.common.constant.StyleConstant.BTN_INACTIVE;
 public class ButtonBarController implements Initializable {
 
     public JFXButton markerBtn;
-    public JFXButton eyeBtn;
-    public JFXButton recordBtn;
-    public JFXButton sslBtn;
+    public JFXToggleNode recordBtn;
+    public JFXToggleNode sslBtn;
     @FXML
     public JFXButton removeAllBtn;
     @FXML
@@ -51,11 +48,6 @@ public class ButtonBarController implements Initializable {
     @Inject
     private ApplicationConfig appConfig;
 
-    private int index = 0;
-
-    @Inject
-    private DetailWebViewController webViewController;
-
     @Inject
     private RequestMockService requestMockService;
 
@@ -64,6 +56,27 @@ public class ButtonBarController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         // proxy setting dialog
         bindProxySettingBtn();
+
+        // toggle record button
+        recordBtn.selectedProperty().addListener(((observable, oldValue, newValue) -> {
+            FontIcon icon = (FontIcon) recordBtn.getGraphic();
+            if (newValue) {
+                icon.setIconLiteral("fas-record-vinyl");
+                icon.setIconColor(Color.valueOf("#ec2222"));
+            } else {
+                icon.setIconLiteral("far-play-circle");
+                icon.setIconColor(Color.valueOf("#616161"));
+            }
+            appConfig.setRecording(newValue);
+        }));
+
+        // toggle handle ssl button
+        sslBtn.selectedProperty().addListener(((observable, oldValue, newValue) -> {
+            FontIcon icon = (FontIcon) sslBtn.getGraphic();
+            String color = newValue ? BTN_ACTIVE : BTN_INACTIVE;
+            icon.setIconColor(Color.valueOf(color));
+            appConfig.setHandleSsl(newValue);
+        }));
     }
 
     public void mockTreeItem() {
@@ -97,29 +110,4 @@ public class ButtonBarController implements Initializable {
         });
     }
 
-    public void handleSSlBtn(ActionEvent actionEvent) {
-        Node graphic = sslBtn.getGraphic();
-        toggleBtnColor(graphic);
-        appConfig.setHandleSsl(!appConfig.isHandleSsl());
-    }
-
-    public void handleRecordBtn(ActionEvent actionEvent) {
-        Node graphic = recordBtn.getGraphic();
-        toggleBtnColor(graphic);
-        appConfig.setRecording(!appConfig.isRecording());
-    }
-
-    private void toggleBtnColor(Node graphic) {
-        FontIcon icon = (FontIcon) graphic;
-        Color iconColor = (Color) icon.getIconColor();
-
-        String toColor = BTN_INACTIVE;
-        if (iconColor.equals(Color.valueOf(toColor))) {
-            toColor = BTN_ACTIVE;
-        }
-        String finalToColor = toColor;
-        Platform.runLater(() -> {
-            icon.setIconColor(Color.valueOf(finalToColor));
-        });
-    }
 }

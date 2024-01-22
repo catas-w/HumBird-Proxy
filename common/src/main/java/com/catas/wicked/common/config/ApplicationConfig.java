@@ -1,5 +1,6 @@
 package com.catas.wicked.common.config;
 
+import com.catas.wicked.common.constant.ProxyProtocol;
 import com.catas.wicked.common.pipeline.MessageQueue;
 import com.catas.wicked.common.util.ThreadPoolService;
 import io.netty.channel.EventLoopGroup;
