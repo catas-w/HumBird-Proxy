@@ -6,8 +6,6 @@ import com.catas.wicked.proxy.gui.componet.FilterableTreeItem;
 import com.catas.wicked.proxy.gui.controller.RequestViewController;
 import com.catas.wicked.common.util.WebUtils;
 import io.netty.handler.codec.http.HttpMethod;
-import jakarta.inject.Inject;
-import jakarta.inject.Singleton;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.scene.control.TreeItem;
@@ -19,15 +17,17 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 @Slf4j
-@Singleton
 public class MessageTree {
 
     private final TreeNode root = new TreeNode();
 
     private TreeNode latestNode;
 
-    @Inject
     private RequestViewController requestViewController;
+
+    public void setRequestViewController(RequestViewController requestViewController) {
+        this.requestViewController = requestViewController;
+    }
 
     /**
      * 根据 path 添加节点到树中
@@ -55,12 +55,12 @@ public class MessageTree {
         createTreeItemUI(parent, node);
         createListItemUI(node);
 
-        if (latestNode == null) {
-            latestNode = new TreeNode();
-        }
-        latestNode.setNext(node);
-        node.setPrev(latestNode);
-        latestNode = node;
+        // if (latestNode == null) {
+        //     latestNode = new TreeNode();
+        // }
+        // latestNode.setNext(node);
+        // node.setPrev(latestNode);
+        // latestNode = node;
     }
 
     /**
@@ -164,6 +164,7 @@ public class MessageTree {
         if (node == null) {
             return;
         }
+        // memory leak
         if (node.isLeaf()) {
             node.getParent().getLeafChildren().remove(node);
         } else {

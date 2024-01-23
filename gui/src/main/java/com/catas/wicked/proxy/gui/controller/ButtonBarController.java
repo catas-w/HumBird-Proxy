@@ -1,7 +1,9 @@
 package com.catas.wicked.proxy.gui.controller;
 
+import com.catas.wicked.common.bean.message.DeleteMessage;
 import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.common.pipeline.MessageQueue;
+import com.catas.wicked.common.pipeline.Topic;
 import com.catas.wicked.proxy.service.RequestMockService;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXToggleNode;
@@ -43,7 +45,7 @@ public class ButtonBarController implements Initializable {
     private Dialog proxyConfigDialog;
 
     @Inject
-    private MessageQueue queue;
+    private MessageQueue messageQueue;
 
     @Inject
     private ApplicationConfig appConfig;
@@ -85,8 +87,13 @@ public class ButtonBarController implements Initializable {
         });
     }
 
+    /**
+     * delete all requests
+     */
     public void deleteAll() {
-        System.out.println("Delete All");
+        DeleteMessage deleteMessage = new DeleteMessage();
+        deleteMessage.setRemoveAll(true);
+        messageQueue.pushMsg(Topic.RECORD, deleteMessage);
     }
 
     private void bindProxySettingBtn() {

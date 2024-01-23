@@ -45,7 +45,6 @@ public class MessageService {
     @Inject
     private Cache<String, RequestMessage> requestCache;
 
-    @Inject
     private MessageTree messageTree;
 
     @Inject
@@ -55,6 +54,12 @@ public class MessageService {
     public void init() {
         messageQueue.subscribe(Topic.RECORD, this::processMsg);
         messageQueue.subscribe(Topic.UPDATE_MSG, this::processUpdate);
+        resetMessageTree();
+    }
+
+    private void resetMessageTree() {
+        messageTree = new MessageTree();
+        messageTree.setRequestViewController(requestViewController);
     }
 
     /**
@@ -144,6 +149,8 @@ public class MessageService {
         if (msg instanceof DeleteMessage deleteMessage) {
             if (deleteMessage.isCleanLeaves()) {
                 cleanLeaves();
+            } else if (deleteMessage.isRemoveAll()){
+                removeAll();
             } else {
                 deleteRequest(deleteMessage);
             }
@@ -238,6 +245,23 @@ public class MessageService {
         try {
             requestCache.removeAll(requestIdList);
         } catch (BulkCacheWritingException e) {
+            log.error("Error in deleting in cache.", e);
+        }
+    }
+
+    /**
+     * remove all request data
+     */
+    private void removeAll() {
+        Platform.runLater(() -> {
+            requestViewController.getTreeRoot().getInternalChildren().clear();
+            requestViewController.getReqSourceList().clear();
+        });
+        resetMessageTree();
+
+        try {
+            requestCache.clear();
+        } catch (Exception e) {
             log.error("Error in deleting in cache.", e);
         }
     }

@@ -16,4 +16,6 @@ public class DeleteMessage extends BaseMessage{
     private RequestCell requestCell;
 
     private boolean cleanLeaves;
+
+    private boolean removeAll;
 }
