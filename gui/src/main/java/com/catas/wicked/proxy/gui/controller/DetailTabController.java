@@ -5,6 +5,7 @@ import com.catas.wicked.common.bean.OverviewInfo;
 import com.catas.wicked.common.bean.PairEntry;
 import com.catas.wicked.common.constant.CodeStyle;
 import com.catas.wicked.common.util.TableUtils;
+import com.catas.wicked.proxy.gui.SelectableEditableTableCell;
 import com.catas.wicked.proxy.gui.componet.MessageLabel;
 import com.catas.wicked.proxy.gui.componet.SelectableNodeBuilder;
 import com.catas.wicked.proxy.gui.componet.SideBar;
@@ -14,13 +15,10 @@ import com.catas.wicked.proxy.gui.componet.richtext.DisplayCodeArea;
 import com.catas.wicked.proxy.render.ContextMenuFactory;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXTabPane;
-import com.jfoenix.controls.JFXTextArea;
 import com.jfoenix.controls.JFXTreeTableView;
-import com.jfoenix.controls.cells.editors.base.GenericEditableTreeTableCell;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
@@ -160,6 +158,8 @@ public class DetailTabController implements Initializable {
      * initialize tableView for headers
      */
     private void initTableView(TableView<HeaderEntry> tableView) {
+        tableView.setEditable(true);
+
         // set key column
         TableColumn<HeaderEntry, String> keyColumn = new TableColumn<>();
         keyColumn.setText("Name");
@@ -168,7 +168,13 @@ public class DetailTabController implements Initializable {
         keyColumn.setCellValueFactory(new PropertyValueFactory<>("key"));
         keyColumn.setPrefWidth(120);
         keyColumn.setMaxWidth(200);
-        TableUtils.setTableCellFactory(keyColumn, true);
+        // TableUtils.setTableCellFactory(keyColumn, true);
+        keyColumn.setCellFactory((TableColumn<HeaderEntry, String> param) -> {
+            SelectableEditableTableCell<HeaderEntry> cell =
+                    new SelectableEditableTableCell<>(new SelectableNodeBuilder(), keyColumn);
+            cell.addTextStyle("headers-key");
+            return cell;
+        });
 
         // set value column
         TableColumn<HeaderEntry, String> valColumn = new TableColumn<>();
@@ -176,11 +182,11 @@ public class DetailTabController implements Initializable {
         valColumn.getStyleClass().add("table-value");
         valColumn.setSortable(false);
         valColumn.setEditable(true);
-        valColumn.setCellValueFactory(new PropertyValueFactory<>("value"));
-        // valColumn.setCellFactory((TreeTableColumn<PairEntry, String> param) ->
-        //         new GenericEditableTreeTableCell<>(new SelectableNodeBuilder()));
+        valColumn.setCellValueFactory(new PropertyValueFactory<>("val"));
+        valColumn.setCellFactory((TableColumn<HeaderEntry, String> param) -> {
+            return new SelectableEditableTableCell<>(new SelectableNodeBuilder(), valColumn);
+        });
 
-        TableUtils.setTableCellFactory(valColumn, false);
         tableView.getColumns().setAll(keyColumn, valColumn);
 
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
