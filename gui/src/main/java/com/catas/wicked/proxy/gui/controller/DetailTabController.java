@@ -5,7 +5,7 @@ import com.catas.wicked.common.bean.OverviewInfo;
 import com.catas.wicked.common.bean.PairEntry;
 import com.catas.wicked.common.constant.CodeStyle;
 import com.catas.wicked.common.util.TableUtils;
-import com.catas.wicked.proxy.gui.SelectableEditableTableCell;
+import com.catas.wicked.proxy.gui.componet.SelectableTableCell;
 import com.catas.wicked.proxy.gui.componet.MessageLabel;
 import com.catas.wicked.proxy.gui.componet.SelectableNodeBuilder;
 import com.catas.wicked.proxy.gui.componet.SideBar;
@@ -170,8 +170,8 @@ public class DetailTabController implements Initializable {
         keyColumn.setMaxWidth(200);
         // TableUtils.setTableCellFactory(keyColumn, true);
         keyColumn.setCellFactory((TableColumn<HeaderEntry, String> param) -> {
-            SelectableEditableTableCell<HeaderEntry> cell =
-                    new SelectableEditableTableCell<>(new SelectableNodeBuilder(), keyColumn);
+            SelectableTableCell<HeaderEntry> cell =
+                    new SelectableTableCell<>(new SelectableNodeBuilder(), keyColumn);
             cell.addTextStyle("headers-key");
             return cell;
         });
@@ -184,7 +184,7 @@ public class DetailTabController implements Initializable {
         valColumn.setEditable(true);
         valColumn.setCellValueFactory(new PropertyValueFactory<>("val"));
         valColumn.setCellFactory((TableColumn<HeaderEntry, String> param) -> {
-            return new SelectableEditableTableCell<>(new SelectableNodeBuilder(), valColumn);
+            return new SelectableTableCell<>(new SelectableNodeBuilder(), valColumn);
         });
 
         tableView.getColumns().setAll(keyColumn, valColumn);

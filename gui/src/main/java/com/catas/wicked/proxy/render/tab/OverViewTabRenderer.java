@@ -8,8 +8,8 @@ import com.catas.wicked.common.bean.message.ResponseMessage;
 import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.common.util.WebUtils;
 import com.catas.wicked.proxy.gui.componet.SelectableNodeBuilder;
+import com.catas.wicked.proxy.gui.componet.SelectableTreeTableCell;
 import com.catas.wicked.proxy.gui.controller.DetailTabController;
-import com.jfoenix.controls.cells.editors.base.GenericEditableTreeTableCell;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import javafx.application.Platform;
@@ -136,7 +136,7 @@ public class OverViewTabRenderer extends AbstractTabRenderer {
         valueColumn.setCellValueFactory((TreeTableColumn.CellDataFeatures<PairEntry, String> param) ->
                 new ReadOnlyStringWrapper(param.getValue().getValue().getVal()));
         valueColumn.setCellFactory((TreeTableColumn<PairEntry, String> param) ->
-                new GenericEditableTreeTableCell<>(new SelectableNodeBuilder()));
+                new SelectableTreeTableCell<>(new SelectableNodeBuilder(), valueColumn));
 
         TreeItem<PairEntry> root = new TreeItem<>();
         TreeItem<PairEntry> reqNode = new TreeItem<>(new PairEntry("Request", null));
