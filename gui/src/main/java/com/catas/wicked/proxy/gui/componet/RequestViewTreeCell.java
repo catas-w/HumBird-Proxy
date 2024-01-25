@@ -72,17 +72,6 @@ public class RequestViewTreeCell<T> extends TreeCell<T> {
         if (getTreeItem() != null) {
             getTreeItem().graphicProperty().addListener(weakTreeItemGraphicListener);
         }
-
-        this.setOnMouseClicked(e -> {
-            TreeItem<T> treeItem = getTreeItem();
-            if (e.getButton() == MouseButton.PRIMARY && treeItem != null && requestViewService != null) {
-                RequestCell cell = (RequestCell) treeItem.getValue();
-                // System.out.println("Clicked " + cell.getFullPath() + " " + cell.getRequestId() + "isLeaf: " + cell.isLeaf());
-                if (cell.isLeaf()) {
-                    requestViewService.updateRequestTab(cell.getRequestId());
-                }
-            }
-        });
     }
 
     public void setRequestViewService(RequestViewService requestViewService) {

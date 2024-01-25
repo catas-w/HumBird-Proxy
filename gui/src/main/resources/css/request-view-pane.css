@@ -117,7 +117,7 @@
 }
 .list-cell:odd:selected,
 .list-cell:even:selected{
-    -fx-background-color: #d4d4d4;
+    -fx-background-color: #7fd9d0;
 }
 
 .list-cell:odd,

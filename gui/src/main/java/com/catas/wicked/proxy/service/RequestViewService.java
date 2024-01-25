@@ -109,9 +109,9 @@ public class RequestViewService {
     public void updateRequestTab(String requestId) {
         String curRequestId = appConfig.getCurrentRequestId().get();
         if (StringUtils.equals(curRequestId, requestId)) {
-            log.warn("Same requestId");
             return;
         }
+        appConfig.getCurrentRequestId().set(requestId);
 
         messageQueue.clearMsg(Topic.RENDER);
         // queue.clear();
@@ -142,6 +142,6 @@ public class RequestViewService {
             // pushMsg(messages.poll());
             messageQueue.pushMsg(Topic.RENDER, messages.poll());
         }
-        appConfig.getCurrentRequestId().set(requestId);
+        // appConfig.getCurrentRequestId().set(requestId);
     }
 }

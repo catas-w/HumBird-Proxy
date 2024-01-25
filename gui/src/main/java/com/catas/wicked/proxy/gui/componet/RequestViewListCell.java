@@ -27,13 +27,6 @@ public class RequestViewListCell<T> extends ListCell<T> {
         this.getStyleClass().add(DEFAULT_STYLE_CLASS);
         selectedPane.getStyleClass().add("req-cell-bar");
         selectedPane.setMouseTransparent(true);
-
-        this.setOnMouseClicked(e -> {
-            if (e.getButton() == MouseButton.PRIMARY && this.requestCell != null && requestViewService != null) {
-                // System.out.println("clicked list: " + requestCell.getFullPath() + " " + requestCell.getRequestId());
-                requestViewService.updateRequestTab(requestCell.getRequestId());
-            }
-        });
     }
 
     public void setRequestViewService(RequestViewService requestViewService) {

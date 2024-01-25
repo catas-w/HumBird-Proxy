@@ -7,6 +7,8 @@ import com.catas.wicked.common.pipeline.Topic;
 import com.catas.wicked.proxy.gui.componet.FilterableTreeItem;
 import com.catas.wicked.proxy.gui.componet.TreeItemPredicate;
 import com.catas.wicked.proxy.gui.componet.ViewCellFactory;
+import com.catas.wicked.proxy.message.MessageService;
+import com.catas.wicked.proxy.service.RequestViewService;
 import com.jfoenix.controls.JFXToggleNode;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
@@ -53,16 +55,15 @@ public class RequestViewController implements Initializable {
     private ViewCellFactory cellFactory;
     @Inject
     private MessageQueue messageQueue;
+    @Inject
+    private RequestViewService requestViewService;
 
+    private MessageService messageService;
     /**
      * save requestList in filteredList
      */
     private ObservableList<RequestCell> reqSourceList;
     private FilteredList<RequestCell> filteredList;
-    /**
-     * current request-view type, 0=tree 1=list
-     */
-    private int curViewType = 0;
 
     public FilterableTreeItem getTreeRoot() {
         return (FilterableTreeItem) reqTreeView.getRoot();
@@ -72,8 +73,20 @@ public class RequestViewController implements Initializable {
         return reqListView;
     }
 
+    public TreeView<RequestCell> getReqTreeView() {
+        return reqTreeView;
+    }
+
     public ObservableList<RequestCell> getReqSourceList() {
         return reqSourceList;
+    }
+
+    /**
+     * To avoid circular dependency
+     * Since postConstruct() is executed earlier than initialize()
+     */
+    public void setMessageService(MessageService messageService) {
+        this.messageService = messageService;
     }
 
     @Override
@@ -93,6 +106,28 @@ public class RequestViewController implements Initializable {
 
         reqTreeView.setContextMenu(contextMenu);
         reqListView.setContextMenu(contextMenu);
+
+        reqTreeView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue == null) {
+                return;
+            }
+            RequestCell requestCell = newValue.getValue();
+            if (!requestCell.isLeaf()) {
+                // TODO display pathNode
+                return;
+            }
+            String requestId = requestCell.getRequestId();
+            requestViewService.updateRequestTab(requestId);
+            messageService.selectRequestItem(requestId, true);
+        });
+        reqListView.getSelectionModel().selectedItemProperty().addListener(((observable, oldValue, newValue) -> {
+            if (newValue == null) {
+                return;
+            }
+            String requestId = newValue.getRequestId();
+            requestViewService.updateRequestTab(requestId);
+            messageService.selectRequestItem(requestId, false);
+        }));
 
         toggleRequestView();
     }

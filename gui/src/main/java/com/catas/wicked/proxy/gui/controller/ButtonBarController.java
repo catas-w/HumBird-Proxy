@@ -38,6 +38,8 @@ public class ButtonBarController implements Initializable {
     @FXML
     public JFXButton removeAllBtn;
     @FXML
+    public JFXButton locateBtn;
+    @FXML
     private MenuButton mainMenuButton;
     @FXML
     private MenuItem proxySetting;
@@ -52,6 +54,9 @@ public class ButtonBarController implements Initializable {
 
     @Inject
     private RequestMockService requestMockService;
+
+    @Inject
+    private RequestViewController requestViewController;
 
     @SneakyThrows
     @Override
@@ -117,4 +122,14 @@ public class ButtonBarController implements Initializable {
         });
     }
 
+    /**
+     * scroll to selected item
+     */
+    public void locateToSelectedItem() {
+        int selectedTreeItem = requestViewController.getReqTreeView().getSelectionModel().getSelectedIndex();
+        requestViewController.getReqTreeView().scrollTo(selectedTreeItem);
+
+        int selectedListItem = requestViewController.getReqListView().getSelectionModel().getSelectedIndex();
+        requestViewController.getReqListView().scrollTo(selectedListItem);
+    }
 }

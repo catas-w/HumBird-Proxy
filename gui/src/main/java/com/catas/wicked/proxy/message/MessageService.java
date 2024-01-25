@@ -54,12 +54,33 @@ public class MessageService {
     public void init() {
         messageQueue.subscribe(Topic.RECORD, this::processMsg);
         messageQueue.subscribe(Topic.UPDATE_MSG, this::processUpdate);
+        // avoid circular dependency
+        requestViewController.setMessageService(this);
         resetMessageTree();
     }
 
     private void resetMessageTree() {
         messageTree = new MessageTree();
         messageTree.setRequestViewController(requestViewController);
+    }
+
+
+    /**
+     * set selectionMode in treeView/listView
+     * @param requestId requestId
+     * @param fromTreeView source
+     */
+    public void selectRequestItem(String requestId, boolean fromTreeView) {
+        RequestMessage requestMessage = requestCache.get(requestId);
+        if (requestMessage == null) {
+            return;
+        }
+        TreeNode treeNode = messageTree.findNodeByPath(requestMessage.getRequestUrl(), requestId);
+        if (fromTreeView) {
+            requestViewController.getReqListView().getSelectionModel().select(treeNode.getListItem());
+        } else {
+            requestViewController.getReqTreeView().getSelectionModel().select(treeNode.getTreeItem());
+        }
     }
 
     /**
