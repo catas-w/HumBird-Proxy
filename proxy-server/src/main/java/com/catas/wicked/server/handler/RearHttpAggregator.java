@@ -2,6 +2,7 @@ package com.catas.wicked.server.handler;
 
 import com.catas.wicked.common.bean.ProxyRequestInfo;
 import com.catas.wicked.common.constant.ProxyConstant;
+import com.catas.wicked.server.component.OversizeHttpMessage;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
@@ -63,7 +64,7 @@ public class RearHttpAggregator extends HttpObjectAggregator {
                 trailingHeaders = EmptyHttpHeaders.INSTANCE;
             }
             DefaultFullHttpRequest errRequest =
-                    new DefaultFullHttpRequest(httpVersion, method, uri, Unpooled.wrappedBuffer(DEFAULT_MSG.getBytes()),
+                    new OversizeHttpRequest(httpVersion, method, uri, Unpooled.wrappedBuffer(DEFAULT_MSG.getBytes()),
                             headers, trailingHeaders);
 
             try {
@@ -75,7 +76,7 @@ public class RearHttpAggregator extends HttpObjectAggregator {
             log.info("Handling oversized http response.");
             HttpResponseStatus status = httpResponse.status();
             HttpVersion httpVersion = httpResponse.protocolVersion();
-            DefaultFullHttpResponse errResponse = new DefaultFullHttpResponse(httpVersion, status,
+            DefaultFullHttpResponse errResponse = new OversizeHttpResponse(httpVersion, status,
                     Unpooled.wrappedBuffer(DEFAULT_MSG.getBytes()));
 
             try {
@@ -115,5 +116,20 @@ public class RearHttpAggregator extends HttpObjectAggregator {
             }
         }
         super.channelRead(ctx, msg);
+    }
+
+    public static class OversizeHttpRequest extends DefaultFullHttpRequest implements OversizeHttpMessage {
+
+        public OversizeHttpRequest(HttpVersion httpVersion, HttpMethod method, String uri,
+                                   ByteBuf content, HttpHeaders headers, HttpHeaders trailingHeader) {
+            super(httpVersion, method, uri, content, headers, trailingHeader);
+        }
+    }
+
+    public static class OversizeHttpResponse extends DefaultFullHttpResponse implements OversizeHttpMessage {
+
+        public OversizeHttpResponse(HttpVersion version, HttpResponseStatus status, ByteBuf content) {
+            super(version, status, content);
+        }
     }
 }

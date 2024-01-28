@@ -52,6 +52,10 @@ public class RequestMessage extends BaseMessage{
 
     private ResponseMessage response;
 
+    private boolean isEncrypted;
+
+    private boolean isOversize;
+
     public RequestMessage() {}
 
     public RequestMessage(String requestUrl) {

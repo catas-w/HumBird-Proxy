@@ -8,6 +8,7 @@ import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.common.constant.ProxyConstant;
 import com.catas.wicked.common.pipeline.MessageQueue;
 import com.catas.wicked.common.pipeline.Topic;
+import com.catas.wicked.server.component.OversizeHttpMessage;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -123,6 +124,7 @@ public class ServerPostRecorder extends ChannelDuplexHandler {
         RequestMessage requestMessage = new RequestMessage(url);
         requestMessage.setMethod("UNKNOWN");
         requestMessage.setHeaders(new HashMap<>());
+        requestMessage.setEncrypted(true);
         setRequestMsgInfo(requestInfo, requestMessage);
         messageQueue.pushMsg(Topic.RECORD, requestMessage);
 
@@ -167,7 +169,10 @@ public class ServerPostRecorder extends ChannelDuplexHandler {
         }
 
         // save to request tree
-        requestMessage.setProtocol(request.protocolVersion().protocolName());
+        requestMessage.setProtocol(request.protocolVersion().text());
+        if (request instanceof OversizeHttpMessage) {
+            requestMessage.setOversize(true);
+        }
         setRequestMsgInfo(requestInfo, requestMessage);
         messageQueue.pushMsg(Topic.RECORD, requestMessage);
 

@@ -1,12 +1,17 @@
 package com.catas.wicked.proxy.gui.controller;
 
 import com.catas.wicked.common.bean.message.DeleteMessage;
+import com.catas.wicked.common.bean.message.RequestMessage;
 import com.catas.wicked.common.config.ApplicationConfig;
+import com.catas.wicked.common.config.ExternalProxyConfig;
+import com.catas.wicked.common.constant.ProxyProtocol;
 import com.catas.wicked.common.pipeline.MessageQueue;
 import com.catas.wicked.common.pipeline.Topic;
 import com.catas.wicked.proxy.service.RequestMockService;
+import com.catas.wicked.server.client.MinimalHttpClient;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXToggleNode;
+import io.netty.handler.codec.http.HttpMethod;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import javafx.fxml.FXML;
@@ -20,15 +25,20 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.paint.Color;
 import javafx.stage.Window;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.ehcache.Cache;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 import static com.catas.wicked.common.constant.StyleConstant.BTN_ACTIVE;
 import static com.catas.wicked.common.constant.StyleConstant.BTN_INACTIVE;
 
+@Slf4j
 @Singleton
 public class ButtonBarController implements Initializable {
 
@@ -39,6 +49,8 @@ public class ButtonBarController implements Initializable {
     public JFXButton removeAllBtn;
     @FXML
     public JFXButton locateBtn;
+    @FXML
+    public JFXButton resendBtn;
     @FXML
     private MenuButton mainMenuButton;
     @FXML
@@ -51,6 +63,9 @@ public class ButtonBarController implements Initializable {
 
     @Inject
     private ApplicationConfig appConfig;
+
+    @Inject
+    private Cache<String, RequestMessage> requestCache;
 
     @Inject
     private RequestMockService requestMockService;
@@ -131,5 +146,51 @@ public class ButtonBarController implements Initializable {
 
         int selectedListItem = requestViewController.getReqListView().getSelectionModel().getSelectedIndex();
         requestViewController.getReqListView().scrollTo(selectedListItem);
+    }
+
+    /**
+     * resend selected request
+     */
+    public void resendRequest() {
+        System.out.println("resend request");
+        String requestId = appConfig.getCurrentRequestId().get();
+        if (StringUtils.isBlank(requestId)) {
+            return;
+        }
+        RequestMessage requestMessage = requestCache.get(requestId);
+        if (requestMessage == null || requestMessage.isEncrypted() || requestMessage.isOversize()) {
+            log.warn("Not integrated http request, unable to resend");
+            return;
+        }
+
+        String url = requestMessage.getRequestUrl();
+        String method = requestMessage.getMethod();
+        String protocol = requestMessage.getProtocol();
+        Map<String, String> headers = requestMessage.getHeaders();
+        byte[] content = requestMessage.getBody();
+
+        ExternalProxyConfig proxyConfig = new ExternalProxyConfig();
+        proxyConfig.setProtocol(ProxyProtocol.HTTP);
+        proxyConfig.setProxyAddress(appConfig.getHost(), appConfig.getPort());
+
+        MinimalHttpClient client = MinimalHttpClient.builder()
+                .uri(url)
+                .method(HttpMethod.valueOf(method))
+                .httpVersion(protocol)
+                .headers(headers)
+                .content(content)
+                .proxyConfig(proxyConfig)
+                .build();
+        try {
+            client.execute();
+        } catch (Exception e) {
+            log.error("Error in resending httpRequest: {}", requestMessage.getRequestUrl());
+        } finally {
+            // try {
+            //     client.close();
+            // } catch (InterruptedException e) {
+            //     e.printStackTrace();
+            // }
+        }
     }
 }
