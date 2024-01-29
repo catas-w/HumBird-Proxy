@@ -12,6 +12,7 @@ import com.catas.wicked.server.client.MinimalHttpClient;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXToggleNode;
 import io.netty.handler.codec.http.HttpMethod;
+import io.netty.handler.codec.http.HttpResponse;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import javafx.fxml.FXML;
@@ -152,7 +153,6 @@ public class ButtonBarController implements Initializable {
      * resend selected request
      */
     public void resendRequest() {
-        System.out.println("resend request");
         String requestId = appConfig.getCurrentRequestId().get();
         if (StringUtils.isBlank(requestId)) {
             return;
@@ -183,14 +183,12 @@ public class ButtonBarController implements Initializable {
                 .build();
         try {
             client.execute();
+            HttpResponse response = client.response();
+            log.info("Get response in resending: {}", response);
         } catch (Exception e) {
-            log.error("Error in resending httpRequest: {}", requestMessage.getRequestUrl());
+            log.error("Error in resending request: {}", requestMessage.getRequestUrl());
         } finally {
-            // try {
-            //     client.close();
-            // } catch (InterruptedException e) {
-            //     e.printStackTrace();
-            // }
+            client.close();
         }
     }
 }

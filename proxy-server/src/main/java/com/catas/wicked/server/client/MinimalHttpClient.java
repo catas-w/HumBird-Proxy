@@ -24,9 +24,7 @@ import io.netty.handler.proxy.ProxyHandler;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
-import io.netty.resolver.DefaultAddressResolverGroup;
-import io.netty.resolver.NoopAddressResolverGroup;
-import lombok.Data;
+import io.netty.util.concurrent.Promise;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetAddress;
@@ -35,13 +33,18 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutionException;
 
 import static com.catas.wicked.common.constant.NettyConstant.CLIENT_PROCESSOR;
 import static com.catas.wicked.common.constant.NettyConstant.EXTERNAL_PROXY;
 import static com.catas.wicked.common.constant.NettyConstant.HTTP_CODEC;
 import static com.catas.wicked.common.constant.NettyConstant.SSL_HANDLER;
 
-@Data
+/**
+ * Simple httpClient for resending request
+ */
 @Slf4j
 public class MinimalHttpClient {
 
@@ -54,12 +57,10 @@ public class MinimalHttpClient {
     private int timeout = 60 * 1000;
     private HttpVersion httpVersion = HttpVersion.HTTP_1_1;
 
-    // private HttpRequest httpRequest;
-    // private HttpContent httpContent;
-
-    private HttpResponse httpResponse;
-    private Object notifier = new Object();
     private ChannelFuture channelFuture;
+    HttpResponse httpResponse;
+    Promise<HttpResponse> responsePromise;
+    BlockingQueue<Promise<HttpResponse>> msgList = new ArrayBlockingQueue<>(1);
 
     public void execute() {
         assert uri != null;
@@ -73,11 +74,14 @@ public class MinimalHttpClient {
         try {
             URL url = new URL(uri);
             String host = url.getHost();
+            int port = url.getPort();
+            if (port == -1) {
+                port = isSSl ? 443 : 80;
+            }
             InetAddress addr = InetAddress.getByName(host);
             if (!host.equalsIgnoreCase(addr.getHostAddress())) {
-                address = new InetSocketAddress(host, isSSl ? 443 : 80);
+                address = new InetSocketAddress(host, port);
             } else {
-                int port = url.getPort();
                 address = InetSocketAddress.createUnresolved(host, port);
             }
         } catch (Exception e) {
@@ -98,9 +102,6 @@ public class MinimalHttpClient {
                             // add external proxy handler
                             ProxyHandler httpProxyHandler = ProxyHandlerFactory.getExternalProxyHandler(proxyConfig);
                             ch.pipeline().addLast(EXTERNAL_PROXY, httpProxyHandler);
-                            bootstrap.resolver(NoopAddressResolverGroup.INSTANCE);
-                        } else {
-                            bootstrap.resolver(DefaultAddressResolverGroup.INSTANCE);
                         }
                         if (isSSl) {
                             SslContext context = SslContextBuilder.forClient()
@@ -140,9 +141,10 @@ public class MinimalHttpClient {
         eventExecutors.shutdownGracefully();
     }
 
-    public HttpResponse response() {
-        // TODO wait to get response
-        return httpResponse;
+    public HttpResponse response() throws InterruptedException, ExecutionException {
+        // wait to get response
+        Promise<HttpResponse> promise = msgList.take();
+        return promise.get();
     }
 
     private HttpRequest buildHttpRequest() {
@@ -161,6 +163,71 @@ public class MinimalHttpClient {
         }
         list.add(new DefaultLastHttpContent());
         return list;
+    }
+
+
+    public String getUri() {
+        return uri;
+    }
+
+    public void setUri(String uri) {
+        this.uri = uri;
+    }
+
+    public HttpMethod getMethod() {
+        return method;
+    }
+
+    public void setMethod(HttpMethod method) {
+        this.method = method;
+    }
+
+    public Map<String, String> getHeaders() {
+        return headers;
+    }
+
+    public void setHeaders(Map<String, String> headers) {
+        this.headers = headers;
+    }
+
+    public byte[] getContent() {
+        return content;
+    }
+
+    public void setContent(byte[] content) {
+        this.content = content;
+    }
+
+    public NioEventLoopGroup getEventExecutors() {
+        return eventExecutors;
+    }
+
+    public void setEventExecutors(NioEventLoopGroup eventExecutors) {
+        this.eventExecutors = eventExecutors;
+    }
+
+    public ExternalProxyConfig getProxyConfig() {
+        return proxyConfig;
+    }
+
+    public void setProxyConfig(ExternalProxyConfig proxyConfig) {
+        this.proxyConfig = proxyConfig;
+    }
+
+    public int getTimeout() {
+        return timeout;
+    }
+
+    public void setTimeout(int timeout) {
+        this.timeout = timeout;
+    }
+
+    public HttpVersion getHttpVersion() {
+        return httpVersion;
+    }
+
+    public void setHttpVersion(HttpVersion httpVersion) {
+        this.httpVersion = httpVersion;
     }
 
     public static Builder builder() {
