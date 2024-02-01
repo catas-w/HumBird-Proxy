@@ -71,27 +71,27 @@
             </VBox.margin>
         </JFXButton>
 
-        <Pane prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="ALWAYS" />
+        <Pane VBox.vgrow="ALWAYS" />
         <MenuButton fx:id="mainMenuButton" mnemonicParsing="false" popupSide="TOP" prefHeight="28.0" prefWidth="45.0" styleClass="main-menu-btn" textFill="#363636bd">
             <items>
-                <MenuItem fx:id="proxySetting" text="Proxy Settings">
+                <MenuItem fx:id="proxySetting" text="Settings">
                     <graphic>
-                        <FontIcon iconLiteral="fas-star" iconSize="24" />
+                        <FontIcon iconLiteral="fas-cog" iconSize="18"/>
                     </graphic>
                 </MenuItem>
-                <MenuItem fx:id="exportBtn" text="Export">
+                <MenuItem fx:id="exportBtn" text="Release Notes">
                     <graphic>
-                        <FontIcon iconLiteral="fas-star" iconSize="24" />
+                        <FontIcon iconLiteral="fas-book-reader" iconSize="18"/>
                     </graphic>
                 </MenuItem>
                 <MenuItem fx:id="AboutBtn" text="About">
                     <graphic>
-                        <FontIcon iconLiteral="fas-star" iconSize="24" />
+                        <FontIcon iconLiteral="fas-info-circle" iconSize="18"/>
                     </graphic>
                 </MenuItem>
                 <MenuItem fx:id="quitBtn" text="Quit">
                     <graphic>
-                        <FontIcon iconLiteral="fas-star" iconSize="24" />
+                        <FontIcon iconLiteral="fas-sign-in-alt" iconSize="18"/>
                     </graphic>
                 </MenuItem>
             </items>
