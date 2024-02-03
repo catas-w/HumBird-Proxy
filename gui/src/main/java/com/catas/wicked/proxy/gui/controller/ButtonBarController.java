@@ -18,12 +18,14 @@ import jakarta.inject.Singleton;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.paint.Color;
+import javafx.stage.Modality;
 import javafx.stage.Window;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -58,6 +60,7 @@ public class ButtonBarController implements Initializable {
     private MenuItem proxySetting;
 
     private Dialog proxyConfigDialog;
+    private Dialog<Node> settingPage;
 
     @Inject
     private MessageQueue messageQueue;
@@ -78,7 +81,7 @@ public class ButtonBarController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         // proxy setting dialog
-        bindProxySettingBtn();
+        // bindProxySettingBtn();
 
         // toggle record button
         recordBtn.selectedProperty().addListener(((observable, oldValue, newValue) -> {
@@ -136,6 +139,28 @@ public class ButtonBarController implements Initializable {
         proxySetting.setOnAction(e -> {
             proxyConfigDialog.showAndWait();
         });
+    }
+
+    public void displaySettingPage() {
+        if (settingPage == null) {
+            try {
+                Parent settingScene = FXMLLoader.load(getClass().getResource("/fxml/setting-page/settings.fxml"));
+                settingPage = new Dialog<>();
+                settingPage.setTitle("Settings");
+                settingPage.initModality(Modality.APPLICATION_MODAL);
+                DialogPane dialogPane = settingPage.getDialogPane();
+                dialogPane.setContent(settingScene);
+                dialogPane.getStylesheets().add(
+                        getClass().getResource("/css/dialog.css").toExternalForm());
+                dialogPane.getStyleClass().add("myDialog");
+                Window window = dialogPane.getScene().getWindow();
+                window.setOnCloseRequest(e -> window.hide());
+            } catch (IOException e) {
+                log.error("Error loading settings-page.", e);
+            }
+        }
+
+        settingPage.showAndWait();
     }
 
     /**

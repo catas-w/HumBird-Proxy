@@ -32,6 +32,8 @@ public class ApplicationConfig implements AutoCloseable {
 
     private boolean recording = true;
 
+    private boolean setSystemProxy;
+
     private int throttleLevel = 0;
 
     private int maxContentSize = 1 * 1024 * 1024;

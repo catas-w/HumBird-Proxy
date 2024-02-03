@@ -74,7 +74,7 @@
         <Pane VBox.vgrow="ALWAYS" />
         <MenuButton fx:id="mainMenuButton" mnemonicParsing="false" popupSide="TOP" prefHeight="28.0" prefWidth="45.0" styleClass="main-menu-btn" textFill="#363636bd">
             <items>
-                <MenuItem fx:id="proxySetting" text="Settings">
+                <MenuItem fx:id="proxySetting" onAction="#displaySettingPage" text="Settings">
                     <graphic>
                         <FontIcon iconLiteral="fas-cog" iconSize="18"/>
                     </graphic>
