@@ -59,7 +59,6 @@ public class ButtonBarController implements Initializable {
     @FXML
     private MenuItem proxySetting;
 
-    private Dialog proxyConfigDialog;
     private Dialog<Node> settingPage;
 
     @Inject
@@ -118,27 +117,6 @@ public class ButtonBarController implements Initializable {
         DeleteMessage deleteMessage = new DeleteMessage();
         deleteMessage.setRemoveAll(true);
         messageQueue.pushMsg(Topic.RECORD, deleteMessage);
-    }
-
-    private void bindProxySettingBtn() {
-        try {
-            Parent proxyScene = FXMLLoader.load(getClass().getResource("/fxml/proxy-settings.fxml"));
-            proxyConfigDialog = new Dialog<>();
-            proxyConfigDialog.setTitle("Proxy Config");
-            DialogPane dialogPane = proxyConfigDialog.getDialogPane();
-            dialogPane.setContent(proxyScene);
-            dialogPane.getStylesheets().add(
-                    getClass().getResource("/css/dialog.css").toExternalForm());
-            dialogPane.getStyleClass().add("myDialog");
-            Window window = dialogPane.getScene().getWindow();
-            window.setOnCloseRequest(e -> window.hide());
-        } catch (IOException ioExc) {
-            ioExc.printStackTrace();
-        }
-
-        proxySetting.setOnAction(e -> {
-            proxyConfigDialog.showAndWait();
-        });
     }
 
     public void displaySettingPage() {

@@ -47,7 +47,6 @@
 }
 
 /****** buttonBar ******/
-
 .settings-btn .button {
     -fx-pref-height: 35;
     -fx-pref-width: 80;
@@ -66,4 +65,36 @@
     -fx-background-color: #29c1c1;
     -fx-border-width: 0;
     -fx-background-radius: 5;
+}
+
+
+/****** input fields ******/
+.setting-tab-pane .jfx-toggle-button {
+    -fx-padding: 0 0 0 -4;
+    -jfx-toggle-color: #009688;
+}
+
+.setting-tab-pane .jfx-text-field {
+    /*-fx-border-width: 1;*/
+    /*-fx-border-color: gray;*/
+    -jfx-focus-color: #219eab;
+    -jfx-unfocus-color: #4d4d4d;
+    -fx-padding: 0.333333em 0 0.333333em 0;
+}
+
+.setting-tab-pane .jfx-text-field > .input-line {
+    -fx-background-color: -jfx-unfocus-color;
+    -fx-pref-height: 1px;
+    -fx-translate-y: 1px;
+}
+
+.setting-tab-pane .jfx-text-field > .input-focused-line {
+    -fx-background-color: -jfx-focus-color;
+    -fx-pref-height: 2px;
+}
+
+.setting-tab-pane .jfx-text-field,
+.setting-tab-pane .jfx-text-field:focused {
+    -fx-background-color: TRANSPARENT, TRANSPARENT, TRANSPARENT;
+    -fx-prompt-text-fill: #4D4D4D;
 }

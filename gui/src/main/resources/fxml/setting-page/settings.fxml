@@ -17,6 +17,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.layout.Pane?>
 
+<?import com.jfoenix.controls.JFXTextField?>
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0"
             prefWidth="640.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.catas.wicked.proxy.gui.controller.SettingController">
@@ -24,7 +25,7 @@
         <URL value="@../../css/setting-page.css"/>
         <URL value="@../../css/common-design.css"/>
     </stylesheets>
-    <TabPane styleClass="setting-tab-pane" rotateGraphic="true" side="LEFT" tabClosingPolicy="UNAVAILABLE"
+    <TabPane fx:id="settingTabPane" styleClass="setting-tab-pane" rotateGraphic="true" side="LEFT" tabClosingPolicy="UNAVAILABLE"
              AnchorPane.bottomAnchor="-10.0" AnchorPane.leftAnchor="-10.0"
              AnchorPane.rightAnchor="-10.0" AnchorPane.topAnchor="-10.0">
         <Tab text="Proxy Settings">
@@ -47,8 +48,8 @@
                     <Label text="System Proxy" GridPane.rowIndex="2"/>
                     <Label text="Throttle level" GridPane.rowIndex="3"/>
 
-                    <TextField fx:id="portField" GridPane.columnIndex="1" maxWidth="80" />
-                    <TextField fx:id="maxSizeField" GridPane.columnIndex="1" maxWidth="80" GridPane.rowIndex="1"/>
+                    <JFXTextField fx:id="portField" GridPane.columnIndex="1" prefWidth="120" />
+                    <JFXTextField fx:id="maxSizeField" GridPane.columnIndex="1" prefWidth="120" GridPane.rowIndex="1"/>
                     <JFXToggleButton mnemonicParsing="false" GridPane.columnIndex="1"
                                   GridPane.rowIndex="2"/>
                     <JFXSlider GridPane.columnIndex="1" GridPane.rowIndex="3"/>
@@ -57,6 +58,28 @@
         </Tab>
         <Tab text="SSl Settings" styleClass="setting-tab-2">
             <AnchorPane>
+                <GridPane AnchorPane.leftAnchor="20.0"
+                          AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0">
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="NEVER" maxWidth="120.0" minWidth="120.0"/>
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="450" minWidth="100.0" prefWidth="400"/>
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints minHeight="45.0" prefHeight="45.0" vgrow="SOMETIMES"/>
+                        <RowConstraints minHeight="45.0" prefHeight="45.0" vgrow="SOMETIMES"/>
+                        <RowConstraints minHeight="45.0" prefHeight="45.0" vgrow="SOMETIMES"/>
+                        <RowConstraints minHeight="45.0" prefHeight="45.0" vgrow="SOMETIMES"/>
+                        <RowConstraints minHeight="45.0" prefHeight="45.0" vgrow="SOMETIMES"/>
+                    </rowConstraints>
+                    <Label text="HTTP-Proxy Port"/>
+                    <Label text="Max-Record Size(M)" GridPane.rowIndex="1"/>
+                    <Label text="System Proxy" GridPane.rowIndex="2"/>
+
+                    <JFXTextField GridPane.columnIndex="1" prefWidth="120" />
+                    <JFXTextField GridPane.columnIndex="1" prefWidth="120" GridPane.rowIndex="1"/>
+                    <JFXToggleButton mnemonicParsing="false" GridPane.columnIndex="1"
+                                     GridPane.rowIndex="2"/>
+                </GridPane>
             </AnchorPane>
         </Tab>
         <Tab text="External Proxy">
@@ -82,7 +105,7 @@
                 <Insets left="10.0" />
             </HBox.margin>
         </JFXButton>
-        <JFXButton text="Cancel" styleClass="cancel-btn">
+        <JFXButton fx:id="cancelBtn" text="Cancel" onAction="#cancel" styleClass="cancel-btn">
             <HBox.margin>
                 <Insets left="10.0" />
             </HBox.margin>
