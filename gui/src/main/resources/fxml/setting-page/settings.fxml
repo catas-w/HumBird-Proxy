@@ -27,7 +27,7 @@
     <TabPane fx:id="settingTabPane" styleClass="setting-tab-pane" rotateGraphic="true" side="LEFT" tabClosingPolicy="UNAVAILABLE"
              AnchorPane.bottomAnchor="-10.0" AnchorPane.leftAnchor="-10.0"
              AnchorPane.rightAnchor="-10.0" AnchorPane.topAnchor="-10.0">
-        <Tab text="Proxy Settings">
+        <Tab text="Proxy Settings" styleClass="setting-tab-server">
             <AnchorPane>
                 <GridPane AnchorPane.leftAnchor="20.0"
                           AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0">
@@ -55,7 +55,7 @@
                 </GridPane>
             </AnchorPane>
         </Tab>
-        <Tab text="SSl Settings" styleClass="setting-tab-2">
+        <Tab text="SSl Settings" styleClass="setting-tab-ssl">
             <AnchorPane>
                 <GridPane AnchorPane.leftAnchor="20.0"
                           AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0">
@@ -81,11 +81,11 @@
                 </GridPane>
             </AnchorPane>
         </Tab>
-        <Tab text="External Proxy">
+        <Tab text="External Proxy" styleClass="setting-tab-external">
             <AnchorPane>
             </AnchorPane>
         </Tab>
-        <Tab text="Help" styleClass="setting-tab-4">
+        <Tab text="Help" styleClass="setting-tab-help">
             <AnchorPane>
             </AnchorPane>
         </Tab>

@@ -1,8 +1,10 @@
 package com.catas.wicked.proxy.gui.controller;
 
+import com.catas.wicked.common.config.ApplicationConfig;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTextField;
 import com.jfoenix.validation.RequiredFieldValidator;
+import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -41,6 +43,13 @@ public class SettingController implements Initializable {
     private JFXTextField maxSizeField;
     @FXML
     private JFXButton saveBtn;
+
+    @Inject
+    private ApplicationConfig appConfig;
+
+    public void setAppConfig(ApplicationConfig appConfig) {
+        this.appConfig = appConfig;
+    }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -108,6 +117,19 @@ public class SettingController implements Initializable {
         }
 
         // TODO
+        List<String> styleList = selectedTab.getStyleClass().stream()
+                .filter(style -> style.startsWith("setting-tab")).toList();
+        String style = styleList.get(0);
+        switch (style) {
+            case "setting-tab-server" -> {}
+            case "setting-tab-ssl" -> {}
+            case "setting-tab-external" -> {}
+            case "setting-tab-help" -> {}
+        }
+
+        // update config file
+        appConfig.setPort(9999);
+        appConfig.updateLocalConfig();
     }
 
     public void cancel() {

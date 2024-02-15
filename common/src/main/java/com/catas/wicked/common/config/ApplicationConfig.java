@@ -3,8 +3,11 @@ package com.catas.wicked.common.config;
 import com.catas.wicked.common.pipeline.MessageQueue;
 import com.catas.wicked.common.util.ThreadPoolService;
 import com.catas.wicked.common.util.WebUtils;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.handler.ssl.SslContext;
@@ -14,7 +17,6 @@ import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,6 +28,7 @@ import java.util.Date;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @Slf4j
 @Data
 @Singleton
@@ -45,7 +48,7 @@ public class ApplicationConfig implements AutoCloseable {
 
     private Integer throttleLevel = 0;
 
-    private Integer maxContentSize = 1 * 1024 * 1024;
+    private Integer maxContentSize = 10 * 1024 * 1024;
 
     private ExternalProxyConfig externalProxy;
 
@@ -66,6 +69,7 @@ public class ApplicationConfig implements AutoCloseable {
      * current requestId in display
      */
     private AtomicReference<String> currentRequestId;
+    private ObjectMapper objectMapper;
 
     @Inject
     private MessageQueue messageQueue;
@@ -74,8 +78,11 @@ public class ApplicationConfig implements AutoCloseable {
     public void init() {
         this.currentRequestId = new AtomicReference<>(null);
         this.shutDownFlag = new AtomicBoolean(false);
-        // this.externalProxyConfig = new ExternalProxyConfig();
         this.proxyLoopGroup = new NioEventLoopGroup(2);
+
+        objectMapper = new ObjectMapper();
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
 
         try {
             loadLocalConfig();
@@ -90,39 +97,63 @@ public class ApplicationConfig implements AutoCloseable {
         // externalProxyConfig.setUsingExternalProxy(true);
     }
 
-    private void loadLocalConfig() throws IOException {
+    private File getLocalConfigFile() throws IOException {
         Path configPath = Paths.get(WebUtils.getStoragePath(), "config", "config.json");
-        File file = configPath.toFile();
+        return configPath.toFile();
+    }
+
+    public void loadLocalConfig() throws IOException {
+        File file = getLocalConfigFile();
         if (!file.exists()) {
             return;
         }
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        ApplicationConfig config = objectMapper.readValue(file, ApplicationConfig.class);
-        // System.out.println("Read config: " + config);
+
+        // ApplicationConfig config = objectMapper.readValue(file, ApplicationConfig.class);
+        JsonNode config = objectMapper.readValue(file, JsonNode.class);
+        System.out.println("Read config: " + config);
         if (config == null) {
             return;
         }
-        if (StringUtils.isNotBlank(config.getHost())) {
-            setHost(config.getHost());
+        if (config.get("host") != null) {
+            setHost(config.get("host").asText());
         }
-        if (config.getPort() != null) {
-            setPort(config.getPort());
+        if (config.get("port") != null) {
+            setPort(config.get("port").asInt());
         }
-        if (config.getHandleSsl() != null) {
-            setHandleSsl(config.getHandleSsl());
+        if (config.get("throttleLevel") != null) {
+            setThrottleLevel(config.get("throttleLevel").asInt());
         }
-        if (config.getMaxContentSize() != null) {
-            setMaxContentSize(config.getMaxContentSize());
+        if (config.get("maxContentSize") != null) {
+            setMaxContentSize(config.get("maxContentSize").asInt());
         }
-        if (config.getSystemProxy() != null) {
-            setSystemProxy(config.getSystemProxy());
+        if (config.get("handleSsl") != null) {
+            setHandleSsl(config.get("handleSsl").asBoolean());
         }
-        if (config.getThrottleLevel() != null) {
-            setThrottleLevel(config.getThrottleLevel());
+        if (config.get("systemProxy") != null) {
+            setSystemProxy(config.get("systemProxy").asBoolean());
         }
-        if (config.getExternalProxy() != null) {
-            setExternalProxy(config.getExternalProxy());
+        if (config.get("externalProxy") != null) {
+            JsonNode node = config.get("externalProxy");
+            ExternalProxyConfig obj = objectMapper.treeToValue(node, ExternalProxyConfig.class);
+            System.out.println(obj);
+            setExternalProxy(obj);
+        }
+    }
+
+    public synchronized void updateLocalConfig() {
+        try {
+            File file = getLocalConfigFile();
+            ApplicationConfig config = new ApplicationConfig();
+            config.setHost(getHost());
+            config.setPort(getPort());
+            config.setSystemProxy(isSystemProxy());
+            config.setHandleSsl(isHandleSsl());
+            config.setMaxContentSize(getMaxContentSize());
+            config.setThrottleLevel(getThrottleLevel());
+            config.setExternalProxy(getExternalProxy());
+            objectMapper.writeValue(file, config);
+        } catch (IOException e) {
+            log.error("Error updating local config.", e);
         }
     }
 
@@ -137,5 +168,17 @@ public class ApplicationConfig implements AutoCloseable {
     @Override
     public void close() throws Exception {
         shutDownApplication();
+    }
+
+    public Boolean isHandleSsl() {
+        return handleSsl;
+    }
+
+    public Boolean isRecording() {
+        return recording;
+    }
+
+    public Boolean isSystemProxy() {
+        return systemProxy;
     }
 }

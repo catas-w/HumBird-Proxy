@@ -122,7 +122,11 @@ public class ButtonBarController implements Initializable {
     public void displaySettingPage() {
         if (settingPage == null) {
             try {
-                Parent settingScene = FXMLLoader.load(getClass().getResource("/fxml/setting-page/settings.fxml"));
+                // Parent settingScene = FXMLLoader.load(getClass().getResource("/fxml/setting-page/settings.fxml"));
+                FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/setting-page/settings.fxml"));
+                Parent settingScene = fxmlLoader.load();
+                SettingController controller = fxmlLoader.getController();
+                controller.setAppConfig(appConfig);
                 settingPage = new Dialog<>();
                 settingPage.setTitle("Settings");
                 settingPage.initModality(Modality.APPLICATION_MODAL);
