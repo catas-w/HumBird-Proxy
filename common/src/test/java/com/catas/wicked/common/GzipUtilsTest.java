@@ -1,13 +1,13 @@
 package com.catas.wicked.common;
 
 import com.catas.wicked.common.util.GzipUtils;
-import io.netty.handler.codec.compression.BrotliDecoder;
-import org.apache.commons.compress.compressors.brotli.BrotliCompressorInputStream;
 import org.junit.Assert;
 import org.junit.Test;
-import org.apache.commons.compress.compressors.brotli.BrotliUtils;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.Paths;
 
 public class GzipUtilsTest {
 
@@ -35,9 +35,15 @@ public class GzipUtilsTest {
         System.out.println("After compressed length: " + compress.length);
         String decompress = GzipUtils.inflateStr(compress);
         Assert.assertEquals(str, decompress);
+    }
 
-//         BrotliDecoder
-
-//        BrotliCompressorInputStream compressorInputStream = new BrotliCompressorInputStream();
+    @Test
+    public void testPath() throws IOException {
+        System.out.println(System.getProperty("user.dir"));
+        System.out.println(Paths.get("").toAbsolutePath().normalize());
+        System.out.println(FileSystems.getDefault().getPath(""));
+        System.out.println(getClass().getResource("").getPath());
+        System.out.println(new File("").getCanonicalPath());
+        System.out.println(new File("").getAbsoluteFile());
     }
 }

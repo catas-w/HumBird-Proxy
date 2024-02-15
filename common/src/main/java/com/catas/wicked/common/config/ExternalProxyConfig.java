@@ -11,6 +11,8 @@ public class ExternalProxyConfig {
 
     private ProxyProtocol protocol;
 
+    private String host;
+    private int port;
     private SocketAddress socketAddress;
 
     private String username;
@@ -23,5 +25,17 @@ public class ExternalProxyConfig {
 
     public void setProxyAddress(String hostname, int port) {
         socketAddress = new InetSocketAddress(hostname, port);
+    }
+
+    public void setProxyAddress() {
+        setProxyAddress(host, port);
+    }
+
+    public SocketAddress getSocketAddress() {
+        if (socketAddress != null) {
+            return socketAddress;
+        }
+        setProxyAddress();
+        return socketAddress;
     }
 }

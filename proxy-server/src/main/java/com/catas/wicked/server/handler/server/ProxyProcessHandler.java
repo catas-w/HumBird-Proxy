@@ -115,7 +115,7 @@ public class ProxyProcessHandler extends ChannelInboundHandlerAdapter {
                         protected void initChannel(NioSocketChannel ch) throws Exception {
                             if (requestInfo.isUsingExternalProxy()) {
                                 // add external proxy handler
-                                ExternalProxyConfig externalProxyConfig = appConfig.getExternalProxyConfig();
+                                ExternalProxyConfig externalProxyConfig = appConfig.getExternalProxy();
                                 ProxyHandler httpProxyHandler = ProxyHandlerFactory.getExternalProxyHandler(externalProxyConfig);
                                 ch.pipeline().addFirst(EXTERNAL_PROXY, httpProxyHandler);
                                 bootstrap.resolver(NoopAddressResolverGroup.INSTANCE);

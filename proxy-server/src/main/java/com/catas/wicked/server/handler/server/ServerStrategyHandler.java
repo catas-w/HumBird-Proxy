@@ -105,9 +105,10 @@ public class ServerStrategyHandler extends ChannelDuplexHandler {
             attr.set(requestInfo);
         }
         assert requestInfo != null;
-        requestInfo.setUsingExternalProxy(appConfig.getExternalProxyConfig().isUsingExternalProxy());
+        requestInfo.setUsingExternalProxy(appConfig.getExternalProxy() != null &&
+                appConfig.getExternalProxy().isUsingExternalProxy());
         requestInfo.setRequestId(IdUtil.getId());
-        requestInfo.setRecording(appConfig.isRecording());
+        requestInfo.setRecording(appConfig.getRecording());
         requestInfo.resetBasicInfo();
 
         SocketAddress remoteAddress = ctx.channel().remoteAddress();
@@ -173,7 +174,7 @@ public class ServerStrategyHandler extends ChannelDuplexHandler {
             ProxyRequestInfo requestInfo = ctx.channel().attr(requestInfoAttributeKey).get();
             assert requestInfo != null;
             requestInfo.setSsl(true);
-            if (requestInfo.isRecording() && appConfig.isHandleSsl()) {
+            if (requestInfo.isRecording() && appConfig.getHandleSsl()) {
                 int port = ((InetSocketAddress) ctx.channel().localAddress()).getPort();
                 String originHost = requestInfo.getHost();
                 SslContext sslCtx = SslContextBuilder.forServer(

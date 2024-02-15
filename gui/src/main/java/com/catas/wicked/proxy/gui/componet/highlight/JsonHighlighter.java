@@ -92,7 +92,7 @@ public class JsonHighlighter implements Highlighter<Collection<String>>, Formatt
             Object json = objectMapper.readValue(text, Object.class);
             return objectMapper.writer(printer).writeValueAsString(json);
         } catch (JsonProcessingException e) {
-            System.out.println("Json format error");
+            // System.out.println("Json format error");
             return text;
         }
     }
