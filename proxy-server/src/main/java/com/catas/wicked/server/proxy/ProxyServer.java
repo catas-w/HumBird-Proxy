@@ -1,6 +1,5 @@
 package com.catas.wicked.server.proxy;
 
-import com.catas.wicked.common.util.ThreadPoolService;
 import com.catas.wicked.server.HttpProxyApplication;
 import com.catas.wicked.server.cert.CertPool;
 import com.catas.wicked.server.cert.CertService;
@@ -9,7 +8,6 @@ import com.catas.wicked.server.handler.server.ProxyServerInitializer;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
-import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
@@ -23,6 +21,7 @@ import jakarta.annotation.PostConstruct;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
+
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
@@ -44,6 +43,8 @@ public class ProxyServer {
     @Inject
     private ProxyServerInitializer proxyServerInitializer;
 
+    private ChannelFuture channelFuture;
+
     public ProxyServer() {
     }
 
@@ -61,23 +62,44 @@ public class ProxyServer {
                     .option(ChannelOption.TCP_NODELAY, true)
                     .handler(new LoggingHandler(LogLevel.INFO))
                     .childHandler(proxyServerInitializer);
-            ChannelFuture channelFuture = bootstrap.bind(applicationConfig.getPort()).sync();
-            channelFuture.channel().closeFuture().sync();
+            channelFuture = bootstrap.bind(applicationConfig.getPort()).sync();
+            // channelFuture.channel().closeFuture().sync();
+            channelFuture.channel().closeFuture().addListener(future -> {
+                System.out.println("** Close **");
+                if (!(bossGroup.isShutdown() || bossGroup.isShuttingDown())) {
+                    bossGroup.shutdownGracefully();
+                }
+                if (!(workGroup.isShutdown() || workGroup.isShuttingDown())) {
+                    workGroup.shutdownGracefully();
+                }
+            });
         } catch (InterruptedException e) {
             log.info("Proxy server interrupt: {}", e.getMessage());
+        // } catch (Exception e) {
+        //     if (e instanceof BindException) {
+        //         log.error("Bind exception: {}", e.getMessage());
+        //         // TODO
+        //     }
+        //     log.error("Proxy server error", e);
         } finally {
-            EventLoopGroup proxyLoopGroup = applicationConfig.getProxyLoopGroup();
-            if (!(proxyLoopGroup.isShutdown() || proxyLoopGroup.isShuttingDown())) {
-                proxyLoopGroup.shutdownGracefully();
-            }
-            if (!(bossGroup.isShutdown() || bossGroup.isShuttingDown())) {
-                bossGroup.shutdownGracefully();
-            }
-            if (!(workGroup.isShutdown() || workGroup.isShuttingDown())) {
-                workGroup.shutdownGracefully();
-            }
+            // System.out.println("Server closed!!!");
+            // EventLoopGroup proxyLoopGroup = applicationConfig.getProxyLoopGroup();
+            // if (!(proxyLoopGroup.isShutdown() || proxyLoopGroup.isShuttingDown())) {
+            //     proxyLoopGroup.shutdownGracefully();
+            // }
+            // if (!(bossGroup.isShutdown() || bossGroup.isShuttingDown())) {
+            //     bossGroup.shutdownGracefully();
+            // }
+            // if (!(workGroup.isShutdown() || workGroup.isShuttingDown())) {
+            //     workGroup.shutdownGracefully();
+            // }
 
         }
+    }
+
+    public void shutdown() {
+        log.info("--- Shutting down proxy server ---");
+        channelFuture.channel().close();
     }
 
     @PostConstruct
@@ -106,7 +128,7 @@ public class ProxyServer {
             log.error("Certificate load error: ", e);
             applicationConfig.setHandleSsl(false);
         }
-        ThreadPoolService.getInstance().run(this::start);
-        // start();
+        // ThreadPoolService.getInstance().run(this::start);
+        start();
     }
 }

@@ -49,8 +49,7 @@
 
                     <JFXTextField fx:id="portField" GridPane.columnIndex="1" prefWidth="120" />
                     <JFXTextField fx:id="maxSizeField" GridPane.columnIndex="1" prefWidth="120" GridPane.rowIndex="1"/>
-                    <JFXToggleButton mnemonicParsing="false" GridPane.columnIndex="1"
-                                  GridPane.rowIndex="2"/>
+                    <JFXToggleButton fx:id="systemProxyField" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
                     <JFXSlider GridPane.columnIndex="1" GridPane.rowIndex="3"/>
                 </GridPane>
             </AnchorPane>

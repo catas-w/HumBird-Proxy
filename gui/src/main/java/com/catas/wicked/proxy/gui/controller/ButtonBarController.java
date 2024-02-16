@@ -9,6 +9,7 @@ import com.catas.wicked.common.pipeline.MessageQueue;
 import com.catas.wicked.common.pipeline.Topic;
 import com.catas.wicked.proxy.service.RequestMockService;
 import com.catas.wicked.server.client.MinimalHttpClient;
+import com.catas.wicked.server.proxy.ProxyServer;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXToggleNode;
 import io.netty.handler.codec.http.HttpMethod;
@@ -76,6 +77,11 @@ public class ButtonBarController implements Initializable {
     @Inject
     private RequestViewController requestViewController;
 
+    @Inject
+    private ProxyServer proxyServer;
+
+    private SettingController settingController;
+
     @SneakyThrows
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -120,13 +126,15 @@ public class ButtonBarController implements Initializable {
     }
 
     public void displaySettingPage() {
-        if (settingPage == null) {
+        if (settingPage == null || settingController == null) {
             try {
                 // Parent settingScene = FXMLLoader.load(getClass().getResource("/fxml/setting-page/settings.fxml"));
                 FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/setting-page/settings.fxml"));
                 Parent settingScene = fxmlLoader.load();
-                SettingController controller = fxmlLoader.getController();
-                controller.setAppConfig(appConfig);
+                settingController = fxmlLoader.getController();
+                settingController.setAppConfig(appConfig);
+                settingController.setProxyServer(proxyServer);
+
                 settingPage = new Dialog<>();
                 settingPage.setTitle("Settings");
                 settingPage.initModality(Modality.APPLICATION_MODAL);
@@ -142,6 +150,7 @@ public class ButtonBarController implements Initializable {
             }
         }
 
+        settingController.initValues();
         settingPage.showAndWait();
     }
 

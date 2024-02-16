@@ -144,7 +144,7 @@ public class ServerStrategyHandler extends ChannelDuplexHandler {
         } else {
             try {
                 ctx.channel().pipeline().addAfter(
-                        SERVER_PROCESSOR, AGGREGATOR, new RearHttpAggregator(appConfig.getMaxContentSize()));
+                        SERVER_PROCESSOR, AGGREGATOR, new RearHttpAggregator(appConfig.getMaxContentSize() * 1024 * 1024));
             } catch (IllegalArgumentException ignore) {}
         }
         requestInfo.setClientType(ProxyRequestInfo.ClientType.NORMAL);

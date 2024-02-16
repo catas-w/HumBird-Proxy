@@ -1,10 +1,11 @@
 package com.catas.wicked.proxy.gui.controller;
 
 import com.catas.wicked.common.config.ApplicationConfig;
+import com.catas.wicked.server.proxy.ProxyServer;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTextField;
+import com.jfoenix.controls.JFXToggleButton;
 import com.jfoenix.validation.RequiredFieldValidator;
-import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -34,6 +35,8 @@ import java.util.function.UnaryOperator;
 public class SettingController implements Initializable {
 
     @FXML
+    private JFXToggleButton systemProxyField;
+    @FXML
     private JFXButton cancelBtn;
     @FXML
     private TabPane settingTabPane;
@@ -44,11 +47,16 @@ public class SettingController implements Initializable {
     @FXML
     private JFXButton saveBtn;
 
-    @Inject
     private ApplicationConfig appConfig;
+
+    private ProxyServer proxyServer;
 
     public void setAppConfig(ApplicationConfig appConfig) {
         this.appConfig = appConfig;
+    }
+
+    public void setProxyServer(ProxyServer proxyServer) {
+        this.proxyServer = proxyServer;
     }
 
     @Override
@@ -98,38 +106,54 @@ public class SettingController implements Initializable {
         }
 
         if (!isValidated) {
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("Warning");
-            alert.setHeaderText("Invalid settings!");
-
-            alert.showAndWait();
-
-            // JFXDialogLayout layout = new JFXDialogLayout();
-            // layout.setBody(new Label("Invalid settings!"));
-            //
-            // JFXAlert<Void> alert = new JFXAlert<>();
-            // alert.setOverlayClose(true);
-            // alert.setAnimation(JFXAlertAnimation.NO_ANIMATION);
-            // alert.setContent(layout);
-            // alert.initModality(Modality.WINDOW_MODAL);
-            //
-            // alert.showAndWait();
+            alert("Illegal settings!");
+            return;
         }
 
-        // TODO
+        // update settings
         List<String> styleList = selectedTab.getStyleClass().stream()
                 .filter(style -> style.startsWith("setting-tab")).toList();
         String style = styleList.get(0);
         switch (style) {
-            case "setting-tab-server" -> {}
-            case "setting-tab-ssl" -> {}
-            case "setting-tab-external" -> {}
-            case "setting-tab-help" -> {}
+            case "setting-tab-server" -> {
+                Integer newPort = Integer.valueOf(portField.getText());
+                Integer oldPort = appConfig.getPort();
+                // TODO: check pot available
+                // restart server if port changed
+                if (!oldPort.equals(newPort)) {
+                    appConfig.setPort(newPort);
+                    try {
+                        proxyServer.shutdown();
+                        // appConfig.refreshEventLoop();
+                        proxyServer.start();
+                    } catch (Exception e) {
+                        log.error("Error in restarting proxy server.", e);
+                        alert("Port " + newPort + " is unavailable");
+                        appConfig.setPort(oldPort);
+                        proxyServer.start();
+                        return;
+                    }
+                }
+                // appConfig.setPort(newPort);
+                appConfig.setMaxContentSize(Integer.parseInt(maxSizeField.getText()));
+                appConfig.setSystemProxy(systemProxyField.isSelected());
+            }
+            case "setting-tab-ssl" -> {
+                System.out.println("ssl settings");
+            }
+            case "setting-tab-external" -> {
+                System.out.println("external proxy settings");
+            }
+            case "setting-tab-help" -> {
+                System.out.println("help settings");
+            }
         }
 
         // update config file
-        appConfig.setPort(9999);
         appConfig.updateLocalConfig();
+
+        // close dialog
+        cancel();
     }
 
     public void cancel() {
@@ -140,5 +164,36 @@ public class SettingController implements Initializable {
                 window.hide();
             }
         }
+    }
+
+    /**
+     * initialize form values
+     */
+    public void initValues() {
+        if (appConfig == null) {
+            return;
+        }
+        portField.setText(String.valueOf(appConfig.getPort()));
+        maxSizeField.setText(String.valueOf(appConfig.getMaxContentSize()));
+        systemProxyField.setSelected(appConfig.isSystemProxy());
+
+    }
+
+    private void alert(String msg) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("Warning");
+        alert.setHeaderText(msg);
+        alert.showAndWait();
+
+        // JFXDialogLayout layout = new JFXDialogLayout();
+        // layout.setBody(new Label("Invalid settings!"));
+        //
+        // JFXAlert<Void> alert = new JFXAlert<>();
+        // alert.setOverlayClose(true);
+        // alert.setAnimation(JFXAlertAnimation.NO_ANIMATION);
+        // alert.setContent(layout);
+        // alert.initModality(Modality.WINDOW_MODAL);
+        //
+        // alert.showAndWait();
     }
 }

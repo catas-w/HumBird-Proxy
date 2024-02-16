@@ -128,7 +128,7 @@ public class ClientStrategyHandler extends ChannelDuplexHandler {
                 if (requestInfo.isRecording()) {
                     try {
                         ch.pipeline().addBefore(POST_RECORDER, AGGREGATOR,
-                                new RearHttpAggregator(appConfig.getMaxContentSize()));
+                                new RearHttpAggregator(appConfig.getMaxContentSize() * 1024 * 1024));
                     } catch (IllegalArgumentException ignored) {}
                 }
             } else {

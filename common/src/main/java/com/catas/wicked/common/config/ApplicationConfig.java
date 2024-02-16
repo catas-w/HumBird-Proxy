@@ -48,7 +48,9 @@ public class ApplicationConfig implements AutoCloseable {
 
     private Integer throttleLevel = 0;
 
-    private Integer maxContentSize = 10 * 1024 * 1024;
+    private Integer maxContentSize = 10;
+
+    private Integer defaultThreadNumber = 2;
 
     private ExternalProxyConfig externalProxy;
 
@@ -78,7 +80,7 @@ public class ApplicationConfig implements AutoCloseable {
     public void init() {
         this.currentRequestId = new AtomicReference<>(null);
         this.shutDownFlag = new AtomicBoolean(false);
-        this.proxyLoopGroup = new NioEventLoopGroup(2);
+        this.proxyLoopGroup = new NioEventLoopGroup(defaultThreadNumber);
 
         objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -90,6 +92,12 @@ public class ApplicationConfig implements AutoCloseable {
             log.error("Error loading local configuration.", e);
         }
 
+        Runtime.getRuntime().addShutdownHook(new Thread(){
+            @Override
+            public void run() {
+                close();
+            }
+        });
         // test
         // System.setProperty("https.protocols", "TLSv1,TLSv1.1,TLSv1.2");
         // externalProxyConfig.setProtocol(ProxyProtocol.SOCKS4);
@@ -110,7 +118,7 @@ public class ApplicationConfig implements AutoCloseable {
 
         // ApplicationConfig config = objectMapper.readValue(file, ApplicationConfig.class);
         JsonNode config = objectMapper.readValue(file, JsonNode.class);
-        System.out.println("Read config: " + config);
+        // System.out.println("Read config: " + config);
         if (config == null) {
             return;
         }
@@ -159,6 +167,9 @@ public class ApplicationConfig implements AutoCloseable {
 
     public void shutDownApplication() {
         shutDownFlag.compareAndSet(false, true);
+        if (!(proxyLoopGroup.isShutdown() || proxyLoopGroup.isShuttingDown())) {
+            proxyLoopGroup.shutdownGracefully();
+        }
         // MessageQueue messageQueue = AppContextUtil.getBean(MessageQueue.class);
         // messageQueue.pushMsg(new PoisonMessage());
         ThreadPoolService.getInstance().shutdown();
@@ -166,7 +177,7 @@ public class ApplicationConfig implements AutoCloseable {
 
     @PreDestroy
     @Override
-    public void close() throws Exception {
+    public void close() {
         shutDownApplication();
     }
 
