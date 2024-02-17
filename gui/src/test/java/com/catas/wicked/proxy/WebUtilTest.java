@@ -2,6 +2,7 @@ package com.catas.wicked.proxy;
 
 import com.catas.wicked.common.util.WebUtils;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.net.MalformedURLException;
@@ -62,4 +63,16 @@ public class WebUtilTest {
         Assert.assertEquals(expected.trim(), headerText);
     }
 
+    @Ignore
+    @Test
+    public void testPortAvailable() {
+        Assert.assertFalse(WebUtils.isPortAvailable(-1));
+        Assert.assertFalse(WebUtils.isPortAvailable(655356));
+        Assert.assertFalse(WebUtils.isPortAvailable(-2));
+        Assert.assertFalse(WebUtils.isPortAvailable(10808));
+        Assert.assertFalse(WebUtils.isPortAvailable(10809));
+
+        Assert.assertTrue(WebUtils.isPortAvailable(9999));
+        Assert.assertTrue(WebUtils.isPortAvailable(9900));
+    }
 }

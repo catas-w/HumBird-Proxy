@@ -1,6 +1,7 @@
 package com.catas.wicked.proxy.gui.controller;
 
 import com.catas.wicked.common.config.ApplicationConfig;
+import com.catas.wicked.common.util.WebUtils;
 import com.catas.wicked.server.proxy.ProxyServer;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTextField;
@@ -118,13 +119,16 @@ public class SettingController implements Initializable {
             case "setting-tab-server" -> {
                 Integer newPort = Integer.valueOf(portField.getText());
                 Integer oldPort = appConfig.getPort();
-                // TODO: check pot available
+                // check pot available
+                if (!WebUtils.isPortAvailable(newPort)) {
+                    alert("Port " + newPort + " is unavailable");
+                    return;
+                }
                 // restart server if port changed
                 if (!oldPort.equals(newPort)) {
                     appConfig.setPort(newPort);
                     try {
                         proxyServer.shutdown();
-                        // appConfig.refreshEventLoop();
                         proxyServer.start();
                     } catch (Exception e) {
                         log.error("Error in restarting proxy server.", e);

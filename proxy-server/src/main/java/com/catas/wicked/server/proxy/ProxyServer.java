@@ -75,12 +75,6 @@ public class ProxyServer {
             });
         } catch (InterruptedException e) {
             log.info("Proxy server interrupt: {}", e.getMessage());
-        // } catch (Exception e) {
-        //     if (e instanceof BindException) {
-        //         log.error("Bind exception: {}", e.getMessage());
-        //         // TODO
-        //     }
-        //     log.error("Proxy server error", e);
         } finally {
             // System.out.println("Server closed!!!");
             // EventLoopGroup proxyLoopGroup = applicationConfig.getProxyLoopGroup();
