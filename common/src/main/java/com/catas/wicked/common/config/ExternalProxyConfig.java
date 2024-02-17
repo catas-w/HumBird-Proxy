@@ -1,6 +1,7 @@
 package com.catas.wicked.common.config;
 
 import com.catas.wicked.common.constant.ProxyProtocol;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import java.net.InetSocketAddress;
@@ -13,6 +14,7 @@ public class ExternalProxyConfig {
 
     private String host;
     private int port;
+    @JsonIgnore
     private SocketAddress socketAddress;
 
     private String username;

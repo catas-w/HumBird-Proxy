@@ -54,6 +54,7 @@ public class WickedProxyApplication implements ApplicationDelegate {
     @Override
     public void stop() throws Exception {
         log.info("---- Stopping Application ----");
+        proxyServer.shutdown();
         applicationConfig.shutDownApplication();
     }
 }

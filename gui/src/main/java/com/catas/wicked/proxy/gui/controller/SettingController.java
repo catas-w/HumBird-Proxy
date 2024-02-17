@@ -1,9 +1,12 @@
 package com.catas.wicked.proxy.gui.controller;
 
 import com.catas.wicked.common.config.ApplicationConfig;
+import com.catas.wicked.common.config.ExternalProxyConfig;
+import com.catas.wicked.common.constant.ProxyProtocol;
 import com.catas.wicked.common.util.WebUtils;
 import com.catas.wicked.server.proxy.ProxyServer;
 import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXTextField;
 import com.jfoenix.controls.JFXToggleButton;
 import com.jfoenix.validation.RequiredFieldValidator;
@@ -14,10 +17,13 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.DialogPane;
+import javafx.scene.control.Label;
+import javafx.scene.control.Labeled;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextFormatter;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.util.converter.IntegerStringConverter;
@@ -35,6 +41,14 @@ import java.util.function.UnaryOperator;
 @Singleton
 public class SettingController implements Initializable {
 
+    public JFXComboBox<Labeled> proxyComboBox;
+    public JFXTextField exProxyHost;
+    public JFXTextField exProxyPort;
+    public JFXTextField exUsername;
+    public JFXTextField exPassword;
+    public JFXToggleButton exProxyAuth;
+    public Label exUsernameLabel;
+    public Label exPasswordLabel;
     @FXML
     private JFXToggleButton systemProxyField;
     @FXML
@@ -52,6 +66,8 @@ public class SettingController implements Initializable {
 
     private ProxyServer proxyServer;
 
+    private UnaryOperator<TextFormatter.Change> textIntegerFilter;
+
     public void setAppConfig(ApplicationConfig appConfig) {
         this.appConfig = appConfig;
     }
@@ -62,7 +78,8 @@ public class SettingController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        UnaryOperator<TextFormatter.Change> integerFilter = change -> {
+        // textField constraint
+        textIntegerFilter = change -> {
             String newText = change.getControlNewText();
             if (newText.matches("-?([1-9][0-9]*)?")) {
                 return change;
@@ -70,11 +87,50 @@ public class SettingController implements Initializable {
             return null;
         };
 
-        portField.setTextFormatter(new TextFormatter<>(new IntegerStringConverter(), 9624, integerFilter));
-        maxSizeField.setTextFormatter(new TextFormatter<>(new IntegerStringConverter(), 10, integerFilter));
 
+        initServerSettingsTab ();
+        initExSettingsTab();
+    }
+
+    /**
+     * init server settings
+     */
+    private void initServerSettingsTab() {
+        portField.setTextFormatter(new TextFormatter<>(new IntegerStringConverter(), 9624, textIntegerFilter));
+        maxSizeField.setTextFormatter(new TextFormatter<>(new IntegerStringConverter(), 10, textIntegerFilter));
+
+        // add validator
         addRequiredValidator(portField);
         addRequiredValidator(maxSizeField);
+    }
+
+    /**
+     * init external proxy settings
+     */
+    private void initExSettingsTab() {
+        exProxyPort.setTextFormatter(new TextFormatter<>(new IntegerStringConverter(), 0, textIntegerFilter));
+
+        proxyComboBox.getItems().add(new Label("None"));
+        proxyComboBox.getItems().add(new Label("Use System Proxy"));
+        proxyComboBox.getItems().add(new Label("HTTP"));
+        proxyComboBox.getItems().add(new Label("SOCKS4"));
+        proxyComboBox.getItems().add(new Label("SOCKS5"));
+        proxyComboBox.getSelectionModel().selectedIndexProperty().addListener(((observable, oldValue, newValue) -> {
+            // disable other fields when not using proxy or system proxy
+            boolean disableFields = newValue.intValue() < 2;
+            ((Pane) proxyComboBox.getParent()).getChildren().stream()
+                    .skip(1)
+                    .filter(node -> node != proxyComboBox)
+                    .forEach(node -> node.setDisable(disableFields));
+        }));
+        proxyComboBox.getSelectionModel().selectFirst();
+
+        exProxyAuth.selectedProperty().addListener(((observable, oldValue, newValue) -> {
+            exUsernameLabel.setVisible(newValue);
+            exPasswordLabel.setVisible(newValue);
+            exUsername.setVisible(newValue);
+            exPassword.setVisible(newValue);
+        }));
     }
 
     private void addRequiredValidator(JFXTextField textField) {
@@ -146,7 +202,23 @@ public class SettingController implements Initializable {
                 System.out.println("ssl settings");
             }
             case "setting-tab-external" -> {
-                System.out.println("external proxy settings");
+                // System.out.println("external proxy settings");
+                ExternalProxyConfig externalProxy = appConfig.getExternalProxy();
+                if (externalProxy == null) {
+                    externalProxy = new ExternalProxyConfig();
+                    appConfig.setExternalProxy(externalProxy);
+                }
+                ProxyProtocol protocol = null;
+                try {
+                    protocol = ProxyProtocol.valueOf(proxyComboBox.getValue().getText());
+                } catch (IllegalArgumentException ignored) {}
+                externalProxy.setUsingExternalProxy(protocol != null);
+                externalProxy.setProtocol(protocol);
+                externalProxy.setHost(exProxyHost.getText());
+                externalProxy.setPort(Integer.parseInt(exProxyPort.getText()));
+                externalProxy.setProxyAuth(exProxyAuth.isSelected());
+                externalProxy.setUsername(exUsername.getText());
+                externalProxy.setPassword(exPassword.getText());
             }
             case "setting-tab-help" -> {
                 System.out.println("help settings");
@@ -177,10 +249,24 @@ public class SettingController implements Initializable {
         if (appConfig == null) {
             return;
         }
+        // server settings tab
         portField.setText(String.valueOf(appConfig.getPort()));
         maxSizeField.setText(String.valueOf(appConfig.getMaxContentSize()));
         systemProxyField.setSelected(appConfig.isSystemProxy());
 
+        // external proxy settings tab
+        ExternalProxyConfig externalProxy = appConfig.getExternalProxy();
+        if (externalProxy != null) {
+            proxyComboBox.getSelectionModel().select(externalProxy.getProtocol() == null ?
+                    0 : externalProxy.getProtocol().ordinal() + 2);
+            exProxyHost.setText(externalProxy.getHost());
+            exProxyPort.setText(String.valueOf(externalProxy.getPort()));
+            exProxyAuth.setSelected(externalProxy.isProxyAuth());
+            exUsername.setText(externalProxy.getUsername());
+            exPassword.setText(externalProxy.getPassword());
+        } else {
+            proxyComboBox.getSelectionModel().select(0);
+        }
     }
 
     private void alert(String msg) {

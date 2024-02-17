@@ -92,12 +92,12 @@ public class ApplicationConfig implements AutoCloseable {
             log.error("Error loading local configuration.", e);
         }
 
-        Runtime.getRuntime().addShutdownHook(new Thread(){
-            @Override
-            public void run() {
-                close();
-            }
-        });
+        // Runtime.getRuntime().addShutdownHook(new Thread(){
+        //     @Override
+        //     public void run() {
+        //         close();
+        //     }
+        // });
         // test
         // System.setProperty("https.protocols", "TLSv1,TLSv1.1,TLSv1.2");
         // externalProxyConfig.setProtocol(ProxyProtocol.SOCKS4);

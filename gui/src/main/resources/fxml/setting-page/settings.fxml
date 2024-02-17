@@ -17,6 +17,7 @@
 <?import javafx.scene.layout.Pane?>
 
 <?import com.jfoenix.controls.JFXTextField?>
+<?import com.jfoenix.controls.JFXComboBox?>
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0"
             prefWidth="640.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.catas.wicked.proxy.gui.controller.SettingController">
@@ -54,7 +55,7 @@
                 </GridPane>
             </AnchorPane>
         </Tab>
-        <Tab text="SSl Settings" styleClass="setting-tab-ssl">
+        <Tab text="SSl Settings" styleClass="setting-tab-ssl, setting-tab-2">
             <AnchorPane>
                 <GridPane AnchorPane.leftAnchor="20.0"
                           AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0">
@@ -80,11 +81,38 @@
                 </GridPane>
             </AnchorPane>
         </Tab>
-        <Tab text="External Proxy" styleClass="setting-tab-external">
+        <Tab text="External Proxy" styleClass="setting-tab-external, setting-tab-3">
             <AnchorPane>
+                <GridPane AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0">
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="NEVER" maxWidth="120.0" minWidth="120.0"/>
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="450" minWidth="100.0" prefWidth="400"/>
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints minHeight="45.0" prefHeight="45.0" vgrow="SOMETIMES"/>
+                        <RowConstraints minHeight="45.0" prefHeight="45.0" vgrow="SOMETIMES"/>
+                        <RowConstraints minHeight="45.0" prefHeight="45.0" vgrow="SOMETIMES"/>
+                        <RowConstraints minHeight="45.0" prefHeight="45.0" vgrow="SOMETIMES"/>
+                        <RowConstraints minHeight="45.0" prefHeight="45.0" vgrow="SOMETIMES"/>
+                        <RowConstraints minHeight="45.0" prefHeight="45.0" vgrow="SOMETIMES"/>
+                    </rowConstraints>
+                    <Label text="Proxy type"/>
+                    <Label text="Host" GridPane.rowIndex="1"/>
+                    <Label text="Port" GridPane.rowIndex="2"/>
+                    <Label text="Proxy Auth" GridPane.rowIndex="3"/>
+                    <Label text="Username" fx:id="exUsernameLabel" visible="false" GridPane.rowIndex="4"/>
+                    <Label text="Password" fx:id="exPasswordLabel" visible="false" GridPane.rowIndex="5"/>
+
+                    <JFXComboBox fx:id="proxyComboBox" GridPane.columnIndex="1"/>
+                    <JFXTextField fx:id="exProxyHost" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                    <JFXTextField fx:id="exProxyPort" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                    <JFXToggleButton fx:id="exProxyAuth" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+                    <JFXTextField fx:id="exUsername" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+                    <JFXTextField fx:id="exPassword" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+                </GridPane>
             </AnchorPane>
         </Tab>
-        <Tab text="Help" styleClass="setting-tab-help">
+        <Tab text="Help" styleClass="setting-tab-help, setting-tab-4">
             <AnchorPane>
             </AnchorPane>
         </Tab>
