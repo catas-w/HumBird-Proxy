@@ -4,6 +4,7 @@ import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.common.config.ExternalProxyConfig;
 import com.catas.wicked.common.constant.ProxyProtocol;
 import com.catas.wicked.common.util.WebUtils;
+import com.catas.wicked.proxy.gui.componet.ProxyTypeLabel;
 import com.catas.wicked.server.proxy.ProxyServer;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
@@ -41,7 +42,7 @@ import java.util.function.UnaryOperator;
 @Singleton
 public class SettingController implements Initializable {
 
-    public JFXComboBox<Labeled> proxyComboBox;
+    public JFXComboBox<ProxyTypeLabel> proxyComboBox;
     public JFXTextField exProxyHost;
     public JFXTextField exProxyPort;
     public JFXTextField exUsername;
@@ -110,11 +111,20 @@ public class SettingController implements Initializable {
     private void initExSettingsTab() {
         exProxyPort.setTextFormatter(new TextFormatter<>(new IntegerStringConverter(), 0, textIntegerFilter));
 
-        proxyComboBox.getItems().add(new Label("None"));
-        proxyComboBox.getItems().add(new Label("Use System Proxy"));
-        proxyComboBox.getItems().add(new Label("HTTP"));
-        proxyComboBox.getItems().add(new Label("SOCKS4"));
-        proxyComboBox.getItems().add(new Label("SOCKS5"));
+        // proxyComboBox.getItems().add(new Label("None"));
+        // proxyComboBox.getItems().add(new Label("System Proxy"));
+        // proxyComboBox.getItems().add(new Label("HTTP"));
+        // proxyComboBox.getItems().add(new Label("SOCKS4"));
+        // proxyComboBox.getItems().add(new Label("SOCKS5"));
+        for (ProxyProtocol proxyType : ProxyProtocol.values()) {
+            ProxyTypeLabel label = new ProxyTypeLabel(proxyType.getName()) {
+                @Override
+                public ProxyProtocol getProxyType() {
+                    return proxyType;
+                }
+            };
+            proxyComboBox.getItems().add(label);
+        }
         proxyComboBox.getSelectionModel().selectedIndexProperty().addListener(((observable, oldValue, newValue) -> {
             // disable other fields when not using proxy or system proxy
             boolean disableFields = newValue.intValue() < 2;
@@ -208,11 +218,8 @@ public class SettingController implements Initializable {
                     externalProxy = new ExternalProxyConfig();
                     appConfig.setExternalProxy(externalProxy);
                 }
-                ProxyProtocol protocol = null;
-                try {
-                    protocol = ProxyProtocol.valueOf(proxyComboBox.getValue().getText());
-                } catch (IllegalArgumentException ignored) {}
-                externalProxy.setUsingExternalProxy(protocol != null);
+                ProxyProtocol protocol = proxyComboBox.getValue().getProxyType();
+                externalProxy.setUsingExternalProxy(protocol != ProxyProtocol.None);
                 externalProxy.setProtocol(protocol);
                 externalProxy.setHost(exProxyHost.getText());
                 externalProxy.setPort(Integer.parseInt(exProxyPort.getText()));
@@ -258,7 +265,7 @@ public class SettingController implements Initializable {
         ExternalProxyConfig externalProxy = appConfig.getExternalProxy();
         if (externalProxy != null) {
             proxyComboBox.getSelectionModel().select(externalProxy.getProtocol() == null ?
-                    0 : externalProxy.getProtocol().ordinal() + 2);
+                    0 : externalProxy.getProtocol().ordinal());
             exProxyHost.setText(externalProxy.getHost());
             exProxyPort.setText(String.valueOf(externalProxy.getPort()));
             exProxyAuth.setSelected(externalProxy.isProxyAuth());
