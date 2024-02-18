@@ -12,7 +12,13 @@ import io.netty.handler.proxy.Socks5ProxyHandler;
  */
 public class ProxyHandlerFactory {
 
-    public static ProxyHandler getExternalProxyHandler(ExternalProxyConfig proxyConfig) {
+    /**
+     * get netty proxyHandler by external proxy config
+     * @param proxyConfig defines proxy type, host & port
+     * @param url used in getting system proxy info
+     * @return ProxyHandler
+     */
+    public static ProxyHandler getExternalProxyHandler(ExternalProxyConfig proxyConfig, String url) {
         if (proxyConfig != null) {
             switch (proxyConfig.getProtocol()) {
                 case HTTP -> {
@@ -49,6 +55,10 @@ public class ProxyHandlerFactory {
                         socks5ProxyHandler = new Socks5ProxyHandler(proxyConfig.getSocketAddress());
                     }
                     return socks5ProxyHandler;
+                }
+                case System -> {
+                    ExternalProxyConfig systemProxy = WebUtils.getSystemProxy(url);
+                    return getExternalProxyHandler(systemProxy, url);
                 }
             }
         }

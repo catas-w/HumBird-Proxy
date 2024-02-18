@@ -116,16 +116,8 @@ public class ProxyProcessHandler extends ChannelInboundHandlerAdapter {
                         protected void initChannel(NioSocketChannel ch) throws Exception {
                             if (requestInfo.isUsingExternalProxy()) {
                                 // add external proxy handler
-                                ProxyHandler proxyHandler = null;
-                                ExternalProxyConfig externalProxyConfig = appConfig.getExternalProxy();
-                                if (externalProxyConfig.getProtocol() == ProxyProtocol.System) {
-                                    String hostname = WebUtils.getHostname(requestInfo);
-                                    ExternalProxyConfig sysProxyConfig = WebUtils.getSystemProxy(hostname);
-                                    proxyHandler = ProxyHandlerFactory.getExternalProxyHandler(sysProxyConfig);
-                                } else {
-                                    proxyHandler = ProxyHandlerFactory.getExternalProxyHandler(externalProxyConfig);
-                                }
-
+                                ProxyHandler proxyHandler = ProxyHandlerFactory.getExternalProxyHandler(
+                                        appConfig.getExternalProxy(), WebUtils.getHostname(requestInfo));
                                 if (proxyHandler != null) {
                                     // TODO: bugfix HTTP proxy error - UnresolvedAddressException
                                     ch.pipeline().addFirst(EXTERNAL_PROXY, proxyHandler);

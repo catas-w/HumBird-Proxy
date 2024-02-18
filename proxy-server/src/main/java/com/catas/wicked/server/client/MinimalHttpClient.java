@@ -102,13 +102,7 @@ public class MinimalHttpClient {
                     protected void initChannel(NioSocketChannel ch) throws Exception {
                         if (proxyConfig != null) {
                             // add external proxy handler
-                            ProxyHandler proxyHandler = null;
-                            if (proxyConfig.getProtocol() == ProxyProtocol.System) {
-                                ExternalProxyConfig sysProxyConfig = WebUtils.getSystemProxy(uri);
-                                proxyHandler = ProxyHandlerFactory.getExternalProxyHandler(sysProxyConfig);
-                            } else {
-                                proxyHandler = ProxyHandlerFactory.getExternalProxyHandler(proxyConfig);
-                            }
+                            ProxyHandler proxyHandler = ProxyHandlerFactory.getExternalProxyHandler(proxyConfig, uri);
                             if (proxyHandler != null) {
                                 ch.pipeline().addLast(EXTERNAL_PROXY, proxyHandler);
                             }

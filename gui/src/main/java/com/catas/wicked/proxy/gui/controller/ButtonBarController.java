@@ -7,6 +7,7 @@ import com.catas.wicked.common.config.ExternalProxyConfig;
 import com.catas.wicked.common.constant.ProxyProtocol;
 import com.catas.wicked.common.pipeline.MessageQueue;
 import com.catas.wicked.common.pipeline.Topic;
+import com.catas.wicked.common.util.ThreadPoolService;
 import com.catas.wicked.proxy.service.RequestMockService;
 import com.catas.wicked.server.client.MinimalHttpClient;
 import com.catas.wicked.server.proxy.ProxyServer;
@@ -179,32 +180,34 @@ public class ButtonBarController implements Initializable {
             return;
         }
 
-        String url = requestMessage.getRequestUrl();
-        String method = requestMessage.getMethod();
-        String protocol = requestMessage.getProtocol();
-        Map<String, String> headers = requestMessage.getHeaders();
-        byte[] content = requestMessage.getBody();
+        ThreadPoolService.getInstance().run(() -> {
+            String url = requestMessage.getRequestUrl();
+            String method = requestMessage.getMethod();
+            String protocol = requestMessage.getProtocol();
+            Map<String, String> headers = requestMessage.getHeaders();
+            byte[] content = requestMessage.getBody();
 
-        ExternalProxyConfig proxyConfig = new ExternalProxyConfig();
-        proxyConfig.setProtocol(ProxyProtocol.HTTP);
-        proxyConfig.setProxyAddress(appConfig.getHost(), appConfig.getPort());
+            ExternalProxyConfig proxyConfig = new ExternalProxyConfig();
+            proxyConfig.setProtocol(ProxyProtocol.HTTP);
+            proxyConfig.setProxyAddress(appConfig.getHost(), appConfig.getPort());
 
-        MinimalHttpClient client = MinimalHttpClient.builder()
-                .uri(url)
-                .method(HttpMethod.valueOf(method))
-                .httpVersion(protocol)
-                .headers(headers)
-                .content(content)
-                .proxyConfig(proxyConfig)
-                .build();
-        try {
-            client.execute();
-            HttpResponse response = client.response();
-            log.info("Get response in resending: {}", response);
-        } catch (Exception e) {
-            log.error("Error in resending request: {}", requestMessage.getRequestUrl());
-        } finally {
-            client.close();
-        }
+            MinimalHttpClient client = MinimalHttpClient.builder()
+                    .uri(url)
+                    .method(HttpMethod.valueOf(method))
+                    .httpVersion(protocol)
+                    .headers(headers)
+                    .content(content)
+                    .proxyConfig(proxyConfig)
+                    .build();
+            try {
+                client.execute();
+                HttpResponse response = client.response();
+                log.info("Get response in resending: {}", response);
+            } catch (Exception e) {
+                log.error("Error in resending request: {}", requestMessage.getRequestUrl());
+            } finally {
+                client.close();
+            }
+        });
     }
 }
