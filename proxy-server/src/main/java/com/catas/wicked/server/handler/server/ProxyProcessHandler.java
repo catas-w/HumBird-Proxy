@@ -4,6 +4,7 @@ import com.catas.wicked.common.bean.ProxyRequestInfo;
 import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.common.config.ExternalProxyConfig;
 import com.catas.wicked.common.constant.ProxyConstant;
+import com.catas.wicked.common.constant.ProxyProtocol;
 import com.catas.wicked.common.pipeline.MessageQueue;
 import com.catas.wicked.common.util.ProxyHandlerFactory;
 import com.catas.wicked.common.util.WebUtils;
@@ -115,10 +116,21 @@ public class ProxyProcessHandler extends ChannelInboundHandlerAdapter {
                         protected void initChannel(NioSocketChannel ch) throws Exception {
                             if (requestInfo.isUsingExternalProxy()) {
                                 // add external proxy handler
+                                ProxyHandler proxyHandler = null;
                                 ExternalProxyConfig externalProxyConfig = appConfig.getExternalProxy();
-                                ProxyHandler httpProxyHandler = ProxyHandlerFactory.getExternalProxyHandler(externalProxyConfig);
-                                ch.pipeline().addFirst(EXTERNAL_PROXY, httpProxyHandler);
-                                bootstrap.resolver(NoopAddressResolverGroup.INSTANCE);
+                                if (externalProxyConfig.getProtocol() == ProxyProtocol.System) {
+                                    String hostname = WebUtils.getHostname(requestInfo);
+                                    ExternalProxyConfig sysProxyConfig = WebUtils.getSystemProxy(hostname);
+                                    proxyHandler = ProxyHandlerFactory.getExternalProxyHandler(sysProxyConfig);
+                                } else {
+                                    proxyHandler = ProxyHandlerFactory.getExternalProxyHandler(externalProxyConfig);
+                                }
+
+                                if (proxyHandler != null) {
+                                    // TODO: bugfix HTTP proxy error - UnresolvedAddressException
+                                    ch.pipeline().addFirst(EXTERNAL_PROXY, proxyHandler);
+                                    bootstrap.resolver(NoopAddressResolverGroup.INSTANCE);
+                                }
                             } else {
                                 bootstrap.resolver(DefaultAddressResolverGroup.INSTANCE);
                             }
@@ -157,7 +169,7 @@ public class ProxyProcessHandler extends ChannelInboundHandlerAdapter {
                     }
                     // TODO 添加错误记录
                     Throwable cause = future.cause();
-                    log.error("Error in creating proxy client channel: {}", cause.getMessage());
+                    log.error("Error in creating proxy client channel", cause);
                     HttpResponse response = new DefaultFullHttpResponse(
                             HttpVersion.HTTP_1_1, HttpResponseStatus.GATEWAY_TIMEOUT);
                     ctx.writeAndFlush(response);

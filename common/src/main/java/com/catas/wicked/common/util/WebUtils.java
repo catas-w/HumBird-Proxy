@@ -1,6 +1,8 @@
 package com.catas.wicked.common.util;
 
 import com.catas.wicked.common.bean.ProxyRequestInfo;
+import com.catas.wicked.common.config.ExternalProxyConfig;
+import com.catas.wicked.common.constant.ProxyProtocol;
 import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaders;
@@ -17,8 +19,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.DatagramSocket;
+import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
+import java.net.Proxy;
+import java.net.ProxySelector;
 import java.net.ServerSocket;
+import java.net.SocketAddress;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.Charset;
@@ -279,6 +286,29 @@ public class WebUtils {
     }
 
     /**
+     * get http host from requestInfo
+     * @return http hostname
+     */
+    public static String getHostname(ProxyRequestInfo requestInfo) {
+        StringBuilder builder = new StringBuilder();
+        if (requestInfo.isSsl()) {
+            builder.append("https://");
+            builder.append(requestInfo.getHost());
+            if (requestInfo.getPort() != 443) {
+                builder.append(":").append(requestInfo.getPort());
+            }
+        } else {
+            builder.append("http://");
+            builder.append(requestInfo.getHost());
+            if (requestInfo.getPort() != 80) {
+                builder.append(":").append(requestInfo.getPort());
+            }
+        }
+
+        return builder.toString();
+    }
+
+    /**
      * check if port is available
      * @param port port number
      * @return boolean
@@ -310,5 +340,43 @@ public class WebUtils {
         }
 
         return false;
+    }
+
+    /**
+     * get system proxy info
+     * vm ags: -Djava.net.useSystemProxies=true
+     * @param url http url
+     */
+    public static ExternalProxyConfig getSystemProxy(String url) {
+        URI uri = URI.create(url);
+        // System.setProperty("java.net.useSystemProxies", "true");
+        List<Proxy> proxyList = ProxySelector.getDefault().select(uri);
+        System.out.println(proxyList);
+        if (!proxyList.isEmpty()) {
+            ExternalProxyConfig config = new ExternalProxyConfig();
+            Proxy proxy = proxyList.get(0);
+            switch (proxy.type()) {
+                case DIRECT -> {
+                    return null;
+                }
+                case HTTP -> {
+                    config.setProtocol(ProxyProtocol.HTTP);
+                }
+                case SOCKS -> {
+                    config.setProtocol(ProxyProtocol.SOCKS4);
+                }
+            }
+
+            SocketAddress address = proxy.address();
+            if (address instanceof InetSocketAddress inetSocketAddress) {
+                config.setHost(inetSocketAddress.getHostString());
+                config.setPort(inetSocketAddress.getPort());
+            } else {
+                config.setSocketAddress(address);
+            }
+            return config;
+        }
+
+        return null;
     }
 }

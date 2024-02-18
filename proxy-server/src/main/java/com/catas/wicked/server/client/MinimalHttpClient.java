@@ -1,7 +1,9 @@
 package com.catas.wicked.server.client;
 
 import com.catas.wicked.common.config.ExternalProxyConfig;
+import com.catas.wicked.common.constant.ProxyProtocol;
 import com.catas.wicked.common.util.ProxyHandlerFactory;
+import com.catas.wicked.common.util.WebUtils;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;
@@ -100,8 +102,16 @@ public class MinimalHttpClient {
                     protected void initChannel(NioSocketChannel ch) throws Exception {
                         if (proxyConfig != null) {
                             // add external proxy handler
-                            ProxyHandler httpProxyHandler = ProxyHandlerFactory.getExternalProxyHandler(proxyConfig);
-                            ch.pipeline().addLast(EXTERNAL_PROXY, httpProxyHandler);
+                            ProxyHandler proxyHandler = null;
+                            if (proxyConfig.getProtocol() == ProxyProtocol.System) {
+                                ExternalProxyConfig sysProxyConfig = WebUtils.getSystemProxy(uri);
+                                proxyHandler = ProxyHandlerFactory.getExternalProxyHandler(sysProxyConfig);
+                            } else {
+                                proxyHandler = ProxyHandlerFactory.getExternalProxyHandler(proxyConfig);
+                            }
+                            if (proxyHandler != null) {
+                                ch.pipeline().addLast(EXTERNAL_PROXY, proxyHandler);
+                            }
                         }
                         if (isSSl) {
                             SslContext context = SslContextBuilder.forClient()

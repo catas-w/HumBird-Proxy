@@ -81,6 +81,9 @@
                         <option>javafx.base/com.sun.javafx.event=com.jfoenix</option>
                         <option>--add-opens</option>
                         <option>java.base/java.lang.reflect=ALL-UNNAMED</option>
+
+                        <!-- system proxy -->
+                        <option>-Djava.net.useSystemProxies=true</option>
                     </options>
                 </configuration>
             </plugin>

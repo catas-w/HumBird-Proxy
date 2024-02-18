@@ -8,6 +8,7 @@ import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.common.constant.ProxyConstant;
 import com.catas.wicked.common.pipeline.MessageQueue;
 import com.catas.wicked.common.pipeline.Topic;
+import com.catas.wicked.common.util.WebUtils;
 import com.catas.wicked.server.component.OversizeHttpMessage;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelDuplexHandler;
@@ -81,25 +82,6 @@ public class ServerPostRecorder extends ChannelDuplexHandler {
         }
     }
 
-    private String getHostname(ProxyRequestInfo requestInfo) {
-        StringBuilder builder = new StringBuilder();
-        if (requestInfo.isSsl()) {
-            builder.append("https://");
-            builder.append(requestInfo.getHost());
-            if (requestInfo.getPort() != 443) {
-                builder.append(":").append(requestInfo.getPort());
-            }
-        } else {
-            builder.append("http://");
-            if (requestInfo.getPort() != 80) {
-                builder.append(":").append(requestInfo.getPort());
-            }
-        }
-
-        // log.info("Get host name from requestInfo: {}", builder);
-        return builder.toString();
-    }
-
     private void setRequestMsgInfo(ProxyRequestInfo requestInfo, RequestMessage requestMsg) {
         requestMsg.setRequestId(requestInfo.getRequestId());
         requestMsg.setStartTime(requestInfo.getRequestStartTime());
@@ -120,7 +102,7 @@ public class ServerPostRecorder extends ChannelDuplexHandler {
             return;
         }
 
-        String url = getHostname(requestInfo) + "/<Encrypted>";
+        String url = WebUtils.getHostname(requestInfo) + "/<Encrypted>";
         RequestMessage requestMessage = new RequestMessage(url);
         requestMessage.setMethod("UNKNOWN");
         requestMessage.setHeaders(new HashMap<>());
@@ -144,7 +126,7 @@ public class ServerPostRecorder extends ChannelDuplexHandler {
         ByteBuf content = request.content();
 
         if (!uri.startsWith("http")) {
-            uri = getHostname(requestInfo) + uri;
+            uri = WebUtils.getHostname(requestInfo) + uri;
         }
         RequestMessage requestMessage = new RequestMessage(uri);
         Map<String, String> headerMap = new LinkedHashMap<>();
