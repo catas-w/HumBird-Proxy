@@ -1,5 +1,6 @@
 package com.catas.wicked.server.proxy;
 
+import com.catas.wicked.common.util.ThreadPoolService;
 import com.catas.wicked.server.HttpProxyApplication;
 import com.catas.wicked.server.cert.CertPool;
 import com.catas.wicked.server.cert.CertService;
@@ -20,6 +21,8 @@ import io.netty.util.internal.logging.JdkLoggerFactory;
 import jakarta.annotation.PostConstruct;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
+import javafx.application.Platform;
+import javafx.scene.control.Alert;
 import lombok.extern.slf4j.Slf4j;
 
 import java.security.KeyPair;
@@ -93,7 +96,9 @@ public class ProxyServer {
 
     public void shutdown() {
         log.info("--- Shutting down proxy server ---");
-        channelFuture.channel().close();
+        if (channelFuture != null) {
+            channelFuture.channel().close();
+        }
     }
 
     @PostConstruct
@@ -122,7 +127,24 @@ public class ProxyServer {
             log.error("Certificate load error: ", e);
             applicationConfig.setHandleSsl(false);
         }
-        // ThreadPoolService.getInstance().run(this::start);
-        start();
+
+        ThreadPoolService.getInstance().run(() -> {
+            try {
+                start();
+            } catch (Exception e) {
+                log.error("Error in starting proxy server.", e);
+                Platform.runLater(() -> {
+                    alert("Port: " + applicationConfig.getPort() + " is unavailable, change port in settings");
+                });
+            }
+        });
+        // start();
+    }
+
+    private void alert(String msg) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("Warning");
+        alert.setHeaderText(msg);
+        alert.showAndWait();
     }
 }
