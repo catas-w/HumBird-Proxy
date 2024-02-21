@@ -4,13 +4,21 @@
     -fx-rotate: 90;
     -fx-translate-x: -28;
 }
+.setting-tab-pane .setting-tab-1 *.tab-label {
+    -fx-rotate: 90;
+    -fx-translate-x: -10;
+}
 .setting-tab-pane .setting-tab-2 *.tab-label {
+    -fx-rotate: 90;
+    /*-fx-translate-x: -20;*/
+}
+.setting-tab-pane .setting-tab-3 *.tab-label {
     -fx-rotate: 90;
     -fx-translate-x: -20;
 }
 .setting-tab-pane .setting-tab-4 *.tab-label {
     -fx-rotate: 90;
-    -fx-translate-x: -2;
+    /*-fx-translate-x: -20;*/
 }
 
 
@@ -19,6 +27,9 @@
     /*-fx-border-width: 1;*/
     /*-fx-border-color: darkred;*/
 }
+/*.setting-tab-pane .anchor-pane{*/
+/*    -fx-border-color: darkred;*/
+/*}*/
 .setting-tab-pane *.tab {
     -fx-pref-height: 180px;
     -fx-pref-width: 40px;

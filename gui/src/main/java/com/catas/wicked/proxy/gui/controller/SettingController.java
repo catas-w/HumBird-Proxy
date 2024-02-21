@@ -110,12 +110,6 @@ public class SettingController implements Initializable {
      */
     private void initExSettingsTab() {
         exProxyPort.setTextFormatter(new TextFormatter<>(new IntegerStringConverter(), 0, textIntegerFilter));
-
-        // proxyComboBox.getItems().add(new Label("None"));
-        // proxyComboBox.getItems().add(new Label("System Proxy"));
-        // proxyComboBox.getItems().add(new Label("HTTP"));
-        // proxyComboBox.getItems().add(new Label("SOCKS4"));
-        // proxyComboBox.getItems().add(new Label("SOCKS5"));
         for (ProxyProtocol proxyType : ProxyProtocol.values()) {
             ProxyTypeLabel label = new ProxyTypeLabel(proxyType.getName()) {
                 @Override

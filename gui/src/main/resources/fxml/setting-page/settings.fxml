@@ -18,8 +18,9 @@
 
 <?import com.jfoenix.controls.JFXTextField?>
 <?import com.jfoenix.controls.JFXComboBox?>
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0"
-            prefWidth="640.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1"
+<?import javafx.scene.control.TextArea?>
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0"
+            prefWidth="700.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.catas.wicked.proxy.gui.controller.SettingController">
     <stylesheets>
         <URL value="@../../css/setting-page.css"/>
@@ -28,7 +29,42 @@
     <TabPane fx:id="settingTabPane" styleClass="setting-tab-pane" rotateGraphic="true" side="LEFT" tabClosingPolicy="UNAVAILABLE"
              AnchorPane.bottomAnchor="-10.0" AnchorPane.leftAnchor="-10.0"
              AnchorPane.rightAnchor="-10.0" AnchorPane.topAnchor="-10.0">
-        <Tab text="Proxy Settings" styleClass="setting-tab-server">
+        <Tab text="General" styleClass="setting-tab-1">
+            <!-- <ScrollPane hbarPolicy="NEVER" vbarPolicy="ALWAYS"> -->
+            <AnchorPane>
+                <GridPane AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="15.0"
+                          AnchorPane.topAnchor="15.0" AnchorPane.bottomAnchor="40.0">
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="NEVER" maxWidth="120.0" minWidth="120.0"/>
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="450" minWidth="100.0" prefWidth="400"/>
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints minHeight="45.0" prefHeight="45.0" vgrow="NEVER"/>
+                        <RowConstraints minHeight="45.0" prefHeight="45.0" vgrow="NEVER"/>
+                        <RowConstraints minHeight="45.0" prefHeight="45.0" vgrow="NEVER"/>
+
+                        <RowConstraints prefHeight="10.0" vgrow="NEVER"/>
+                        <RowConstraints minHeight="45.0" prefHeight="45.0" maxHeight="75" vgrow="SOMETIMES"/>
+                        <RowConstraints prefHeight="10.0" vgrow="NEVER"/>
+                        <RowConstraints minHeight="45.0" prefHeight="45.0" maxHeight="75" vgrow="SOMETIMES"/>
+                    </rowConstraints>
+                    <Label text="Language"/>
+                    <!-- <Label text="Theme Color" GridPane.rowIndex="1"/> -->
+                    <Label text="Record" GridPane.rowIndex="1"/>
+                    <Label text="Max-Record Size(M)" GridPane.rowIndex="2"/>
+                    <Label text="Include" GridPane.rowIndex="4"/>
+                    <Label text="Exclude" GridPane.rowIndex="6"/>
+
+                    <JFXComboBox GridPane.columnIndex="1" />
+                    <JFXToggleButton GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                    <JFXTextField GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                    <TextArea GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+                    <TextArea GridPane.columnIndex="1" GridPane.rowIndex="6"/>
+                </GridPane>
+            </AnchorPane>
+            <!-- </ScrollPane> -->
+        </Tab>
+        <Tab text="Proxy Settings" styleClass="setting-tab-server, setting-tab-2">
             <AnchorPane>
                 <GridPane AnchorPane.leftAnchor="20.0"
                           AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0">
@@ -55,7 +91,7 @@
                 </GridPane>
             </AnchorPane>
         </Tab>
-        <Tab text="SSl Settings" styleClass="setting-tab-ssl, setting-tab-2">
+        <Tab text="SSl Settings" styleClass="setting-tab-ssl, setting-tab-3">
             <AnchorPane>
                 <GridPane AnchorPane.leftAnchor="20.0"
                           AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0">
@@ -81,7 +117,7 @@
                 </GridPane>
             </AnchorPane>
         </Tab>
-        <Tab text="External Proxy" styleClass="setting-tab-external, setting-tab-3">
+        <Tab text="External Proxy" styleClass="setting-tab-external, setting-tab-4">
             <AnchorPane>
                 <GridPane AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0">
                     <columnConstraints>
@@ -112,10 +148,10 @@
                 </GridPane>
             </AnchorPane>
         </Tab>
-        <Tab text="Help" styleClass="setting-tab-help, setting-tab-4">
-            <AnchorPane>
-            </AnchorPane>
-        </Tab>
+        <!-- <Tab text="Help" styleClass="setting-tab-help, setting-tab-5"> -->
+        <!--     <AnchorPane> -->
+        <!--     </AnchorPane> -->
+        <!-- </Tab> -->
     </TabPane>
 
     <HBox styleClass="settings-btn"
