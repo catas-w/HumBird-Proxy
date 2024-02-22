@@ -172,7 +172,7 @@
                 <Insets left="10.0" />
             </HBox.margin>
         </JFXButton>
-        <JFXButton text="Apply" styleClass="apply-btn">
+        <JFXButton text="Apply" onAction="#apply" styleClass="apply-btn">
             <HBox.margin>
                 <Insets left="10.0" right="5.0"/>
             </HBox.margin>

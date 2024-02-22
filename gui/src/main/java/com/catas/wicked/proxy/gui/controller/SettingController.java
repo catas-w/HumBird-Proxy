@@ -12,6 +12,7 @@ import com.jfoenix.controls.JFXTextField;
 import com.jfoenix.controls.JFXToggleButton;
 import com.jfoenix.validation.RequiredFieldValidator;
 import jakarta.inject.Singleton;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
@@ -19,11 +20,9 @@ import javafx.scene.Parent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
-import javafx.scene.control.Labeled;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextFormatter;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.stage.Window;
@@ -89,7 +88,7 @@ public class SettingController implements Initializable {
         };
 
 
-        initServerSettingsTab ();
+        initServerSettingsTab();
         initExSettingsTab();
     }
 
@@ -151,17 +150,18 @@ public class SettingController implements Initializable {
         });
     }
 
-    public void save() {
-        Tab selectedTab = settingTabPane.getSelectionModel().getSelectedItem();
-        AnchorPane content = (AnchorPane) selectedTab.getContent();
-        Set<Node> textFields = content.lookupAll(".jfx-text-field");
-
+    public void save(ActionEvent event) {
+        // valid textFields
         boolean isValidated = true;
-        if (textFields != null && !textFields.isEmpty()) {
-            for (Node textField : textFields) {
-                if (textField instanceof JFXTextField jfxTextField && !jfxTextField.validate()) {
-                    isValidated = false;
-                    break;
+        for (Tab tab : settingTabPane.getTabs()) {
+            Pane tabContent = (Pane) tab.getContent();
+            Set<Node> textFields = tabContent.lookupAll(".jfx-text-field");
+            if (isValidated && textFields != null && !textFields.isEmpty()) {
+                for (Node textField : textFields) {
+                    if (textField instanceof JFXTextField jfxTextField && !jfxTextField.validate()) {
+                        isValidated = false;
+                        break;
+                    }
                 }
             }
         }
@@ -171,69 +171,68 @@ public class SettingController implements Initializable {
             return;
         }
 
-        // update settings
-        List<String> styleList = selectedTab.getStyleClass().stream()
-                .filter(style -> style.startsWith("setting-tab")).toList();
-        String style = styleList.get(0);
-        switch (style) {
-            case "setting-tab-server" -> {
-                Integer newPort = Integer.valueOf(portField.getText());
-                Integer oldPort = appConfig.getPort();
-                // check pot available
-                if (!WebUtils.isPortAvailable(newPort)) {
-                    alert("Port " + newPort + " is unavailable");
-                    return;
-                }
-                // restart server if port changed
-                if (!oldPort.equals(newPort)) {
-                    appConfig.setPort(newPort);
-                    try {
-                        proxyServer.shutdown();
-                        proxyServer.start();
-                    } catch (Exception e) {
-                        log.error("Error in restarting proxy server.", e);
-                        alert("Port " + newPort + " is unavailable");
-                        appConfig.setPort(oldPort);
-                        proxyServer.start();
-                        return;
-                    }
-                }
-                // appConfig.setPort(newPort);
-                appConfig.setMaxContentSize(Integer.parseInt(maxSizeField.getText()));
-                appConfig.setSystemProxy(systemProxyField.isSelected());
-            }
-            case "setting-tab-ssl" -> {
-                System.out.println("ssl settings");
-            }
-            case "setting-tab-external" -> {
-                // System.out.println("external proxy settings");
-                ExternalProxyConfig externalProxy = appConfig.getExternalProxy();
-                if (externalProxy == null) {
-                    externalProxy = new ExternalProxyConfig();
-                    appConfig.setExternalProxy(externalProxy);
-                }
-                ProxyProtocol protocol = proxyComboBox.getValue().getProxyType();
-                externalProxy.setUsingExternalProxy(protocol != ProxyProtocol.None);
-                externalProxy.setProtocol(protocol);
-                externalProxy.setHost(exProxyHost.getText());
-                externalProxy.setPort(Integer.parseInt(exProxyPort.getText()));
-                externalProxy.setProxyAuth(exProxyAuth.isSelected());
-                externalProxy.setUsername(exUsername.getText());
-                externalProxy.setPassword(exPassword.getText());
-            }
-            case "setting-tab-help" -> {
-                System.out.println("help settings");
-            }
-        }
+        saveGeneralSettings();
+        saveServerSettings();
+        saveExProxySettings();
 
         // update config file
         appConfig.updateLocalConfig();
-
-        // close dialog
-        cancel();
+        cancel(event);
     }
 
-    public void cancel() {
+    private void saveGeneralSettings() {
+        System.out.println("Save general settings");
+    }
+
+    private void saveServerSettings() {
+        Integer newPort = Integer.valueOf(portField.getText());
+        Integer oldPort = appConfig.getPort();
+
+        // restart server if port changed
+        if (!oldPort.equals(newPort)) {
+            // check pot available
+            if (!WebUtils.isPortAvailable(newPort)) {
+                alert("Port " + newPort + " is unavailable");
+                return;
+            }
+            appConfig.setPort(newPort);
+            try {
+                proxyServer.shutdown();
+                proxyServer.start();
+            } catch (Exception e) {
+                log.error("Error in restarting proxy server.", e);
+                alert("Port " + newPort + " is unavailable");
+                appConfig.setPort(oldPort);
+                proxyServer.start();
+                return;
+            }
+        }
+        // appConfig.setPort(newPort);
+        appConfig.setMaxContentSize(Integer.parseInt(maxSizeField.getText()));
+        appConfig.setSystemProxy(systemProxyField.isSelected());
+    }
+
+    private void saveExProxySettings() {
+        // System.out.println("external proxy settings");
+        ExternalProxyConfig externalProxy = appConfig.getExternalProxy();
+        if (externalProxy == null) {
+            externalProxy = new ExternalProxyConfig();
+            appConfig.setExternalProxy(externalProxy);
+        }
+        ProxyProtocol protocol = proxyComboBox.getValue().getProxyType();
+        externalProxy.setUsingExternalProxy(protocol != ProxyProtocol.None);
+        externalProxy.setProtocol(protocol);
+        externalProxy.setHost(exProxyHost.getText());
+        externalProxy.setPort(Integer.parseInt(exProxyPort.getText()));
+        externalProxy.setProxyAuth(exProxyAuth.isSelected());
+        externalProxy.setUsername(exUsername.getText());
+        externalProxy.setPassword(exPassword.getText());
+    }
+
+    public void cancel(ActionEvent event) {
+        if (event == null) {
+            return;
+        }
         List<Window> windows = Stage.getWindows().stream().filter(Window::isShowing).filter(Window::isFocused).toList();
         for (Window window : windows) {
             Parent root = window.getScene().getRoot();
@@ -241,6 +240,11 @@ public class SettingController implements Initializable {
                 window.hide();
             }
         }
+    }
+
+
+    public void apply(ActionEvent event) {
+        save(null);
     }
 
     /**
