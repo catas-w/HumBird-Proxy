@@ -8,6 +8,7 @@ import com.catas.wicked.proxy.gui.componet.ProxyTypeLabel;
 import com.catas.wicked.server.proxy.ProxyServer;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
+import com.jfoenix.controls.JFXRadioButton;
 import com.jfoenix.controls.JFXTextField;
 import com.jfoenix.controls.JFXToggleButton;
 import com.jfoenix.validation.RequiredFieldValidator;
@@ -20,9 +21,12 @@ import javafx.scene.Parent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
+import javafx.scene.control.Labeled;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextFormatter;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.stage.Window;
@@ -49,8 +53,18 @@ public class SettingController implements Initializable {
     public JFXToggleButton exProxyAuth;
     public Label exUsernameLabel;
     public Label exPasswordLabel;
+    public JFXComboBox<Labeled> languageComboBox;
+    public JFXRadioButton defaultCertRadio;
+    public JFXRadioButton customCertRadio;
+    public JFXButton selectCertBtn;
+    public JFXToggleButton recordBtn;
+    public TextArea recordIncludeArea;
+    public TextArea recordExcludeArea;
+    public TextArea sysProxyExcludeArea;
+    public JFXToggleButton sslBtn;
+    public TextArea sslExcludeArea;
     @FXML
-    private JFXToggleButton systemProxyField;
+    private JFXToggleButton sysProxyBtn;
     @FXML
     private JFXButton cancelBtn;
     @FXML
@@ -88,20 +102,83 @@ public class SettingController implements Initializable {
         };
 
 
-        initServerSettingsTab();
+        initGeneralSettingsTab();
+        initSSlSettingsTab();
+        initProxySettingsTab();
         initExSettingsTab();
+    }
+
+    private void initGeneralSettingsTab() {
+        languageComboBox.getItems().add(new Label("English"));
+        languageComboBox.getItems().add(new Label("简体中文"));
+        languageComboBox.getSelectionModel().select(0);
+
+        maxSizeField.setTextFormatter(new TextFormatter<>(new IntegerStringConverter(), 10, textIntegerFilter));
+        addRequiredValidator(maxSizeField);
+
+        recordBtn.selectedProperty().addListener(((observable, oldValue, newValue) -> {
+            maxSizeField.setDisable(!newValue);
+            recordIncludeArea.setDisable(!newValue);
+            recordExcludeArea.setDisable(!newValue);
+
+            Pane parent = (Pane) recordBtn.getParent();
+            parent.getChildren().stream()
+                    .filter(node -> node instanceof Label)
+                    .skip(2)
+                    .forEach(node -> {
+                        Label labeled = (Label) node;
+                        labeled.setDisable(!newValue);
+                    });
+        }));
+    }
+
+    private void initSSlSettingsTab() {
+        final ToggleGroup group = new ToggleGroup();
+        defaultCertRadio.setSelected(true);
+        defaultCertRadio.setToggleGroup(group);
+        customCertRadio.setToggleGroup(group);
+
+        customCertRadio.selectedProperty().addListener(((observable, oldValue, newValue) -> {
+            selectCertBtn.setDisable(!sslBtn.isSelected() || !newValue);
+        }));
+
+        sslBtn.selectedProperty().addListener(((observable, oldValue, newValue) -> {
+            defaultCertRadio.setDisable(!newValue);
+            customCertRadio.setDisable(!newValue);
+            selectCertBtn.setDisable(!newValue);
+            sslExcludeArea.setDisable(!newValue);
+
+            Pane parent = (Pane) sslBtn.getParent();
+            parent.getChildren().stream()
+                    .filter(node -> node instanceof Label)
+                    .skip(1)
+                    .forEach(node -> {
+                        Label labeled = (Label) node;
+                        labeled.setDisable(!newValue);
+                    });
+        }));
     }
 
     /**
      * init server settings
      */
-    private void initServerSettingsTab() {
+    private void initProxySettingsTab() {
         portField.setTextFormatter(new TextFormatter<>(new IntegerStringConverter(), 9624, textIntegerFilter));
-        maxSizeField.setTextFormatter(new TextFormatter<>(new IntegerStringConverter(), 10, textIntegerFilter));
 
         // add validator
         addRequiredValidator(portField);
-        addRequiredValidator(maxSizeField);
+
+        sysProxyBtn.selectedProperty().addListener(((observable, oldValue, newValue) -> {
+            sysProxyExcludeArea.setDisable(!newValue);
+            Pane parent = (Pane) sysProxyBtn.getParent();
+            parent.getChildren().stream()
+                    .filter(node -> node instanceof Label)
+                    .skip(2)
+                    .forEach(node -> {
+                        Label labeled = (Label) node;
+                        labeled.setDisable(!newValue);
+                    });
+        }));
     }
 
     /**
@@ -209,7 +286,7 @@ public class SettingController implements Initializable {
         }
         // appConfig.setPort(newPort);
         appConfig.setMaxContentSize(Integer.parseInt(maxSizeField.getText()));
-        appConfig.setSystemProxy(systemProxyField.isSelected());
+        appConfig.setSystemProxy(sysProxyBtn.isSelected());
     }
 
     private void saveExProxySettings() {
@@ -257,7 +334,7 @@ public class SettingController implements Initializable {
         // server settings tab
         portField.setText(String.valueOf(appConfig.getPort()));
         maxSizeField.setText(String.valueOf(appConfig.getMaxContentSize()));
-        systemProxyField.setSelected(appConfig.isSystemProxy());
+        sysProxyBtn.setSelected(appConfig.isSystemProxy());
 
         // external proxy settings tab
         ExternalProxyConfig externalProxy = appConfig.getExternalProxy();

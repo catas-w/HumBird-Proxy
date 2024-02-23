@@ -10,7 +10,6 @@
 
 <?import java.net.URL?>
 <?import com.jfoenix.controls.JFXToggleButton?>
-<?import com.jfoenix.controls.JFXSlider?>
 <?import javafx.scene.layout.HBox?>
 <?import com.jfoenix.controls.JFXButton?>
 <?import javafx.geometry.Insets?>
@@ -19,6 +18,8 @@
 <?import com.jfoenix.controls.JFXTextField?>
 <?import com.jfoenix.controls.JFXComboBox?>
 <?import javafx.scene.control.TextArea?>
+<?import com.jfoenix.controls.JFXRadioButton?>
+
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0"
             prefWidth="700.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.catas.wicked.proxy.gui.controller.SettingController">
@@ -49,17 +50,16 @@
                         <RowConstraints minHeight="45.0" prefHeight="45.0" maxHeight="75" vgrow="SOMETIMES"/>
                     </rowConstraints>
                     <Label text="Language"/>
-                    <!-- <Label text="Theme Color" GridPane.rowIndex="1"/> -->
-                    <Label text="Record" GridPane.rowIndex="1"/>
+                    <Label text="Record Requests" GridPane.rowIndex="1"/>
                     <Label text="Max-Record Size(M)" GridPane.rowIndex="2"/>
                     <Label text="Include" GridPane.rowIndex="4"/>
                     <Label text="Exclude" GridPane.rowIndex="6"/>
 
-                    <JFXComboBox GridPane.columnIndex="1" />
-                    <JFXToggleButton GridPane.columnIndex="1" GridPane.rowIndex="1"/>
-                    <JFXTextField GridPane.columnIndex="1" GridPane.rowIndex="2"/>
-                    <TextArea GridPane.columnIndex="1" GridPane.rowIndex="4"/>
-                    <TextArea GridPane.columnIndex="1" GridPane.rowIndex="6"/>
+                    <JFXComboBox fx:id="languageComboBox" GridPane.columnIndex="1" />
+                    <JFXToggleButton fx:id="recordBtn" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                    <JFXTextField fx:id="maxSizeField" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                    <TextArea fx:id="recordIncludeArea" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+                    <TextArea fx:id="recordExcludeArea" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
                 </GridPane>
             </AnchorPane>
             <!-- </ScrollPane> -->
@@ -80,14 +80,12 @@
                         <RowConstraints minHeight="45.0" prefHeight="45.0" vgrow="SOMETIMES"/>
                     </rowConstraints>
                     <Label text="HTTP-Proxy Port"/>
-                    <Label text="Max-Record Size(M)" GridPane.rowIndex="1"/>
-                    <Label text="System Proxy" GridPane.rowIndex="2"/>
-                    <Label text="Throttle level" GridPane.rowIndex="3"/>
+                    <Label text="System Proxy" GridPane.rowIndex="1"/>
+                    <Label text="Exclude" GridPane.rowIndex="2"/>
 
-                    <JFXTextField fx:id="portField" GridPane.columnIndex="1" prefWidth="120" />
-                    <JFXTextField fx:id="maxSizeField" GridPane.columnIndex="1" prefWidth="120" GridPane.rowIndex="1"/>
-                    <JFXToggleButton fx:id="systemProxyField" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
-                    <JFXSlider GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+                    <JFXTextField fx:id="portField" GridPane.columnIndex="1"/>
+                    <JFXToggleButton fx:id="sysProxyBtn" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                    <TextArea fx:id="sysProxyExcludeArea" GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.rowSpan="2" />
                 </GridPane>
             </AnchorPane>
         </Tab>
@@ -104,16 +102,19 @@
                         <RowConstraints minHeight="45.0" prefHeight="45.0" vgrow="SOMETIMES"/>
                         <RowConstraints minHeight="45.0" prefHeight="45.0" vgrow="SOMETIMES"/>
                         <RowConstraints minHeight="45.0" prefHeight="45.0" vgrow="SOMETIMES"/>
-                        <RowConstraints minHeight="45.0" prefHeight="45.0" vgrow="SOMETIMES"/>
                     </rowConstraints>
-                    <Label text="HTTP-Proxy Port"/>
-                    <Label text="Max-Record Size(M)" GridPane.rowIndex="1"/>
-                    <Label text="System Proxy" GridPane.rowIndex="2"/>
+                    <Label text="Handle SSL"/>
+                    <Label text="Certificate" GridPane.rowIndex="1"/>
+                    <Label text="Exclude" GridPane.rowIndex="3"/>
 
-                    <JFXTextField GridPane.columnIndex="1" prefWidth="120" />
-                    <JFXTextField GridPane.columnIndex="1" prefWidth="120" GridPane.rowIndex="1"/>
-                    <JFXToggleButton mnemonicParsing="false" GridPane.columnIndex="1"
-                                     GridPane.rowIndex="2"/>
+                    <JFXToggleButton fx:id="sslBtn" GridPane.columnIndex="1"/>
+                    <JFXRadioButton fx:id="defaultCertRadio" text="Built-in Certificate" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                    <HBox GridPane.columnIndex="1" GridPane.rowIndex="2">
+                        <JFXRadioButton fx:id="customCertRadio" text="Select Certificate"/>
+                        <Pane HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+                        <JFXButton fx:id="selectCertBtn" text="Select From..." translateY="-5"/>
+                    </HBox>
+                    <TextArea fx:id="sslExcludeArea" GridPane.columnIndex="1" GridPane.rowIndex="3" GridPane.rowSpan="2"/>
                 </GridPane>
             </AnchorPane>
         </Tab>
