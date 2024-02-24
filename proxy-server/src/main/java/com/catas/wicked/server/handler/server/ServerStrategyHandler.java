@@ -105,10 +105,10 @@ public class ServerStrategyHandler extends ChannelDuplexHandler {
             attr.set(requestInfo);
         }
         assert requestInfo != null;
-        requestInfo.setUsingExternalProxy(appConfig.getExternalProxy() != null &&
-                appConfig.getExternalProxy().isUsingExternalProxy());
+        requestInfo.setUsingExternalProxy(appConfig.getSettings().getExternalProxy() != null &&
+                appConfig.getSettings().getExternalProxy().isUsingExternalProxy());
         requestInfo.setRequestId(IdUtil.getId());
-        requestInfo.setRecording(appConfig.isRecording());
+        requestInfo.setRecording(appConfig.getSettings().isRecording());
         requestInfo.resetBasicInfo();
 
         SocketAddress remoteAddress = ctx.channel().remoteAddress();
@@ -143,8 +143,8 @@ public class ServerStrategyHandler extends ChannelDuplexHandler {
             } catch (NoSuchElementException ignored) {}
         } else {
             try {
-                ctx.channel().pipeline().addAfter(
-                        SERVER_PROCESSOR, AGGREGATOR, new RearHttpAggregator(appConfig.getMaxContentSize() * 1024 * 1024));
+                ctx.channel().pipeline().addAfter(SERVER_PROCESSOR, AGGREGATOR,
+                        new RearHttpAggregator(appConfig.getSettings().getMaxContentSize() * 1024 * 1024));
             } catch (IllegalArgumentException ignore) {}
         }
         requestInfo.setClientType(ProxyRequestInfo.ClientType.NORMAL);
@@ -174,7 +174,7 @@ public class ServerStrategyHandler extends ChannelDuplexHandler {
             ProxyRequestInfo requestInfo = ctx.channel().attr(requestInfoAttributeKey).get();
             assert requestInfo != null;
             requestInfo.setSsl(true);
-            if (requestInfo.isRecording() && appConfig.isHandleSsl()) {
+            if (requestInfo.isRecording() && appConfig.getSettings().isHandleSsl()) {
                 int port = ((InetSocketAddress) ctx.channel().localAddress()).getPort();
                 String originHost = requestInfo.getHost();
                 SslContext sslCtx = SslContextBuilder.forServer(

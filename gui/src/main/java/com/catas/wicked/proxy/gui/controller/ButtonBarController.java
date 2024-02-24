@@ -99,7 +99,7 @@ public class ButtonBarController implements Initializable {
                 icon.setIconLiteral("far-play-circle");
                 icon.setIconColor(Color.valueOf("#616161"));
             }
-            appConfig.setRecording(newValue);
+            appConfig.getSettings().setRecording(newValue);
         }));
 
         // toggle handle ssl button
@@ -107,7 +107,7 @@ public class ButtonBarController implements Initializable {
             FontIcon icon = (FontIcon) sslBtn.getGraphic();
             String color = newValue ? BTN_ACTIVE : BTN_INACTIVE;
             icon.setIconColor(Color.valueOf(color));
-            appConfig.setHandleSsl(newValue);
+            appConfig.getSettings().setHandleSsl(newValue);
         }));
     }
 
@@ -189,7 +189,7 @@ public class ButtonBarController implements Initializable {
 
             ExternalProxyConfig proxyConfig = new ExternalProxyConfig();
             proxyConfig.setProtocol(ProxyProtocol.HTTP);
-            proxyConfig.setProxyAddress(appConfig.getHost(), appConfig.getPort());
+            proxyConfig.setProxyAddress(appConfig.getHost(), appConfig.getSettings().getPort());
 
             MinimalHttpClient client = MinimalHttpClient.builder()
                     .uri(url)

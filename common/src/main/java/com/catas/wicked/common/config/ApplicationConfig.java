@@ -17,6 +17,7 @@ import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,23 +39,13 @@ public class ApplicationConfig implements AutoCloseable {
 
     private String host = "127.0.0.1";
 
-    private Integer port = 9999;
-
-    private Boolean handleSsl = true;
-
-    private Boolean recording = true;
-
-    private Boolean systemProxy = true;
-
-    private Integer throttleLevel = 0;
-
-    private Integer maxContentSize = 10;
-
     private Integer defaultThreadNumber = 2;
 
-    private ExternalProxyConfig externalProxy;
-
     private EventLoopGroup proxyLoopGroup;
+
+    private Settings settings;
+
+    private String settingPath;
 
     /**
      * ssl configs
@@ -87,7 +78,7 @@ public class ApplicationConfig implements AutoCloseable {
         objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
 
         try {
-            loadLocalConfig();
+            loadSettings();
         } catch (IOException e) {
             log.error("Error loading local configuration.", e);
         }
@@ -106,60 +97,30 @@ public class ApplicationConfig implements AutoCloseable {
     }
 
     private File getLocalConfigFile() throws IOException {
-        Path configPath = Paths.get(WebUtils.getStoragePath(), "config", "config.json");
+        Path configPath;
+        if (StringUtils.isBlank(settingPath)) {
+            configPath = Paths.get(WebUtils.getStoragePath(), "config", "config.json");
+        } else {
+            configPath = Paths.get(settingPath);
+        }
         return configPath.toFile();
     }
 
-    public void loadLocalConfig() throws IOException {
+    public void loadSettings() throws IOException {
         File file = getLocalConfigFile();
         if (!file.exists()) {
+            log.info("Settings file not exist.");
+            settings = new Settings();
             return;
         }
 
-        // ApplicationConfig config = objectMapper.readValue(file, ApplicationConfig.class);
-        JsonNode config = objectMapper.readValue(file, JsonNode.class);
-        // System.out.println("Read config: " + config);
-        if (config == null) {
-            return;
-        }
-        if (config.get("host") != null) {
-            setHost(config.get("host").asText());
-        }
-        if (config.get("port") != null) {
-            setPort(config.get("port").asInt());
-        }
-        if (config.get("throttleLevel") != null) {
-            setThrottleLevel(config.get("throttleLevel").asInt());
-        }
-        if (config.get("maxContentSize") != null) {
-            setMaxContentSize(config.get("maxContentSize").asInt());
-        }
-        if (config.get("handleSsl") != null) {
-            setHandleSsl(config.get("handleSsl").asBoolean());
-        }
-        if (config.get("systemProxy") != null) {
-            setSystemProxy(config.get("systemProxy").asBoolean());
-        }
-        if (config.get("externalProxy") != null) {
-            JsonNode node = config.get("externalProxy");
-            ExternalProxyConfig obj = objectMapper.treeToValue(node, ExternalProxyConfig.class);
-            System.out.println(obj);
-            setExternalProxy(obj);
-        }
+        settings = objectMapper.readValue(file, Settings.class);
     }
 
-    public synchronized void updateLocalConfig() {
+    public synchronized void updateSettings() {
         try {
             File file = getLocalConfigFile();
-            ApplicationConfig config = new ApplicationConfig();
-            config.setHost(getHost());
-            config.setPort(getPort());
-            config.setSystemProxy(isSystemProxy());
-            config.setHandleSsl(isHandleSsl());
-            config.setMaxContentSize(getMaxContentSize());
-            config.setThrottleLevel(getThrottleLevel());
-            config.setExternalProxy(getExternalProxy());
-            objectMapper.writeValue(file, config);
+            objectMapper.writeValue(file, settings);
         } catch (IOException e) {
             log.error("Error updating local config.", e);
         }
@@ -181,15 +142,4 @@ public class ApplicationConfig implements AutoCloseable {
         shutDownApplication();
     }
 
-    public Boolean isHandleSsl() {
-        return handleSsl;
-    }
-
-    public Boolean isRecording() {
-        return recording;
-    }
-
-    public Boolean isSystemProxy() {
-        return systemProxy;
-    }
 }

@@ -117,7 +117,7 @@ public class ProxyProcessHandler extends ChannelInboundHandlerAdapter {
                             if (requestInfo.isUsingExternalProxy()) {
                                 // add external proxy handler
                                 ProxyHandler proxyHandler = ProxyHandlerFactory.getExternalProxyHandler(
-                                        appConfig.getExternalProxy(), WebUtils.getHostname(requestInfo));
+                                        appConfig.getSettings().getExternalProxy(), WebUtils.getHostname(requestInfo));
                                 if (proxyHandler != null) {
                                     // TODO: bugfix HTTP proxy error - UnresolvedAddressException
                                     ch.pipeline().addFirst(EXTERNAL_PROXY, proxyHandler);

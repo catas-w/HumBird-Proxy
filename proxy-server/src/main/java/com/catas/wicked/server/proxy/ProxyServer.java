@@ -65,7 +65,7 @@ public class ProxyServer {
                     .option(ChannelOption.TCP_NODELAY, true)
                     .handler(new LoggingHandler(LogLevel.INFO))
                     .childHandler(proxyServerInitializer);
-            channelFuture = bootstrap.bind(applicationConfig.getPort()).sync();
+            channelFuture = bootstrap.bind(applicationConfig.getSettings().getPort()).sync();
             // channelFuture.channel().closeFuture().sync();
             channelFuture.channel().closeFuture().addListener(future -> {
                 System.out.println("** Close **");
@@ -125,7 +125,7 @@ public class ProxyServer {
             applicationConfig.setServerPubKey(keyPair.getPublic());
         } catch (Exception e) {
             log.error("Certificate load error: ", e);
-            applicationConfig.setHandleSsl(false);
+            applicationConfig.getSettings().setHandleSsl(false);
         }
 
         ThreadPoolService.getInstance().run(() -> {
@@ -134,7 +134,7 @@ public class ProxyServer {
             } catch (Exception e) {
                 log.error("Error in starting proxy server.", e);
                 Platform.runLater(() -> {
-                    alert("Port: " + applicationConfig.getPort() + " is unavailable, change port in settings");
+                    alert("Port: " + applicationConfig.getSettings().getPort() + " is unavailable, change port in settings");
                 });
             }
         });

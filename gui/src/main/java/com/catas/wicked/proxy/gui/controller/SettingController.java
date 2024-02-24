@@ -2,6 +2,7 @@ package com.catas.wicked.proxy.gui.controller;
 
 import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.common.config.ExternalProxyConfig;
+import com.catas.wicked.common.config.Settings;
 import com.catas.wicked.common.constant.ProxyProtocol;
 import com.catas.wicked.common.util.WebUtils;
 import com.catas.wicked.proxy.gui.componet.ProxyTypeLabel;
@@ -253,7 +254,7 @@ public class SettingController implements Initializable {
         saveExProxySettings();
 
         // update config file
-        appConfig.updateLocalConfig();
+        appConfig.updateSettings();
         cancel(event);
     }
 
@@ -262,39 +263,40 @@ public class SettingController implements Initializable {
     }
 
     private void saveServerSettings() {
-        Integer newPort = Integer.valueOf(portField.getText());
-        Integer oldPort = appConfig.getPort();
+        Settings settings = appConfig.getSettings();
+        int newPort = Integer.parseInt(portField.getText());
+        int oldPort = settings.getPort();
 
         // restart server if port changed
-        if (!oldPort.equals(newPort)) {
+        if (oldPort != newPort) {
             // check pot available
             if (!WebUtils.isPortAvailable(newPort)) {
                 alert("Port " + newPort + " is unavailable");
                 return;
             }
-            appConfig.setPort(newPort);
+            settings.setPort(newPort);
             try {
                 proxyServer.shutdown();
                 proxyServer.start();
             } catch (Exception e) {
                 log.error("Error in restarting proxy server.", e);
                 alert("Port " + newPort + " is unavailable");
-                appConfig.setPort(oldPort);
+                settings.setPort(oldPort);
                 proxyServer.start();
                 return;
             }
         }
         // appConfig.setPort(newPort);
-        appConfig.setMaxContentSize(Integer.parseInt(maxSizeField.getText()));
-        appConfig.setSystemProxy(sysProxyBtn.isSelected());
+        settings.setMaxContentSize(Integer.parseInt(maxSizeField.getText()));
+        settings.setSystemProxy(sysProxyBtn.isSelected());
     }
 
     private void saveExProxySettings() {
-        // System.out.println("external proxy settings");
-        ExternalProxyConfig externalProxy = appConfig.getExternalProxy();
+        Settings settings = appConfig.getSettings();
+        ExternalProxyConfig externalProxy = settings.getExternalProxy();
         if (externalProxy == null) {
             externalProxy = new ExternalProxyConfig();
-            appConfig.setExternalProxy(externalProxy);
+            settings.setExternalProxy(externalProxy);
         }
         ProxyProtocol protocol = proxyComboBox.getValue().getProxyType();
         externalProxy.setUsingExternalProxy(protocol != ProxyProtocol.None);
@@ -332,12 +334,13 @@ public class SettingController implements Initializable {
             return;
         }
         // server settings tab
-        portField.setText(String.valueOf(appConfig.getPort()));
-        maxSizeField.setText(String.valueOf(appConfig.getMaxContentSize()));
-        sysProxyBtn.setSelected(appConfig.isSystemProxy());
+        Settings settings = appConfig.getSettings();
+        portField.setText(String.valueOf(settings.getPort()));
+        maxSizeField.setText(String.valueOf(settings.getMaxContentSize()));
+        sysProxyBtn.setSelected(settings.isSystemProxy());
 
         // external proxy settings tab
-        ExternalProxyConfig externalProxy = appConfig.getExternalProxy();
+        ExternalProxyConfig externalProxy = settings.getExternalProxy();
         if (externalProxy != null) {
             proxyComboBox.getSelectionModel().select(externalProxy.getProtocol() == null ?
                     0 : externalProxy.getProtocol().ordinal());

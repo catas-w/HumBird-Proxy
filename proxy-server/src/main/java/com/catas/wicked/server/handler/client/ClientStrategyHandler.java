@@ -107,8 +107,8 @@ public class ClientStrategyHandler extends ChannelDuplexHandler {
                 // update sslHandler
                 if (requestInfo.isSsl()) {
                     try {
-                        ch.pipeline().addBefore(CLIENT_PROCESSOR, SSL_HANDLER,
-                                appConfig.getClientSslCtx().newHandler(ch.alloc(), appConfig.getHost(), appConfig.getPort()));
+                        ch.pipeline().addBefore(CLIENT_PROCESSOR, SSL_HANDLER, appConfig.getClientSslCtx().newHandler(
+                                ch.alloc(), appConfig.getHost(), appConfig.getSettings().getPort()));
                     } catch (IllegalArgumentException ignored) {
                     } catch (Exception e) {
                         log.error("Error establish Ssl context");
@@ -128,7 +128,7 @@ public class ClientStrategyHandler extends ChannelDuplexHandler {
                 if (requestInfo.isRecording()) {
                     try {
                         ch.pipeline().addBefore(POST_RECORDER, AGGREGATOR,
-                                new RearHttpAggregator(appConfig.getMaxContentSize() * 1024 * 1024));
+                                new RearHttpAggregator(appConfig.getSettings().getMaxContentSize() * 1024 * 1024));
                     } catch (IllegalArgumentException ignored) {}
                 }
             } else {
