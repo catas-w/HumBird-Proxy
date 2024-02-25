@@ -22,6 +22,8 @@ public class ProxySettingService extends AbstractSettingService{
         setIntegerStringConverter(settingController.getPortField(), 9624);
         addRequiredValidator(settingController.getPortField());
 
+        // bugfix: make disable-listener work
+        settingController.getSysProxyBtn().setSelected(true);
         settingController.getSysProxyBtn().selectedProperty().addListener(((observable, oldValue, newValue) -> {
             settingController.getSysProxyExcludeArea().setDisable(!newValue);
             Pane parent = (Pane) settingController.getSysProxyBtn().getParent();

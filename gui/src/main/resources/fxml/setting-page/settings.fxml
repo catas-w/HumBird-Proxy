@@ -30,7 +30,7 @@
     <TabPane fx:id="settingTabPane" styleClass="setting-tab-pane" rotateGraphic="true" side="LEFT" tabClosingPolicy="UNAVAILABLE"
              AnchorPane.bottomAnchor="-10.0" AnchorPane.leftAnchor="-10.0"
              AnchorPane.rightAnchor="-10.0" AnchorPane.topAnchor="-10.0">
-        <Tab text="General" styleClass="setting-tab-1">
+        <Tab text="General" styleClass="setting-general, setting-tab-1">
             <!-- <ScrollPane hbarPolicy="NEVER" vbarPolicy="ALWAYS"> -->
             <AnchorPane>
                 <GridPane AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="15.0"
@@ -45,9 +45,9 @@
                         <RowConstraints minHeight="45.0" prefHeight="45.0" vgrow="NEVER"/>
 
                         <RowConstraints prefHeight="10.0" vgrow="NEVER"/>
-                        <RowConstraints minHeight="45.0" prefHeight="45.0" maxHeight="75" vgrow="SOMETIMES"/>
+                        <RowConstraints minHeight="45.0" prefHeight="45.0" maxHeight="80" vgrow="SOMETIMES"/>
                         <RowConstraints prefHeight="10.0" vgrow="NEVER"/>
-                        <RowConstraints minHeight="45.0" prefHeight="45.0" maxHeight="75" vgrow="SOMETIMES"/>
+                        <RowConstraints minHeight="45.0" prefHeight="45.0" maxHeight="80" vgrow="SOMETIMES"/>
                     </rowConstraints>
                     <Label text="Language"/>
                     <Label text="Record Requests" GridPane.rowIndex="1"/>
@@ -64,7 +64,7 @@
             </AnchorPane>
             <!-- </ScrollPane> -->
         </Tab>
-        <Tab text="Proxy Settings" styleClass="setting-tab-server, setting-tab-2">
+        <Tab text="Proxy Settings" styleClass="setting-server, setting-tab-2">
             <AnchorPane>
                 <GridPane AnchorPane.leftAnchor="20.0"
                           AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0">
@@ -75,9 +75,7 @@
                     <rowConstraints>
                         <RowConstraints minHeight="45.0" prefHeight="45.0" vgrow="SOMETIMES"/>
                         <RowConstraints minHeight="45.0" prefHeight="45.0" vgrow="SOMETIMES"/>
-                        <RowConstraints minHeight="45.0" prefHeight="45.0" vgrow="SOMETIMES"/>
-                        <RowConstraints minHeight="45.0" prefHeight="45.0" vgrow="SOMETIMES"/>
-                        <RowConstraints minHeight="45.0" prefHeight="45.0" vgrow="SOMETIMES"/>
+                        <RowConstraints minHeight="45.0" prefHeight="80.0" vgrow="SOMETIMES"/>
                     </rowConstraints>
                     <Label text="HTTP-Proxy Port"/>
                     <Label text="System Proxy" GridPane.rowIndex="1"/>
@@ -85,11 +83,11 @@
 
                     <JFXTextField fx:id="portField" GridPane.columnIndex="1"/>
                     <JFXToggleButton fx:id="sysProxyBtn" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
-                    <TextArea fx:id="sysProxyExcludeArea" GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.rowSpan="2" />
+                    <TextArea fx:id="sysProxyExcludeArea" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
                 </GridPane>
             </AnchorPane>
         </Tab>
-        <Tab text="SSl Settings" styleClass="setting-tab-ssl, setting-tab-3">
+        <Tab text="SSl Settings" styleClass="setting-ssl, setting-tab-3">
             <AnchorPane>
                 <GridPane AnchorPane.leftAnchor="20.0"
                           AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0">
@@ -101,7 +99,7 @@
                         <RowConstraints minHeight="45.0" prefHeight="45.0" vgrow="SOMETIMES"/>
                         <RowConstraints minHeight="45.0" prefHeight="45.0" vgrow="SOMETIMES"/>
                         <RowConstraints minHeight="45.0" prefHeight="45.0" vgrow="SOMETIMES"/>
-                        <RowConstraints minHeight="45.0" prefHeight="45.0" vgrow="SOMETIMES"/>
+                        <RowConstraints minHeight="45.0" prefHeight="80.0" vgrow="SOMETIMES"/>
                     </rowConstraints>
                     <Label text="Handle SSL"/>
                     <Label text="Certificate" GridPane.rowIndex="1"/>
@@ -114,11 +112,11 @@
                         <Pane HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
                         <JFXButton fx:id="selectCertBtn" text="Select From..." translateY="-5"/>
                     </HBox>
-                    <TextArea fx:id="sslExcludeArea" GridPane.columnIndex="1" GridPane.rowIndex="3" GridPane.rowSpan="2"/>
+                    <TextArea fx:id="sslExcludeArea" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
                 </GridPane>
             </AnchorPane>
         </Tab>
-        <Tab text="External Proxy" styleClass="setting-tab-external, setting-tab-4">
+        <Tab text="External Proxy" styleClass="setting-external, setting-tab-4">
             <AnchorPane>
                 <GridPane AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0">
                     <columnConstraints>
@@ -157,7 +155,7 @@
 
     <HBox styleClass="settings-btn"
           prefHeight="40.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="190.0" AnchorPane.rightAnchor="0.0">
-        <JFXButton text="Reset" styleClass="reset-btn">
+        <JFXButton onAction="#reset" text="Reset" styleClass="reset-btn">
             <HBox.margin>
                 <Insets left="10.0" />
             </HBox.margin>

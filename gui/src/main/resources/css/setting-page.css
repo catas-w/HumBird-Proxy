@@ -84,11 +84,14 @@
     -fx-padding: 0 0 0 -4;
     -jfx-toggle-color: #009688;
 }
+.setting-tab-pane .jfx-toggle-button .jfx-rippler {
+    -jfx-rippler-disabled: true;
+}
 
 .setting-tab-pane .jfx-text-field {
     /*-fx-border-width: 1;*/
     /*-fx-border-color: gray;*/
-    -jfx-focus-color: #219eab;
+    -jfx-focus-color: #29c1c1;
     -jfx-unfocus-color: #4d4d4d;
     -fx-padding: 0.333333em 0 0.333333em 0;
 }
@@ -108,4 +111,58 @@
 .setting-tab-pane .jfx-text-field:focused {
     -fx-background-color: TRANSPARENT, TRANSPARENT, TRANSPARENT;
     -fx-prompt-text-fill: #4D4D4D;
+}
+
+
+/****** text area ******/
+.setting-tab-pane .text-area {
+    /*-fx-highlight-fill: gray;*/
+    -fx-focus-color: #b0b0b0;
+    -fx-faint-focus-color: TRANSPARENT;
+}
+
+
+/****** combBox ******/
+.setting-tab-pane .jfx-combo-box {
+    -jfx-focus-color: #29c1c1;
+    /*-jfx-unfocus-color: TRANSPARENT;*/
+    -fx-prompt-text-fill: #707070;
+}
+.setting-tab-pane .jfx-combo-box .label{
+    -fx-text-fill: #707070;
+}
+.setting-tab-pane .combo-box-popup .list-view {
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+    -fx-background-color: white;
+}
+.setting-tab-pane .combo-box-popup .list-view .jfx-list-cell:odd:selected .jfx-list-cell-container,
+.setting-tab-pane .combo-box-popup .list-view .jfx-list-cell:even:selected .jfx-list-cell-container {
+    -fx-background-color: TRANSPARENT;
+    -fx-text-fill: #707070;
+}
+
+.setting-tab-pane .combo-box-popup .list-view .jfx-list-cell {
+    -fx-background-insets: 0.0;
+    -fx-text-fill: #707070;
+}
+
+.setting-tab-pane .combo-box-popup .list-view .jfx-list-cell:odd,
+.setting-tab-pane .combo-box-popup .list-view .jfx-list-cell:even {
+    -fx-background-color: TRANSPARENT;
+    -fx-text-fill: #707070;
+}
+
+.setting-tab-pane .combo-box-popup .list-view .jfx-list-cell:hover {
+    -fx-background-color: #eaeaea;
+    -fx-background-radius: 5;
+    /*-fx-font-weight: 700;*/
+}
+.setting-tab-pane .combo-box-popup .list-view .jfx-list-cell:hover .label {
+    -fx-text-fill: black;
+}
+
+.setting-tab-pane .combo-box-popup .list-view .jfx-list-cell:selected .label {
+    -fx-text-fill: #33cbb9;
+    -fx-font-weight: bold;
 }

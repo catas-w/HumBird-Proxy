@@ -26,6 +26,8 @@ public class GeneralSettingService extends AbstractSettingService {
         setIntegerStringConverter(settingController.getMaxSizeField(), 10);
         addRequiredValidator(settingController.getMaxSizeField());
 
+        // make disable-listener work
+        settingController.getRecordBtn().setSelected(true);
         settingController.getRecordBtn().selectedProperty().addListener(((observable, oldValue, newValue) -> {
             settingController.getMaxSizeField().setDisable(!newValue);
             settingController.getRecordIncludeArea().setDisable(!newValue);

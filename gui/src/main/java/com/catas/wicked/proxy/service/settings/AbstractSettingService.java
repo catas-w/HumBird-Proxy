@@ -69,7 +69,7 @@ public abstract class AbstractSettingService implements SettingService {
     }
 
     /**
-     * get list from include/exclude text fro update settings
+     * get list from include/exclude text for update settings
      * @param text include/exclude text
      * @return list
      */

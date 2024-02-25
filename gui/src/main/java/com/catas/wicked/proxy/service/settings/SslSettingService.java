@@ -27,6 +27,9 @@ public class SslSettingService extends AbstractSettingService {
             settingController.getSelectCertBtn().setDisable(!settingController.getSslBtn().isSelected() || !newValue);
         }));
 
+        // bugfix: make disable-listener work
+        settingController.getSslBtn().setSelected(true);
+
         settingController.getSslBtn().selectedProperty().addListener(((observable, oldValue, newValue) -> {
             settingController.getDefaultCertRadio().setDisable(!newValue);
             settingController.getCustomCertRadio().setDisable(!newValue);

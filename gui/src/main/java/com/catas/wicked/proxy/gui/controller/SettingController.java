@@ -80,8 +80,6 @@ public class SettingController implements Initializable {
 
     private ProxyServer proxyServer;
 
-    private UnaryOperator<TextFormatter.Change> textIntegerFilter;
-
     private List<SettingService> settingServiceList;
 
     public void setAppConfig(ApplicationConfig appConfig) {
@@ -94,15 +92,6 @@ public class SettingController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        // textField constraint
-        textIntegerFilter = change -> {
-            String newText = change.getControlNewText();
-            if (newText.matches("-?([1-9][0-9]*)?")) {
-                return change;
-            }
-            return null;
-        };
-
         settingServiceList = new ArrayList<>();
         settingServiceList.add(new GeneralSettingService(this));
         settingServiceList.add(new ProxySettingService(this));
@@ -166,6 +155,32 @@ public class SettingController implements Initializable {
         }
 
         settingServiceList.forEach(settingService -> settingService.initValues(appConfig));
+    }
+
+    /**
+     * reset current page
+     */
+    public void reset() {
+        Tab selectedTab = settingTabPane.getSelectionModel().getSelectedItem();
+        List<String> styleList = selectedTab.getStyleClass()
+                .stream()
+                .filter(style -> style.startsWith("setting-") && !style.startsWith("setting-tab"))
+                .toList();
+        Class targetServiceType = null;
+        switch (styleList.get(0)) {
+            case "setting-general" -> targetServiceType = GeneralSettingService.class;
+            case "setting-server" -> targetServiceType = ProxySettingService.class;
+            case "setting-ssl" -> targetServiceType = SslSettingService.class;
+            case "setting-external" -> targetServiceType = ExternalProxySettingService.class;
+        }
+
+        if (targetServiceType != null) {
+            for (SettingService service : settingServiceList) {
+                if (service.getClass().equals(targetServiceType)) {
+                    service.initValues(appConfig);
+                }
+            }
+        }
     }
 
     public void alert(String msg) {
