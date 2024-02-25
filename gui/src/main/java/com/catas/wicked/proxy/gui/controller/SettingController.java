@@ -1,18 +1,18 @@
 package com.catas.wicked.proxy.gui.controller;
 
 import com.catas.wicked.common.config.ApplicationConfig;
-import com.catas.wicked.common.config.ExternalProxyConfig;
-import com.catas.wicked.common.config.Settings;
-import com.catas.wicked.common.constant.ProxyProtocol;
-import com.catas.wicked.common.util.WebUtils;
 import com.catas.wicked.proxy.gui.componet.ProxyTypeLabel;
+import com.catas.wicked.proxy.service.settings.ExternalProxySettingService;
+import com.catas.wicked.proxy.service.settings.GeneralSettingService;
+import com.catas.wicked.proxy.service.settings.ProxySettingService;
+import com.catas.wicked.proxy.service.settings.SettingService;
+import com.catas.wicked.proxy.service.settings.SslSettingService;
 import com.catas.wicked.server.proxy.ProxyServer;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXRadioButton;
 import com.jfoenix.controls.JFXTextField;
 import com.jfoenix.controls.JFXToggleButton;
-import com.jfoenix.validation.RequiredFieldValidator;
 import jakarta.inject.Singleton;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -27,21 +27,20 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextFormatter;
-import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.stage.Window;
-import javafx.util.converter.IntegerStringConverter;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.kordamp.ikonli.fontawesome5.FontAwesomeSolid;
-import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.function.UnaryOperator;
 
+@Getter
 @Slf4j
 @Singleton
 public class SettingController implements Initializable {
@@ -83,6 +82,8 @@ public class SettingController implements Initializable {
 
     private UnaryOperator<TextFormatter.Change> textIntegerFilter;
 
+    private List<SettingService> settingServiceList;
+
     public void setAppConfig(ApplicationConfig appConfig) {
         this.appConfig = appConfig;
     }
@@ -102,130 +103,12 @@ public class SettingController implements Initializable {
             return null;
         };
 
-
-        initGeneralSettingsTab();
-        initSSlSettingsTab();
-        initProxySettingsTab();
-        initExSettingsTab();
-    }
-
-    private void initGeneralSettingsTab() {
-        languageComboBox.getItems().add(new Label("English"));
-        languageComboBox.getItems().add(new Label("简体中文"));
-        languageComboBox.getSelectionModel().select(0);
-
-        maxSizeField.setTextFormatter(new TextFormatter<>(new IntegerStringConverter(), 10, textIntegerFilter));
-        addRequiredValidator(maxSizeField);
-
-        recordBtn.selectedProperty().addListener(((observable, oldValue, newValue) -> {
-            maxSizeField.setDisable(!newValue);
-            recordIncludeArea.setDisable(!newValue);
-            recordExcludeArea.setDisable(!newValue);
-
-            Pane parent = (Pane) recordBtn.getParent();
-            parent.getChildren().stream()
-                    .filter(node -> node instanceof Label)
-                    .skip(2)
-                    .forEach(node -> {
-                        Label labeled = (Label) node;
-                        labeled.setDisable(!newValue);
-                    });
-        }));
-    }
-
-    private void initSSlSettingsTab() {
-        final ToggleGroup group = new ToggleGroup();
-        defaultCertRadio.setSelected(true);
-        defaultCertRadio.setToggleGroup(group);
-        customCertRadio.setToggleGroup(group);
-
-        customCertRadio.selectedProperty().addListener(((observable, oldValue, newValue) -> {
-            selectCertBtn.setDisable(!sslBtn.isSelected() || !newValue);
-        }));
-
-        sslBtn.selectedProperty().addListener(((observable, oldValue, newValue) -> {
-            defaultCertRadio.setDisable(!newValue);
-            customCertRadio.setDisable(!newValue);
-            selectCertBtn.setDisable(!newValue);
-            sslExcludeArea.setDisable(!newValue);
-
-            Pane parent = (Pane) sslBtn.getParent();
-            parent.getChildren().stream()
-                    .filter(node -> node instanceof Label)
-                    .skip(1)
-                    .forEach(node -> {
-                        Label labeled = (Label) node;
-                        labeled.setDisable(!newValue);
-                    });
-        }));
-    }
-
-    /**
-     * init server settings
-     */
-    private void initProxySettingsTab() {
-        portField.setTextFormatter(new TextFormatter<>(new IntegerStringConverter(), 9624, textIntegerFilter));
-
-        // add validator
-        addRequiredValidator(portField);
-
-        sysProxyBtn.selectedProperty().addListener(((observable, oldValue, newValue) -> {
-            sysProxyExcludeArea.setDisable(!newValue);
-            Pane parent = (Pane) sysProxyBtn.getParent();
-            parent.getChildren().stream()
-                    .filter(node -> node instanceof Label)
-                    .skip(2)
-                    .forEach(node -> {
-                        Label labeled = (Label) node;
-                        labeled.setDisable(!newValue);
-                    });
-        }));
-    }
-
-    /**
-     * init external proxy settings
-     */
-    private void initExSettingsTab() {
-        exProxyPort.setTextFormatter(new TextFormatter<>(new IntegerStringConverter(), 0, textIntegerFilter));
-        for (ProxyProtocol proxyType : ProxyProtocol.values()) {
-            ProxyTypeLabel label = new ProxyTypeLabel(proxyType.getName()) {
-                @Override
-                public ProxyProtocol getProxyType() {
-                    return proxyType;
-                }
-            };
-            proxyComboBox.getItems().add(label);
-        }
-        proxyComboBox.getSelectionModel().selectedIndexProperty().addListener(((observable, oldValue, newValue) -> {
-            // disable other fields when not using proxy or system proxy
-            boolean disableFields = newValue.intValue() < 2;
-            ((Pane) proxyComboBox.getParent()).getChildren().stream()
-                    .skip(1)
-                    .filter(node -> node != proxyComboBox)
-                    .forEach(node -> node.setDisable(disableFields));
-        }));
-        proxyComboBox.getSelectionModel().selectFirst();
-
-        exProxyAuth.selectedProperty().addListener(((observable, oldValue, newValue) -> {
-            exUsernameLabel.setVisible(newValue);
-            exPasswordLabel.setVisible(newValue);
-            exUsername.setVisible(newValue);
-            exPassword.setVisible(newValue);
-        }));
-    }
-
-    private void addRequiredValidator(JFXTextField textField) {
-        RequiredFieldValidator validator = new RequiredFieldValidator();
-        validator.setMessage("Cannot be empty");
-        FontIcon warnIcon = new FontIcon(FontAwesomeSolid.EXCLAMATION_TRIANGLE);
-        warnIcon.getStyleClass().add("error");
-        validator.setIcon(warnIcon);
-        textField.getValidators().add(validator);
-        textField.focusedProperty().addListener((o, oldVal, newVal) -> {
-            if (!newVal) {
-                textField.validate();
-            }
-        });
+        settingServiceList = new ArrayList<>();
+        settingServiceList.add(new GeneralSettingService(this));
+        settingServiceList.add(new ProxySettingService(this));
+        settingServiceList.add(new SslSettingService(this));
+        settingServiceList.add(new ExternalProxySettingService(this));
+        settingServiceList.forEach(SettingService::init);
     }
 
     public void save(ActionEvent event) {
@@ -249,63 +132,11 @@ public class SettingController implements Initializable {
             return;
         }
 
-        saveGeneralSettings();
-        saveServerSettings();
-        saveExProxySettings();
+        settingServiceList.forEach(settingService -> settingService.update(appConfig));
 
         // update config file
         appConfig.updateSettings();
         cancel(event);
-    }
-
-    private void saveGeneralSettings() {
-        System.out.println("Save general settings");
-    }
-
-    private void saveServerSettings() {
-        Settings settings = appConfig.getSettings();
-        int newPort = Integer.parseInt(portField.getText());
-        int oldPort = settings.getPort();
-
-        // restart server if port changed
-        if (oldPort != newPort) {
-            // check pot available
-            if (!WebUtils.isPortAvailable(newPort)) {
-                alert("Port " + newPort + " is unavailable");
-                return;
-            }
-            settings.setPort(newPort);
-            try {
-                proxyServer.shutdown();
-                proxyServer.start();
-            } catch (Exception e) {
-                log.error("Error in restarting proxy server.", e);
-                alert("Port " + newPort + " is unavailable");
-                settings.setPort(oldPort);
-                proxyServer.start();
-                return;
-            }
-        }
-        // appConfig.setPort(newPort);
-        settings.setMaxContentSize(Integer.parseInt(maxSizeField.getText()));
-        settings.setSystemProxy(sysProxyBtn.isSelected());
-    }
-
-    private void saveExProxySettings() {
-        Settings settings = appConfig.getSettings();
-        ExternalProxyConfig externalProxy = settings.getExternalProxy();
-        if (externalProxy == null) {
-            externalProxy = new ExternalProxyConfig();
-            settings.setExternalProxy(externalProxy);
-        }
-        ProxyProtocol protocol = proxyComboBox.getValue().getProxyType();
-        externalProxy.setUsingExternalProxy(protocol != ProxyProtocol.None);
-        externalProxy.setProtocol(protocol);
-        externalProxy.setHost(exProxyHost.getText());
-        externalProxy.setPort(Integer.parseInt(exProxyPort.getText()));
-        externalProxy.setProxyAuth(exProxyAuth.isSelected());
-        externalProxy.setUsername(exUsername.getText());
-        externalProxy.setPassword(exPassword.getText());
     }
 
     public void cancel(ActionEvent event) {
@@ -333,28 +164,11 @@ public class SettingController implements Initializable {
         if (appConfig == null) {
             return;
         }
-        // server settings tab
-        Settings settings = appConfig.getSettings();
-        portField.setText(String.valueOf(settings.getPort()));
-        maxSizeField.setText(String.valueOf(settings.getMaxContentSize()));
-        sysProxyBtn.setSelected(settings.isSystemProxy());
 
-        // external proxy settings tab
-        ExternalProxyConfig externalProxy = settings.getExternalProxy();
-        if (externalProxy != null) {
-            proxyComboBox.getSelectionModel().select(externalProxy.getProtocol() == null ?
-                    0 : externalProxy.getProtocol().ordinal());
-            exProxyHost.setText(externalProxy.getHost());
-            exProxyPort.setText(String.valueOf(externalProxy.getPort()));
-            exProxyAuth.setSelected(externalProxy.isProxyAuth());
-            exUsername.setText(externalProxy.getUsername());
-            exPassword.setText(externalProxy.getPassword());
-        } else {
-            proxyComboBox.getSelectionModel().select(0);
-        }
+        settingServiceList.forEach(settingService -> settingService.initValues(appConfig));
     }
 
-    private void alert(String msg) {
+    public void alert(String msg) {
         Alert alert = new Alert(Alert.AlertType.WARNING);
         alert.setTitle("Warning");
         alert.setHeaderText(msg);
