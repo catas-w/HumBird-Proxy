@@ -40,6 +40,13 @@ public class ExternalProxySettingService extends AbstractSettingService{
                     .skip(1)
                     .filter(node -> node != proxyComboBox)
                     .forEach(node -> node.setDisable(disableFields));
+            if (!disableFields) {
+                addRequiredValidator(settingController.getExProxyHost());
+                addRequiredValidator(settingController.getExProxyPort());
+            } else {
+                removeRequiredValidator(settingController.getExProxyHost());
+                removeRequiredValidator(settingController.getExProxyPort());
+            }
         }));
         proxyComboBox.getSelectionModel().selectFirst();
 
@@ -78,6 +85,8 @@ public class ExternalProxySettingService extends AbstractSettingService{
         }
         ProxyProtocol protocol = settingController.getProxyComboBox().getValue().getProxyType();
         externalProxy.setUsingExternalProxy(protocol != ProxyProtocol.None);
+        // TODO: bugfix 切换协议后报错
+        //  ProxyConnectException: http, none, /127.0.0.1:10808 => www.google.com/<unresolved>:443, disconnected
         externalProxy.setProtocol(protocol);
         externalProxy.setHost(settingController.getExProxyHost().getText());
         externalProxy.setPort(Integer.parseInt(settingController.getExProxyPort().getText()));

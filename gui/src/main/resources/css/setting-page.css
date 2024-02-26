@@ -89,35 +89,33 @@
 }
 
 .setting-tab-pane .jfx-text-field {
-    /*-fx-border-width: 1;*/
-    /*-fx-border-color: gray;*/
-    -jfx-focus-color: #29c1c1;
-    -jfx-unfocus-color: #4d4d4d;
+    -fx-border-width: 1;
+    -fx-border-color: #b0b0b0;
+    -fx-border-radius: 3px;
+    /*-jfx-focus-color: #29c1c1;*/
+    /*-jfx-unfocus-color: #4d4d4d;*/
     -fx-padding: 0.333333em 0 0.333333em 0;
 }
-
 .setting-tab-pane .jfx-text-field > .input-line {
-    -fx-background-color: -jfx-unfocus-color;
-    -fx-pref-height: 1px;
-    -fx-translate-y: 1px;
+    /*-fx-background-color: -jfx-unfocus-color;*/
+    -fx-pref-height: 0px;
+    /*-fx-translate-y: 1px;*/
 }
-
 .setting-tab-pane .jfx-text-field > .input-focused-line {
-    -fx-background-color: -jfx-focus-color;
-    -fx-pref-height: 2px;
+    /*-fx-background-color: -jfx-focus-color;*/
+    -fx-pref-height: 0px;
 }
-
-.setting-tab-pane .jfx-text-field,
 .setting-tab-pane .jfx-text-field:focused {
     -fx-background-color: TRANSPARENT, TRANSPARENT, TRANSPARENT;
     -fx-prompt-text-fill: #4D4D4D;
+    -fx-border-color: #808080;
 }
 
 
 /****** text area ******/
 .setting-tab-pane .text-area {
     /*-fx-highlight-fill: gray;*/
-    -fx-focus-color: #b0b0b0;
+    -fx-focus-color: #808080;
     -fx-faint-focus-color: TRANSPARENT;
 }
 

@@ -37,8 +37,12 @@ public abstract class AbstractSettingService implements SettingService {
      * @param textField jfxTextField
      */
     protected void addRequiredValidator(JFXTextField textField) {
+        if (textField == null) {
+            return;
+        }
         RequiredFieldValidator validator = new RequiredFieldValidator();
-        validator.setMessage("Cannot be empty");
+        // validator.setMessage("Cannot be empty");
+        validator.setMessage("Required!");
         FontIcon warnIcon = new FontIcon(FontAwesomeSolid.EXCLAMATION_TRIANGLE);
         warnIcon.getStyleClass().add("error");
         validator.setIcon(warnIcon);
@@ -48,6 +52,13 @@ public abstract class AbstractSettingService implements SettingService {
                 textField.validate();
             }
         });
+    }
+
+    protected void removeRequiredValidator(JFXTextField textField) {
+        if (textField == null) {
+            return;
+        }
+        textField.getValidators().removeIf(validator -> validator instanceof RequiredFieldValidator);
     }
 
     /**

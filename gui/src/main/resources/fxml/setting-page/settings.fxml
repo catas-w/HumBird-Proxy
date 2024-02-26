@@ -81,7 +81,7 @@
                     <Label text="System Proxy" GridPane.rowIndex="1"/>
                     <Label text="Exclude" GridPane.rowIndex="2"/>
 
-                    <JFXTextField fx:id="portField" GridPane.columnIndex="1"/>
+                    <JFXTextField fx:id="portField" GridPane.columnIndex="1" maxWidth="80.0"/>
                     <JFXToggleButton fx:id="sysProxyBtn" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
                     <TextArea fx:id="sysProxyExcludeArea" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
                 </GridPane>
@@ -132,18 +132,30 @@
                         <RowConstraints minHeight="45.0" prefHeight="45.0" vgrow="SOMETIMES"/>
                     </rowConstraints>
                     <Label text="Proxy type"/>
-                    <Label text="Host" GridPane.rowIndex="1"/>
-                    <Label text="Port" GridPane.rowIndex="2"/>
-                    <Label text="Proxy Auth" GridPane.rowIndex="3"/>
-                    <Label text="Username" fx:id="exUsernameLabel" visible="false" GridPane.rowIndex="4"/>
-                    <Label text="Password" fx:id="exPasswordLabel" visible="false" GridPane.rowIndex="5"/>
+                    <Label text="Address" GridPane.rowIndex="1"/>
+                    <!-- <Label text="Port" GridPane.rowIndex="2"/> -->
+                    <Label text="Proxy Auth" GridPane.rowIndex="2"/>
+                    <Label text="Username" fx:id="exUsernameLabel" visible="false" GridPane.rowIndex="3"/>
+                    <Label text="Password" fx:id="exPasswordLabel" visible="false" GridPane.rowIndex="4"/>
 
                     <JFXComboBox fx:id="proxyComboBox" GridPane.columnIndex="1"/>
-                    <JFXTextField fx:id="exProxyHost" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
-                    <JFXTextField fx:id="exProxyPort" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
-                    <JFXToggleButton fx:id="exProxyAuth" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
-                    <JFXTextField fx:id="exUsername" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
-                    <JFXTextField fx:id="exPassword" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+                    <HBox GridPane.columnIndex="1" GridPane.rowIndex="1">
+                        <JFXTextField fx:id="exProxyHost" prefWidth="250"/>
+                        <Label text=":">
+                            <HBox.margin>
+                                <Insets right="2.0" left="2.0" top="3.0"/>
+                            </HBox.margin>
+                        </Label>
+                        <JFXTextField fx:id="exProxyPort" prefWidth="80"/>
+                        <GridPane.margin>
+                            <Insets top="12.0"/>
+                        </GridPane.margin>
+                    </HBox>
+                    <!-- <JFXTextField fx:id="exProxyHost" GridPane.columnIndex="1" GridPane.rowIndex="1"/> -->
+                    <!-- <JFXTextField fx:id="exProxyPort" GridPane.columnIndex="1" GridPane.rowIndex="2"/> -->
+                    <JFXToggleButton fx:id="exProxyAuth" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                    <JFXTextField fx:id="exUsername" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+                    <JFXTextField fx:id="exPassword" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
                 </GridPane>
             </AnchorPane>
         </Tab>
