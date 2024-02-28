@@ -1,7 +1,6 @@
 package com.catas.wicked.server.proxy;
 
 import com.catas.wicked.common.util.ThreadPoolService;
-import com.catas.wicked.server.HttpProxyApplication;
 import com.catas.wicked.server.cert.CertPool;
 import com.catas.wicked.server.cert.CertService;
 import com.catas.wicked.common.config.ApplicationConfig;
@@ -112,8 +111,8 @@ public class ProxyServer {
         PrivateKey caPriKey;
         try {
             applicationConfig.setClientSslCtx(contextBuilder.build());
-            caCert = certService.loadCert(HttpProxyApplication.class.getResource("/cert/cert.crt").openStream());
-            caPriKey = certService.loadPriKey(HttpProxyApplication.class.getResource("/cert/private.key").openStream());
+            caCert = certService.loadCert(getClass().getResource("/cert/cert.crt").openStream());
+            caPriKey = certService.loadPriKey(getClass().getResource("/cert/private.key").openStream());
             applicationConfig.setIssuer(certService.getSubject(caCert));
             applicationConfig.setCaNotBefore(caCert.getNotBefore());
             applicationConfig.setCaNotAfter(caCert.getNotAfter());

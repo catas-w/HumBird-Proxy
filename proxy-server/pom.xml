@@ -42,7 +42,7 @@
         <!--     <groupId>io.micronaut</groupId> -->
         <!--     <artifactId>micronaut-http-server-netty</artifactId> -->
         <!--     <version>${micronaut.version}</version> -->
-        <!--     <scope>runtime</scope> -->
+        <!--     <scope>test</scope> -->
         <!-- </dependency> -->
     </dependencies>
 

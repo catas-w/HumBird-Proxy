@@ -17,6 +17,7 @@ import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpResponse;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -209,5 +210,9 @@ public class ButtonBarController implements Initializable {
                 client.close();
             }
         });
+    }
+
+    public void exit() {
+        Platform.exit();
     }
 }

@@ -89,7 +89,7 @@
                         <FontIcon iconLiteral="fas-info-circle" iconSize="18"/>
                     </graphic>
                 </MenuItem>
-                <MenuItem fx:id="quitBtn" text="Quit">
+                <MenuItem fx:id="quitBtn" onAction="#exit" text="Exit">
                     <graphic>
                         <FontIcon iconLiteral="fas-sign-in-alt" iconSize="18"/>
                     </graphic>
