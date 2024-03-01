@@ -6,7 +6,7 @@ import app.supernaut.fx.fxml.FxmlLoaderFactory;
 import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.proxy.message.MessageService;
 import com.catas.wicked.server.proxy.ProxyServer;
-import io.micronaut.context.annotation.Import;
+import io.micronaut.context.annotation.Any;
 import jakarta.inject.Inject;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -16,12 +16,12 @@ import lombok.extern.slf4j.Slf4j;
 import jakarta.inject.Singleton;
 
 @Slf4j
-@Import(packages = {
-        "com.catas.wicked.server.proxy",
-        "com.catas.wicked.server.cert",
-        "com.catas.wicked.server.cert.spi",
-        "com.catas.wicked.server.handler.server"
-})
+// @Import(packages = {
+//         "com.catas.wicked.server.proxy",
+//         "com.catas.wicked.server.cert",
+//         "com.catas.wicked.server.cert.spi",
+//         "com.catas.wicked.server.handler.server"
+// })
 @Singleton
 public class WickedProxyApplication implements ApplicationDelegate {
 
@@ -34,6 +34,7 @@ public class WickedProxyApplication implements ApplicationDelegate {
     @Inject
     private MessageService messageService;
 
+    @Any
     @Inject
     private ProxyServer proxyServer;
 

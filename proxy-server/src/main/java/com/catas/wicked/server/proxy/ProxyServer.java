@@ -1,6 +1,7 @@
 package com.catas.wicked.server.proxy;
 
 import com.catas.wicked.common.util.ThreadPoolService;
+import com.catas.wicked.server.HttpProxyApplication;
 import com.catas.wicked.server.cert.CertPool;
 import com.catas.wicked.server.cert.CertService;
 import com.catas.wicked.common.config.ApplicationConfig;
@@ -127,17 +128,21 @@ public class ProxyServer {
             applicationConfig.getSettings().setHandleSsl(false);
         }
 
-        ThreadPoolService.getInstance().run(() -> {
-            try {
-                start();
-            } catch (Exception e) {
-                log.error("Error in starting proxy server.", e);
-                Platform.runLater(() -> {
-                    alert("Port: " + applicationConfig.getSettings().getPort() + " is unavailable, change port in settings");
-                });
-            }
-        });
-        // start();
+        if (HttpProxyApplication.startFromServer) {
+            start();
+        } else {
+            ThreadPoolService.getInstance().run(() -> {
+                try {
+                    start();
+                } catch (Exception e) {
+                    log.error("Error in starting proxy server.", e);
+                    Platform.runLater(() -> {
+                        alert("Port: " + applicationConfig.getSettings().getPort()
+                                + " is unavailable, change port in settings");
+                    });
+                }
+            });
+        }
     }
 
     private void alert(String msg) {
