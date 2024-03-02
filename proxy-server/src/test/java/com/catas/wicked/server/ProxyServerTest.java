@@ -1,5 +1,6 @@
 package com.catas.wicked.server;
 
+import com.catas.wicked.common.bean.message.RequestMessage;
 import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.common.util.SslUtils;
 import com.catas.wicked.server.proxy.ProxyServer;
@@ -15,6 +16,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.ehcache.Cache;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -33,6 +35,9 @@ public class ProxyServerTest {
 
     // @Inject
     private static ApplicationConfig appConfig;
+    private static TestMessageService testMessageService;
+    private static Cache<String, RequestMessage> cache;
+    private static PrevIdGenerator prevIdGenerator;
 
     @BeforeClass
     public static void init() throws Exception {
@@ -48,29 +53,35 @@ public class ProxyServerTest {
                 .setSSLSocketFactory(SslUtils.getSocketFactory(false, null, null))
                 .build();
 
-        HttpProxyApplication.startFromServer = true;
+        ProxyServer.standalone = true;
         BeanContext context = BeanContext.build();
         context.start();
 
         appConfig = context.getBean(ApplicationConfig.class);
         proxyServer = context.getBean(ProxyServer.class);
-    }
-
-    @Test
-    public void test() {
-        Assert.assertNotNull(proxyServer);
-        Assert.assertNotNull(appConfig);
+        testMessageService = context.getBean(TestMessageService.class);
+        prevIdGenerator = context.getBean(PrevIdGenerator.class);
+        cache = context.getBean(Cache.class);
     }
 
     @Test
     public void testBasicHttpRequest() throws IOException {
+        String reqId = "basic-test-001";
+        prevIdGenerator.setNextId(reqId);
+
         HttpGet httpGet = new HttpGet("https://httpbin.org/get?name=jack&age=32");
         httpGet.addHeader("accept", "application/json");
         CloseableHttpResponse getResp = httpClient.execute(httpGet);
         Assert.assertEquals(200, getResp.getStatusLine().getStatusCode());
-        String getRespEntity = EntityUtils.toString(getResp.getEntity());
-        System.out.println(getRespEntity);
-        Assert.assertTrue(getRespEntity.length() > 0);
+        getResp.close();
+
+        RequestMessage requestMessage = cache.get(reqId);
+        System.out.println(requestMessage);
+        Assert.assertEquals("https://httpbin.org/get?name=jack&age=32", requestMessage.getRequestUrl());
+        // cache.forEach(entry -> {
+        //     System.out.println("Key: " + entry.getKey());
+        //     System.out.println("Value: " + entry.getValue());
+        // });
     }
 
     @Test

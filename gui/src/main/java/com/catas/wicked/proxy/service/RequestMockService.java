@@ -1,10 +1,10 @@
 package com.catas.wicked.proxy.service;
 
+import com.catas.wicked.common.bean.IdGenerator;
 import com.catas.wicked.common.bean.message.RequestMessage;
 import com.catas.wicked.common.bean.message.ResponseMessage;
 import com.catas.wicked.common.pipeline.MessageQueue;
 import com.catas.wicked.common.pipeline.Topic;
-import com.catas.wicked.common.util.IdUtil;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 
@@ -22,6 +22,9 @@ public class RequestMockService {
 
     @Inject
     private MessageQueue messageQueue;
+
+    @Inject
+    private IdGenerator idGenerator;
 
     private int index;
 
@@ -155,7 +158,7 @@ public class RequestMockService {
         String[] split = url.split(" ");
 
         RequestMessage msg = new RequestMessage(split[1]);
-        msg.setRequestId(IdUtil.getId());
+        msg.setRequestId(idGenerator.nextId());
         msg.setMethod(split[0]);
         msg.setHeaders(getHeaders(reqHeadersList, index));
         msg.setBody(sampleJson.getBytes(StandardCharsets.UTF_8));

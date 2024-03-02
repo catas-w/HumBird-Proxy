@@ -1,10 +1,10 @@
 package com.catas.wicked.server.handler.server;
 
+import com.catas.wicked.common.bean.IdGenerator;
 import com.catas.wicked.common.bean.ProxyRequestInfo;
 import com.catas.wicked.common.constant.ProxyConstant;
 import com.catas.wicked.common.constant.ServerStatus;
 import com.catas.wicked.common.config.ApplicationConfig;
-import com.catas.wicked.common.util.IdUtil;
 import com.catas.wicked.common.util.WebUtils;
 import com.catas.wicked.server.cert.CertPool;
 import com.catas.wicked.server.handler.RearHttpAggregator;
@@ -59,12 +59,15 @@ public class ServerStrategyHandler extends ChannelDuplexHandler {
 
     private final CertPool certPool;
 
+    private IdGenerator idGenerator;
+
     private final AttributeKey<ProxyRequestInfo> requestInfoAttributeKey = AttributeKey.valueOf("requestInfo");
 
-    public ServerStrategyHandler(ApplicationConfig applicationConfig, CertPool certPool) {
+    public ServerStrategyHandler(ApplicationConfig applicationConfig, CertPool certPool, IdGenerator idGenerator) {
         this.appConfig = applicationConfig;
         this.certPool = certPool;
         this.status = ServerStatus.INIT;
+        this.idGenerator = idGenerator;
     }
 
     @Override
@@ -107,7 +110,7 @@ public class ServerStrategyHandler extends ChannelDuplexHandler {
         assert requestInfo != null;
         requestInfo.setUsingExternalProxy(appConfig.getSettings().getExternalProxy() != null &&
                 appConfig.getSettings().getExternalProxy().isUsingExternalProxy());
-        requestInfo.setRequestId(IdUtil.getId());
+        requestInfo.setRequestId(idGenerator.nextId());
         requestInfo.setRecording(appConfig.getSettings().isRecording());
         requestInfo.resetBasicInfo();
 

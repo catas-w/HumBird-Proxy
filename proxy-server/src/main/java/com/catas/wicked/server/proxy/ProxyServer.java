@@ -1,7 +1,6 @@
 package com.catas.wicked.server.proxy;
 
 import com.catas.wicked.common.util.ThreadPoolService;
-import com.catas.wicked.server.HttpProxyApplication;
 import com.catas.wicked.server.cert.CertPool;
 import com.catas.wicked.server.cert.CertService;
 import com.catas.wicked.common.config.ApplicationConfig;
@@ -33,6 +32,8 @@ import java.security.cert.X509Certificate;
 @Slf4j
 @Singleton
 public class ProxyServer {
+
+    public static boolean standalone;
 
     @Inject
     private ApplicationConfig applicationConfig;
@@ -128,7 +129,7 @@ public class ProxyServer {
             applicationConfig.getSettings().setHandleSsl(false);
         }
 
-        if (HttpProxyApplication.startFromServer) {
+        if (standalone) {
             start();
         } else {
             ThreadPoolService.getInstance().run(() -> {
