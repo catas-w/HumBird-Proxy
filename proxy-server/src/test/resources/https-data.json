@@ -1,0 +1,177 @@
+[
+    {
+        "protocol": "https",
+        "url": "https://httpbin.org/get",
+        "method": "GET",
+        "queryParams": [
+            {
+                "key": "name",
+                "value": "jack"
+            }
+        ],
+        "headers": [
+            {
+                "key": "accept",
+                "value": "application/json"
+            }
+        ],
+        "expect": {
+            "status": "FINISHED",
+            "code": 200,
+            "headers": [
+                {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                }
+            ],
+            "content": null
+        }
+    },
+    {
+        "protocol": "https",
+        "url": "https://httpbin.org/post",
+        "method": "POST",
+        "queryParams": null,
+        "headers": [
+            {
+                "key": "accept",
+                "value": "application/json"
+            }, {
+                "key": "Content-Type",
+                "value": "application/json"
+            }
+        ],
+        "contentType": "TEXT_JSON",
+        "content": {
+            "name": "Jack",
+            "ship": "Black Pearl"
+        },
+        "expect": {
+            "status": "FINISHED",
+            "code": 200,
+            "headers": [
+                {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                }
+            ],
+            "content": null
+        }
+    },
+    {
+        "protocol": "https",
+        "url": "https://httpbin.org/delete",
+        "method": "DELETE",
+        "queryParams": null,
+        "headers": [
+            {
+                "key": "accept",
+                "value": "application/json"
+            }
+        ],
+        "content": null,
+        "expect": {
+            "status": "FINISHED",
+            "code": 200,
+            "headers": null,
+            "content": null
+        }
+    },
+
+    {
+        "protocol": "https",
+        "url": "https://httpbin.org/status/400",
+        "method": "GET",
+        "queryParams": null,
+        "headers": [
+            {
+                "key": "accept",
+                "value": "text/plain"
+            }
+        ],
+        "content": null,
+        "expect": {
+            "status": "FINISHED",
+            "code": 400,
+            "headers": null,
+            "content": null
+        }
+    },
+    {
+        "protocol": "https",
+        "url": "https://httpbin.org/status/403",
+        "method": "GET",
+        "queryParams": null,
+        "headers": [
+            {
+                "key": "accept",
+                "value": "text/plain"
+            }
+        ],
+        "content": null,
+        "expect": {
+            "status": "FINISHED",
+            "code": 403,
+            "headers": null,
+            "content": null
+        }
+    },
+    {
+        "protocol": "https",
+        "url": "https://httpbin.org/status/404",
+        "method": "GET",
+        "queryParams": null,
+        "headers": [
+            {
+                "key": "accept",
+                "value": "text/plain"
+            }
+        ],
+        "content": null,
+        "expect": {
+            "status": "FINISHED",
+            "code": 404,
+            "headers": null,
+            "content": null
+        }
+    },
+    {
+        "protocol": "https",
+        "url": "https://httpbin.org/status/500",
+        "method": "GET",
+        "queryParams": null,
+        "headers": [
+            {
+                "key": "accept",
+                "value": "text/plain"
+            }
+        ],
+        "content": null,
+        "expect": {
+            "status": "FINISHED",
+            "code": 500,
+            "headers": null,
+            "content": null
+        }
+    },
+    {
+        "protocol": "https",
+        "url": "https://httpbin.org/status/503",
+        "method": "GET",
+        "queryParams": null,
+        "headers": [
+            {
+                "key": "accept",
+                "value": "text/plain"
+            }
+        ],
+        "content": null,
+        "expect": {
+            "status": "FINISHED",
+            "code": 503,
+            "headers": null,
+            "content": null
+        }
+    }
+
+]

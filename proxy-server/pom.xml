@@ -171,6 +171,16 @@
                 <filtering>false</filtering>
             </resource>
         </resources>
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+                <includes>
+                    <include>*.*</include>
+                    <include>**/*.*</include>
+                </includes>
+                <filtering>false</filtering>
+            </testResource>
+        </testResources>
     </build>
 
 </project>

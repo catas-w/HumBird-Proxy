@@ -1,4 +1,4 @@
-package com.catas.wicked.server;
+package com.catas.wicked.server.cert;
 
 import com.catas.wicked.server.cert.CertService;
 import com.catas.wicked.server.cert.spi.BouncyCastleCertGenerator;

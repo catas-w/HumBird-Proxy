@@ -33,6 +33,7 @@ public class TestMessageService {
 
     private void processUpdate(BaseMessage msg) {
         if (msg instanceof RequestMessage updateMsg) {
+            log.info("Process requestId={}", updateMsg.getRequestId());
             RequestMessage requestMessage = requestCache.get(updateMsg.getRequestId());
             if (requestMessage == null) {
                 return;

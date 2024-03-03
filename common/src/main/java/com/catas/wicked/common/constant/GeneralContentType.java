@@ -11,5 +11,7 @@ public enum GeneralContentType {
     TEXT_HTML,
     IMAGE,
     VIDEO,
-    BINARY;
+    BINARY,
+    QUERY_FORM,
+    MULTIPART_FORM,
 }
