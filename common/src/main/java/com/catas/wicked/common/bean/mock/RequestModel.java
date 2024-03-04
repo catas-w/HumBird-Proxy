@@ -1,4 +1,4 @@
-package com.catas.wicked.common.bean.test;
+package com.catas.wicked.common.bean.mock;
 
 import com.catas.wicked.common.bean.StrPair;
 import com.catas.wicked.common.constant.GeneralContentType;
@@ -23,6 +23,8 @@ public class RequestModel {
     private List<StrPair> queryParams;
 
     private List<StrPair> headers;
+
+    private List<StrPair> formData;
 
     private GeneralContentType contentType;
 

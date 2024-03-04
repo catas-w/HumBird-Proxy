@@ -126,6 +126,13 @@ public class ApplicationConfig implements AutoCloseable {
         }
     }
 
+    public int getMaxContentSize() {
+        if (settings == null || settings.getMaxContentSize() <= 0) {
+            return 1024 * 1024;
+        }
+        return settings.getMaxContentSize() * 1024 * 1024;
+    }
+
     public void shutDownApplication() {
         shutDownFlag.compareAndSet(false, true);
         if (!(proxyLoopGroup.isShutdown() || proxyLoopGroup.isShuttingDown())) {

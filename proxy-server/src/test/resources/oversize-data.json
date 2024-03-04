@@ -1,0 +1,50 @@
+[
+    {
+        "protocol": "http",
+        "url": "http://httpbin.org/bytes/1024000",
+        "method": "GET",
+        "queryParams": null,
+        "headers": [
+            {
+                "key": "accept",
+                "value": "*/*"
+            }
+        ],
+        "contentType": null,
+        "content": null,
+        "expect": {
+            "status": "FINISHED",
+            "code": 200,
+            "content": null
+        }
+    },
+    {
+        "protocol": "http",
+        "url": "http://httpbin.org/anything",
+        "method": "POST",
+        "queryParams": null,
+        "headers": [
+            {
+                "key": "accept",
+                "value": "*/*"
+            }
+        ],
+        "contentType": "MULTIPART_FORM",
+        "content": null,
+        "formData": [
+            {
+                "key": "data",
+                "value": "file:random.data"
+            }, {
+                "key": "name",
+                "value": "Jack"
+            }
+        ],
+        "expect": {
+            "status": "FINISHED",
+            "code": 200,
+            "content": null
+        }
+    }
+
+]

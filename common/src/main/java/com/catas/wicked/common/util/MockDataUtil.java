@@ -1,8 +1,9 @@
 package com.catas.wicked.common.util;
 
+import com.catas.wicked.common.bean.StrPair;
 import com.catas.wicked.common.bean.message.RequestMessage;
 import com.catas.wicked.common.bean.message.ResponseMessage;
-import com.catas.wicked.common.bean.test.RequestModel;
+import com.catas.wicked.common.bean.mock.RequestModel;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -18,6 +19,8 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.FileEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.entity.mime.content.ContentBody;
+import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.message.BasicNameValuePair;
 
@@ -25,6 +28,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -76,7 +81,7 @@ public class MockDataUtil {
     /**
      * get HttpUriRequest from requestModel
      */
-    public HttpUriRequest getUriRequest(RequestModel requestModel) throws UnsupportedEncodingException {
+    public HttpUriRequest getUriRequest(RequestModel requestModel) throws UnsupportedEncodingException, URISyntaxException {
         if (requestModel == null) {
             throw new IllegalArgumentException();
         }
@@ -89,30 +94,52 @@ public class MockDataUtil {
         if (requestModel.getHeaders() != null) {
             requestModel.getHeaders().forEach(item -> builder.addHeader(item.getKey(), item.getValue()));
         }
-        if (requestModel.getContent() != null && requestModel.getContentType() != null) {
+        if (requestModel.getContentType() != null) {
             JsonNode content = requestModel.getContent();
+            List<StrPair> formData = requestModel.getFormData();
             switch (requestModel.getContentType()) {
                 case TEXT_JSON,TEXT,TEXT_XML,TEXT_HTML -> {
-                    HttpEntity entity = new StringEntity(content.asText());
-                    builder.setEntity(entity);
+                    if (content != null) {
+                        HttpEntity entity = new StringEntity(content.asText());
+                        builder.setEntity(entity);
+                    }
                 }
                 case IMAGE, BINARY -> {
-                    FileEntity entity = new FileEntity(new File(content.get("file").asText()));
-                    builder.setEntity(entity);
+                    if (content != null) {
+                        FileEntity entity = new FileEntity(new File(content.get("file").asText()));
+                        builder.setEntity(entity);
+                    }
                 }
                 case QUERY_FORM -> {
-                    List<NameValuePair> parameters = new ArrayList<NameValuePair>(0);
-                    content.fields().forEachRemaining(field ->
-                            parameters.add(new BasicNameValuePair(field.getKey(), field.getValue().asText())));
-                    UrlEncodedFormEntity entity = new UrlEncodedFormEntity(parameters);
-                    builder.setEntity(entity);
+                    if (formData != null) {
+                        List<NameValuePair> parameters = new ArrayList<NameValuePair>(0);
+                        formData.forEach(strPair ->
+                                parameters.add(new BasicNameValuePair(strPair.getValue(), strPair.getValue())));
+                        UrlEncodedFormEntity entity = new UrlEncodedFormEntity(parameters);
+                        builder.setEntity(entity);
+                    }
                 }
                 case MULTIPART_FORM -> {
-                    // String only
+                    if (formData == null) {
+                        break;
+                    }
+                    // HttpPost httpPost = new HttpPost(requestModel.getUrl());
                     MultipartEntityBuilder multipartBuilder = MultipartEntityBuilder.create();
-                    content.fields().forEachRemaining(field -> multipartBuilder.addPart(field.getKey(),
-                                    new StringBody(field.getValue().asText(),  ContentType.TEXT_PLAIN)));
-                    builder.setEntity(multipartBuilder.build());
+                    for (StrPair item : formData) {
+                        ContentBody contentBody = null;
+                        if (item.getValue().startsWith("file:")) {
+                            URL fileUrl = getClass().getClassLoader().getResource(item.getValue().substring(5));
+                            contentBody = new FileBody(new File(fileUrl.toURI()), ContentType.MULTIPART_FORM_DATA);
+                        } else {
+                            contentBody = new StringBody(item.getValue(), ContentType.TEXT_PLAIN);
+                        }
+                        multipartBuilder.addPart(item.getKey(), contentBody);
+                    }
+                    HttpEntity multipartEntity = multipartBuilder.build();
+                    // httpPost.setEntity(multipartEntity);
+                    // return httpPost;
+                    builder.setEntity(multipartEntity);
+                    // builder.addHeader(multipartEntity.getContentType());
                 }
             }
         }
