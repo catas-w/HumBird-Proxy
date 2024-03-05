@@ -1,0 +1,62 @@
+[
+    {
+        "protocol": "https",
+        "url": "https://www.google.com",
+        "method": "GET",
+        "queryParams": null,
+        "headers": [
+            {
+                "key": "accept",
+                "value": "*/*"
+            }
+        ],
+        "contentType": null,
+        "content": null,
+        "expect": {
+            "status": "FINISHED",
+            "code": 200,
+            "respOversize": false,
+            "content": null
+        }
+    },
+    {
+        "protocol": "https",
+        "url": "https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png",
+        "method": "GET",
+        "queryParams": null,
+        "headers": [
+            {
+                "key": "accept",
+                "value": "*/*"
+            }
+        ],
+        "contentType": null,
+        "content": null,
+        "expect": {
+            "status": "FINISHED",
+            "code": 200,
+            "respOversize": false,
+            "content": null
+        }
+    },
+    {
+        "protocol": "https",
+        "url": "https://www.wikipedia.org/static/favicon/wikipedia.ico",
+        "method": "GET",
+        "queryParams": null,
+        "headers": [
+            {
+                "key": "accept",
+                "value": "*/*"
+            }
+        ],
+        "contentType": null,
+        "content": null,
+        "expect": {
+            "status": "FINISHED",
+            "code": 200,
+            "respOversize": false,
+            "content": null
+        }
+    }
+]

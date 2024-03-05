@@ -72,7 +72,6 @@ public class OversizeMsgTest extends ProxyServerTest {
             log.info("---- Response of {}, code: {}", reqId, response.getStatusLine().getStatusCode());
             InputStream content = response.getEntity().getContent();
             content.readAllBytes();
-            // System.out.println("******");
 
             // validate result
             ExpectModel expectModel = requestModel.getExpect();

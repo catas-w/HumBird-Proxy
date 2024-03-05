@@ -113,6 +113,7 @@
 
                         <arg>--add-opens java.base/java.lang.reflect=ALL-UNNAMED</arg>
                         <arg>--add-opens java.base/java.lang=ALL-UNNAMED</arg>
+                        <arg>-Djava.net.useSystemProxies=true</arg>
 
                         <arg>--initialize-at-build-time=io.netty.util.internal.logging.Slf4JLoggerFactory</arg>
                         <arg>--initialize-at-build-time=io.netty.channel.MultithreadEventLoopGroup</arg>
