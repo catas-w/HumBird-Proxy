@@ -19,4 +19,8 @@ public class ExpectModel {
     private GeneralContentType contentType;
 
     private Object content;
+
+    private boolean requestOversize;
+
+    private boolean respOversize;
 }

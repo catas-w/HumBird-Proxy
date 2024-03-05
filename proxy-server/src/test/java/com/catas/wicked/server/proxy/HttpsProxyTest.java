@@ -12,9 +12,9 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.util.List;
 
 @Slf4j
@@ -27,14 +27,15 @@ public class HttpsProxyTest extends ProxyServerTest {
         cache.clear();
     }
 
+    @BeforeClass
+    public static void init() throws Exception {
+        initHttpClient();
+        initBeanContext();
+    }
+
     @Test
     public void testRecordHttps() throws Exception {
-        List<RequestModel> list = null;
-        try {
-            list = mockDataUtil.loadRequestModel("https-data.json");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        List<RequestModel> list = mockDataUtil.loadRequestModel("https-data.json");
         Assert.assertNotNull(list);
 
         for (int i = 0; i < list.size(); i++) {
@@ -62,8 +63,7 @@ public class HttpsProxyTest extends ProxyServerTest {
 
     @Test
     public void testRecordUnhandledHttps() throws Exception {
-        List<RequestModel> list = null;
-        list = mockDataUtil.loadRequestModel("https-data.json");
+        List<RequestModel> list = mockDataUtil.loadRequestModel("https-data.json");
         Assert.assertNotNull(list);
         appConfig.getSettings().setHandleSsl(false);
 

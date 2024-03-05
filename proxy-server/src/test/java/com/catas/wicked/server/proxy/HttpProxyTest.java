@@ -4,7 +4,6 @@ import com.catas.wicked.common.bean.message.RequestMessage;
 import com.catas.wicked.common.bean.message.ResponseMessage;
 import com.catas.wicked.common.bean.mock.ExpectModel;
 import com.catas.wicked.common.bean.mock.RequestModel;
-import com.catas.wicked.common.config.Settings;
 import com.catas.wicked.common.constant.ClientStatus;
 import com.catas.wicked.server.ProxyServerTest;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +11,7 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.HashSet;
@@ -25,8 +25,13 @@ public class HttpProxyTest extends ProxyServerTest {
     @Before
     public void before() {
         // reset all config
-        appConfig.setSettings(new Settings());
         cache.clear();
+    }
+
+    @BeforeClass
+    public static void init() throws Exception {
+        initHttpClient();
+        initBeanContext();
     }
 
     @Test

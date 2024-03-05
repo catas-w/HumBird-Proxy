@@ -14,7 +14,6 @@ import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.ehcache.Cache;
-import org.junit.BeforeClass;
 
 import java.util.Collections;
 
@@ -32,11 +31,11 @@ public class ProxyServerTest {
     protected static TestMessageService testMessageService;
     protected static Cache<String, RequestMessage> cache;
     protected static PrevIdGenerator prevIdGenerator;
-
+    protected static BeanContext context;
     protected final MockDataUtil mockDataUtil = new MockDataUtil();
 
-    @BeforeClass
-    public static void init() throws Exception {
+
+    protected static void initHttpClient() throws Exception {
         RequestConfig requestConfig = RequestConfig.custom()
                 .setConnectTimeout(10 * 1000)
                 .setConnectionRequestTimeout(10 * 1000)
@@ -48,9 +47,11 @@ public class ProxyServerTest {
                 .setDefaultRequestConfig(requestConfig)
                 .setSSLSocketFactory(SslUtils.getSocketFactory(false, null, null))
                 .build();
+    }
 
+    protected static void initBeanContext() {
         ProxyServer.standalone = true;
-        BeanContext context = BeanContext.build();
+        context = BeanContext.build();
         context.start();
 
         appConfig = context.getBean(ApplicationConfig.class);
@@ -59,6 +60,7 @@ public class ProxyServerTest {
         prevIdGenerator = context.getBean(PrevIdGenerator.class);
         cache = context.getBean(Cache.class);
     }
+
 
     protected RequestMessage getRequestMessageFromCache(String requestId) {
         return getRequestMessageFromCache(requestId, 0);
