@@ -20,7 +20,15 @@ public class ExpectModel {
 
     private Object content;
 
+    private List<ContainsItem> containsList;
+
     private boolean requestOversize;
 
     private boolean respOversize;
+
+    @Data
+    public static class ContainsItem {
+        String type;
+        String content;
+    }
 }

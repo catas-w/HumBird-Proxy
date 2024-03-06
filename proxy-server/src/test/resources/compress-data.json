@@ -1,0 +1,88 @@
+[
+    {
+        "protocol": "https",
+        "url": "https://httpbin.org/brotli",
+        "method": "GET",
+        "queryParams": null,
+        "headers": [
+            {
+                "key": "accept",
+                "value": "application/json"
+            }
+        ],
+        "expect": {
+            "status": "FINISHED",
+            "code": 200,
+            "headers": [
+                {
+                    "key": "content-encoding",
+                    "value": "br"
+                }
+            ],
+            "containsList": [
+                {
+                    "type": "STR",
+                    "content": "\"brotli\": true"
+                }
+            ]
+        }
+    },
+    {
+        "protocol": "https",
+        "url": "https://httpbin.org/deflate",
+        "method": "GET",
+        "queryParams": null,
+        "headers": [
+            {
+                "key": "accept",
+                "value": "application/json"
+            }
+        ],
+        "expect": {
+            "status": "FINISHED",
+            "code": 200,
+            "headers": [
+                {
+                    "key": "content-encoding",
+                    "value": "br"
+                }
+            ],
+            "content": null,
+            "containsList": [
+                {
+                    "type": "STR",
+                    "content": "\"deflated\": true"
+                }
+            ]
+        }
+    },
+    {
+        "protocol": "https",
+        "url": "https://httpbin.org/gzip",
+        "method": "GET",
+        "queryParams": null,
+        "headers": [
+            {
+                "key": "accept",
+                "value": "application/json"
+            }
+        ],
+        "expect": {
+            "status": "FINISHED",
+            "code": 200,
+            "headers": [
+                {
+                    "key": "content-encoding",
+                    "value": "gzip"
+                }
+            ],
+            "content": null,
+            "containsList": [
+                {
+                    "type": "STR",
+                    "content": "\"gzipped\": true"
+                }
+            ]
+        }
+    }
+]
