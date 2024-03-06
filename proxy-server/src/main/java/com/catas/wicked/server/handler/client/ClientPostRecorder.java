@@ -109,7 +109,7 @@ public class ClientPostRecorder extends ChannelDuplexHandler {
         responseMessage.setReasonPhrase(status.reasonPhrase());
         responseMessage.setHeaders(map);
         ByteBuf content = resp.content();
-        if (content.isReadable()) {
+        if (content != null && content.isReadable()) {
             if (content.hasArray()) {
                 responseMessage.setContent(content.array());
             } else {

@@ -1,5 +1,6 @@
 package com.catas.wicked.common.bean.message;
 
+import com.catas.wicked.common.constant.ClientStatus;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -55,6 +56,8 @@ public class RequestMessage extends BaseMessage{
     private boolean isEncrypted;
 
     private boolean isOversize;
+
+    private ClientStatus clientStatus;
 
     public RequestMessage() {}
 

@@ -51,14 +51,13 @@ public class ExternalProxyTest extends ProxyServerTest {
 
             CloseableHttpResponse response = httpClient.execute(request);
             log.info("---- Response of {}, code: {}", reqId, response.getStatusLine().getStatusCode());
-
-            // validate result
-            ExpectModel expectModel = requestModel.getExpect();
             Assert.assertEquals(assertMsg, 504, response.getStatusLine().getStatusCode());
 
             // TODO
             RequestMessage requestMessage = getRequestMessageFromCache(reqId);
-            Assert.assertNull(requestMessage);
+            // Assert.assertNull(requestMessage);
+            Assert.assertNotNull(assertMsg, requestMessage);
+            Assert.assertFalse(assertMsg, requestMessage.getClientStatus().isSuccess());
 
             response.close();
         }

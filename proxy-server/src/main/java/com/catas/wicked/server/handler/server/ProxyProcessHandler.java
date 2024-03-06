@@ -35,6 +35,7 @@ import io.netty.util.ReferenceCountUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
+import java.net.ConnectException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -155,13 +156,19 @@ public class ProxyProcessHandler extends ChannelInboundHandlerAdapter {
                     }
                     isConnected = true;
                 } else {
+                    // TODO 添加错误记录
+                    Throwable cause = future.cause();
+                    log.error("Error in creating proxy client channel", cause);
+                    if (cause instanceof ConnectException connectException) {
+                        // TODO: add error msg, send requestList to postRecorder
+                        String host = requestInfo.getHost();
+                    } else {
+                        System.out.println(cause);
+                    }
                     synchronized (requestList) {
                         requestList.forEach(ReferenceCountUtil::release);
                         requestList.clear();
                     }
-                    // TODO 添加错误记录
-                    Throwable cause = future.cause();
-                    log.error("Error in creating proxy client channel", cause);
                     HttpResponse response = new DefaultFullHttpResponse(
                             HttpVersion.HTTP_1_1, HttpResponseStatus.GATEWAY_TIMEOUT);
                     ctx.writeAndFlush(response);

@@ -137,7 +137,7 @@ public class ServerPostRecorder extends ChannelDuplexHandler {
         requestMessage.setHeaders(headerMap);
 
         try {
-            if (content.isReadable()) {
+            if (content != null && content.isReadable()) {
                 if (content.hasArray()) {
                     requestMessage.setBody(content.array());
                 } else {
