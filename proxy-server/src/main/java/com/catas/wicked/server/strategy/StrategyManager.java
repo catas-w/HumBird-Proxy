@@ -6,7 +6,18 @@ import java.util.List;
 
 public interface StrategyManager {
 
-    void arrange(ChannelPipeline pipeline, List<StrategyMode> modeList);
+    /**
+     * arrange channelHandlers in pipeline according to the order defined by modeList
+     * @param pipeline ChannelPipeline
+     * @param modelList strategyModel list
+     */
+    void arrange(ChannelPipeline pipeline, List<StrategyModel> modelList);
 
-    boolean verify(ChannelPipeline pipeline, List<StrategyMode> modeList);
+    /**
+     * verify order consistency
+     * @param pipeline ChannelPipeline
+     * @param modelList strategyModel list
+     * @return boolean
+     */
+    boolean verify(ChannelPipeline pipeline, List<StrategyModel> modelList);
 }
