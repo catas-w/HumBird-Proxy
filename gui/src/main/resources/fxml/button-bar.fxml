@@ -21,6 +21,9 @@
             <VBox.margin>
                 <Insets top="20.0" />
             </VBox.margin>
+            <tooltip>
+                <Tooltip text="Record Requests"/>
+            </tooltip>
         </JFXToggleNode>
         <JFXToggleNode fx:id="sslBtn" prefWidth="200.0" textOverrun="CLIP">
             <graphic>
@@ -29,6 +32,9 @@
             <VBox.margin>
                 <Insets top="20.0" />
             </VBox.margin>
+            <tooltip>
+                <Tooltip text="Handle SSL"/>
+            </tooltip>
         </JFXToggleNode>
         <JFXButton fx:id="removeAllBtn" onAction="#deleteAll" prefWidth="200.0" textOverrun="CLIP">
             <graphic>
@@ -37,6 +43,9 @@
             <VBox.margin>
                 <Insets top="20.0" />
             </VBox.margin>
+            <tooltip>
+                <Tooltip text="Delete All Requests"/>
+            </tooltip>
         </JFXButton>
         <JFXButton prefWidth="200.0" textOverrun="CLIP">
             <graphic>
@@ -53,6 +62,9 @@
             <VBox.margin>
                 <Insets top="20.0" />
             </VBox.margin>
+            <tooltip>
+                <Tooltip text="Resend"/>
+            </tooltip>
         </JFXButton>
         <JFXButton fx:id="locateBtn" onAction="#locateToSelectedItem" prefWidth="200.0" textOverrun="CLIP">
             <graphic>
@@ -61,6 +73,9 @@
             <VBox.margin>
                 <Insets top="20.0" />
             </VBox.margin>
+            <tooltip>
+                <Tooltip text="Locate"/>
+            </tooltip>
         </JFXButton>
         <JFXButton fx:id="markerBtn" onAction="#mockTreeItem" prefWidth="200.0" textOverrun="CLIP">
             <graphic>

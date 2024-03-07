@@ -120,8 +120,13 @@ public class ApplicationConfig implements AutoCloseable {
     public synchronized void updateSettings() {
         try {
             File file = getLocalConfigFile();
+            if (!file.exists()) {
+                file.getParentFile().mkdirs();
+                file.createNewFile();
+            }
             objectMapper.writeValue(file, settings);
         } catch (IOException e) {
+            // TODO alert
             log.error("Error updating local config.", e);
         }
     }
