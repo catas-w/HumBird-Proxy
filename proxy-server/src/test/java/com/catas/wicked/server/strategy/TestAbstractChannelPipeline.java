@@ -17,7 +17,16 @@ import java.util.stream.Collectors;
 @Slf4j
 public abstract class TestAbstractChannelPipeline implements ChannelPipeline {
 
-    List<Pair<String, ChannelHandler>> list = new LinkedList<>();
+    List<Pair<String, ChannelHandler>> list;
+    Pair<String, ChannelHandler> tail;
+
+    private static final String TAIL = "TailContext";
+
+    public TestAbstractChannelPipeline() {
+        tail = new Pair<>(TAIL, new StrategyManagerTest.TestChannelHandler());
+        list = new LinkedList<>();
+        list.add(tail);
+    }
 
     int getIndex(String name) {
         for (int i=0; i < list.size(); i++) {
@@ -36,7 +45,8 @@ public abstract class TestAbstractChannelPipeline implements ChannelPipeline {
 
     @Override
     public ChannelPipeline addLast(String name, ChannelHandler handler) {
-        list.add(new Pair<>(name, handler));
+        // list.add(new Pair<>(name, handler));
+        addBefore(TAIL, name, handler);
         return this;
     }
 
@@ -46,8 +56,7 @@ public abstract class TestAbstractChannelPipeline implements ChannelPipeline {
         if (index == -1) {
             throw new IllegalArgumentException("Base name not exist");
         }
-        int addIndex = index == 0 ? 0 : index - 1;
-        list.add(addIndex, new Pair<>(name, handler));
+        list.add(index, new Pair<>(name, handler));
         return this;
     }
 
@@ -69,7 +78,7 @@ public abstract class TestAbstractChannelPipeline implements ChannelPipeline {
 
     @Override
     public ChannelHandler removeFirst() {
-        if (list.size() > 0) {
+        if (list.size() > 1) {
             list.remove(0);
         }
         return null;
@@ -77,8 +86,8 @@ public abstract class TestAbstractChannelPipeline implements ChannelPipeline {
 
     @Override
     public ChannelHandler removeLast() {
-        if (list.size() > 0) {
-            list.remove(list.size() - 1);
+        if (list.size() > 1) {
+            list.remove(list.size() - 2);
         }
         return null;
     }

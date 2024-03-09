@@ -93,4 +93,33 @@ public class HttpsProxyTest extends ProxyServerTest {
             response.close();
         }
     }
+
+    @Test
+    public void testUnRecordHttps() throws Exception {
+        List<RequestModel> list = mockDataUtil.loadRequestModel("https-data.json");
+        Assert.assertNotNull(list);
+        appConfig.getSettings().setRecording(false);
+
+        for (int i = 0; i < list.size(); i++) {
+            RequestModel requestModel = list.get(i);
+            String reqId = String.format("testHttps-unrecord-id-%d", i);
+            String assertMsg = "Error: id=" + reqId + ", url=" + requestModel.getUrl();
+            log.info("==== RequestId: {}, uri: {} ====", reqId, requestModel.getUrl());
+
+            // execute request
+            HttpUriRequest request = mockDataUtil.getUriRequest(requestModel);
+            prevIdGenerator.setNextId(reqId);
+            CloseableHttpResponse response = httpClient.execute(request);
+            log.info("---- Response of {}, code: {}", reqId, response.getStatusLine().getStatusCode());
+
+            // validate result
+            ExpectModel expectModel = requestModel.getExpect();
+            if (expectModel.getStatus() == ClientStatus.FINISHED && expectModel.getCode() != 0) {
+                Assert.assertEquals(assertMsg, expectModel.getCode(), response.getStatusLine().getStatusCode());
+                RequestMessage requestMessage = getRequestMessageFromCache(reqId);
+                Assert.assertNull(requestMessage);
+            }
+            response.close();
+        }
+    }
 }

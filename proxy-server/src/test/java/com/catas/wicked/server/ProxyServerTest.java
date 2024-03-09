@@ -88,7 +88,7 @@ public class ProxyServerTest {
     }
 
     protected ResponseMessage getRespMessageFromCache(String requestId, int waitTime) {
-        if (waitTime >= 1000) {
+        if (waitTime >= 2000) {
             return null;
         }
         RequestMessage requestMessage = cache.get(requestId);

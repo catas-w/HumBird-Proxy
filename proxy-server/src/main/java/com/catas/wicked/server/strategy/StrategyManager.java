@@ -9,15 +9,15 @@ public interface StrategyManager {
     /**
      * arrange channelHandlers in pipeline according to the order defined by modeList
      * @param pipeline ChannelPipeline
-     * @param modelList strategyModel list
+     * @param strategyList strategyModel list
      */
-    void arrange(ChannelPipeline pipeline, List<StrategyModel> modelList);
+    void arrange(ChannelPipeline pipeline, StrategyList strategyList);
 
     /**
      * verify order consistency
      * @param pipeline ChannelPipeline
-     * @param modelList strategyModel list
+     * @param strategyList strategyModel list
      * @return boolean
      */
-    boolean verify(ChannelPipeline pipeline, List<StrategyModel> modelList);
+    boolean verify(ChannelPipeline pipeline, StrategyList strategyList);
 }

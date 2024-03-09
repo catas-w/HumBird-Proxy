@@ -7,7 +7,9 @@ import com.catas.wicked.common.constant.ServerStatus;
 import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.common.util.WebUtils;
 import com.catas.wicked.server.cert.CertPool;
-import com.catas.wicked.server.handler.RearHttpAggregator;
+import com.catas.wicked.server.strategy.Handler;
+import com.catas.wicked.server.strategy.StrategyList;
+import com.catas.wicked.server.strategy.StrategyManager;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -21,10 +23,10 @@ import io.netty.handler.codec.http.HttpObject;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.HttpResponseStatus;
-import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.codec.http.HttpVersion;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
+import io.netty.handler.ssl.SslHandler;
 import io.netty.util.Attribute;
 import io.netty.util.AttributeKey;
 import io.netty.util.ReferenceCountUtil;
@@ -34,7 +36,6 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.NoSuchElementException;
 
-import static com.catas.wicked.common.constant.NettyConstant.*;
 
 /**
  * Decide which handlers to use for current channel and refresh request-info
@@ -49,6 +50,7 @@ import static com.catas.wicked.common.constant.NettyConstant.*;
  * ssl un-record [TUNNEL]:  strategyHandler - proxyProcessHandler - postRecorder
  */
 @Slf4j
+// @ChannelHandler.Sharable
 public class ServerStrategyHandler extends ChannelDuplexHandler {
 
     private byte[] httpTagBuf;
@@ -61,13 +63,23 @@ public class ServerStrategyHandler extends ChannelDuplexHandler {
 
     private IdGenerator idGenerator;
 
+    private StrategyList strategyList;
+
+    private StrategyManager strategyManager;
+
     private final AttributeKey<ProxyRequestInfo> requestInfoAttributeKey = AttributeKey.valueOf("requestInfo");
 
-    public ServerStrategyHandler(ApplicationConfig applicationConfig, CertPool certPool, IdGenerator idGenerator) {
+    public ServerStrategyHandler(ApplicationConfig applicationConfig,
+                                 CertPool certPool,
+                                 IdGenerator idGenerator,
+                                 StrategyList strategyList,
+                                 StrategyManager strategyManager) {
         this.appConfig = applicationConfig;
         this.certPool = certPool;
         this.status = ServerStatus.INIT;
         this.idGenerator = idGenerator;
+        this.strategyList = strategyList;
+        this.strategyManager = strategyManager;
     }
 
     @Override
@@ -140,16 +152,19 @@ public class ServerStrategyHandler extends ChannelDuplexHandler {
         }
 
         ProxyRequestInfo requestInfo = refreshRequestInfo(ctx, request);
-        if (!requestInfo.isRecording()) {
-            try {
-                ctx.channel().pipeline().remove(AGGREGATOR);
-            } catch (NoSuchElementException ignored) {}
-        } else {
-            try {
-                ctx.channel().pipeline().addAfter(SERVER_PROCESSOR, AGGREGATOR,
-                        new RearHttpAggregator(appConfig.getMaxContentSize()));
-            } catch (IllegalArgumentException ignore) {}
-        }
+        // if (!requestInfo.isRecording()) {
+        //     try {
+        //         ctx.channel().pipeline().remove(AGGREGATOR);
+        //     } catch (NoSuchElementException ignored) {}
+        // } else {
+        //     try {
+        //         ctx.channel().pipeline().addAfter(SERVER_PROCESSOR, AGGREGATOR,
+        //                 new RearHttpAggregator(appConfig.getMaxContentSize()));
+        //     } catch (IllegalArgumentException ignore) {}
+        // }
+        strategyList.setRequire(Handler.HTTP_AGGREGATOR.name(), requestInfo.isRecording());
+        strategyManager.arrange(ctx.pipeline(), strategyList);
+
         requestInfo.setClientType(ProxyRequestInfo.ClientType.NORMAL);
         // attr.set(requestInfo);
 
@@ -159,9 +174,12 @@ public class ServerStrategyHandler extends ChannelDuplexHandler {
                 // https connect
                 HttpResponse response = new DefaultFullHttpResponse(request.protocolVersion(), ProxyConstant.SUCCESS);
                 ctx.writeAndFlush(response);
-                try {
-                    ctx.channel().pipeline().remove(HTTP_CODEC);
-                } catch (NoSuchElementException ignore) {}
+                // try {
+                //     ctx.channel().pipeline().remove(HTTP_CODEC);
+                // } catch (NoSuchElementException ignore) {}
+                strategyList.setRequire(Handler.HTTP_CODEC.name(), false);
+                strategyManager.arrange(ctx.pipeline(), strategyList);
+
                 ReferenceCountUtil.release(msg);
                 return;
             }
@@ -183,14 +201,22 @@ public class ServerStrategyHandler extends ChannelDuplexHandler {
                 SslContext sslCtx = SslContextBuilder.forServer(
                         appConfig.getServerPriKey(), certPool.getCert(port, originHost)).build();
 
-                ctx.pipeline().addFirst(HTTP_CODEC, new HttpServerCodec());
-                ctx.pipeline().addFirst(SSL_HANDLER, sslCtx.newHandler(ctx.alloc()));
+                // ctx.pipeline().addFirst(HTTP_CODEC, new HttpServerCodec());
+                // ctx.pipeline().addFirst(SSL_HANDLER, sslCtx.newHandler(ctx.alloc()));
+                strategyList.setRequire(Handler.HTTP_CODEC.name(), true);
+                strategyList.setRequire(Handler.SSL_HANDLER.name(), true);
+                strategyList.setSupplier(Handler.SSL_HANDLER.name(), () -> sslCtx.newHandler(ctx.alloc()));
+                strategyManager.arrange(ctx.pipeline(), strategyList);
+
                 ctx.pipeline().fireChannelRead(msg);
                 return;
             }
             requestInfo.setClientType(ProxyRequestInfo.ClientType.TUNNEL);
             try {
-                ctx.pipeline().remove(AGGREGATOR);
+                // ctx.pipeline().remove(AGGREGATOR);
+                strategyList.setRequire(Handler.HTTP_CODEC.name(), false);
+                strategyList.setRequire(Handler.HTTP_AGGREGATOR.name(), false);
+                strategyManager.arrange(ctx.pipeline(), strategyList);
             } catch (NoSuchElementException ignore) {}
         }
 
@@ -210,10 +236,23 @@ public class ServerStrategyHandler extends ChannelDuplexHandler {
 
         // 如果connect后面跑的是HTTP报文，也可以抓包处理
         if (WebUtils.isHttp(byteBuf)) {
-            ctx.pipeline().addFirst(HTTP_CODEC, new HttpServerCodec());
+            // ctx.pipeline().addFirst(HTTP_CODEC, new HttpServerCodec());
+            strategyList.setRequire(Handler.HTTP_CODEC.name(), true);
+            strategyManager.arrange(ctx.pipeline(), strategyList);
+
             ctx.pipeline().fireChannelRead(msg);
             return;
         }
         ctx.fireChannelRead(msg);
+    }
+
+    private SslHandler createSslHandler(ChannelHandlerContext ctx) throws Exception {
+        ProxyRequestInfo requestInfo = ctx.channel().attr(requestInfoAttributeKey).get();
+        int port = ((InetSocketAddress) ctx.channel().localAddress()).getPort();
+        String originHost = requestInfo.getHost();
+        SslContext sslCtx = SslContextBuilder.forServer(
+                appConfig.getServerPriKey(), certPool.getCert(port, originHost)).build();
+
+        return sslCtx.newHandler(ctx.alloc());
     }
 }

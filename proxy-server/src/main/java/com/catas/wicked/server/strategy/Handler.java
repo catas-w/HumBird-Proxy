@@ -1,11 +1,12 @@
 package com.catas.wicked.server.strategy;
 
-public enum HandlerName {
+public enum Handler {
 
     SERVER_STRATEGY,
     CLIENT_STRATEGY,
     HTTP_CODEC,
-    AGGREGATOR,
+    HTTP_AGGREGATOR,
+    PREV_RECORDER,
     POST_RECORDER,
     SSL_HANDLER,
     SERVER_PROCESSOR,

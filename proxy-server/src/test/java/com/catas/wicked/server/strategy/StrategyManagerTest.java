@@ -6,8 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -16,7 +14,7 @@ public class StrategyManagerTest {
     @Test
     public void testMockPipeline() {
         TestChannelPipeline pipeline = new TestChannelPipeline();
-        Assert.assertTrue(pipeline.names().isEmpty());
+        Assert.assertEquals(1, pipeline.names().size());
 
         pipeline.addFirst("3rd", new TestChannelHandler());
         pipeline.addFirst("2nd", new TestChannelHandler());
@@ -40,16 +38,22 @@ public class StrategyManagerTest {
         pipeline.addLast("5th", new TestChannelHandler());
         Assert.assertEquals("5th", pipeline.names().get(4));
 
-        while (pipeline.names().size() > 0) {
+        while (pipeline.names().size() > 1) {
             pipeline.removeLast();
         }
-        Assert.assertTrue(pipeline.names().isEmpty());
+        Assert.assertEquals(1, pipeline.names().size());
+
+        pipeline.addLast("4th", new TestChannelHandler());
+        pipeline.addLast("5th", new TestChannelHandler());
+        Assert.assertEquals("4th", pipeline.names().get(0));
+        Assert.assertEquals("5th", pipeline.names().get(1));
     }
 
     @Test
     public void testStrategyManager() {
         DefaultStrategyManager strategyManager = new DefaultStrategyManager();
-        List<StrategyModel> list = new ArrayList<>();
+        // List<StrategyModel> list = new ArrayList<>();
+        StrategyList list = new StrategyList();
         list.add(new StrategyModel("A", true, TestChannelHandler::new));
         list.add(new StrategyModel("A1", false, TestChannelHandler::new));
         list.add(new StrategyModel("B", true, TestChannelHandler::new));
@@ -63,6 +67,16 @@ public class StrategyManagerTest {
             pipeline.addFirst("A", new TestChannelHandler());
             pipeline.addFirst("B", new TestChannelHandler());
             pipeline.addFirst("C", new TestChannelHandler());
+
+            strategyManager.arrange(pipeline, list);
+            Assert.assertTrue(strategyManager.verify(pipeline, list));
+        }
+
+        {
+            TestChannelPipeline pipeline = new TestChannelPipeline();
+            pipeline.addFirst("C", new TestChannelHandler());
+            pipeline.addFirst("B", new TestChannelHandler());
+            pipeline.addFirst("A", new TestChannelHandler());
 
             strategyManager.arrange(pipeline, list);
             Assert.assertTrue(strategyManager.verify(pipeline, list));
