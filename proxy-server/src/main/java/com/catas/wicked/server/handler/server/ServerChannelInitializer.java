@@ -15,11 +15,14 @@ import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 
-
+import static com.catas.wicked.server.strategy.Handler.HTTP_CODEC;
+import static com.catas.wicked.server.strategy.Handler.POST_RECORDER;
+import static com.catas.wicked.server.strategy.Handler.SERVER_PROCESSOR;
+import static com.catas.wicked.server.strategy.Handler.SERVER_STRATEGY;
 
 @Slf4j
 @Singleton
-public class ProxyServerInitializer extends ChannelInitializer {
+public class ServerChannelInitializer extends ChannelInitializer {
 
     @Inject
     private ApplicationConfig appConfig;
@@ -38,25 +41,25 @@ public class ProxyServerInitializer extends ChannelInitializer {
 
     @Override
     protected void initChannel(Channel ch) throws Exception {
-        ch.pipeline().addLast(Handler.HTTP_CODEC.name(), new HttpServerCodec());
-        ch.pipeline().addLast(Handler.SERVER_STRATEGY.name(),
-                new ServerStrategyHandler(appConfig, certPool, idGenerator, defaultStrategyList(), strategyManager));
-        ch.pipeline().addLast(Handler.SERVER_PROCESSOR.name(), new ProxyProcessHandler(appConfig, messageQueue));
-        ch.pipeline().addLast(Handler.POST_RECORDER.name(), new ServerPostRecorder(appConfig, messageQueue));
+        StrategyList strategyList = defaultStrategyList();
+        ch.pipeline().addLast(HTTP_CODEC.name(), strategyList.getSupplier(HTTP_CODEC.name()).get());
+        ch.pipeline().addLast(SERVER_STRATEGY.name(), strategyList.getSupplier(SERVER_STRATEGY.name()).get());
+        ch.pipeline().addLast(SERVER_PROCESSOR.name(), strategyList.getSupplier(SERVER_PROCESSOR.name()).get());
+        ch.pipeline().addLast(POST_RECORDER.name(), strategyList.getSupplier(POST_RECORDER.name()).get());
     }
 
     private StrategyList defaultStrategyList() {
-        StrategyList strategyList = new StrategyList();
-        strategyList.add(Handler.SSL_HANDLER.name(), false, () -> null);
-        strategyList.add(Handler.HTTP_CODEC.name(), true, HttpServerCodec::new);
-        strategyList.add(Handler.SERVER_STRATEGY.name(), true, true,
+        StrategyList list = new StrategyList();
+        list.add(Handler.SSL_HANDLER.name(), false, () -> null);
+        list.add(HTTP_CODEC.name(), true, HttpServerCodec::new);
+        list.add(SERVER_STRATEGY.name(), true, true,
                 () -> new ServerStrategyHandler(appConfig, certPool, idGenerator, defaultStrategyList(), strategyManager));
-        strategyList.add(Handler.SERVER_PROCESSOR.name(), true, true,
-                () -> new ProxyProcessHandler(appConfig, messageQueue));
-        strategyList.add(Handler.HTTP_AGGREGATOR.name(), false,
+        list.add(SERVER_PROCESSOR.name(), true, true,
+                () -> new ProxyProcessHandler(appConfig, messageQueue, strategyManager));
+        list.add(Handler.HTTP_AGGREGATOR.name(), false,
                 () -> new RearHttpAggregator(appConfig.getMaxContentSize()));
-        strategyList.add(Handler.POST_RECORDER.name(), true, true,
+        list.add(POST_RECORDER.name(), true, true,
                 () -> new ServerPostRecorder(appConfig, messageQueue));
-        return strategyList;
+        return list;
     }
 }

@@ -4,27 +4,22 @@ import com.catas.wicked.common.bean.ProxyRequestInfo;
 import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.common.constant.ProxyConstant;
 import com.catas.wicked.common.pipeline.MessageQueue;
-import com.catas.wicked.server.handler.RearHttpAggregator;
+import com.catas.wicked.server.strategy.Handler;
+import com.catas.wicked.server.strategy.StrategyList;
+import com.catas.wicked.server.strategy.StrategyManager;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
-import io.netty.handler.codec.http.HttpClientCodec;
+import io.netty.handler.ssl.SslHandler;
 import io.netty.util.AttributeKey;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.NoSuchElementException;
-
-import static com.catas.wicked.common.constant.NettyConstant.*;
 
 /**
  * decide which handlers to use when sending new request
  * remote <-<-<- local
- * [Normal]: [externalProxyHandler] - [sslHandler] - [httpCodec] - strategyHandler - proxyClientHandler -
- *           [aggregator] - postRecorder
- * [Tunnel]: [externalProxyHandler] - strategyHandler - proxyClientHandler - postRecorder
- *
  * [Normal]: [externalProxyHandler] - [sslHandler] - [httpCodec] - proxyClientHandler -
  *           [aggregator] - postRecorder - strategyHandler
  * [Tunnel]: [externalProxyHandler] - proxyClientHandler - postRecorder - strategyHandler
@@ -40,14 +35,22 @@ public class ClientStrategyHandler extends ChannelDuplexHandler {
 
     private String currentRequestId;
 
+    private StrategyList strategyList;
+
+    private StrategyManager strategyManager;
+
     private final AttributeKey<ProxyRequestInfo> requestInfoKey = AttributeKey.valueOf(ProxyConstant.REQUEST_INFO);
 
     public ClientStrategyHandler(ApplicationConfig appConfig,
                                  MessageQueue messageQueue,
-                                 ProxyRequestInfo requestInfo) {
+                                 ProxyRequestInfo requestInfo,
+                                 StrategyList strategyList,
+                                 StrategyManager strategyManager) {
         this.appConfig = appConfig;
         this.requestInfo = requestInfo;
         this.messageQueue = messageQueue;
+        this.strategyList = strategyList;
+        this.strategyManager = strategyManager;
     }
 
     @Override
@@ -102,44 +105,40 @@ public class ClientStrategyHandler extends ChannelDuplexHandler {
             currentRequestId = requestInfo.getRequestId();
             Channel ch = ctx.channel();
 
+            if (requestInfo.isUsingExternalProxy()) {
+                strategyList.setRequire(Handler.EXTERNAL_PROXY.name(), true);
+            }
             // update record strategy
             if (requestInfo.getClientType() == ProxyRequestInfo.ClientType.NORMAL) {
                 // update sslHandler
                 if (requestInfo.isSsl()) {
                     try {
-                        ch.pipeline().addBefore(CLIENT_PROCESSOR, SSL_HANDLER, appConfig.getClientSslCtx().newHandler(
-                                ch.alloc(), appConfig.getHost(), appConfig.getSettings().getPort()));
-                    } catch (IllegalArgumentException ignored) {
+                        SslHandler sslHandler = appConfig.getClientSslCtx().newHandler(
+                                ch.alloc(), appConfig.getHost(), appConfig.getSettings().getPort());
+                        strategyList.setSupplier(Handler.SSL_HANDLER.name(), () -> sslHandler);
+                        strategyList.setRequire(Handler.SSL_HANDLER.name(), true);
                     } catch (Exception e) {
                         log.error("Error establish Ssl context");
                     }
                 } else {
-                    try {
-                        ch.pipeline().remove(SSL_HANDLER);
-                    } catch (NoSuchElementException ignored) {}
+                    strategyList.setRequire(Handler.SSL_HANDLER.name(), false);
                 }
 
-                // update httpCodec & responseRecorder
-                try {
-                    ch.pipeline().addBefore(CLIENT_PROCESSOR, HTTP_CODEC, new HttpClientCodec());
-                } catch (IllegalArgumentException ignored) {}
-
-                // update httpAggregator
-                if (requestInfo.isRecording()) {
-                    try {
-                        ch.pipeline().addBefore(POST_RECORDER, AGGREGATOR,
-                                new RearHttpAggregator(appConfig.getMaxContentSize()));
-                    } catch (IllegalArgumentException ignored) {}
-                }
+                strategyList.setRequire(Handler.HTTP_CODEC.name(), true);
+                strategyList.setRequire(Handler.HTTP_AGGREGATOR.name(), requestInfo.isRecording());
             } else {
-                try {
-                    ch.pipeline().remove(HTTP_CODEC);
-                    ch.pipeline().remove(AGGREGATOR);
-                    ch.pipeline().remove(SSL_HANDLER);
-                } catch (NoSuchElementException ignored) {}
+                strategyList.setRequire(Handler.HTTP_CODEC.name(), false);
+                strategyList.setRequire(Handler.HTTP_AGGREGATOR.name(), false);
+                strategyList.setRequire(Handler.SSL_HANDLER.name(), false);
             }
+            strategyManager.arrange(ctx.pipeline(), strategyList);
         }
         log.info(">> Client send data: {} >>", requestInfo.getRequestId());
     }
 
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        log.error("Client channel unexpected error, closing...", cause);
+        ctx.channel().close();
+    }
 }

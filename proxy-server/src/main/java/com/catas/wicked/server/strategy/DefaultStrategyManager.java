@@ -65,7 +65,7 @@ public class DefaultStrategyManager implements StrategyManager{
             pipeline.removeLast();
             toTrim --;
         }
-        // System.out.println("after: " + pipeline.names());
+        // System.out.println("After Arrange: " + pipeline.names());
     }
 
     private boolean isTailHandler(String handlerName) {

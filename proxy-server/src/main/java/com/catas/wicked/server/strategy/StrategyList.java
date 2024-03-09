@@ -76,6 +76,14 @@ public class StrategyList {
         model.setSupplier(supplier);
     }
 
+    public Supplier<ChannelHandler> getSupplier(String handlerName) {
+        StrategyModel model = getStrategyModel(handlerName);
+        if (model != null) {
+            return model.getSupplier();
+        }
+        return null;
+    }
+
     public List<StrategyModel> getList() {
         return new ArrayList<>(list);
     }
