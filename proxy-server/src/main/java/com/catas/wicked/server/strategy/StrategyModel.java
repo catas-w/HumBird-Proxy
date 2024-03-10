@@ -69,6 +69,11 @@ public class StrategyModel {
         this.skipPredicate = skipPredicate;
     }
 
+    public StrategyModel(String handlerName, boolean required, boolean anchored, Supplier<ChannelHandler> supplier,
+                          Predicate<String> skipPredicate) {
+        this(handlerName, required, anchored, supplier);
+        this.skipPredicate = skipPredicate;
+    }
     public boolean isRequired() {
         return anchored || required;
     }

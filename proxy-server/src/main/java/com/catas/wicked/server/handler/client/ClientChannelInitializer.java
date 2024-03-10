@@ -4,8 +4,10 @@ import com.catas.wicked.common.bean.ProxyRequestInfo;
 import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.common.pipeline.MessageQueue;
 import com.catas.wicked.server.handler.RearHttpAggregator;
+import com.catas.wicked.server.strategy.DefaultSkipPredicate;
 import com.catas.wicked.server.strategy.StrategyList;
 import com.catas.wicked.server.strategy.StrategyManager;
+import com.catas.wicked.server.strategy.TailStrategyManager;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import io.netty.handler.codec.http.HttpClientCodec;
@@ -71,7 +73,9 @@ public class ClientChannelInitializer extends ChannelInitializer {
                 () -> new ClientPostRecorder(appConfig, messageQueue));
         list.add(CLIENT_STRATEGY.name(), true, true,
                 () -> new ClientStrategyHandler(appConfig, messageQueue, requestInfo, defaultStrategyList(), strategyManager));
+        list.add(new TailStrategyManager.TailContextStrategy());
 
+        list.getList().forEach(model -> model.setSkipPredicate(DefaultSkipPredicate.INSTANCE));
         return list;
     }
 }

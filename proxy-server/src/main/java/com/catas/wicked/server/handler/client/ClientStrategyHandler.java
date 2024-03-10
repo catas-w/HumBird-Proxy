@@ -86,7 +86,9 @@ public class ClientStrategyHandler extends ChannelDuplexHandler {
     public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
         // Before Arrange: [HttpProxyHandler$HttpClientCodecWrapper#0, EXTERNAL_PROXY, CLIENT_PROCESSOR, POST_RECORDER
         // , CLIENT_STRATEGY, DefaultChannelPipeline$TailContext#0]
+        System.out.println("before: " + ctx.pipeline().names());
         refreshStrategy(ctx);
+        System.out.println("after: " + ctx.pipeline().names());
         super.write(ctx, msg, promise);
     }
 

@@ -2,6 +2,7 @@ package com.catas.wicked.server.strategy;
 
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelPipeline;
+import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
@@ -12,6 +13,7 @@ import java.util.NoSuchElementException;
 import java.util.function.Predicate;
 
 @Slf4j
+@Singleton
 public class TailStrategyManager implements StrategyManager{
 
     @Override
@@ -81,7 +83,7 @@ public class TailStrategyManager implements StrategyManager{
             x ++;
             y ++;
         }
-        System.out.println("After Arrange: " + pipeline.names());
+        // System.out.println("After Arrange: " + pipeline.names());
     }
 
     @Override
@@ -128,7 +130,7 @@ public class TailStrategyManager implements StrategyManager{
 
     protected static final TailContextStrategy TAIL_CONTEXT = new TailContextStrategy();
 
-    static class TailContextStrategy extends StrategyModel {
+    public static class TailContextStrategy extends StrategyModel {
 
         public TailContextStrategy() {
             super("TailContextStrategy", true, true, null);
