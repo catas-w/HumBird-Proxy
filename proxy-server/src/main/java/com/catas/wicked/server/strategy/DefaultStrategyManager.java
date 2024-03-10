@@ -33,7 +33,7 @@ public class DefaultStrategyManager implements StrategyManager{
 
             List<String> handlerNames = pipeline.names();
             String currentHandler = handlerNames.get(x);
-            if (!target.equals(currentHandler)) {
+            if (!strategyMode.isEligible(currentHandler)) {
                 if (!isTailHandler(currentHandler) && !strategyList.isRequired(currentHandler)) {
                     pipeline.remove(currentHandler);
                     continue;

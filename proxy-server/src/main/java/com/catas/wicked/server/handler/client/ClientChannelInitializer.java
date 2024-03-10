@@ -3,14 +3,13 @@ package com.catas.wicked.server.handler.client;
 import com.catas.wicked.common.bean.ProxyRequestInfo;
 import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.common.pipeline.MessageQueue;
-import com.catas.wicked.common.util.ProxyHandlerFactory;
-import com.catas.wicked.common.util.WebUtils;
 import com.catas.wicked.server.handler.RearHttpAggregator;
 import com.catas.wicked.server.strategy.StrategyList;
 import com.catas.wicked.server.strategy.StrategyManager;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import io.netty.handler.codec.http.HttpClientCodec;
+import io.netty.handler.proxy.ProxyHandler;
 import lombok.extern.slf4j.Slf4j;
 
 import static com.catas.wicked.server.strategy.Handler.*;
@@ -29,21 +28,28 @@ public class ClientChannelInitializer extends ChannelInitializer {
 
     private Channel serverChannel;
 
+    private ProxyHandler proxyHandler;
+
     public ClientChannelInitializer(ApplicationConfig appConfig,
                                     MessageQueue messageQueue,
                                     ProxyRequestInfo requestInfo,
                                     StrategyManager strategyManager,
+                                    ProxyHandler proxyHandler,
                                     Channel serverChannel) {
         this.appConfig = appConfig;
         this.messageQueue = messageQueue;
         this.strategyManager = strategyManager;
         this.requestInfo = requestInfo;
+        this.proxyHandler = proxyHandler;
         this.serverChannel = serverChannel;
     }
 
     @Override
     protected void initChannel(Channel ch) throws Exception {
         StrategyList strategyList = defaultStrategyList();
+        if (proxyHandler != null) {
+            ch.pipeline().addLast(EXTERNAL_PROXY.name(), strategyList.getSupplier(EXTERNAL_PROXY.name()).get());
+        }
         ch.pipeline().addLast(CLIENT_PROCESSOR.name(), strategyList.getSupplier(CLIENT_PROCESSOR.name()).get());
         ch.pipeline().addLast(POST_RECORDER.name(), strategyList.getSupplier(POST_RECORDER.name()).get());
         ch.pipeline().addLast(CLIENT_STRATEGY.name(), strategyList.getSupplier(CLIENT_STRATEGY.name()).get());
@@ -51,9 +57,10 @@ public class ClientChannelInitializer extends ChannelInitializer {
 
     private StrategyList defaultStrategyList() {
         StrategyList list = new StrategyList();
-        list.add(EXTERNAL_PROXY.name(), false,
-                () -> ProxyHandlerFactory.getExternalProxyHandler(appConfig.getSettings().getExternalProxy(),
-                        WebUtils.getHostname(requestInfo)));
+        // HttpProxyHandler$HttpClientCodecWrapper#0
+        // list.add(new StrategyModel("HttpProxyHandler$HttpClientCodecWrapper", proxyHandler != null,
+        //         () -> null, name -> name.contains("HttpClientCodec")));
+        list.add(EXTERNAL_PROXY.name(), proxyHandler != null, () -> proxyHandler);
         list.add(SSL_HANDLER.name(), false, () -> null);
         list.add(HTTP_CODEC.name(), false, HttpClientCodec::new);
         list.add(CLIENT_PROCESSOR.name(), true, true,

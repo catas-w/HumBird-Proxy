@@ -4,6 +4,7 @@ import com.catas.wicked.common.bean.ProxyRequestInfo;
 import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.common.constant.ProxyConstant;
 import com.catas.wicked.common.pipeline.MessageQueue;
+import com.catas.wicked.common.util.ProxyHandlerFactory;
 import com.catas.wicked.common.util.WebUtils;
 import com.catas.wicked.server.handler.client.ClientChannelInitializer;
 import com.catas.wicked.server.strategy.StrategyManager;
@@ -22,6 +23,9 @@ import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpVersion;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import io.netty.handler.proxy.ProxyHandler;
+import io.netty.resolver.DefaultAddressResolverGroup;
+import io.netty.resolver.NoopAddressResolverGroup;
 import io.netty.util.AttributeKey;
 import io.netty.util.ReferenceCountUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -101,10 +105,23 @@ public class ProxyProcessHandler extends ChannelInboundHandlerAdapter {
             isConnected = false;
             requestInfo.setClientConnected(false);
             Bootstrap bootstrap = new Bootstrap();
+
+            // set external proxyHandler if needed
+            ProxyHandler proxyHandler = null;
+            if (requestInfo.isUsingExternalProxy()) {
+                proxyHandler = ProxyHandlerFactory.getExternalProxyHandler(
+                        appConfig.getSettings().getExternalProxy(), WebUtils.getHostname(requestInfo));
+                if (proxyHandler != null) {
+                    // TODO: bugfix HTTP proxy error - UnresolvedAddressException
+                    bootstrap.resolver(NoopAddressResolverGroup.INSTANCE);
+                }
+            }
+
             bootstrap.group(appConfig.getProxyLoopGroup())
                     .channel(NioSocketChannel.class)
                     .handler(new LoggingHandler(LogLevel.INFO))
-                    .handler(new ClientChannelInitializer(appConfig, messageQueue, requestInfo, strategyManager, ctx.channel()));
+                    .handler(new ClientChannelInitializer(appConfig, messageQueue, requestInfo,
+                            strategyManager, proxyHandler, ctx.channel()));
                     // .handler(new ChannelInitializer<NioSocketChannel>() {
                     //     @Override
                     //     protected void initChannel(NioSocketChannel ch) throws Exception {
@@ -129,6 +146,7 @@ public class ProxyProcessHandler extends ChannelInboundHandlerAdapter {
                     //     }
                     // });
 
+            bootstrap.resolver(DefaultAddressResolverGroup.INSTANCE);
             requestList.clear();
             channelFuture = bootstrap.connect(requestInfo.getHost(), requestInfo.getPort());
             channelFuture.addListener((ChannelFutureListener) future -> {

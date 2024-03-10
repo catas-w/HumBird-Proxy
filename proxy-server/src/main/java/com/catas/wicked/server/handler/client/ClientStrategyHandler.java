@@ -84,6 +84,8 @@ public class ClientStrategyHandler extends ChannelDuplexHandler {
 
     @Override
     public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
+        // Before Arrange: [HttpProxyHandler$HttpClientCodecWrapper#0, EXTERNAL_PROXY, CLIENT_PROCESSOR, POST_RECORDER
+        // , CLIENT_STRATEGY, DefaultChannelPipeline$TailContext#0]
         refreshStrategy(ctx);
         super.write(ctx, msg, promise);
     }
@@ -105,9 +107,9 @@ public class ClientStrategyHandler extends ChannelDuplexHandler {
             currentRequestId = requestInfo.getRequestId();
             Channel ch = ctx.channel();
 
-            if (requestInfo.isUsingExternalProxy()) {
-                strategyList.setRequire(Handler.EXTERNAL_PROXY.name(), true);
-            }
+            // if (requestInfo.isUsingExternalProxy()) {
+            //     strategyList.setRequire(Handler.EXTERNAL_PROXY.name(), true);
+            // }
             // update record strategy
             if (requestInfo.getClientType() == ProxyRequestInfo.ClientType.NORMAL) {
                 // update sslHandler
