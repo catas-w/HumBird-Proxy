@@ -79,7 +79,7 @@ public class ExternalProxyTest extends ProxyServerTest {
 
         for (int i = 0; i < list.size(); i++) {
             RequestModel requestModel = list.get(i);
-            String reqId = String.format("test-oversize-id-%d", i);
+            String reqId = String.format("test-ex-http-id-%d", i);
             String assertMsg = "Error: id=" + reqId + ", url=" + requestModel.getUrl();
             log.info("==== RequestId: {}, uri: {} ====", reqId, requestModel.getUrl());
 
@@ -117,7 +117,7 @@ public class ExternalProxyTest extends ProxyServerTest {
 
         for (int i = 0; i < list.size(); i++) {
             RequestModel requestModel = list.get(i);
-            String reqId = String.format("test-oversize-id-%d", i);
+            String reqId = String.format("test-ex-socks-id-%d", i);
             String assertMsg = "Error: id=" + reqId + ", url=" + requestModel.getUrl();
             log.info("==== RequestId: {}, uri: {} ====", reqId, requestModel.getUrl());
 

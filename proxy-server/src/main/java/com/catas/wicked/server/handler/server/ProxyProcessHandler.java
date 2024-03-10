@@ -146,7 +146,6 @@ public class ProxyProcessHandler extends ChannelInboundHandlerAdapter {
                     //     }
                     // });
 
-            bootstrap.resolver(DefaultAddressResolverGroup.INSTANCE);
             requestList.clear();
             channelFuture = bootstrap.connect(requestInfo.getHost(), requestInfo.getPort());
             channelFuture.addListener((ChannelFutureListener) future -> {
