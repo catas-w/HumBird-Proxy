@@ -16,14 +16,14 @@ import lombok.extern.slf4j.Slf4j;
 
 
 @Slf4j
-public class ProxyClientHandler extends ChannelInboundHandlerAdapter {
+public class ClientProcessHandler extends ChannelInboundHandlerAdapter {
 
     private Channel clientChannel;
 
     private final AttributeKey<ProxyRequestInfo> requestInfoAttributeKey =
             AttributeKey.valueOf(ProxyConstant.REQUEST_INFO);
 
-    public ProxyClientHandler(Channel clientChannel) {
+    public ClientProcessHandler(Channel clientChannel) {
         this.clientChannel = clientChannel;
     }
 

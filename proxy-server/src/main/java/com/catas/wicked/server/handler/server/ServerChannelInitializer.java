@@ -56,7 +56,7 @@ public class ServerChannelInitializer extends ChannelInitializer {
         list.add(SERVER_STRATEGY.name(), true, true,
                 () -> new ServerStrategyHandler(appConfig, certPool, idGenerator, defaultStrategyList(), strategyManager));
         list.add(SERVER_PROCESSOR.name(), true, true,
-                () -> new ProxyProcessHandler(appConfig, messageQueue, strategyManager));
+                () -> new ServerProcessHandler(appConfig, messageQueue, strategyManager));
         list.add(Handler.HTTP_AGGREGATOR.name(), false,
                 () -> new RearHttpAggregator(appConfig.getMaxContentSize()));
         list.add(POST_RECORDER.name(), true, true,

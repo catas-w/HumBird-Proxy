@@ -24,7 +24,6 @@ import io.netty.handler.codec.http.HttpVersion;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.proxy.ProxyHandler;
-import io.netty.resolver.DefaultAddressResolverGroup;
 import io.netty.resolver.NoopAddressResolverGroup;
 import io.netty.util.AttributeKey;
 import io.netty.util.ReferenceCountUtil;
@@ -40,7 +39,7 @@ import java.util.List;
  * send data to target server
  */
 @Slf4j
-public class ProxyProcessHandler extends ChannelInboundHandlerAdapter {
+public class ServerProcessHandler extends ChannelInboundHandlerAdapter {
 
     private boolean isConnected;
 
@@ -59,9 +58,9 @@ public class ProxyProcessHandler extends ChannelInboundHandlerAdapter {
             AttributeKey.valueOf(ProxyConstant.REQUEST_INFO);
 
     private String curRequestId;
-    public ProxyProcessHandler(ApplicationConfig applicationConfig,
-                               MessageQueue messageQueue,
-                               StrategyManager strategyManager) {
+    public ServerProcessHandler(ApplicationConfig applicationConfig,
+                                MessageQueue messageQueue,
+                                StrategyManager strategyManager) {
         this.appConfig = applicationConfig;
         this.messageQueue = messageQueue;
         this.strategyManager = strategyManager;
@@ -101,6 +100,7 @@ public class ProxyProcessHandler extends ChannelInboundHandlerAdapter {
                 return;
             }
 
+            // TODO: thread safe
             curRequestId = requestInfo.getRequestId();
             isConnected = false;
             requestInfo.setClientConnected(false);

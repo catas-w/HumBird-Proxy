@@ -1,0 +1,118 @@
+[
+    {
+        "protocol": "https",
+        "url": "https://www.google.com",
+        "method": "GET",
+        "queryParams": null,
+        "headers": [
+            {
+                "key": "accept",
+                "value": "*/*"
+            }
+        ],
+        "contentType": null,
+        "expect": {
+            "status": "TIMEOUT"
+        }
+    },
+    {
+        "protocol": "https",
+        "url": "https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png",
+        "method": "GET",
+        "queryParams": null,
+        "headers": [
+            {
+                "key": "accept",
+                "value": "*/*"
+            }
+        ],
+        "contentType": null,
+        "expect": {
+            "status": "TIMEOUT"
+        }
+    },
+    {
+        "protocol": "https",
+        "url": "https://www.wikipedia.org/static/favicon/wikipedia.ico",
+        "method": "GET",
+        "queryParams": null,
+        "headers": [
+            {
+                "key": "accept",
+                "value": "*/*"
+            }
+        ],
+        "contentType": null,
+        "content": null,
+        "expect": {
+            "status": "TIMEOUT"
+        }
+    },
+    {
+        "protocol": "https",
+        "url": "https://www.googl002134144aade.com",
+        "method": "GET",
+        "queryParams": null,
+        "headers": [
+            {
+                "key": "accept",
+                "value": "*/*"
+            }
+        ],
+        "contentType": null,
+        "expect": {
+            "status": "ADDR_NOTFOUND"
+        }
+    },
+    {
+        "protocol": "https",
+        "url": "https://www.wikipediaNotExist.org",
+        "method": "GET",
+        "queryParams": null,
+        "headers": [
+            {
+                "key": "accept",
+                "value": "*/*"
+            }
+        ],
+        "contentType": null,
+        "content": null,
+        "expect": {
+            "status": "ADDR_NOTFOUND"
+        }
+    },
+    {
+        "protocol": "https",
+        "url": "https://www.baidu.com:445",
+        "method": "GET",
+        "queryParams": null,
+        "headers": [
+            {
+                "key": "accept",
+                "value": "*/*"
+            }
+        ],
+        "contentType": null,
+        "content": null,
+        "expect": {
+            "status": "REJECTED"
+        }
+    },
+    {
+        "protocol": "https",
+        "url": "https://www.baidu.com:123",
+        "method": "GET",
+        "queryParams": null,
+        "headers": [
+            {
+                "key": "accept",
+                "value": "*/*"
+            }
+        ],
+        "contentType": null,
+        "content": null,
+        "expect": {
+            "status": "REJECTED"
+        }
+    }
+]

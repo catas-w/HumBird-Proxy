@@ -48,11 +48,16 @@ public class MockDataUtil {
      * parse json file into requestModel
      * @param fileName json file
      */
-    public List<RequestModel> loadRequestModel(String fileName) throws IOException {
+    public List<RequestModel> loadRequestModel(String fileName) {
         if (StringUtils.isBlank(fileName)) {
             return null;
         }
-        return loadRequestModel(fileName, this.getClass());
+        try {
+            return loadRequestModel(fileName, this.getClass());
+        } catch (IOException e) {
+            log.error("Error loading requestModels.", e);
+            return null;
+        }
     }
 
     /**

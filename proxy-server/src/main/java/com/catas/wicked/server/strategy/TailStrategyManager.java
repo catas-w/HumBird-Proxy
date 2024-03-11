@@ -31,7 +31,6 @@ public class TailStrategyManager implements StrategyManager{
         int x = 0;
         int y = 0;
 
-        // TODO: use two pointers
         // A-B-C-D-E-TAIL
         // A-E-TAIL
         // #-A-B-#-C-TAIL
