@@ -45,19 +45,21 @@ public class ServerChannelInitializer extends ChannelInitializer {
         StrategyList strategyList = defaultStrategyList();
         ch.pipeline().addLast(HTTP_CODEC.name(), strategyList.getSupplier(HTTP_CODEC.name()).get());
         ch.pipeline().addLast(SERVER_STRATEGY.name(), strategyList.getSupplier(SERVER_STRATEGY.name()).get());
+        ch.pipeline().addLast(PREV_RECORDER.name(), strategyList.getSupplier(PREV_RECORDER.name()).get());
         ch.pipeline().addLast(SERVER_PROCESSOR.name(), strategyList.getSupplier(SERVER_PROCESSOR.name()).get());
         ch.pipeline().addLast(POST_RECORDER.name(), strategyList.getSupplier(POST_RECORDER.name()).get());
     }
 
     private StrategyList defaultStrategyList() {
         StrategyList list = new StrategyList();
-        list.add(Handler.SSL_HANDLER.name(), false, () -> null);
+        list.add(SSL_HANDLER.name(), false, () -> null);
         list.add(HTTP_CODEC.name(), true, HttpServerCodec::new);
         list.add(SERVER_STRATEGY.name(), true, true,
                 () -> new ServerStrategyHandler(appConfig, certPool, idGenerator, defaultStrategyList(), strategyManager));
+        list.add(PREV_RECORDER.name(), true, true, () -> new ServerPreRecorder(appConfig, messageQueue));
         list.add(SERVER_PROCESSOR.name(), true, true,
                 () -> new ServerProcessHandler(appConfig, messageQueue, strategyManager));
-        list.add(Handler.HTTP_AGGREGATOR.name(), false,
+        list.add(HTTP_AGGREGATOR.name(), false,
                 () -> new RearHttpAggregator(appConfig.getMaxContentSize()));
         list.add(POST_RECORDER.name(), true, true,
                 () -> new ServerPostRecorder(appConfig, messageQueue));

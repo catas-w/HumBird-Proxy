@@ -2,6 +2,7 @@ package com.catas.wicked.server.handler.server;
 
 import com.catas.wicked.common.bean.ProxyRequestInfo;
 import com.catas.wicked.common.config.ApplicationConfig;
+import com.catas.wicked.common.constant.ClientStatus;
 import com.catas.wicked.common.constant.ProxyConstant;
 import com.catas.wicked.common.pipeline.MessageQueue;
 import com.catas.wicked.common.util.ProxyHandlerFactory;
@@ -9,14 +10,12 @@ import com.catas.wicked.common.util.WebUtils;
 import com.catas.wicked.server.handler.client.ClientChannelInitializer;
 import com.catas.wicked.server.strategy.StrategyManager;
 import io.netty.bootstrap.Bootstrap;
-import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
-import io.netty.handler.codec.http.HttpContent;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.HttpResponseStatus;
@@ -76,19 +75,19 @@ public class ServerProcessHandler extends ChannelInboundHandlerAdapter {
             return;
         }
 
-        if (msg instanceof HttpRequest httpRequest) {
-            curRequestInfo.updateRequestSize(WebUtils.estimateSize(httpRequest));
-        } else if (msg instanceof HttpContent content) {
-            curRequestInfo.updateRequestSize(content.content().readableBytes());
-        } else {
-            try {
-                ByteBuf cont = (ByteBuf) msg;
-                curRequestInfo.updateRequestSize(cont.readableBytes());
-            } catch (Exception e) {
-                log.warn("Unable to catch request size.", e);
-            }
-        }
-        curRequestInfo.updateRequestTime();
+        // if (msg instanceof HttpRequest httpRequest) {
+        //     curRequestInfo.updateRequestSize(WebUtils.estimateSize(httpRequest));
+        // } else if (msg instanceof HttpContent content) {
+        //     curRequestInfo.updateRequestSize(content.content().readableBytes());
+        // } else {
+        //     try {
+        //         ByteBuf cont = (ByteBuf) msg;
+        //         curRequestInfo.updateRequestSize(cont.readableBytes());
+        //     } catch (Exception e) {
+        //         log.warn("Unable to catch request size.", e);
+        //     }
+        // }
+        // curRequestInfo.updateRequestTime();
         // System.out.println("Handlers: " + ctx.channel().pipeline().names());
         handleProxyData(ctx, msg, curRequestInfo);
     }
@@ -166,19 +165,22 @@ public class ServerProcessHandler extends ChannelInboundHandlerAdapter {
                     }
                     isConnected = true;
                 } else {
-                    // TODO 添加错误记录
+                    // TODO: 添加错误记录
                     Throwable cause = future.cause();
                     log.error("Error in creating proxy client channel", cause);
                     if (cause instanceof ConnectException connectException) {
-                        // TODO: add error msg, send requestList to postRecorder
-                        String host = requestInfo.getHost();
+                        // add error msg, send requestList to postRecorder
+                        requestInfo.setClientStatus(ClientStatus.TIMEOUT);
                     } else {
                         System.out.println(cause);
                     }
+                    ctx.fireChannelRead(msg);
                     synchronized (requestList) {
-                        requestList.forEach(ReferenceCountUtil::release);
-                        requestList.clear();
+                        // requestList.forEach(ReferenceCountUtil::release);
+                        // requestList.clear();
+                        requestList.forEach(ctx::fireChannelRead);
                     }
+
                     HttpResponse response = new DefaultFullHttpResponse(
                             HttpVersion.HTTP_1_1, HttpResponseStatus.GATEWAY_TIMEOUT);
                     ctx.writeAndFlush(response);

@@ -92,6 +92,7 @@ public class ServerPostRecorder extends ChannelDuplexHandler {
         // requestMsg.setRemoteAddress(requestInfo.getRemoteAddress());
         requestMsg.setLocalAddress(requestInfo.getLocalAddress());
         requestMsg.setLocalPort(requestInfo.getLocalPort());
+        requestMsg.setClientStatus(requestInfo.getClientStatus());
     }
 
     /**
@@ -108,7 +109,7 @@ public class ServerPostRecorder extends ChannelDuplexHandler {
         requestMessage.setHeaders(new HashMap<>());
         requestMessage.setEncrypted(true);
         setRequestMsgInfo(requestInfo, requestMessage);
-        messageQueue.pushMsg(Topic.RECORD, requestMessage);
+        messageQueue.pushMsg(Topic.UPDATE_MSG, requestMessage);
 
         requestInfo.setHasSentRequestMsg(true);
         log.info(">>>> Request send[encrypted]: {} ID: {} >>>>", url, requestInfo.getRequestId());
@@ -156,7 +157,7 @@ public class ServerPostRecorder extends ChannelDuplexHandler {
             requestMessage.setOversize(true);
         }
         setRequestMsgInfo(requestInfo, requestMessage);
-        messageQueue.pushMsg(Topic.RECORD, requestMessage);
+        messageQueue.pushMsg(Topic.UPDATE_MSG, requestMessage);
 
         requestInfo.setHasSentRequestMsg(true);
         log.info(">>>> Request send[decoded]: {} ID: {} >>>>", uri, requestInfo.getRequestId());

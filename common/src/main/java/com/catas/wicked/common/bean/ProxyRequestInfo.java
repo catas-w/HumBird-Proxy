@@ -1,5 +1,6 @@
 package com.catas.wicked.common.bean;
 
+import com.catas.wicked.common.constant.ClientStatus;
 import lombok.Data;
 
 /**
@@ -38,6 +39,8 @@ public class ProxyRequestInfo {
     private String requestId;
 
     private ClientType clientType;
+
+    private ClientStatus clientStatus;
 
     private volatile long requestStartTime;
     private volatile long requestEndTime;

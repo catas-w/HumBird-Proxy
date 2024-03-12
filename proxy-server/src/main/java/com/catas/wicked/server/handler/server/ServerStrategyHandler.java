@@ -2,6 +2,7 @@ package com.catas.wicked.server.handler.server;
 
 import com.catas.wicked.common.bean.IdGenerator;
 import com.catas.wicked.common.bean.ProxyRequestInfo;
+import com.catas.wicked.common.constant.ClientStatus;
 import com.catas.wicked.common.constant.ProxyConstant;
 import com.catas.wicked.common.constant.ServerStatus;
 import com.catas.wicked.common.config.ApplicationConfig;
@@ -80,6 +81,7 @@ public class ServerStrategyHandler extends ChannelDuplexHandler {
         this.idGenerator = idGenerator;
         this.strategyList = strategyList;
         this.strategyManager = strategyManager;
+        // System.out.println("*** new channel ***");
     }
 
     @Override
@@ -124,6 +126,7 @@ public class ServerStrategyHandler extends ChannelDuplexHandler {
                 appConfig.getSettings().getExternalProxy().isUsingExternalProxy());
         requestInfo.setRequestId(idGenerator.nextId());
         requestInfo.setRecording(appConfig.getSettings().isRecording());
+        requestInfo.setClientStatus(ClientStatus.WAITING);
         requestInfo.resetBasicInfo();
 
         SocketAddress remoteAddress = ctx.channel().remoteAddress();
@@ -192,6 +195,7 @@ public class ServerStrategyHandler extends ChannelDuplexHandler {
         ByteBuf byteBuf = (ByteBuf) msg;
         if (byteBuf.getByte(0) == 22) {
             // TODO process new request
+            System.out.println("********* Handle raw *********");
             ProxyRequestInfo requestInfo = ctx.channel().attr(requestInfoAttributeKey).get();
             assert requestInfo != null;
             requestInfo.setSsl(true);

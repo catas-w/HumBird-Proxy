@@ -36,14 +36,24 @@ public class TestMessageService {
             log.info("Process requestId={}", updateMsg.getRequestId());
             RequestMessage requestMessage = requestCache.get(updateMsg.getRequestId());
             if (requestMessage == null) {
+                // TODO: avoid
+                System.out.println("Request is null!!!");
                 return;
             }
             requestMessage.setSize(updateMsg.getSize());
             requestMessage.setEndTime(updateMsg.getEndTime());
+            requestMessage.setClientStatus(updateMsg.getClientStatus());
+            if (updateMsg.getBody() != null) {
+                requestMessage.setBody(updateMsg.getBody());
+            }
+            if (updateMsg.getHeaders() != null) {
+                requestMessage.getHeaders().putAll(updateMsg.getHeaders());
+            }
             requestCache.put(requestMessage.getRequestId(), requestMessage);
         } else if (msg instanceof ResponseMessage updateMsg) {
             RequestMessage requestMessage = requestCache.get(updateMsg.getRequestId());
             if (requestMessage == null) {
+                System.out.println("Request is null!!!");
                 return;
             }
             if (requestMessage.getResponse() == null ) {

@@ -4,15 +4,20 @@ import com.catas.wicked.common.bean.message.RequestMessage;
 import com.catas.wicked.common.bean.mock.ExpectModel;
 import com.catas.wicked.common.bean.mock.RequestModel;
 import com.catas.wicked.common.constant.ClientStatus;
+import com.catas.wicked.common.util.SslUtils;
 import com.catas.wicked.server.ProxyServerTest;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.HttpHost;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.impl.client.HttpClients;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.util.Collections;
 import java.util.List;
 
 @Slf4j
@@ -25,7 +30,19 @@ public class ErrorMsgTest extends ProxyServerTest {
 
     @BeforeClass
     public static void init() throws Exception {
-        initHttpClient();
+        // initHttpClient();
+        RequestConfig requestConfig = RequestConfig.custom()
+                .setConnectTimeout(2 * 1000)
+                .setConnectionRequestTimeout(2 * 1000)
+                .setProxy(new HttpHost("127.0.0.1", 9999))
+                .build();
+
+        httpClient = HttpClients.custom()
+                .setDefaultHeaders(Collections.emptyList())
+                .setDefaultRequestConfig(requestConfig)
+                .setSSLSocketFactory(SslUtils.getSocketFactory(false, null, null))
+                .build();
+
         initBeanContext();
     }
 

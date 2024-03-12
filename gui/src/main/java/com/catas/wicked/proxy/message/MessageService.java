@@ -52,6 +52,7 @@ public class MessageService {
 
     @PostConstruct
     public void init() {
+        // TODO: use one thread-pool consumer
         messageQueue.subscribe(Topic.RECORD, this::processMsg);
         messageQueue.subscribe(Topic.UPDATE_MSG, this::processUpdate);
         // avoid circular dependency
@@ -92,14 +93,24 @@ public class MessageService {
         if (msg instanceof RequestMessage updateMsg) {
             RequestMessage requestMessage = requestCache.get(updateMsg.getRequestId());
             if (requestMessage == null) {
+                // TODO: avoid
+                System.out.println("requestMessage is null");
                 return;
             }
             requestMessage.setSize(updateMsg.getSize());
             requestMessage.setEndTime(updateMsg.getEndTime());
+            requestMessage.setClientStatus(updateMsg.getClientStatus());
+            if (updateMsg.getBody() != null) {
+                requestMessage.setBody(updateMsg.getBody());
+            }
+            if (updateMsg.getHeaders() != null) {
+                requestMessage.getHeaders().putAll(updateMsg.getHeaders());
+            }
             requestCache.put(requestMessage.getRequestId(), requestMessage);
         } else if (msg instanceof ResponseMessage updateMsg) {
             RequestMessage requestMessage = requestCache.get(updateMsg.getRequestId());
             if (requestMessage == null) {
+                System.out.println("requestMessage is null");
                 return;
             }
             if (requestMessage.getResponse() == null ) {
