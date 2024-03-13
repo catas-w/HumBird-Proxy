@@ -52,7 +52,7 @@ public class ClientPostRecorder extends ChannelDuplexHandler {
             requestMessage.setEndTime(requestInfo.getRequestEndTime());
             requestMessage.setSize(requestInfo.getRequestSize());
             // TODO
-            requestMessage.setClientStatus(ClientStatus.FINISHED);
+            requestMessage.updateClientStatus(ClientStatus.Status.FINISHED);
             messageQueue.pushMsg(Topic.UPDATE_MSG, requestMessage);
         }
         super.write(ctx, msg, promise);

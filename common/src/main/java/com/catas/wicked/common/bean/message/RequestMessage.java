@@ -70,5 +70,19 @@ public class RequestMessage extends BaseMessage{
         this.requestUrl = requestUrl;
         this.setType(MessageType.REQUEST);
     }
+
+    public void updateClientStatus(ClientStatus.Status status) {
+        updateClientStatus(status, null);
+    }
+
+    public void updateClientStatus(ClientStatus.Status status, String msg) {
+        if (clientStatus == null) {
+            clientStatus = new ClientStatus();
+        }
+        clientStatus.setStatus(status);
+        if (msg != null) {
+            clientStatus.setMsg(msg);
+        }
+    }
 }
 

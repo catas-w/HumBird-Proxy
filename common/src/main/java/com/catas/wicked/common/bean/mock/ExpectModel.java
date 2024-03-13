@@ -10,7 +10,7 @@ import java.util.List;
 @Data
 public class ExpectModel {
 
-    private ClientStatus status;
+    private ClientStatus.Status status;
 
     private int code;
 

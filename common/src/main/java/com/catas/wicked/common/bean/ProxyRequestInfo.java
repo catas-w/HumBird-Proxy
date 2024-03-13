@@ -108,6 +108,20 @@ public class ProxyRequestInfo {
         }
     }
 
+    public void updateClientStatus(ClientStatus.Status status) {
+        updateClientStatus(status, null);
+    }
+
+    public void updateClientStatus(ClientStatus.Status status, String msg) {
+        if (clientStatus == null) {
+            clientStatus = new ClientStatus();
+        }
+        clientStatus.setStatus(status);
+        if (msg != null) {
+            clientStatus.setMsg(msg);
+        }
+    }
+
     public enum ClientType {
         /**
          * 隧道代理，不解析 http

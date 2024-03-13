@@ -126,7 +126,7 @@ public class ServerStrategyHandler extends ChannelDuplexHandler {
                 appConfig.getSettings().getExternalProxy().isUsingExternalProxy());
         requestInfo.setRequestId(idGenerator.nextId());
         requestInfo.setRecording(appConfig.getSettings().isRecording());
-        requestInfo.setClientStatus(ClientStatus.WAITING);
+        requestInfo.updateClientStatus(ClientStatus.Status.WAITING);
         requestInfo.resetBasicInfo();
 
         SocketAddress remoteAddress = ctx.channel().remoteAddress();

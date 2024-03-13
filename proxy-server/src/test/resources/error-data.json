@@ -83,7 +83,7 @@
     },
     {
         "protocol": "https",
-        "url": "https://www.baidu.com:445",
+        "url": "http://127.0.0.1:80",
         "method": "GET",
         "queryParams": null,
         "headers": [
@@ -100,7 +100,7 @@
     },
     {
         "protocol": "https",
-        "url": "https://www.baidu.com:123",
+        "url": "http://127.0.0.1:123",
         "method": "GET",
         "queryParams": null,
         "headers": [

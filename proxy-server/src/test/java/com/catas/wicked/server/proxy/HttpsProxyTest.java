@@ -53,7 +53,7 @@ public class HttpsProxyTest extends ProxyServerTest {
 
             // validate result
             ExpectModel expectModel = requestModel.getExpect();
-            if (expectModel.getStatus() == ClientStatus.FINISHED && expectModel.getCode() != 0) {
+            if (expectModel.getStatus() == ClientStatus.Status.FINISHED && expectModel.getCode() != 0) {
                 ResponseMessage responseMessage = getRespMessageFromCache(reqId);
                 Assert.assertNotNull(assertMsg, responseMessage);
                 Assert.assertEquals(assertMsg, (int) responseMessage.getStatus(), expectModel.getCode());
@@ -81,7 +81,7 @@ public class HttpsProxyTest extends ProxyServerTest {
 
             // validate result
             ExpectModel expectModel = requestModel.getExpect();
-            if (expectModel.getStatus() == ClientStatus.FINISHED && expectModel.getCode() != 0) {
+            if (expectModel.getStatus() == ClientStatus.Status.FINISHED && expectModel.getCode() != 0) {
                 Assert.assertEquals(assertMsg, expectModel.getCode(), response.getStatusLine().getStatusCode());
                 RequestMessage requestMessage = getRequestMessageFromCache(reqId);
                 // latter https requests in one tunnel channel cannot be recorded
@@ -114,7 +114,7 @@ public class HttpsProxyTest extends ProxyServerTest {
 
             // validate result
             ExpectModel expectModel = requestModel.getExpect();
-            if (expectModel.getStatus() == ClientStatus.FINISHED && expectModel.getCode() != 0) {
+            if (expectModel.getStatus() == ClientStatus.Status.FINISHED && expectModel.getCode() != 0) {
                 Assert.assertEquals(assertMsg, expectModel.getCode(), response.getStatusLine().getStatusCode());
                 RequestMessage requestMessage = getRequestMessageFromCache(reqId);
                 Assert.assertNull(requestMessage);

@@ -30,6 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 import java.net.ConnectException;
+import java.net.UnknownHostException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -170,8 +171,11 @@ public class ServerProcessHandler extends ChannelInboundHandlerAdapter {
                     log.error("Error in creating proxy client channel", cause);
                     if (cause instanceof ConnectException connectException) {
                         // add error msg, send requestList to postRecorder
-                        requestInfo.setClientStatus(ClientStatus.TIMEOUT);
+                        requestInfo.updateClientStatus(ClientStatus.Status.CONNECT_ERR, connectException.getMessage());
+                    } else if (cause instanceof UnknownHostException hostException) {
+                        requestInfo.updateClientStatus(ClientStatus.Status.ADDR_NOTFOUND, hostException.getMessage());
                     } else {
+                        // javax.net.ssl.SSLPeerUnverifiedException
                         System.out.println(cause);
                     }
                     ctx.fireChannelRead(msg);

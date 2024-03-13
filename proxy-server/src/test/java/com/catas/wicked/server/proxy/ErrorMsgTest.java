@@ -52,7 +52,7 @@ public class ErrorMsgTest extends ProxyServerTest {
         Assert.assertNotNull(data);
 
         List<RequestModel> list = data.stream()
-                .filter(model -> model.getExpect().getStatus() == ClientStatus.TIMEOUT)
+                .filter(model -> model.getExpect().getStatus() == ClientStatus.Status.TIMEOUT)
                 .toList();
 
         for (int i = 0; i < list.size(); i++) {
@@ -72,17 +72,79 @@ public class ErrorMsgTest extends ProxyServerTest {
             ExpectModel expectModel = requestModel.getExpect();
             RequestMessage requestMessage = getRequestMessageFromCache(reqId);
             Assert.assertNotNull(assertMsg, requestMessage);
-            Assert.assertEquals(assertMsg, expectModel.getStatus(), requestMessage.getClientStatus());
+            Assert.assertEquals(assertMsg, ClientStatus.Status.CONNECT_ERR, requestMessage.getClientStatus().getStatus());
+            Assert.assertTrue(assertMsg, requestMessage.getClientStatus().getMsg().contains("Connection timed out"));
         }
     }
 
     @Test
     public void testAddrNotFound() throws Exception {
+        List<RequestModel> data = mockDataUtil.loadRequestModel("error-data.json");
+        Assert.assertNotNull(data);
 
+        List<RequestModel> list = data.stream()
+                .filter(model -> model.getExpect().getStatus() == ClientStatus.Status.ADDR_NOTFOUND)
+                .toList();
+
+        for (int i = 0; i < list.size(); i++) {
+            String reqId = String.format("test-error-id-%d", i);
+            RequestModel requestModel = list.get(i);
+            String assertMsg = "Error: id=" + reqId + ", url=" + requestModel.getUrl();
+            log.info("==== RequestId: {}, uri: {} ====", reqId, requestModel.getUrl());
+
+            // execute request
+            HttpUriRequest request = mockDataUtil.getUriRequest(requestModel);
+            prevIdGenerator.setNextId(reqId);
+            CloseableHttpResponse response = httpClient.execute(request);
+            log.info("---- Response: {}", response.getStatusLine().getStatusCode());
+            response.close();
+
+            // wait for update msg
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ignored) {
+
+            }
+            ExpectModel expectModel = requestModel.getExpect();
+            RequestMessage requestMessage = getRequestMessageFromCache(reqId);
+            Assert.assertNotNull(assertMsg, requestMessage);
+            Assert.assertEquals(assertMsg, expectModel.getStatus(), requestMessage.getClientStatus().getStatus());
+        }
     }
 
     @Test
-    public void testServerRejected() {
+    public void testServerRejected() throws Exception {
+        List<RequestModel> data = mockDataUtil.loadRequestModel("error-data.json");
+        Assert.assertNotNull(data);
 
+        List<RequestModel> list = data.stream()
+                .filter(model -> model.getExpect().getStatus() == ClientStatus.Status.REJECTED)
+                .toList();
+
+        for (int i = 0; i < list.size(); i++) {
+            String reqId = String.format("test-error-id-%d", i);
+            RequestModel requestModel = list.get(i);
+            String assertMsg = "Error: id=" + reqId + ", url=" + requestModel.getUrl();
+            log.info("==== RequestId: {}, uri: {} ====", reqId, requestModel.getUrl());
+
+            // execute request
+            HttpUriRequest request = mockDataUtil.getUriRequest(requestModel);
+            prevIdGenerator.setNextId(reqId);
+            CloseableHttpResponse response = httpClient.execute(request);
+            log.info("---- Response: {}", response.getStatusLine().getStatusCode());
+            response.close();
+
+            // wait for update msg
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ignored) {
+
+            }
+            ExpectModel expectModel = requestModel.getExpect();
+            RequestMessage requestMessage = getRequestMessageFromCache(reqId);
+            Assert.assertNotNull(assertMsg, requestMessage);
+            Assert.assertEquals(assertMsg, ClientStatus.Status.CONNECT_ERR, requestMessage.getClientStatus().getStatus());
+            Assert.assertTrue(assertMsg, requestMessage.getClientStatus().getMsg().contains("Connection refused"));
+        }
     }
 }

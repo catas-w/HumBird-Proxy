@@ -50,7 +50,7 @@ public class DecompressTest extends ProxyServerTest {
 
             // validate result
             ExpectModel expectModel = requestModel.getExpect();
-            if (expectModel.getStatus() == ClientStatus.FINISHED && expectModel.getCode() != 0) {
+            if (expectModel.getStatus() == ClientStatus.Status.FINISHED && expectModel.getCode() != 0) {
                 Assert.assertEquals(assertMsg, expectModel.getCode(), response.getStatusLine().getStatusCode());
                 ResponseMessage responseMsg = getRespMessageFromCache(reqId);
 
