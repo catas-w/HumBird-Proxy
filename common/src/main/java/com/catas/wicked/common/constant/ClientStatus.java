@@ -14,6 +14,7 @@ public class ClientStatus implements Serializable {
         REJECTED,
         TIMEOUT,
         ADDR_NOTFOUND,
+        CLOSED,
         SSL_INVALID,
         UNKNOWN_ERR;
     }

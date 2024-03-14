@@ -52,9 +52,10 @@ public class ServerPreRecorder extends ChannelInboundHandlerAdapter {
             newRequest = curRequestId.compareAndSet(reqId, requestInfo.getRequestId());
         }
 
+        // TODO: update size/time
         if (msg instanceof HttpRequest httpRequest) {
-            requestInfo.updateRequestSize(WebUtils.estimateSize(httpRequest));
-            // record
+            // requestInfo.updateRequestSize(WebUtils.estimateSize(httpRequest));
+            requestInfo.updateRequestSize(((ByteBuf) msg).readableBytes());
             recordHttpRequest(requestInfo, httpRequest, newRequest);
         } else if (msg instanceof HttpContent content) {
             requestInfo.updateRequestSize(content.content().readableBytes());

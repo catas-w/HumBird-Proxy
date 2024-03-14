@@ -43,7 +43,7 @@ public class ClientPostRecorder extends ChannelDuplexHandler {
     @Override
     public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
         ProxyRequestInfo requestInfo = ctx.channel().attr(requestInfoKey).get();
-        // update request size & time
+        // update request size & time TODO: move to preRecorder
         if (requestInfo != null && requestInfo.isHasSentRequestMsg()) {
             requestInfo.updateRequestTime();
             RequestMessage requestMessage = new RequestMessage();
@@ -51,8 +51,6 @@ public class ClientPostRecorder extends ChannelDuplexHandler {
             requestMessage.setType(BaseMessage.MessageType.UPDATE);
             requestMessage.setEndTime(requestInfo.getRequestEndTime());
             requestMessage.setSize(requestInfo.getRequestSize());
-            // TODO
-            requestMessage.updateClientStatus(ClientStatus.Status.FINISHED);
             messageQueue.pushMsg(Topic.UPDATE_MSG, requestMessage);
         }
         super.write(ctx, msg, promise);

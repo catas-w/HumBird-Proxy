@@ -31,6 +31,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.net.ConnectException;
 import java.net.UnknownHostException;
+import java.nio.channels.ClosedChannelException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -169,15 +170,21 @@ public class ServerProcessHandler extends ChannelInboundHandlerAdapter {
                     // TODO: 添加错误记录
                     Throwable cause = future.cause();
                     log.error("Error in creating proxy client channel", cause);
-                    if (cause instanceof ConnectException connectException) {
-                        // add error msg, send requestList to postRecorder
-                        requestInfo.updateClientStatus(ClientStatus.Status.CONNECT_ERR, connectException.getMessage());
-                    } else if (cause instanceof UnknownHostException hostException) {
-                        requestInfo.updateClientStatus(ClientStatus.Status.ADDR_NOTFOUND, hostException.getMessage());
+                    // add error msg, send requestList to postRecorder
+                    ClientStatus.Status targetStatus;
+                    if (cause instanceof ConnectException) {
+                        targetStatus = ClientStatus.Status.CONNECT_ERR;
+                    } else if (cause instanceof UnknownHostException) {
+                        targetStatus = ClientStatus.Status.ADDR_NOTFOUND;
+                    } else if (cause instanceof ClosedChannelException){
+                        targetStatus = ClientStatus.Status.CLOSED;
                     } else {
                         // javax.net.ssl.SSLPeerUnverifiedException
                         System.out.println(cause);
+                        targetStatus = ClientStatus.Status.UNKNOWN_ERR;
                     }
+                    requestInfo.updateClientStatus(targetStatus, cause.getMessage());
+
                     ctx.fireChannelRead(msg);
                     synchronized (requestList) {
                         // requestList.forEach(ReferenceCountUtil::release);

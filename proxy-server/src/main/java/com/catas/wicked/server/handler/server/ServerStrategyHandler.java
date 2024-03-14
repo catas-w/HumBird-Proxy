@@ -81,7 +81,6 @@ public class ServerStrategyHandler extends ChannelDuplexHandler {
         this.idGenerator = idGenerator;
         this.strategyList = strategyList;
         this.strategyManager = strategyManager;
-        // System.out.println("*** new channel ***");
     }
 
     @Override
@@ -95,13 +94,18 @@ public class ServerStrategyHandler extends ChannelDuplexHandler {
     }
 
     @Override
+    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+        super.channelActive(ctx);
+    }
+
+    @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         if (msg instanceof HttpRequest) {
             handleHttpRequest(ctx, msg);
         } else if (msg instanceof HttpContent) {
             // 处理 head 后的 LastContent
-            if (status == ServerStatus.AFTER_CONNECT) {
-                status = ServerStatus.INIT;
+            if (status == ServerStatus.IN_CONNECT) {
+                status = ServerStatus.AFTER_CONNECT;
                 ReferenceCountUtil.release(msg);
                 return;
             }
@@ -155,31 +159,18 @@ public class ServerStrategyHandler extends ChannelDuplexHandler {
         }
 
         ProxyRequestInfo requestInfo = refreshRequestInfo(ctx, request);
-        // if (!requestInfo.isRecording()) {
-        //     try {
-        //         ctx.channel().pipeline().remove(AGGREGATOR);
-        //     } catch (NoSuchElementException ignored) {}
-        // } else {
-        //     try {
-        //         ctx.channel().pipeline().addAfter(SERVER_PROCESSOR, AGGREGATOR,
-        //                 new RearHttpAggregator(appConfig.getMaxContentSize()));
-        //     } catch (IllegalArgumentException ignore) {}
-        // }
         strategyList.setRequire(Handler.HTTP_AGGREGATOR.name(), requestInfo.isRecording());
         strategyManager.arrange(ctx.pipeline(), strategyList);
 
         requestInfo.setClientType(ProxyRequestInfo.ClientType.NORMAL);
         // attr.set(requestInfo);
 
-        if (status.equals(ServerStatus.INIT)) {
+        if (status == ServerStatus.INIT || status == ServerStatus.AFTER_CONNECT) {
             if (HttpMethod.CONNECT.name().equalsIgnoreCase(request.method().name())) {
-                status = ServerStatus.AFTER_CONNECT;
+                status = ServerStatus.IN_CONNECT;
                 // https connect
                 HttpResponse response = new DefaultFullHttpResponse(request.protocolVersion(), ProxyConstant.SUCCESS);
                 ctx.writeAndFlush(response);
-                // try {
-                //     ctx.channel().pipeline().remove(HTTP_CODEC);
-                // } catch (NoSuchElementException ignore) {}
                 strategyList.setRequire(Handler.HTTP_CODEC.name(), false);
                 strategyManager.arrange(ctx.pipeline(), strategyList);
 
@@ -191,11 +182,9 @@ public class ServerStrategyHandler extends ChannelDuplexHandler {
     }
 
     private void handleRaw(ChannelHandlerContext ctx, Object msg) throws Exception {
-        // 判断是否为新请求
         ByteBuf byteBuf = (ByteBuf) msg;
-        if (byteBuf.getByte(0) == 22) {
-            // TODO process new request
-            System.out.println("********* Handle raw *********");
+        if (byteBuf.getByte(0) == 22 && status == ServerStatus.AFTER_CONNECT) {
+            // process new request
             ProxyRequestInfo requestInfo = ctx.channel().attr(requestInfoAttributeKey).get();
             assert requestInfo != null;
             requestInfo.setSsl(true);
@@ -204,9 +193,6 @@ public class ServerStrategyHandler extends ChannelDuplexHandler {
                 String originHost = requestInfo.getHost();
                 SslContext sslCtx = SslContextBuilder.forServer(
                         appConfig.getServerPriKey(), certPool.getCert(port, originHost)).build();
-
-                // ctx.pipeline().addFirst(HTTP_CODEC, new HttpServerCodec());
-                // ctx.pipeline().addFirst(SSL_HANDLER, sslCtx.newHandler(ctx.alloc()));
                 strategyList.setRequire(Handler.HTTP_CODEC.name(), true);
                 strategyList.setRequire(Handler.SSL_HANDLER.name(), true);
                 strategyList.setSupplier(Handler.SSL_HANDLER.name(), () -> sslCtx.newHandler(ctx.alloc()));
@@ -240,7 +226,6 @@ public class ServerStrategyHandler extends ChannelDuplexHandler {
 
         // 如果connect后面跑的是HTTP报文，也可以抓包处理
         if (WebUtils.isHttp(byteBuf)) {
-            // ctx.pipeline().addFirst(HTTP_CODEC, new HttpServerCodec());
             strategyList.setRequire(Handler.HTTP_CODEC.name(), true);
             strategyManager.arrange(ctx.pipeline(), strategyList);
 
@@ -248,15 +233,5 @@ public class ServerStrategyHandler extends ChannelDuplexHandler {
             return;
         }
         ctx.fireChannelRead(msg);
-    }
-
-    private SslHandler createSslHandler(ChannelHandlerContext ctx) throws Exception {
-        ProxyRequestInfo requestInfo = ctx.channel().attr(requestInfoAttributeKey).get();
-        int port = ((InetSocketAddress) ctx.channel().localAddress()).getPort();
-        String originHost = requestInfo.getHost();
-        SslContext sslCtx = SslContextBuilder.forServer(
-                appConfig.getServerPriKey(), certPool.getCert(port, originHost)).build();
-
-        return sslCtx.newHandler(ctx.alloc());
     }
 }
