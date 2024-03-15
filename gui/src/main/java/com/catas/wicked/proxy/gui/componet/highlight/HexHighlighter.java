@@ -30,6 +30,11 @@ public class HexHighlighter extends  OriginHighlighter implements Formatter{
         if (builder.length() > 0) {
             builder.deleteCharAt(builder.length() - 1);
         }
+        // TODO
+        if (builder.length() > 10000) {
+            builder.delete(10000, builder.length());
+            builder.append("...(omitted)");
+        }
         return builder.toString();
     }
 

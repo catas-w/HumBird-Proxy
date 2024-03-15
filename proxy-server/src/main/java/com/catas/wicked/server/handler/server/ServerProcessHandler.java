@@ -29,11 +29,12 @@ import io.netty.util.ReferenceCountUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
-import java.net.ConnectException;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.nio.channels.ClosedChannelException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 
 /**
@@ -58,7 +59,7 @@ public class ServerProcessHandler extends ChannelInboundHandlerAdapter {
     private final AttributeKey<ProxyRequestInfo> requestInfoAttributeKey =
             AttributeKey.valueOf(ProxyConstant.REQUEST_INFO);
 
-    private String curRequestId;
+    private AtomicReference<String> curRequestId;
     public ServerProcessHandler(ApplicationConfig applicationConfig,
                                 MessageQueue messageQueue,
                                 StrategyManager strategyManager) {
@@ -66,6 +67,7 @@ public class ServerProcessHandler extends ChannelInboundHandlerAdapter {
         this.messageQueue = messageQueue;
         this.strategyManager = strategyManager;
         requestList = new LinkedList<>();
+        curRequestId = new AtomicReference<>("initId");
     }
 
     @Override
@@ -77,32 +79,23 @@ public class ServerProcessHandler extends ChannelInboundHandlerAdapter {
             return;
         }
 
-        // if (msg instanceof HttpRequest httpRequest) {
-        //     curRequestInfo.updateRequestSize(WebUtils.estimateSize(httpRequest));
-        // } else if (msg instanceof HttpContent content) {
-        //     curRequestInfo.updateRequestSize(content.content().readableBytes());
-        // } else {
-        //     try {
-        //         ByteBuf cont = (ByteBuf) msg;
-        //         curRequestInfo.updateRequestSize(cont.readableBytes());
-        //     } catch (Exception e) {
-        //         log.warn("Unable to catch request size.", e);
-        //     }
-        // }
-        // curRequestInfo.updateRequestTime();
-        // System.out.println("Handlers: " + ctx.channel().pipeline().names());
         handleProxyData(ctx, msg, curRequestInfo);
     }
 
     private void handleProxyData(ChannelHandlerContext ctx, Object msg, ProxyRequestInfo requestInfo)  throws Exception {
-        if (channelFuture == null || !StringUtils.equals(curRequestId, requestInfo.getRequestId())) {
+        boolean newRequest = false;
+        String reqId = curRequestId.get();
+        if (!StringUtils.equals(reqId, requestInfo.getRequestId())) {
+            newRequest = curRequestId.compareAndSet(reqId, requestInfo.getRequestId());
+        }
+        if (channelFuture == null || newRequest) {
             if (requestInfo.getClientType() == ProxyRequestInfo.ClientType.NORMAL
                     && (!(msg instanceof HttpRequest))) {
                 return;
             }
 
             // TODO: thread safe
-            curRequestId = requestInfo.getRequestId();
+            // curRequestId = requestInfo.getRequestId();
             isConnected = false;
             requestInfo.setClientConnected(false);
             Bootstrap bootstrap = new Bootstrap();
@@ -123,34 +116,12 @@ public class ServerProcessHandler extends ChannelInboundHandlerAdapter {
                     .handler(new LoggingHandler(LogLevel.INFO))
                     .handler(new ClientChannelInitializer(appConfig, messageQueue, requestInfo,
                             strategyManager, proxyHandler, ctx.channel()));
-                    // .handler(new ChannelInitializer<NioSocketChannel>() {
-                    //     @Override
-                    //     protected void initChannel(NioSocketChannel ch) throws Exception {
-                    //         if (requestInfo.isUsingExternalProxy()) {
-                    //             // add external proxy handler
-                    //             ProxyHandler proxyHandler = ProxyHandlerFactory.getExternalProxyHandler(
-                    //                     appConfig.getSettings().getExternalProxy(), WebUtils.getHostname(requestInfo));
-                    //             if (proxyHandler != null) {
-                    //                 // TODO: bugfix HTTP proxy error - UnresolvedAddressException
-                    //                 ch.pipeline().addFirst(EXTERNAL_PROXY, proxyHandler);
-                    //                 bootstrap.resolver(NoopAddressResolverGroup.INSTANCE);
-                    //             }
-                    //         } else {
-                    //             bootstrap.resolver(DefaultAddressResolverGroup.INSTANCE);
-                    //         }
-                    //         // ch.pipeline().addLast(CLIENT_STRATEGY,
-                    //         //         new ClientStrategyHandler(appConfig, messageQueue, requestInfo));
-                    //         ch.pipeline().addLast(CLIENT_PROCESSOR, new ProxyClientHandler(ctx.channel()));
-                    //         ch.pipeline().addLast(POST_RECORDER, new ClientPostRecorder(appConfig, messageQueue));
-                    //         ch.pipeline().addLast(CLIENT_STRATEGY,
-                    //                 new ClientStrategyHandler(appConfig, messageQueue, requestInfo));
-                    //     }
-                    // });
 
             requestList.clear();
             channelFuture = bootstrap.connect(requestInfo.getHost(), requestInfo.getPort());
             channelFuture.addListener((ChannelFutureListener) future -> {
                 if (future.isSuccess()) {
+                    requestInfo.updateClientStatus(ClientStatus.Status.FINISHED);
                     ReferenceCountUtil.retain(msg);
                     future.channel().writeAndFlush(msg);
                     ctx.fireChannelRead(msg);
@@ -167,12 +138,11 @@ public class ServerProcessHandler extends ChannelInboundHandlerAdapter {
                     }
                     isConnected = true;
                 } else {
-                    // TODO: 添加错误记录
+                    // add error msg, send requestList to postRecorder
                     Throwable cause = future.cause();
                     log.error("Error in creating proxy client channel", cause);
-                    // add error msg, send requestList to postRecorder
                     ClientStatus.Status targetStatus;
-                    if (cause instanceof ConnectException) {
+                    if (cause instanceof SocketException) {
                         targetStatus = ClientStatus.Status.CONNECT_ERR;
                     } else if (cause instanceof UnknownHostException) {
                         targetStatus = ClientStatus.Status.ADDR_NOTFOUND;

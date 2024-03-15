@@ -1,6 +1,7 @@
 package com.catas.wicked.proxy.gui.componet.richtext;
 
 import com.catas.wicked.common.constant.CodeStyle;
+import com.catas.wicked.common.util.ThreadPoolService;
 import com.catas.wicked.proxy.gui.componet.highlight.Formatter;
 import com.catas.wicked.proxy.gui.componet.highlight.Highlighter;
 import com.catas.wicked.proxy.gui.componet.highlight.HighlighterFactory;
@@ -19,7 +20,6 @@ import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.GenericStyledArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.model.Paragraph;
-import org.fxmisc.richtext.model.StyleSpans;
 import org.reactfx.collection.ListModification;
 
 import java.util.Collection;
@@ -97,7 +97,8 @@ public class DisplayCodeArea extends VirtualizedScrollPane<CodeArea> {
 
         // refresh style
         if (refreshStyle) {
-            refreshStyle();
+            // refreshStyle();
+            ThreadPoolService.getInstance().run(this::refreshStyle);
         }
     }
 
@@ -108,7 +109,8 @@ public class DisplayCodeArea extends VirtualizedScrollPane<CodeArea> {
     public void replaceText(String text, boolean refreshStyle) {
         this.originText = text;
         if (refreshStyle) {
-            refreshStyle();
+            // refreshStyle();
+            ThreadPoolService.getInstance().run(this::refreshStyle);
         } else {
             Platform.runLater(() -> {
                 codeArea.replaceText(text);

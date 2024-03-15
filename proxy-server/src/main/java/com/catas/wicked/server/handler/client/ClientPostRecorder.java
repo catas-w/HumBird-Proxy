@@ -2,11 +2,8 @@ package com.catas.wicked.server.handler.client;
 
 
 import com.catas.wicked.common.bean.ProxyRequestInfo;
-import com.catas.wicked.common.bean.message.BaseMessage;
-import com.catas.wicked.common.bean.message.RequestMessage;
 import com.catas.wicked.common.bean.message.ResponseMessage;
 import com.catas.wicked.common.config.ApplicationConfig;
-import com.catas.wicked.common.constant.ClientStatus;
 import com.catas.wicked.common.constant.ProxyConstant;
 import com.catas.wicked.common.pipeline.MessageQueue;
 import com.catas.wicked.common.pipeline.Topic;
@@ -42,17 +39,6 @@ public class ClientPostRecorder extends ChannelDuplexHandler {
 
     @Override
     public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
-        ProxyRequestInfo requestInfo = ctx.channel().attr(requestInfoKey).get();
-        // update request size & time TODO: move to preRecorder
-        if (requestInfo != null && requestInfo.isHasSentRequestMsg()) {
-            requestInfo.updateRequestTime();
-            RequestMessage requestMessage = new RequestMessage();
-            requestMessage.setRequestId(requestInfo.getRequestId());
-            requestMessage.setType(BaseMessage.MessageType.UPDATE);
-            requestMessage.setEndTime(requestInfo.getRequestEndTime());
-            requestMessage.setSize(requestInfo.getRequestSize());
-            messageQueue.pushMsg(Topic.UPDATE_MSG, requestMessage);
-        }
         super.write(ctx, msg, promise);
     }
 

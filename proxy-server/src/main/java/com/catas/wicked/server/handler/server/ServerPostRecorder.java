@@ -73,7 +73,7 @@ public class ServerPostRecorder extends ChannelDuplexHandler {
             } else if (!(msg instanceof HttpObject)) {
                 recordUnParsedRequest(ctx, msg, requestInfo);
             } else {
-                log.error("?????");
+                log.error("Unknown msg type: {}", msg);
             }
         } catch (Exception e) {
             log.error("Error in recording http request.", e);

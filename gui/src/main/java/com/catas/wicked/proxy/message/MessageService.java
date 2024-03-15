@@ -99,7 +99,9 @@ public class MessageService {
             }
             requestMessage.setSize(updateMsg.getSize());
             requestMessage.setEndTime(updateMsg.getEndTime());
-            requestMessage.setClientStatus(updateMsg.getClientStatus());
+            if (updateMsg.getClientStatus() != null) {
+                requestMessage.setClientStatus(updateMsg.getClientStatus());
+            }
             if (updateMsg.getBody() != null) {
                 requestMessage.setBody(updateMsg.getBody());
             }

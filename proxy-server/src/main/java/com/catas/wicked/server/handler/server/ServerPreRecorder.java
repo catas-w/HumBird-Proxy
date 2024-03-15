@@ -1,6 +1,7 @@
 package com.catas.wicked.server.handler.server;
 
 import com.catas.wicked.common.bean.ProxyRequestInfo;
+import com.catas.wicked.common.bean.message.BaseMessage;
 import com.catas.wicked.common.bean.message.RequestMessage;
 import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.common.constant.ProxyConstant;
@@ -14,6 +15,7 @@ import io.netty.handler.codec.http.HttpContent;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpRequest;
+import io.netty.handler.codec.http.LastHttpContent;
 import io.netty.util.AttributeKey;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -52,13 +54,14 @@ public class ServerPreRecorder extends ChannelInboundHandlerAdapter {
             newRequest = curRequestId.compareAndSet(reqId, requestInfo.getRequestId());
         }
 
-        // TODO: update size/time
+        requestInfo.updateRequestTime();
         if (msg instanceof HttpRequest httpRequest) {
-            // requestInfo.updateRequestSize(WebUtils.estimateSize(httpRequest));
-            requestInfo.updateRequestSize(((ByteBuf) msg).readableBytes());
+            requestInfo.updateRequestSize(WebUtils.estimateSize(httpRequest));
+            // requestInfo.updateRequestSize(((ByteBuf) msg).readableBytes());
             recordHttpRequest(requestInfo, httpRequest, newRequest);
         } else if (msg instanceof HttpContent content) {
             requestInfo.updateRequestSize(content.content().readableBytes());
+            recordHttpRequest(requestInfo, content, newRequest);
         } else {
             try {
                 ByteBuf cont = (ByteBuf) msg;
@@ -68,11 +71,13 @@ public class ServerPreRecorder extends ChannelInboundHandlerAdapter {
             }
             recordHttpRequest(requestInfo, msg, newRequest);
         }
-        requestInfo.updateRequestTime();
 
         super.channelRead(ctx, msg);
     }
 
+    /**
+     * record parsed httpRequest
+     */
     private void recordHttpRequest(ProxyRequestInfo requestInfo, HttpRequest request, boolean newRequest) {
         if (!requestInfo.isRecording()) {
             return;
@@ -101,20 +106,58 @@ public class ServerPreRecorder extends ChannelInboundHandlerAdapter {
         log.info(">>>> Request Prev-Send[decoded]: {} ID: {} >>>>", uri, requestInfo.getRequestId());
     }
 
-    private void recordHttpRequest(ProxyRequestInfo requestInfo, Object msg, boolean newRequest) {
-        if (!requestInfo.isRecording() || !newRequest) {
+    /**
+     * record lastHttpContent
+     */
+    private void recordHttpRequest(ProxyRequestInfo requestInfo, HttpContent httpContent, boolean newRequest) {
+        if (!requestInfo.isRecording()) {
             return;
         }
-        String url = WebUtils.getHostname(requestInfo) + "/<Encrypted>";
-        RequestMessage requestMessage = new RequestMessage(url);
-        requestMessage.setMethod("-");
-        requestMessage.setHeaders(new HashMap<>());
-        requestMessage.setEncrypted(true);
-        setRequestMsgInfo(requestInfo, requestMessage);
-        messageQueue.pushMsg(Topic.RECORD, requestMessage);
+        // update trailing headers and size & timing
+        if (httpContent instanceof LastHttpContent lastHttpContent) {
+            RequestMessage requestMessage = new RequestMessage();
+            requestMessage.setRequestId(requestInfo.getRequestId());
+            requestMessage.setType(BaseMessage.MessageType.UPDATE);
+            requestMessage.setEndTime(requestInfo.getRequestEndTime());
+            requestMessage.setSize(requestInfo.getRequestSize());
 
-        requestInfo.setHasSentRequestMsg(true);
-        log.info(">>>> Request Prev-Send[encrypted]: {} ID: {} >>>>", url, requestInfo.getRequestId());
+            LinkedHashMap<String, String> headerMap = new LinkedHashMap<>();
+            HttpHeaders trailingHeaders = lastHttpContent.trailingHeaders();
+            trailingHeaders.entries().forEach(entry -> headerMap.put(entry.getKey(), entry.getValue()));
+            requestMessage.setHeaders(headerMap);
+            messageQueue.pushMsg(Topic.UPDATE_MSG, requestMessage);
+        }
+    }
+
+    /**
+     * record unparsed httpRequest
+     */
+    private void recordHttpRequest(ProxyRequestInfo requestInfo, Object msg, boolean newRequest) {
+        if (!requestInfo.isRecording()) {
+            return;
+        }
+
+        if (newRequest) {
+            String url = WebUtils.getHostname(requestInfo) + "/<Encrypted>";
+            RequestMessage requestMessage = new RequestMessage(url);
+            requestMessage.setMethod("-");
+            requestMessage.setHeaders(new HashMap<>());
+            requestMessage.setEncrypted(true);
+            setRequestMsgInfo(requestInfo, requestMessage);
+            messageQueue.pushMsg(Topic.RECORD, requestMessage);
+
+            requestInfo.setHasSentRequestMsg(true);
+            log.info(">>>> Request Prev-Send[encrypted]: {} ID: {} >>>>", url, requestInfo.getRequestId());
+        } else {
+            // update size & time
+            requestInfo.updateRequestTime();
+            RequestMessage requestMessage = new RequestMessage();
+            requestMessage.setRequestId(requestInfo.getRequestId());
+            requestMessage.setType(BaseMessage.MessageType.UPDATE);
+            requestMessage.setEndTime(requestInfo.getRequestEndTime());
+            requestMessage.setSize(requestInfo.getRequestSize());
+            messageQueue.pushMsg(Topic.UPDATE_MSG, requestMessage);
+        }
     }
 
     private void setRequestMsgInfo(ProxyRequestInfo requestInfo, RequestMessage requestMsg) {
@@ -127,6 +170,6 @@ public class ServerPreRecorder extends ChannelInboundHandlerAdapter {
         // requestMsg.setRemoteAddress(requestInfo.getRemoteAddress());
         requestMsg.setLocalAddress(requestInfo.getLocalAddress());
         requestMsg.setLocalPort(requestInfo.getLocalPort());
-        requestMsg.setClientStatus(requestInfo.getClientStatus().copy());
+        // requestMsg.setClientStatus(requestInfo.getClientStatus().copy());
     }
 }
