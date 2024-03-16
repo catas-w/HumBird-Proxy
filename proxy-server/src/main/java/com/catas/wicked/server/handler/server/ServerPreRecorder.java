@@ -87,9 +87,7 @@ public class ServerPreRecorder extends ChannelInboundHandlerAdapter {
         HttpHeaders headers = request.headers();
         HttpMethod method = request.method();
 
-        if (!uri.startsWith("http")) {
-            uri = WebUtils.getHostname(requestInfo) + uri;
-        }
+        uri = WebUtils.completeUri(uri, requestInfo);
         RequestMessage requestMessage = new RequestMessage(uri);
         Map<String, String> headerMap = new LinkedHashMap<>();
         headers.entries().forEach(entry -> {
@@ -138,7 +136,7 @@ public class ServerPreRecorder extends ChannelInboundHandlerAdapter {
         }
 
         if (newRequest) {
-            String url = WebUtils.getHostname(requestInfo) + "/<Encrypted>";
+            String url = WebUtils.getHostname(requestInfo) + "/" + ProxyConstant.UNPARSED_ALIAS;
             RequestMessage requestMessage = new RequestMessage(url);
             requestMessage.setMethod("-");
             requestMessage.setHeaders(new HashMap<>());

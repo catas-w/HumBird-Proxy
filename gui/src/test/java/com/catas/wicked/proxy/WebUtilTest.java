@@ -75,4 +75,16 @@ public class WebUtilTest {
         Assert.assertTrue(WebUtils.isPortAvailable(9999));
         Assert.assertTrue(WebUtils.isPortAvailable(9900));
     }
+
+    @Test
+    public void testRemoveProtocol() {
+        Assert.assertEquals("test.com", WebUtils.removeProtocol("test.com"));
+        Assert.assertEquals("test.com", WebUtils.removeProtocol("http://test.com"));
+        Assert.assertEquals("test.com", WebUtils.removeProtocol("https://test.com"));
+        Assert.assertEquals("test.com/123", WebUtils.removeProtocol("https://test.com/123"));
+        Assert.assertEquals("", WebUtils.removeProtocol("https://"));
+        Assert.assertEquals("httpbin.org", WebUtils.removeProtocol("https://httpbin.org"));
+        Assert.assertEquals("httpbin.org", WebUtils.removeProtocol("http://httpbin.org"));
+        Assert.assertEquals("httpbin.org", WebUtils.removeProtocol("httpbin.org"));
+    }
 }

@@ -40,6 +40,9 @@ import java.util.regex.Pattern;
 @Slf4j
 public class WebUtils {
 
+    public static final String HTTP_PREFIX = "http://";
+    public static final String HTTPS_PREFIX = "https://";
+
     public static ProxyRequestInfo getRequestProto(HttpRequest httpRequest) {
         ProxyRequestInfo requestInfo = new ProxyRequestInfo();
         String uri = httpRequest.uri().toLowerCase();
@@ -378,5 +381,31 @@ public class WebUtils {
         }
 
         return null;
+    }
+
+    /**
+     * https://test.com/path/1 --> test.com/path/1
+     */
+    public static String removeProtocol(String uri) {
+        if (uri == null) {
+            return null;
+        }
+        if (uri.startsWith(HTTP_PREFIX)) {
+            return uri.substring(HTTP_PREFIX.length());
+        }
+        if (uri.startsWith(HTTPS_PREFIX)) {
+            return uri.substring(HTTPS_PREFIX.length());
+        }
+        return uri;
+    }
+
+    /**
+     * complete uri with protocol and host name if its uncompleted
+     */
+    public static String completeUri(String uri, ProxyRequestInfo requestInfo) {
+        if (uri == null || requestInfo == null || uri.startsWith(HTTP_PREFIX) || uri.startsWith(HTTPS_PREFIX)) {
+            return uri;
+        }
+        return getHostname(requestInfo) + uri;
     }
 }

@@ -103,7 +103,7 @@
                     </rowConstraints>
                     <Label text="Handle SSL"/>
                     <Label text="Certificate" GridPane.rowIndex="1"/>
-                    <Label text="Exclude" GridPane.rowIndex="3"/>
+                    <Label text="Exclude Domains" GridPane.rowIndex="3"/>
 
                     <JFXToggleButton fx:id="sslBtn" GridPane.columnIndex="1"/>
                     <JFXRadioButton fx:id="defaultCertRadio" text="Built-in Certificate" GridPane.columnIndex="1" GridPane.rowIndex="1"/>

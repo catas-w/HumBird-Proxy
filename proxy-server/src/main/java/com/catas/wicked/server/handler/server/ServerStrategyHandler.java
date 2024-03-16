@@ -2,15 +2,18 @@ package com.catas.wicked.server.handler.server;
 
 import com.catas.wicked.common.bean.IdGenerator;
 import com.catas.wicked.common.bean.ProxyRequestInfo;
+import com.catas.wicked.common.config.Settings;
 import com.catas.wicked.common.constant.ClientStatus;
 import com.catas.wicked.common.constant.ProxyConstant;
 import com.catas.wicked.common.constant.ServerStatus;
 import com.catas.wicked.common.config.ApplicationConfig;
+import com.catas.wicked.common.util.AntMatcherUtils;
 import com.catas.wicked.common.util.WebUtils;
 import com.catas.wicked.server.cert.CertPool;
 import com.catas.wicked.server.strategy.Handler;
 import com.catas.wicked.server.strategy.StrategyList;
 import com.catas.wicked.server.strategy.StrategyManager;
+import io.micronaut.core.util.CollectionUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -129,7 +132,8 @@ public class ServerStrategyHandler extends ChannelDuplexHandler {
         requestInfo.setUsingExternalProxy(appConfig.getSettings().getExternalProxy() != null &&
                 appConfig.getSettings().getExternalProxy().isUsingExternalProxy());
         requestInfo.setRequestId(idGenerator.nextId());
-        requestInfo.setRecording(appConfig.getSettings().isRecording());
+        // requestInfo.setRecording(appConfig.getSettings().isRecording());
+        requestInfo.setRecording(needRecord(appConfig, requestInfo, request));
         requestInfo.updateClientStatus(ClientStatus.Status.WAITING);
         requestInfo.resetBasicInfo();
 
@@ -188,7 +192,7 @@ public class ServerStrategyHandler extends ChannelDuplexHandler {
             ProxyRequestInfo requestInfo = ctx.channel().attr(requestInfoAttributeKey).get();
             assert requestInfo != null;
             requestInfo.setSsl(true);
-            if (requestInfo.isRecording() && appConfig.getSettings().isHandleSsl()) {
+            if (requestInfo.isRecording() && needHandlerSsl(appConfig, requestInfo)) {
                 int port = ((InetSocketAddress) ctx.channel().localAddress()).getPort();
                 String originHost = requestInfo.getHost();
                 SslContext sslCtx = SslContextBuilder.forServer(
@@ -233,5 +237,35 @@ public class ServerStrategyHandler extends ChannelDuplexHandler {
             return;
         }
         ctx.fireChannelRead(msg);
+    }
+
+    private boolean needRecord(ApplicationConfig appConfig, ProxyRequestInfo requestInfo, HttpRequest request) {
+        Settings settings = appConfig.getSettings();
+        if (!settings.isRecording()) {
+            return false;
+        }
+        if (HttpMethod.CONNECT.name().equalsIgnoreCase(request.method().name())) {
+            return true;
+        }
+
+        boolean res = true;
+        String uri = request.uri();
+        uri = WebUtils.completeUri(uri, requestInfo);
+        if (CollectionUtils.isNotEmpty(settings.getRecordIncludeList())) {
+            res = AntMatcherUtils.matches(settings.getRecordIncludeList(), uri);
+        }
+        if (CollectionUtils.isNotEmpty(settings.getRecordExcludeList())) {
+            res = !AntMatcherUtils.matches(settings.getRecordExcludeList(), uri);
+        }
+        return res;
+    }
+
+    private boolean needHandlerSsl(ApplicationConfig appConfig, ProxyRequestInfo requestInfo) {
+        Settings settings = appConfig.getSettings();
+        if (!settings.isHandleSsl()) {
+            return false;
+        }
+        return CollectionUtils.isEmpty(settings.getSslExcludeList()) ||
+                !settings.getSslExcludeList().contains(requestInfo.getHost());
     }
 }

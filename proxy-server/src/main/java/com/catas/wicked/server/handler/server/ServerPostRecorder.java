@@ -103,7 +103,7 @@ public class ServerPostRecorder extends ChannelDuplexHandler {
             return;
         }
 
-        String url = WebUtils.getHostname(requestInfo) + "/<Encrypted>";
+        String url = WebUtils.getHostname(requestInfo) + "/" + ProxyConstant.UNPARSED_ALIAS;
         RequestMessage requestMessage = new RequestMessage(url);
         requestMessage.setMethod("UNKNOWN");
         requestMessage.setHeaders(new HashMap<>());
@@ -126,9 +126,7 @@ public class ServerPostRecorder extends ChannelDuplexHandler {
         // log.info("-- uri: {}\n-- headers: {}\n-- method: {}", uri, headers, method);
         ByteBuf content = request.content();
 
-        if (!uri.startsWith("http")) {
-            uri = WebUtils.getHostname(requestInfo) + uri;
-        }
+        uri = WebUtils.completeUri(uri, requestInfo);
         RequestMessage requestMessage = new RequestMessage(uri);
         Map<String, String> headerMap = new LinkedHashMap<>();
         headers.entries().forEach(entry -> {

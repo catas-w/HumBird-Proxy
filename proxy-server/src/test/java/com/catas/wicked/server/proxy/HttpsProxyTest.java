@@ -6,6 +6,7 @@ import com.catas.wicked.common.bean.mock.ExpectModel;
 import com.catas.wicked.common.bean.mock.RequestModel;
 import com.catas.wicked.common.config.Settings;
 import com.catas.wicked.common.constant.ClientStatus;
+import com.catas.wicked.common.constant.ProxyConstant;
 import com.catas.wicked.server.ProxyServerTest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -86,7 +87,7 @@ public class HttpsProxyTest extends ProxyServerTest {
                 RequestMessage requestMessage = getRequestMessageFromCache(reqId);
                 // latter https requests in one tunnel channel cannot be recorded
                 if (requestMessage != null) {
-                    Assert.assertTrue(assertMsg, requestMessage.getRequestUrl().endsWith("<Encrypted>"));
+                    Assert.assertTrue(assertMsg, requestMessage.getRequestUrl().endsWith(ProxyConstant.UNPARSED_ALIAS));
                     Assert.assertTrue(assertMsg, requestMessage.isEncrypted());
                 }
             }
