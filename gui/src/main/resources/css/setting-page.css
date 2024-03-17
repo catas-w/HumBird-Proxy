@@ -20,6 +20,10 @@
     -fx-rotate: 90;
     /*-fx-translate-x: -20;*/
 }
+.setting-tab-pane .setting-tab-5 *.tab-label {
+    -fx-rotate: 90;
+    -fx-translate-x: -32;
+}
 
 
 .setting-tab-pane {

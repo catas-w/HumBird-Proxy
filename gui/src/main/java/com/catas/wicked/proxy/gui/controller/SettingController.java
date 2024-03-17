@@ -7,6 +7,7 @@ import com.catas.wicked.proxy.service.settings.GeneralSettingService;
 import com.catas.wicked.proxy.service.settings.ProxySettingService;
 import com.catas.wicked.proxy.service.settings.SettingService;
 import com.catas.wicked.proxy.service.settings.SslSettingService;
+import com.catas.wicked.proxy.service.settings.ThrottleSettingService;
 import com.catas.wicked.server.proxy.ProxyServer;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
@@ -26,7 +27,6 @@ import javafx.scene.control.Labeled;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
-import javafx.scene.control.TextFormatter;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.stage.Window;
@@ -38,7 +38,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Set;
-import java.util.function.UnaryOperator;
 
 @Getter
 @Slf4j
@@ -63,6 +62,8 @@ public class SettingController implements Initializable {
     public TextArea sysProxyExcludeArea;
     public JFXToggleButton sslBtn;
     public TextArea sslExcludeArea;
+    public JFXToggleButton throttleBtn;
+    public JFXComboBox<Labeled> throttleComboBox;
     @FXML
     private JFXToggleButton sysProxyBtn;
     @FXML
@@ -78,6 +79,8 @@ public class SettingController implements Initializable {
 
     private ApplicationConfig appConfig;
 
+    private ButtonBarController buttonBarController;
+
     private ProxyServer proxyServer;
 
     private List<SettingService> settingServiceList;
@@ -90,13 +93,31 @@ public class SettingController implements Initializable {
         this.proxyServer = proxyServer;
     }
 
+    public void setButtonBarController(ButtonBarController buttonBarController) {
+        this.buttonBarController = buttonBarController;
+    }
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        // settingServiceList = new ArrayList<>();
+        // settingServiceList.add(new GeneralSettingService(this));
+        // settingServiceList.add(new ProxySettingService(this));
+        // settingServiceList.add(new SslSettingService(this));
+        // settingServiceList.add(new ExternalProxySettingService(this));
+        // settingServiceList.add(new ThrottleSettingService(this, buttonBarController));
+        // settingServiceList.forEach(SettingService::init);
+    }
+
+    /**
+     * initialize all components
+     */
+    public void init() {
         settingServiceList = new ArrayList<>();
         settingServiceList.add(new GeneralSettingService(this));
         settingServiceList.add(new ProxySettingService(this));
         settingServiceList.add(new SslSettingService(this));
         settingServiceList.add(new ExternalProxySettingService(this));
+        settingServiceList.add(new ThrottleSettingService(this, buttonBarController));
         settingServiceList.forEach(SettingService::init);
     }
 

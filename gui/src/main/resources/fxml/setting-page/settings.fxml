@@ -159,10 +159,26 @@
                 </GridPane>
             </AnchorPane>
         </Tab>
-        <!-- <Tab text="Help" styleClass="setting-tab-help, setting-tab-5"> -->
-        <!--     <AnchorPane> -->
-        <!--     </AnchorPane> -->
-        <!-- </Tab> -->
+        <Tab text="Throttle Settings" styleClass="setting-throttle, setting-tab-5">
+            <AnchorPane>
+                <GridPane AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="15.0"
+                          AnchorPane.topAnchor="15.0" AnchorPane.bottomAnchor="40.0">
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="NEVER" maxWidth="120.0" minWidth="120.0"/>
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="450" minWidth="100.0" prefWidth="400"/>
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints minHeight="45.0" prefHeight="45.0" vgrow="NEVER"/>
+                        <RowConstraints minHeight="45.0" prefHeight="45.0" vgrow="NEVER"/>
+                    </rowConstraints>
+                    <Label text="Throttle Requests"/>
+                    <Label text="Throttle Presets" GridPane.rowIndex="1"/>
+
+                    <JFXToggleButton fx:id="throttleBtn" GridPane.columnIndex="1" />
+                    <JFXComboBox fx:id="throttleComboBox" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                </GridPane>
+            </AnchorPane>
+        </Tab>
     </TabPane>
 
     <HBox styleClass="settings-btn"

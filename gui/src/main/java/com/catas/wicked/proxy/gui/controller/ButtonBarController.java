@@ -18,6 +18,7 @@ import io.netty.handler.codec.http.HttpResponse;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -57,6 +58,7 @@ public class ButtonBarController implements Initializable {
     public JFXButton locateBtn;
     @FXML
     public JFXButton resendBtn;
+    public JFXToggleNode throttleBtn;
     @FXML
     private MenuButton mainMenuButton;
     @FXML
@@ -101,7 +103,11 @@ public class ButtonBarController implements Initializable {
                 icon.setIconColor(Color.valueOf("#616161"));
             }
             appConfig.getSettings().setRecording(newValue);
+
+            String toolTip = newValue ? "Stop Recording" : "Record Requests";
+            recordBtn.getTooltip().setText(toolTip);
         }));
+        recordBtn.setSelected(true);
 
         // toggle handle ssl button
         sslBtn.selectedProperty().addListener(((observable, oldValue, newValue) -> {
@@ -109,7 +115,23 @@ public class ButtonBarController implements Initializable {
             String color = newValue ? BTN_ACTIVE : BTN_INACTIVE;
             icon.setIconColor(Color.valueOf(color));
             appConfig.getSettings().setHandleSsl(newValue);
+
+            String toolTip = newValue ? "Stop Handling SSL" : "Handle SSL";
+            sslBtn.getTooltip().setText(toolTip);
         }));
+        sslBtn.setSelected(appConfig.getSettings().isHandleSsl());
+
+        // init throttle button
+        throttleBtn.selectedProperty().addListener(((observable, oldValue, newValue) -> {
+            FontIcon icon = (FontIcon) throttleBtn.getGraphic();
+            String color = newValue ? BTN_ACTIVE : BTN_INACTIVE;
+            icon.setIconColor(Color.valueOf(color));
+            appConfig.getSettings().setThrottle(newValue);
+
+            String toolTip = newValue ? "Stop Throttling" : "Start Throttling";
+            throttleBtn.getTooltip().setText(toolTip);
+        }));
+        throttleBtn.setSelected(appConfig.getSettings().isThrottle());
     }
 
     public void mockTreeItem() {
@@ -136,6 +158,8 @@ public class ButtonBarController implements Initializable {
                 settingController = fxmlLoader.getController();
                 settingController.setAppConfig(appConfig);
                 settingController.setProxyServer(proxyServer);
+                settingController.setButtonBarController(this);
+                settingController.init();
 
                 settingPage = new Dialog<>();
                 settingPage.setTitle("Settings");
@@ -214,5 +238,9 @@ public class ButtonBarController implements Initializable {
 
     public void exit() {
         Platform.exit();
+    }
+
+    public void clearLeafNode(ActionEvent event) {
+        requestViewController.clearLeafNode();
     }
 }
