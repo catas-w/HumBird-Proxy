@@ -6,7 +6,6 @@ import com.catas.wicked.common.pipeline.MessageQueue;
 import com.catas.wicked.server.cert.CertPool;
 import com.catas.wicked.server.handler.RearHttpAggregator;
 import com.catas.wicked.server.strategy.DefaultSkipPredicate;
-import com.catas.wicked.server.strategy.Handler;
 import com.catas.wicked.server.strategy.StrategyList;
 import com.catas.wicked.server.strategy.StrategyManager;
 import com.catas.wicked.server.strategy.TailStrategyManager;
@@ -54,15 +53,14 @@ public class ServerChannelInitializer extends ChannelInitializer {
         StrategyList list = new StrategyList();
         list.add(SSL_HANDLER.name(), false, () -> null);
         list.add(HTTP_CODEC.name(), true, HttpServerCodec::new);
-        list.add(SERVER_STRATEGY.name(), true, true,
-                () -> new ServerStrategyHandler(appConfig, certPool, idGenerator, defaultStrategyList(), strategyManager));
-        list.add(PREV_RECORDER.name(), true, true, () -> new ServerPreRecorder(appConfig, messageQueue));
-        list.add(SERVER_PROCESSOR.name(), true, true,
-                () -> new ServerProcessHandler(appConfig, messageQueue, strategyManager));
+        list.addAnchored(SERVER_STRATEGY.name(), () -> new ServerStrategyHandler(
+                appConfig, certPool, idGenerator, defaultStrategyList(), strategyManager));
+        list.addAnchored(PREV_RECORDER.name(), () -> new ServerPreRecorder(appConfig, messageQueue));
+        list.add(THROTTLE_HANDLER.name(), false, () -> null);
+        list.addAnchored(SERVER_PROCESSOR.name(), () -> new ServerProcessHandler(appConfig, messageQueue, strategyManager));
         list.add(HTTP_AGGREGATOR.name(), false,
                 () -> new RearHttpAggregator(appConfig.getMaxContentSize()));
-        list.add(POST_RECORDER.name(), true, true,
-                () -> new ServerPostRecorder(appConfig, messageQueue));
+        list.addAnchored(POST_RECORDER.name(), () -> new ServerPostRecorder(appConfig, messageQueue));
         list.add(new TailStrategyManager.TailContextStrategy());
 
         list.getList().forEach(model -> model.setSkipPredicate(DefaultSkipPredicate.INSTANCE));

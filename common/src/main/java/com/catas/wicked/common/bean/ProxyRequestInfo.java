@@ -36,6 +36,8 @@ public class ProxyRequestInfo {
 
     private boolean isRecording;
 
+    private boolean isThrottling;
+
     private String requestId;
 
     private ClientType clientType;

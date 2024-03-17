@@ -31,6 +31,10 @@ public class StrategyList {
         add(new StrategyModel(handlerName, required, anchored, supplier));
     }
 
+    public void addAnchored(String handlerName, Supplier<ChannelHandler> supplier) {
+        add(new StrategyModel(handlerName, true, true, supplier));
+    }
+
     public void add(StrategyModel strategyModel) {
         if (map.containsKey(strategyModel.getHandlerName())) {
             throw new IllegalArgumentException("Duplicate strategyModel");

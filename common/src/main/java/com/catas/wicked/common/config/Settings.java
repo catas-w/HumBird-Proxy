@@ -1,5 +1,6 @@
 package com.catas.wicked.common.config;
 
+import com.catas.wicked.common.constant.ThrottlePreset;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -49,7 +50,7 @@ public class Settings {
     /**
      * Throttle settings
      */
-    private boolean throttle = true;
-    private int throttleLevel = 0;
+    private boolean throttle;
+    private ThrottlePreset throttlePreset;
 
 }

@@ -7,6 +7,7 @@ import com.catas.wicked.common.constant.ClientStatus;
 import com.catas.wicked.common.constant.ProxyConstant;
 import com.catas.wicked.common.constant.ServerStatus;
 import com.catas.wicked.common.config.ApplicationConfig;
+import com.catas.wicked.common.constant.ThrottlePreset;
 import com.catas.wicked.common.util.AntMatcherUtils;
 import com.catas.wicked.common.util.WebUtils;
 import com.catas.wicked.server.cert.CertPool;
@@ -30,7 +31,7 @@ import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpVersion;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
-import io.netty.handler.ssl.SslHandler;
+import io.netty.handler.traffic.ChannelTrafficShapingHandler;
 import io.netty.util.Attribute;
 import io.netty.util.AttributeKey;
 import io.netty.util.ReferenceCountUtil;
@@ -134,6 +135,7 @@ public class ServerStrategyHandler extends ChannelDuplexHandler {
         requestInfo.setRequestId(idGenerator.nextId());
         // requestInfo.setRecording(appConfig.getSettings().isRecording());
         requestInfo.setRecording(needRecord(appConfig, requestInfo, request));
+        requestInfo.setThrottling(appConfig.getSettings().isThrottle());
         requestInfo.updateClientStatus(ClientStatus.Status.WAITING);
         requestInfo.resetBasicInfo();
 
@@ -164,6 +166,10 @@ public class ServerStrategyHandler extends ChannelDuplexHandler {
 
         ProxyRequestInfo requestInfo = refreshRequestInfo(ctx, request);
         strategyList.setRequire(Handler.HTTP_AGGREGATOR.name(), requestInfo.isRecording());
+        strategyList.setRequire(Handler.THROTTLE_HANDLER.name(), requestInfo.isThrottling());
+        if (requestInfo.isThrottling()) {
+            strategyList.setSupplier(Handler.THROTTLE_HANDLER.name(), () -> getThrottleHandler(appConfig));
+        }
         strategyManager.arrange(ctx.pipeline(), strategyList);
 
         requestInfo.setClientType(ProxyRequestInfo.ClientType.NORMAL);
@@ -267,5 +273,15 @@ public class ServerStrategyHandler extends ChannelDuplexHandler {
         }
         return CollectionUtils.isEmpty(settings.getSslExcludeList()) ||
                 !settings.getSslExcludeList().contains(requestInfo.getHost());
+    }
+
+    private ChannelTrafficShapingHandler getThrottleHandler(ApplicationConfig appConfig) {
+        Settings settings = appConfig.getSettings();
+        ThrottlePreset preset = settings.getThrottlePreset();
+        if (preset == null) {
+            preset = ThrottlePreset.REGULAR_3G;
+        }
+        return new ChannelTrafficShapingHandler(preset.getWriteLimit(), preset.getReadLimit(),
+                preset.getCheckInterval(), preset.getMaxTime());
     }
 }
