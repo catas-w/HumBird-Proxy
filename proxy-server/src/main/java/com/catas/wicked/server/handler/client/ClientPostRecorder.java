@@ -46,7 +46,8 @@ public class ClientPostRecorder extends ChannelDuplexHandler {
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         ProxyRequestInfo requestInfo = ctx.channel().attr(requestInfoKey).get();
         if (!requestInfo.isRecording()) {
-            ReferenceCountUtil.release(msg);
+            // ReferenceCountUtil.release(msg);
+            ctx.fireChannelRead(msg);
             return;
         }
         if (msg instanceof FullHttpResponse response) {
@@ -54,14 +55,13 @@ public class ClientPostRecorder extends ChannelDuplexHandler {
                 recordHttpResponse(ctx, response, requestInfo);
             } catch (Exception e) {
                 log.error("Error in recording response.", e);
-            } finally {
-                response.release();
             }
         } else {
             // record un-parsed response
             recordUnParsedResponse(ctx, requestInfo);
-            ReferenceCountUtil.release(msg);
+            // ReferenceCountUtil.release(msg);
         }
+        ctx.fireChannelRead(msg);
     }
 
     @Override

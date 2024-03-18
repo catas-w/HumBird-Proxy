@@ -11,8 +11,12 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
+import io.netty.handler.codec.http.HttpHeaderNames;
+import io.netty.handler.codec.http.HttpHeaderValues;
+import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.ssl.SslHandler;
 import io.netty.util.AttributeKey;
+import io.netty.util.ReferenceCountUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
@@ -95,7 +99,14 @@ public class ClientStrategyHandler extends ChannelDuplexHandler {
         if (ctx.channel().attr(requestInfoKey).get() != null) {
             ctx.channel().attr(requestInfoKey).get().updateResponseTime();
         }
-        super.channelRead(ctx, msg);
+        if (msg instanceof HttpResponse httpResponse) {
+            // remove httpCodec in websocket
+            if (HttpHeaderValues.WEBSOCKET.toString().equals(httpResponse.headers().get(HttpHeaderNames.UPGRADE))){
+                strategyList.setRequire(Handler.HTTP_CODEC.name(), false);
+                strategyManager.arrange(ctx.channel().pipeline(), strategyList);
+            }
+        }
+        ReferenceCountUtil.release(msg);
     }
 
     public void refreshStrategy(ChannelHandlerContext ctx) throws Exception {
