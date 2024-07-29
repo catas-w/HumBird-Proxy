@@ -5,6 +5,7 @@ import com.catas.wicked.server.cert.CertPool;
 import com.catas.wicked.server.cert.CertService;
 import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.server.handler.server.ServerChannelInitializer;
+import io.micronaut.context.annotation.Parallel;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
@@ -30,6 +31,7 @@ import java.security.cert.X509Certificate;
 
 
 @Slf4j
+@Parallel
 @Singleton
 public class ProxyServer {
 
@@ -77,6 +79,13 @@ public class ProxyServer {
                     workGroup.shutdownGracefully();
                 }
             });
+            channelFuture.addListener(future -> {
+                if (future.isSuccess()) {
+                    System.out.println("====== Started success!!!  ======");
+                } else {
+                    System.out.println("====== Started failed!!!  ======");
+                }
+            });
         } catch (InterruptedException e) {
             log.info("Proxy server interrupt: {}", e.getMessage());
         } finally {
@@ -102,6 +111,7 @@ public class ProxyServer {
         }
     }
 
+    // @Parallel
     @PostConstruct
     private void init() {
         SslContextBuilder contextBuilder = SslContextBuilder.forClient()
