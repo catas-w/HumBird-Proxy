@@ -1,8 +1,9 @@
 package com.catas.wicked.common.constant;
 
-public enum ServerStatus {
+public enum ConnectionStatus {
 
     INIT,
     RUNNING,
-    HALTED
+    IN_CONNECT,
+    AFTER_CONNECT;
 }

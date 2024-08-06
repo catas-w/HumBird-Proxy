@@ -1,11 +1,12 @@
 package com.catas.wicked.common.config;
 
+import com.catas.wicked.common.constant.ServerStatus;
+import com.catas.wicked.common.constant.SystemProxyStatus;
 import com.catas.wicked.common.pipeline.MessageQueue;
 import com.catas.wicked.common.util.ThreadPoolService;
 import com.catas.wicked.common.util.WebUtils;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import io.netty.channel.EventLoopGroup;
@@ -35,8 +36,6 @@ import java.util.concurrent.atomic.AtomicReference;
 @Singleton
 public class ApplicationConfig implements AutoCloseable {
 
-    private AtomicBoolean shutDownFlag;
-
     private String host = "127.0.0.1";
 
     private Integer defaultThreadNumber = 2;
@@ -59,21 +58,28 @@ public class ApplicationConfig implements AutoCloseable {
     private PublicKey serverPubKey;
 
     /**
+     * status of proxy server
+     * TODO: bind gui style
+     */
+    private ServerStatus serverStatus;
+    private SystemProxyStatus systemProxyStatus;
+
+    /**
      * current requestId in display
      */
-    private AtomicReference<String> currentRequestId;
-    private ObjectMapper objectMapper;
+    private final AtomicReference<String> currentRequestId = new AtomicReference<>(null);
+    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final AtomicBoolean shutDownFlag = new AtomicBoolean(false);
 
     @Inject
     private MessageQueue messageQueue;
 
     @PostConstruct
     public void init() {
-        this.currentRequestId = new AtomicReference<>(null);
-        this.shutDownFlag = new AtomicBoolean(false);
+        // this.currentRequestId = new AtomicReference<>(null);
+        // this.shutDownFlag = new AtomicBoolean(false);
         this.proxyLoopGroup = new NioEventLoopGroup(defaultThreadNumber);
 
-        objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
 

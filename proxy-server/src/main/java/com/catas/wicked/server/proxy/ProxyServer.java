@@ -1,11 +1,12 @@
 package com.catas.wicked.server.proxy;
 
+import com.catas.wicked.common.constant.ServerStatus;
 import com.catas.wicked.common.util.ThreadPoolService;
 import com.catas.wicked.server.cert.CertPool;
 import com.catas.wicked.server.cert.CertService;
 import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.server.handler.server.ServerChannelInitializer;
-import io.micronaut.context.annotation.Parallel;
+import com.catas.wicked.server.worker.SystemProxyWorker;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
@@ -31,7 +32,6 @@ import java.security.cert.X509Certificate;
 
 
 @Slf4j
-@Parallel
 @Singleton
 public class ProxyServer {
 
@@ -49,13 +49,18 @@ public class ProxyServer {
     @Inject
     private ServerChannelInitializer proxyServerInitializer;
 
+    @Inject
+    private SystemProxyWorker systemProxyWorker;
+
     private ChannelFuture channelFuture;
 
-    public ProxyServer() {
+    public void setStatus(ServerStatus status) {
+        applicationConfig.setServerStatus(status);
     }
 
     public void start() {
         log.info("--- Proxy server Starting ---");
+        setStatus(ServerStatus.INIT);
         NioEventLoopGroup workGroup = new NioEventLoopGroup(2);
         NioEventLoopGroup bossGroup = new NioEventLoopGroup();
 
@@ -68,10 +73,10 @@ public class ProxyServer {
                     .option(ChannelOption.TCP_NODELAY, true)
                     .handler(new LoggingHandler(LogLevel.INFO))
                     .childHandler(proxyServerInitializer);
-            channelFuture = bootstrap.bind(applicationConfig.getSettings().getPort()).sync();
-            // channelFuture.channel().closeFuture().sync();
+            channelFuture = bootstrap.bind(applicationConfig.getSettings().getPort());
             channelFuture.channel().closeFuture().addListener(future -> {
-                System.out.println("** Close **");
+                log.info("--- Proxy server stopping ---");
+                setStatus(ServerStatus.HALTED);
                 if (!(bossGroup.isShutdown() || bossGroup.isShuttingDown())) {
                     bossGroup.shutdownGracefully();
                 }
@@ -81,26 +86,16 @@ public class ProxyServer {
             });
             channelFuture.addListener(future -> {
                 if (future.isSuccess()) {
-                    System.out.println("====== Started success!!!  ======");
+                    log.info("--- Proxy server running on: {} ---", applicationConfig.getSettings().getPort());
+                    setStatus(ServerStatus.RUNNING);
                 } else {
-                    System.out.println("====== Started failed!!!  ======");
+                    log.info("--- Proxy server failed on starting: {} ---", future.cause().getMessage());
+                    setStatus(ServerStatus.HALTED);
                 }
             });
+            channelFuture.channel().closeFuture().sync();
         } catch (InterruptedException e) {
             log.info("Proxy server interrupt: {}", e.getMessage());
-        } finally {
-            // System.out.println("Server closed!!!");
-            // EventLoopGroup proxyLoopGroup = applicationConfig.getProxyLoopGroup();
-            // if (!(proxyLoopGroup.isShutdown() || proxyLoopGroup.isShuttingDown())) {
-            //     proxyLoopGroup.shutdownGracefully();
-            // }
-            // if (!(bossGroup.isShutdown() || bossGroup.isShuttingDown())) {
-            //     bossGroup.shutdownGracefully();
-            // }
-            // if (!(workGroup.isShutdown() || workGroup.isShuttingDown())) {
-            //     workGroup.shutdownGracefully();
-            // }
-
         }
     }
 
@@ -114,6 +109,7 @@ public class ProxyServer {
     // @Parallel
     @PostConstruct
     private void init() {
+        setStatus(ServerStatus.HALTED);
         SslContextBuilder contextBuilder = SslContextBuilder.forClient()
                 .sslProvider(SslProvider.OPENSSL)
                 .startTls(true)
@@ -157,6 +153,7 @@ public class ProxyServer {
     }
 
     private void alert(String msg) {
+        // todo move to gui
         Alert alert = new Alert(Alert.AlertType.WARNING);
         alert.setTitle("Warning");
         alert.setHeaderText(msg);

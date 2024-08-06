@@ -5,7 +5,7 @@ import com.catas.wicked.common.bean.ProxyRequestInfo;
 import com.catas.wicked.common.config.Settings;
 import com.catas.wicked.common.constant.ClientStatus;
 import com.catas.wicked.common.constant.ProxyConstant;
-import com.catas.wicked.common.constant.ServerStatus;
+import com.catas.wicked.common.constant.ConnectionStatus;
 import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.common.constant.ThrottlePreset;
 import com.catas.wicked.common.util.AntMatcherUtils;
@@ -64,7 +64,7 @@ public class ServerStrategyHandler extends ChannelDuplexHandler {
 
     private final ApplicationConfig appConfig;
 
-    private ServerStatus status;
+    private ConnectionStatus status;
 
     private final CertPool certPool;
 
@@ -83,7 +83,7 @@ public class ServerStrategyHandler extends ChannelDuplexHandler {
                                  StrategyManager strategyManager) {
         this.appConfig = applicationConfig;
         this.certPool = certPool;
-        this.status = ServerStatus.INIT;
+        this.status = ConnectionStatus.INIT;
         this.idGenerator = idGenerator;
         this.strategyList = strategyList;
         this.strategyManager = strategyManager;
@@ -117,8 +117,8 @@ public class ServerStrategyHandler extends ChannelDuplexHandler {
             handleHttpRequest(ctx, msg);
         } else if (msg instanceof HttpContent) {
             // 处理 head 后的 LastContent
-            if (status == ServerStatus.IN_CONNECT) {
-                status = ServerStatus.AFTER_CONNECT;
+            if (status == ConnectionStatus.IN_CONNECT) {
+                status = ConnectionStatus.AFTER_CONNECT;
                 ReferenceCountUtil.release(msg);
                 return;
             }
@@ -184,9 +184,9 @@ public class ServerStrategyHandler extends ChannelDuplexHandler {
         requestInfo.setClientType(ProxyRequestInfo.ClientType.NORMAL);
         // attr.set(requestInfo);
 
-        if (status == ServerStatus.INIT || status == ServerStatus.AFTER_CONNECT) {
+        if (status == ConnectionStatus.INIT || status == ConnectionStatus.AFTER_CONNECT) {
             if (HttpMethod.CONNECT.name().equalsIgnoreCase(request.method().name())) {
-                status = ServerStatus.IN_CONNECT;
+                status = ConnectionStatus.IN_CONNECT;
                 // https connect
                 HttpResponse response = new DefaultFullHttpResponse(request.protocolVersion(), ProxyConstant.SUCCESS);
                 ctx.writeAndFlush(response);
@@ -204,7 +204,7 @@ public class ServerStrategyHandler extends ChannelDuplexHandler {
         ByteBuf byteBuf = (ByteBuf) msg;
         ProxyRequestInfo requestInfo = ctx.channel().attr(requestInfoAttributeKey).get();
 
-        if (byteBuf.getByte(0) == 22 && status == ServerStatus.AFTER_CONNECT) {
+        if (byteBuf.getByte(0) == 22 && status == ConnectionStatus.AFTER_CONNECT) {
             // process new request
             requestInfo.setSsl(true);
             if (requestInfo.isRecording() && needHandlerSsl(appConfig, requestInfo)) {
