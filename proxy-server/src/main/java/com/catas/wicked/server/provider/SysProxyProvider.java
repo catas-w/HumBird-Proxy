@@ -1,10 +1,12 @@
-package com.catas.wicked.server.worker;
+package com.catas.wicked.server.provider;
 
 import com.catas.wicked.common.config.SystemProxyConfig;
 
+import java.util.List;
+
 public interface SysProxyProvider {
 
-    SystemProxyConfig getSysProxyConfig();
+    List<SystemProxyConfig> getSysProxyConfig();
 
     void setSysProxyConfig();
 }

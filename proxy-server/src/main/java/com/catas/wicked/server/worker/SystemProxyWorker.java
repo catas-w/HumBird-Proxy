@@ -3,6 +3,7 @@ package com.catas.wicked.server.worker;
 import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.common.constant.ServerStatus;
 import com.catas.wicked.common.constant.SystemProxyStatus;
+import com.catas.wicked.server.provider.SysProxyProvider;
 import jakarta.annotation.PostConstruct;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
@@ -41,6 +42,9 @@ public class SystemProxyWorker extends AbstractScheduledWorker{
             appConfig.setSystemProxyStatus(SystemProxyStatus.OFF);
             return;
         }
+
+        // SystemProxyConfig sysProxyConfig = proxyProvider.getSysProxyConfig();
+
     }
 
 }
