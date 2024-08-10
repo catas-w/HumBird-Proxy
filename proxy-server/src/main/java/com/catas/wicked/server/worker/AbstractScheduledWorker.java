@@ -1,34 +1,21 @@
 package com.catas.wicked.server.worker;
 
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.atomic.AtomicReference;
 
 @Slf4j
-public abstract class AbstractScheduledWorker implements Worker {
+public abstract class AbstractScheduledWorker implements ScheduledWorker {
 
     private enum LOCK_STATUS {
-        UN_LOCKED,
+        FREE,
         LOCKED
     }
 
-    @Getter
-    private final long delay;
-    private final long spinDelay;
+    private final AtomicReference<LOCK_STATUS> lock = new AtomicReference<>(LOCK_STATUS.FREE);
     private boolean running;
-    private final AtomicReference<LOCK_STATUS> lock = new AtomicReference<>(LOCK_STATUS.UN_LOCKED);
-
-
-    public AbstractScheduledWorker(long delay, long spinDelay) {
-        this.delay = delay;
-        this.spinDelay = spinDelay;
-    }
-
-    public AbstractScheduledWorker(long delay) {
-        this.delay = delay;
-        this.spinDelay = 100L;
-    }
+    protected long spinDelay = 100L;
+    protected long lockTimeout = 2 * 1000L;
 
     @Override
     public void start() {
@@ -41,20 +28,8 @@ public abstract class AbstractScheduledWorker implements Worker {
     }
 
     @Override
-    public void invoke(long timeout) {
-        if (!tryLock(timeout)) {
-            log.warn("Worker failed to get lock: {}", timeout);
-            return;
-        }
-        try {
-            long start = System.currentTimeMillis();
-            doWork();
-            log.info("Executing scheduled worker, time cost: {}", System.currentTimeMillis() - start);
-        } catch (Exception e) {
-            log.error("Error in executing worker: ", e);
-        } finally {
-            lock.set(LOCK_STATUS.UN_LOCKED);
-        }
+    public void invoke() {
+        getLockAndRun(true);
     }
 
     @Override
@@ -63,11 +38,26 @@ public abstract class AbstractScheduledWorker implements Worker {
             log.warn("Task is paused");
             return;
         }
-        invoke(0);
+        getLockAndRun(false);
+    }
+
+    private void getLockAndRun(boolean manually) {
+        long timeout = manually ? lockTimeout : 0;
+        if (!tryLock(timeout)) {
+            log.warn("Worker failed to get lock for: {} ms", timeout);
+            return;
+        }
+        try {
+            doWork(manually);
+        } catch (Exception e) {
+            log.error("Error in executing worker: ", e);
+        } finally {
+            lock.set(LOCK_STATUS.FREE);
+        }
     }
 
     private boolean tryLock(long timeout) {
-        if (lock.compareAndSet(LOCK_STATUS.UN_LOCKED, LOCK_STATUS.LOCKED)) {
+        if (lock.compareAndSet(LOCK_STATUS.FREE, LOCK_STATUS.LOCKED)) {
             return true;
         }
         if (timeout <= spinDelay) {
@@ -75,17 +65,15 @@ public abstract class AbstractScheduledWorker implements Worker {
         }
         long endTime = System.currentTimeMillis() + timeout;
         while (System.currentTimeMillis() <= endTime) {
-            if (lock.compareAndSet(LOCK_STATUS.UN_LOCKED, LOCK_STATUS.LOCKED)) {
+            if (lock.compareAndSet(LOCK_STATUS.FREE, LOCK_STATUS.LOCKED)) {
                 return true;
             }
             try {
                 Thread.sleep(spinDelay);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
+            } catch (InterruptedException ignored) {}
         }
         return false;
     }
 
-    protected abstract void doWork();
+    protected abstract void doWork(boolean manually);
 }
