@@ -20,4 +20,14 @@ public class WinSysProxyProvider implements SysProxyProvider {
     @Override
     public void setSysProxyConfig() {
     }
+
+    @Override
+    public List<String> getBypassDomains() {
+        return null;
+    }
+
+    @Override
+    public void setBypassDomains(List<String> domains) {
+
+    }
 }

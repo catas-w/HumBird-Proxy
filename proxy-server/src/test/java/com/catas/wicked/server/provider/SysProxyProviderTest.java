@@ -10,6 +10,8 @@ import io.micronaut.context.annotation.Requires;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -60,6 +62,39 @@ public class SysProxyProviderTest extends BaseTestClass {
             configList.forEach(config -> {
                 Assertions.assertFalse(config.isEnabled());
             });
+        }
+    }
+
+    @Test
+    @ConditionalTest(os = Requires.Family.MAC_OS)
+    public void testMacBypassDomains() {
+        MacSysProxyProvider proxyProvider = new MacSysProxyProvider();
+        final String testDomain = ".catas.org";
+
+        List<String> originDomains = proxyProvider.getBypassDomains();
+        // System.out.println(originDomains);
+
+        // add domain
+        {
+            List<String> targets = new ArrayList<>(originDomains);
+            targets.add(testDomain);
+            proxyProvider.setBypassDomains(targets);
+            List<String> finalDomains = proxyProvider.getBypassDomains();
+            Assertions.assertTrue(finalDomains.contains(testDomain));
+        }
+
+        // clear
+        {
+            proxyProvider.setBypassDomains(Collections.emptyList());
+            List<String> finalDomains = proxyProvider.getBypassDomains();
+            Assertions.assertTrue(finalDomains.isEmpty());
+        }
+
+        // reset
+        {
+            proxyProvider.setBypassDomains(originDomains);
+            List<String> finalDomains = proxyProvider.getBypassDomains();
+            Assertions.assertEquals(originDomains, finalDomains);
         }
     }
 

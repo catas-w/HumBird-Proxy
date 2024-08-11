@@ -12,8 +12,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Singleton
@@ -21,6 +23,7 @@ import java.util.List;
 public class MacSysProxyProvider implements SysProxyProvider {
 
     private static final String NETWORK_SETUP = "networksetup";
+    private static final String BYPASS_DOMAIN = "proxybypassdomains";
     private static final String PROXY_TYPE_WEB = "webproxy";
     private static final String PROXY_TYPE_SECURE_WEB = "securewebproxy";
     private static final String PROXY_TYPE_SOCKS = "socksfirewallproxy";
@@ -32,7 +35,6 @@ public class MacSysProxyProvider implements SysProxyProvider {
     @Override
     public List<SystemProxyConfig> getSysProxyConfig() {
         List<String> networkServices = getNetworkServices();
-        log.info("All available network services: {}", networkServices);
         if (networkServices.isEmpty()) {
             log.error("No available network services");
             return Collections.emptyList();
@@ -66,7 +68,6 @@ public class MacSysProxyProvider implements SysProxyProvider {
     @Override
     public void setSysProxyConfig() {
         List<String> networkServices = getNetworkServices();
-        log.info("All available network services: {}", networkServices);
         if (networkServices.isEmpty()) {
             log.error("No available network services");
             return;
@@ -89,6 +90,66 @@ public class MacSysProxyProvider implements SysProxyProvider {
         }
     }
 
+    @Override
+    public List<String> getBypassDomains() {
+        List<String> networkServices = getNetworkServices();
+        if (networkServices.isEmpty()) {
+            log.error("No available network services");
+            return Collections.emptyList();
+        }
+
+        List<String> list = new ArrayList<>();
+        for (String networkService : networkServices) {
+            ProcessBuilder builder = new ProcessBuilder(NETWORK_SETUP,
+                    "-get" + BYPASS_DOMAIN,
+                    networkService);
+            try {
+                String res = runCommand(builder);
+                List<String> domainList = Arrays.stream(res.split("\n"))
+                        .filter(Objects::nonNull)
+                        .filter(item -> !item.contains(" "))
+                        .map(String::trim).toList();
+                list.addAll(domainList);
+            } catch (Exception e) {
+                log.error("Error in getting MacOS bypass domains.", e);
+            }
+        }
+        return list.stream().distinct().toList();
+    }
+
+    @Override
+    public void setBypassDomains(List<String> domains) {
+        if (domains == null) {
+            throw new IllegalArgumentException("Domains cannot be null");
+        }
+        List<String> networkServices = getNetworkServices();
+        if (networkServices.isEmpty()) {
+            log.error("No available network services");
+            return;
+        }
+
+        if (domains.isEmpty()) {
+            // Specify "Empty" for <domain1> to clear all Domain Name entries.
+            domains = List.of("Empty");
+        } else {
+            domains = domains.stream().distinct().toList();
+        }
+
+        for (String networkService: networkServices) {
+            List<String> cmd = new ArrayList<>();
+            cmd.add(NETWORK_SETUP);
+            cmd.add("-set" + BYPASS_DOMAIN);
+            cmd.add(networkService);
+            cmd.addAll(domains);
+            ProcessBuilder builder = new ProcessBuilder(cmd);
+            try {
+                runCommand(builder);
+            } catch (Exception e) {
+                log.error("Error in setting macOs bypass domains.", e);
+            }
+        }
+    }
+
     private List<String> getNetworkServices() {
         ProcessBuilder builder = new ProcessBuilder(NETWORK_SETUP, "-listallnetworkservices");
         String res = null;
@@ -108,6 +169,7 @@ public class MacSysProxyProvider implements SysProxyProvider {
                 list.add(line.trim());
             }
         }
+        log.info("All available network services: {}", list);
         return list;
     }
 

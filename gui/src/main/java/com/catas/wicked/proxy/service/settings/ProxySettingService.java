@@ -42,7 +42,7 @@ public class ProxySettingService extends AbstractSettingService{
         Settings settings = appConfig.getSettings();
         settingController.getPortField().setText(String.valueOf(settings.getPort()));
         settingController.getSysProxyBtn().setSelected(settings.isSystemProxy());
-        settingController.getSysProxyExcludeArea().setText(getTextFromList(settings.getSysProxyExcludeList()));
+        settingController.getSysProxyExcludeArea().setText(getTextFromList(settings.getSysProxyBypassList()));
     }
 
     @Override
@@ -72,6 +72,6 @@ public class ProxySettingService extends AbstractSettingService{
         }
 
         settings.setSystemProxy(settingController.getSysProxyBtn().isSelected());
-        settings.setSysProxyExcludeList(getListFromText(settingController.getSysProxyExcludeArea().getText()));
+        settings.setSysProxyBypassList(getListFromText(settingController.getSysProxyExcludeArea().getText()));
     }
 }

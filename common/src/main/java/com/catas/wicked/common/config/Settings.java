@@ -32,7 +32,7 @@ public class Settings {
      */
     private int port = 9999;
     private boolean systemProxy = true;
-    private List<String> sysProxyExcludeList;
+    private List<String> sysProxyBypassList;
 
     /**
      * Ssl settings
