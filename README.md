@@ -10,10 +10,5 @@ HumBird Proxy 是基于一款由 Java 开发的桌面端 HTTP 代理与抓包工
 ![image](screenshots/screenshot-4.png)
 
 
-## P.S.
-目前还有些 Bug, 修复完成后将发布 Release.
-
-本人是个菜比, 欢迎各路大佬参与此项目并提交 PR, 感激不尽!!
-
 
 

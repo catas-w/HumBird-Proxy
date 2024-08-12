@@ -1,0 +1,72 @@
+package com.catas.wicked.common.worker;
+
+import com.catas.wicked.BaseTest;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
+public class ScheduledManagerTest extends BaseTest {
+
+    @Test
+    public void testScheduledManager() throws InterruptedException {
+        Count autoCnt = new Count();
+        Count manualCnt = new Count();
+        ScheduledManager manager = new ScheduledManager();
+        ScheduledWorker worker = new AbstractScheduledWorker() {
+            @Override
+            public long getDelay() {
+                return 1000;
+            }
+
+            @Override
+            protected void doWork(boolean manually) {
+                // System.out.println("running task");
+                if (manually) {
+                    manualCnt.add(1);
+                } else {
+                    autoCnt.add(1);
+                }
+            }
+        };
+
+        String worker1 = "worker1";
+        manager.register(worker1, worker);
+        Thread.sleep(2500);
+
+        manager.invoke(worker1);
+        manager.cancel(worker1);
+        Thread.sleep(2000);
+
+        Assertions.assertEquals(1, manualCnt.count);
+        Assertions.assertEquals(3, autoCnt.count);
+    }
+
+    @Test
+    public void testManagerErrors() {
+        Count cnt = new Count();
+        ScheduledManager manager = new ScheduledManager();
+        ScheduledWorker worker = new AbstractScheduledWorker() {
+            @Override
+            public long getDelay() {
+                return 1000;
+            }
+
+            @Override
+            protected void doWork(boolean manually) {
+                cnt.add(1);
+            }
+        };
+
+
+        manager.register("duplicate", worker);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> manager.register("duplicate", null));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> manager.invoke("not-exist"));
+    }
+
+    static class Count {
+        public int count;
+
+        public void add(int amount) {
+            count += amount;
+        }
+    }
+}

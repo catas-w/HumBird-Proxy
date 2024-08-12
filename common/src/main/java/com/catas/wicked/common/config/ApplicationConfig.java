@@ -2,6 +2,7 @@ package com.catas.wicked.common.config;
 
 import com.catas.wicked.common.constant.ServerStatus;
 import com.catas.wicked.common.constant.SystemProxyStatus;
+import com.catas.wicked.common.executor.ScheduledThreadPoolService;
 import com.catas.wicked.common.pipeline.MessageQueue;
 import com.catas.wicked.common.executor.ThreadPoolService;
 import com.catas.wicked.common.util.WebUtils;
@@ -149,9 +150,9 @@ public class ApplicationConfig implements AutoCloseable {
         if (!(proxyLoopGroup.isShutdown() || proxyLoopGroup.isShuttingDown())) {
             proxyLoopGroup.shutdownGracefully();
         }
-        // MessageQueue messageQueue = AppContextUtil.getBean(MessageQueue.class);
-        // messageQueue.pushMsg(new PoisonMessage());
+
         ThreadPoolService.getInstance().shutdown();
+        ScheduledThreadPoolService.getInstance().shutdown();
     }
 
     @PreDestroy

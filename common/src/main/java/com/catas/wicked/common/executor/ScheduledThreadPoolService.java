@@ -1,5 +1,7 @@
 package com.catas.wicked.common.executor;
 
+import java.util.concurrent.RunnableScheduledFuture;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
@@ -22,12 +24,19 @@ public class ScheduledThreadPoolService {
         this.service = new ScheduledThreadPoolExecutor(CORE_SIZE, threadFactory);
     }
 
-    public void submit(Runnable task, long initialDelay, long delay, TimeUnit timeUnit) {
-        service.scheduleAtFixedRate(task, initialDelay, delay, timeUnit);
+    public ScheduledFuture<?> submit(Runnable task, long initialDelay, long delay, TimeUnit timeUnit) {
+        return service.scheduleAtFixedRate(task, initialDelay, delay, timeUnit);
     }
 
-    public void submit(Runnable task, long delay) {
-        service.scheduleAtFixedRate(task, 0, delay, TimeUnit.MILLISECONDS);
+    public ScheduledFuture<?> submit(Runnable task, long delay) {
+        return service.scheduleAtFixedRate(task, 0, delay, TimeUnit.MILLISECONDS);
+    }
+
+    public boolean cancel(RunnableScheduledFuture<?> task) {
+        if (task == null) {
+            return false;
+        }
+        return service.remove(task);
     }
 
     public void shutdown() {

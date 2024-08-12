@@ -6,27 +6,21 @@ import com.catas.wicked.common.constant.ServerStatus;
 import com.catas.wicked.common.constant.SystemProxyStatus;
 import com.catas.wicked.common.provider.SysProxyProvider;
 import io.micronaut.core.util.CollectionUtils;
-import jakarta.annotation.PostConstruct;
-import jakarta.inject.Inject;
-import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
 
 @Slf4j
-@Singleton
 public class SystemProxyWorker extends AbstractScheduledWorker{
 
-    @Inject
-    private ApplicationConfig appConfig;
+    private final ApplicationConfig appConfig;
 
-    @Inject
-    private SysProxyProvider proxyProvider;
+    private final SysProxyProvider proxyProvider;
 
-    @PostConstruct
-    public void init() {
-        log.info("Provider: {}", proxyProvider);
+    public SystemProxyWorker(ApplicationConfig appConfig, SysProxyProvider proxyProvider) {
+        this.appConfig = appConfig;
+        this.proxyProvider = proxyProvider;
     }
 
     @Override

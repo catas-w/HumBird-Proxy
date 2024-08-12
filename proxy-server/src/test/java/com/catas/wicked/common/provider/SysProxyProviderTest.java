@@ -4,8 +4,7 @@ package com.catas.wicked.common.provider;
 import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.common.config.Settings;
 import com.catas.wicked.common.config.SystemProxyConfig;
-import com.catas.wicked.common.provider.MacSysProxyProvider;
-import com.catas.wicked.BaseTestClass;
+import com.catas.wicked.BaseTest;
 import com.catas.wicked.ConditionalTest;
 import io.micronaut.context.annotation.Requires;
 import org.junit.jupiter.api.Assertions;
@@ -18,7 +17,7 @@ import java.util.List;
 /**
  * junit5
  */
-public class SysProxyProviderTest extends BaseTestClass {
+public class SysProxyProviderTest extends BaseTest {
 
     @Test
     @ConditionalTest(os = Requires.Family.MAC_OS)
