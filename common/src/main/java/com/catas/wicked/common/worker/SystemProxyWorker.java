@@ -1,10 +1,10 @@
-package com.catas.wicked.server.worker;
+package com.catas.wicked.common.worker;
 
 import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.common.config.SystemProxyConfig;
 import com.catas.wicked.common.constant.ServerStatus;
 import com.catas.wicked.common.constant.SystemProxyStatus;
-import com.catas.wicked.server.provider.SysProxyProvider;
+import com.catas.wicked.common.provider.SysProxyProvider;
 import io.micronaut.core.util.CollectionUtils;
 import jakarta.annotation.PostConstruct;
 import jakarta.inject.Inject;

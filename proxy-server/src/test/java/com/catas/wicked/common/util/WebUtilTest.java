@@ -1,6 +1,5 @@
-package com.catas.wicked.proxy;
+package com.catas.wicked.common.util;
 
-import com.catas.wicked.common.util.WebUtils;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;

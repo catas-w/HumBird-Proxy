@@ -1,4 +1,4 @@
-package com.catas.wicked.server;
+package com.catas.wicked;
 
 import io.micronaut.context.annotation.Requires;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -1,4 +1,4 @@
-package com.catas.wicked.server;
+package com.catas.wicked;
 
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.context.condition.OperatingSystem;

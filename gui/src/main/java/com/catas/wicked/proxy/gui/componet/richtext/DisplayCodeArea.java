@@ -1,7 +1,7 @@
 package com.catas.wicked.proxy.gui.componet.richtext;
 
 import com.catas.wicked.common.constant.CodeStyle;
-import com.catas.wicked.common.util.ThreadPoolService;
+import com.catas.wicked.common.executor.ThreadPoolService;
 import com.catas.wicked.proxy.gui.componet.highlight.Formatter;
 import com.catas.wicked.proxy.gui.componet.highlight.Highlighter;
 import com.catas.wicked.proxy.gui.componet.highlight.HighlighterFactory;

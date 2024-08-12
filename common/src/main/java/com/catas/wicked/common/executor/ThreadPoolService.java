@@ -1,4 +1,4 @@
-package com.catas.wicked.common.util;
+package com.catas.wicked.common.executor;
 
 import java.util.concurrent.*;
 

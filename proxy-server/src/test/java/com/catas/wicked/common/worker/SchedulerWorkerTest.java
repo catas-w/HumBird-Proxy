@@ -1,6 +1,6 @@
-package com.catas.wicked.server.worker;
+package com.catas.wicked.common.worker;
 
-import com.catas.wicked.common.task.ScheduledThreadPoolService;
+import com.catas.wicked.common.executor.ScheduledThreadPoolService;
 import org.junit.Assert;
 import org.junit.Test;
 

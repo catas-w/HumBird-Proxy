@@ -3,7 +3,7 @@ package com.catas.wicked.common.config;
 import com.catas.wicked.common.constant.ServerStatus;
 import com.catas.wicked.common.constant.SystemProxyStatus;
 import com.catas.wicked.common.pipeline.MessageQueue;
-import com.catas.wicked.common.util.ThreadPoolService;
+import com.catas.wicked.common.executor.ThreadPoolService;
 import com.catas.wicked.common.util.WebUtils;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;

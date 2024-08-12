@@ -1,4 +1,4 @@
-package com.catas.wicked.server.provider;
+package com.catas.wicked.common.provider;
 
 import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.common.config.SystemProxyConfig;

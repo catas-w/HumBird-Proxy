@@ -1,4 +1,4 @@
-package com.catas.wicked.common.task;
+package com.catas.wicked.common.executor;
 
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;

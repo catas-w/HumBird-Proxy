@@ -1,12 +1,11 @@
 package com.catas.wicked.server.proxy;
 
 import com.catas.wicked.common.constant.ServerStatus;
-import com.catas.wicked.common.util.ThreadPoolService;
+import com.catas.wicked.common.executor.ThreadPoolService;
 import com.catas.wicked.server.cert.CertPool;
 import com.catas.wicked.server.cert.CertService;
 import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.server.handler.server.ServerChannelInitializer;
-import com.catas.wicked.server.worker.SystemProxyWorker;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
@@ -48,9 +47,6 @@ public class ProxyServer {
 
     @Inject
     private ServerChannelInitializer proxyServerInitializer;
-
-    @Inject
-    private SystemProxyWorker systemProxyWorker;
 
     private ChannelFuture channelFuture;
 

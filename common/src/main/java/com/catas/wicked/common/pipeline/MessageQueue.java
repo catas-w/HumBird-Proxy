@@ -2,7 +2,7 @@ package com.catas.wicked.common.pipeline;
 
 import com.catas.wicked.common.bean.message.BaseMessage;
 import com.catas.wicked.common.bean.message.PoisonMessage;
-import com.catas.wicked.common.util.ThreadPoolService;
+import com.catas.wicked.common.executor.ThreadPoolService;
 import jakarta.annotation.PostConstruct;
 import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;

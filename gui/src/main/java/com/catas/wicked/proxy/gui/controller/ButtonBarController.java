@@ -7,7 +7,7 @@ import com.catas.wicked.common.config.ExternalProxyConfig;
 import com.catas.wicked.common.constant.ProxyProtocol;
 import com.catas.wicked.common.pipeline.MessageQueue;
 import com.catas.wicked.common.pipeline.Topic;
-import com.catas.wicked.common.util.ThreadPoolService;
+import com.catas.wicked.common.executor.ThreadPoolService;
 import com.catas.wicked.proxy.service.RequestMockService;
 import com.catas.wicked.server.client.MinimalHttpClient;
 import com.catas.wicked.server.proxy.ProxyServer;

@@ -1,4 +1,4 @@
-package com.catas.wicked.server.worker;
+package com.catas.wicked.common.worker;
 
 public interface ScheduledWorker extends Runnable {
 

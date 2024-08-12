@@ -1,4 +1,4 @@
-package com.catas.wicked.server;
+package com.catas.wicked;
 
 import java.lang.reflect.Field;
 

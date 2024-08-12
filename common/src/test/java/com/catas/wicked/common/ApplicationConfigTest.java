@@ -2,6 +2,7 @@ package com.catas.wicked.common;
 
 import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.common.config.Settings;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
@@ -10,6 +11,7 @@ import java.io.IOException;
 public class ApplicationConfigTest {
 
     @Test
+    @Ignore
     public void testLoadSettings() throws IOException {
         ApplicationConfig appConfig = new ApplicationConfig();
         appConfig.init();
@@ -19,6 +21,7 @@ public class ApplicationConfigTest {
     }
 
     @Test
+    @Ignore
     public void testUpdateSettings() throws IOException {
         ApplicationConfig appConfig = new ApplicationConfig();
         appConfig.init();

@@ -1,6 +1,5 @@
-package com.catas.wicked.common;
+package com.catas.wicked.common.util;
 
-import com.catas.wicked.common.util.GzipUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -22,8 +21,10 @@ public class GzipUtilsTest {
     @Test
     public void testGzip() throws IOException {
         byte[] compress = GzipUtils.compress(str);
-        System.out.println("Before compressed length: " + str.length());
-        System.out.println("After compressed length: " + compress.length);
+        int beforeLen = str.getBytes().length;
+        int afterCompressedLen = compress.length;
+        Assert.assertTrue(afterCompressedLen <= beforeLen);
+
         String decompressStr = GzipUtils.decompressStr(compress);
         Assert.assertEquals(str, decompressStr);
     }
@@ -31,8 +32,10 @@ public class GzipUtilsTest {
     @Test
     public void testDeflate() throws IOException {
         byte[] compress = GzipUtils.deflateStr(str);
-        System.out.println("Before compressed length: " + str.length());
-        System.out.println("After compressed length: " + compress.length);
+        int beforeLen = str.getBytes().length;
+        int afterCompressedLen = compress.length;
+        Assert.assertTrue(afterCompressedLen <= beforeLen);
+
         String decompress = GzipUtils.inflateStr(compress);
         Assert.assertEquals(str, decompress);
     }
