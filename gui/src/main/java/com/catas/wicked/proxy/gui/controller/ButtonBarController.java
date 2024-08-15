@@ -164,6 +164,7 @@ public class ButtonBarController implements Initializable {
                 settingController.setAppConfig(appConfig);
                 settingController.setProxyServer(proxyServer);
                 settingController.setButtonBarController(this);
+                settingController.setScheduledManager(scheduledManager);
                 settingController.init();
 
                 settingPage = new Dialog<>();

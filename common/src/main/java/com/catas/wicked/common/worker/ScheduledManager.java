@@ -73,6 +73,7 @@ public class ScheduledManager {
 
     /**
      * invoke task once
+     * TODO async
      */
     public void invoke(String name) {
         if (StringUtils.isBlank(name) || !workerMap.containsKey(name)) {

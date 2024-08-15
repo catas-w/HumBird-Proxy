@@ -1,6 +1,8 @@
 package com.catas.wicked.proxy.gui.controller;
 
 import com.catas.wicked.common.config.ApplicationConfig;
+import com.catas.wicked.common.util.AlertUtils;
+import com.catas.wicked.common.worker.ScheduledManager;
 import com.catas.wicked.proxy.gui.componet.ProxyTypeLabel;
 import com.catas.wicked.proxy.service.settings.ExternalProxySettingService;
 import com.catas.wicked.proxy.service.settings.GeneralSettingService;
@@ -20,7 +22,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.control.Alert;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.Labeled;
@@ -31,6 +32,7 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.URL;
@@ -77,25 +79,16 @@ public class SettingController implements Initializable {
     @FXML
     private JFXButton saveBtn;
 
+    @Setter
     private ApplicationConfig appConfig;
-
+    @Setter
     private ButtonBarController buttonBarController;
-
+    @Setter
     private ProxyServer proxyServer;
+    @Setter
+    private ScheduledManager scheduledManager;
 
     private List<SettingService> settingServiceList;
-
-    public void setAppConfig(ApplicationConfig appConfig) {
-        this.appConfig = appConfig;
-    }
-
-    public void setProxyServer(ProxyServer proxyServer) {
-        this.proxyServer = proxyServer;
-    }
-
-    public void setButtonBarController(ButtonBarController buttonBarController) {
-        this.buttonBarController = buttonBarController;
-    }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -138,7 +131,7 @@ public class SettingController implements Initializable {
         }
 
         if (!isValidated) {
-            alert("Illegal settings!");
+            AlertUtils.alertWarning("Illegal settings!");
             return;
         }
 
@@ -202,23 +195,5 @@ public class SettingController implements Initializable {
                 }
             }
         }
-    }
-
-    public void alert(String msg) {
-        Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle("Warning");
-        alert.setHeaderText(msg);
-        alert.showAndWait();
-
-        // JFXDialogLayout layout = new JFXDialogLayout();
-        // layout.setBody(new Label("Invalid settings!"));
-        //
-        // JFXAlert<Void> alert = new JFXAlert<>();
-        // alert.setOverlayClose(true);
-        // alert.setAnimation(JFXAlertAnimation.NO_ANIMATION);
-        // alert.setContent(layout);
-        // alert.initModality(Modality.WINDOW_MODAL);
-        //
-        // alert.showAndWait();
     }
 }

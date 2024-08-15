@@ -2,6 +2,7 @@ package com.catas.wicked.server.proxy;
 
 import com.catas.wicked.common.constant.ServerStatus;
 import com.catas.wicked.common.executor.ThreadPoolService;
+import com.catas.wicked.common.util.AlertUtils;
 import com.catas.wicked.server.cert.CertPool;
 import com.catas.wicked.server.cert.CertService;
 import com.catas.wicked.common.config.ApplicationConfig;
@@ -21,7 +22,6 @@ import io.netty.util.internal.logging.JdkLoggerFactory;
 import jakarta.annotation.PostConstruct;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
-import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import lombok.extern.slf4j.Slf4j;
 
@@ -51,7 +51,7 @@ public class ProxyServer {
     private ChannelFuture channelFuture;
 
     public void setStatus(ServerStatus status) {
-        applicationConfig.setServerStatus(status);
+        applicationConfig.getObservableConfig().setServerStatus(status);
     }
 
     public void start() {
@@ -69,7 +69,7 @@ public class ProxyServer {
                     .option(ChannelOption.TCP_NODELAY, true)
                     .handler(new LoggingHandler(LogLevel.INFO))
                     .childHandler(proxyServerInitializer);
-            channelFuture = bootstrap.bind(applicationConfig.getSettings().getPort());
+            channelFuture = bootstrap.bind(applicationConfig.getSettings().getPort()).sync();
             channelFuture.channel().closeFuture().addListener(future -> {
                 log.info("--- Proxy server stopping ---");
                 setStatus(ServerStatus.HALTED);
@@ -89,7 +89,6 @@ public class ProxyServer {
                     setStatus(ServerStatus.HALTED);
                 }
             });
-            channelFuture.channel().closeFuture().sync();
         } catch (InterruptedException e) {
             log.info("Proxy server interrupt: {}", e.getMessage());
         }
@@ -139,20 +138,10 @@ public class ProxyServer {
                     start();
                 } catch (Exception e) {
                     log.error("Error in starting proxy server.", e);
-                    Platform.runLater(() -> {
-                        alert("Port: " + applicationConfig.getSettings().getPort()
-                                + " is unavailable, change port in settings");
-                    });
+                    String msg = "Port: " + applicationConfig.getSettings().getPort() + " is unavailable, change port in settings";
+                    AlertUtils.alertLater(Alert.AlertType.ERROR, msg);
                 }
             });
         }
-    }
-
-    private void alert(String msg) {
-        // todo move to gui
-        Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle("Warning");
-        alert.setHeaderText(msg);
-        alert.showAndWait();
     }
 }

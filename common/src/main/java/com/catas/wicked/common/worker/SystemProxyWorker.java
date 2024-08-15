@@ -26,13 +26,14 @@ public class SystemProxyWorker extends AbstractScheduledWorker{
     @Override
     protected void doWork(boolean manually) {
         // server is not running
-        if (appConfig.getServerStatus() != ServerStatus.RUNNING) {
+        if (appConfig.getObservableConfig().getServerStatus() != ServerStatus.RUNNING) {
             log.warn("Server is not running");
-            appConfig.setSystemProxyStatus(SystemProxyStatus.DISABLED);
+            appConfig.getObservableConfig().setSystemProxyStatus(SystemProxyStatus.DISABLED);
             return;
         }
 
         if (manually) {
+            log.info("Manually invoke systemProxyWorker");
             forceUpdateSysProxy();
         } else {
             autoUpdateSysProxy();
@@ -42,7 +43,7 @@ public class SystemProxyWorker extends AbstractScheduledWorker{
     private void autoUpdateSysProxy() {
         // sysProxy off
         if (!appConfig.getSettings().isSystemProxy()) {
-            appConfig.setSystemProxyStatus(SystemProxyStatus.OFF);
+            appConfig.getObservableConfig().setSystemProxyStatus(SystemProxyStatus.OFF);
             return;
         }
 
@@ -58,14 +59,14 @@ public class SystemProxyWorker extends AbstractScheduledWorker{
         }
         if (!isConsistent) {
             log.warn("Os system proxy is not consistent with settings.");
-            appConfig.setSystemProxyStatus(SystemProxyStatus.SUSPENDED);
+            appConfig.getObservableConfig().setSystemProxyStatus(SystemProxyStatus.SUSPENDED);
         }
     }
 
     private void forceUpdateSysProxy() {
         proxyProvider.setSysProxyConfig();
         SystemProxyStatus status = appConfig.getSettings().isSystemProxy() ? SystemProxyStatus.ON : SystemProxyStatus.OFF;
-        appConfig.setSystemProxyStatus(status);
+        appConfig.getObservableConfig().setSystemProxyStatus(status);
 
         // update bypass domains
         List<String> targetList = appConfig.getSettings().getSysProxyBypassList();

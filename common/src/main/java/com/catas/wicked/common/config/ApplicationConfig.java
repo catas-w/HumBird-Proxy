@@ -1,10 +1,9 @@
 package com.catas.wicked.common.config;
 
-import com.catas.wicked.common.constant.ServerStatus;
-import com.catas.wicked.common.constant.SystemProxyStatus;
 import com.catas.wicked.common.executor.ScheduledThreadPoolService;
 import com.catas.wicked.common.pipeline.MessageQueue;
 import com.catas.wicked.common.executor.ThreadPoolService;
+import com.catas.wicked.common.util.AlertUtils;
 import com.catas.wicked.common.util.WebUtils;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -58,16 +57,7 @@ public class ApplicationConfig implements AutoCloseable {
     private PrivateKey serverPriKey;
     private PublicKey serverPubKey;
 
-    /**
-     * status of proxy server
-     * TODO: bind gui style
-     */
-    private ServerStatus serverStatus;
-    private SystemProxyStatus systemProxyStatus;
-
-    /**
-     * current requestId in display
-     */
+    private final ObservableConfig observableConfig = new ObservableConfig();
     private final AtomicReference<String> currentRequestId = new AtomicReference<>(null);
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final AtomicBoolean shutDownFlag = new AtomicBoolean(false);
@@ -77,8 +67,6 @@ public class ApplicationConfig implements AutoCloseable {
 
     @PostConstruct
     public void init() {
-        // this.currentRequestId = new AtomicReference<>(null);
-        // this.shutDownFlag = new AtomicBoolean(false);
         this.proxyLoopGroup = new NioEventLoopGroup(defaultThreadNumber);
 
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -133,8 +121,8 @@ public class ApplicationConfig implements AutoCloseable {
             }
             objectMapper.writeValue(file, settings);
         } catch (IOException e) {
-            // TODO alert
             log.error("Error updating local config.", e);
+            AlertUtils.alertWarning("Error in updating settings.");
         }
     }
 

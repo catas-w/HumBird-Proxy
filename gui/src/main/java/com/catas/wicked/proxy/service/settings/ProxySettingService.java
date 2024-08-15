@@ -2,6 +2,8 @@ package com.catas.wicked.proxy.service.settings;
 
 import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.common.config.Settings;
+import com.catas.wicked.common.constant.WorkerConstant;
+import com.catas.wicked.common.util.AlertUtils;
 import com.catas.wicked.common.util.WebUtils;
 import com.catas.wicked.proxy.gui.controller.SettingController;
 import javafx.scene.control.Label;
@@ -55,7 +57,7 @@ public class ProxySettingService extends AbstractSettingService{
         if (oldPort != newPort) {
             // check pot available
             if (!WebUtils.isPortAvailable(newPort)) {
-                settingController.alert("Port " + newPort + " is unavailable");
+                AlertUtils.alertWarning("Port " + newPort + " is unavailable");
                 return;
             }
             settings.setPort(newPort);
@@ -64,7 +66,7 @@ public class ProxySettingService extends AbstractSettingService{
                 settingController.getProxyServer().start();
             } catch (Exception e) {
                 log.error("Error in restarting proxy server.", e);
-                settingController.alert("Port " + newPort + " is unavailable");
+                AlertUtils.alertWarning("Port " + newPort + " is unavailable");
                 settings.setPort(oldPort);
                 settingController.getProxyServer().start();
                 return;
@@ -73,5 +75,8 @@ public class ProxySettingService extends AbstractSettingService{
 
         settings.setSystemProxy(settingController.getSysProxyBtn().isSelected());
         settings.setSysProxyBypassList(getListFromText(settingController.getSysProxyExcludeArea().getText()));
+
+        // manually invoke systemProxyWorker
+        settingController.getScheduledManager().invoke(WorkerConstant.SYS_PROXY_WORKER);
     }
 }
