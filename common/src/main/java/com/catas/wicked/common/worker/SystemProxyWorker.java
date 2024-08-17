@@ -80,6 +80,11 @@ public class SystemProxyWorker extends AbstractScheduledWorker{
 
     @Override
     public long getDelay() {
-        return 5 * 1000L;
+        return 5 * 1000;
+    }
+
+    @Override
+    public long getInitDelay() {
+        return 5 * 1000;
     }
 }

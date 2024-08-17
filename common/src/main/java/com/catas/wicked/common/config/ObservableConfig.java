@@ -20,11 +20,6 @@ public class ObservableConfig {
             // TODO display alert
             log.info("Observable Server status: " + newValue);
         });
-
-        systemProxyStatus.addListener(((observable, oldValue, newValue) -> {
-            // TODO update gui
-            System.out.println("== SystemProxyStatus: " + newValue);
-        }));
     }
 
     public ServerStatus getServerStatus() {

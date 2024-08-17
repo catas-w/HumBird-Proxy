@@ -21,4 +21,8 @@ public interface ScheduledWorker extends Runnable {
      * time delay for auto execution
      */
     long getDelay();
+
+    default long getInitDelay() {
+        return 0;
+    }
 }

@@ -5,11 +5,12 @@ import com.catas.wicked.common.bean.message.RequestMessage;
 import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.common.config.ExternalProxyConfig;
 import com.catas.wicked.common.constant.ProxyProtocol;
+import com.catas.wicked.common.constant.SystemProxyStatus;
+import com.catas.wicked.common.constant.WorkerConstant;
 import com.catas.wicked.common.pipeline.MessageQueue;
 import com.catas.wicked.common.pipeline.Topic;
 import com.catas.wicked.common.executor.ThreadPoolService;
 import com.catas.wicked.common.worker.ScheduledManager;
-import com.catas.wicked.common.worker.ScheduledWorker;
 import com.catas.wicked.proxy.service.RequestMockService;
 import com.catas.wicked.server.client.MinimalHttpClient;
 import com.catas.wicked.server.proxy.ProxyServer;
@@ -44,8 +45,9 @@ import java.net.URL;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-import static com.catas.wicked.common.constant.StyleConstant.BTN_ACTIVE;
-import static com.catas.wicked.common.constant.StyleConstant.BTN_INACTIVE;
+import static com.catas.wicked.common.constant.StyleConstant.COLOR_ACTIVE;
+import static com.catas.wicked.common.constant.StyleConstant.COLOR_INACTIVE;
+import static com.catas.wicked.common.constant.StyleConstant.COLOR_SUSPEND;
 
 @Slf4j
 @Singleton
@@ -54,13 +56,11 @@ public class ButtonBarController implements Initializable {
     public JFXButton markerBtn;
     public JFXToggleNode recordBtn;
     public JFXToggleNode sslBtn;
-    @FXML
     public JFXButton removeAllBtn;
-    @FXML
     public JFXButton locateBtn;
-    @FXML
     public JFXButton resendBtn;
     public JFXToggleNode throttleBtn;
+    public JFXToggleNode sysProxyBtn;
     @FXML
     private MenuButton mainMenuButton;
     @FXML
@@ -97,8 +97,8 @@ public class ButtonBarController implements Initializable {
         // proxy setting dialog
         // bindProxySettingBtn();
 
-        // toggle record button
-        recordBtn.selectedProperty().addListener(((observable, oldValue, newValue) -> {
+        // toggle record button TODO: wrap in component
+        recordBtn.selectedProperty().addListener((observable, oldValue, newValue) -> {
             FontIcon icon = (FontIcon) recordBtn.getGraphic();
             if (newValue) {
                 icon.setIconLiteral("fas-record-vinyl");
@@ -111,32 +111,49 @@ public class ButtonBarController implements Initializable {
 
             String toolTip = newValue ? "Stop Recording" : "Record Requests";
             recordBtn.getTooltip().setText(toolTip);
-        }));
+        });
         recordBtn.setSelected(true);
 
         // toggle handle ssl button
-        sslBtn.selectedProperty().addListener(((observable, oldValue, newValue) -> {
+        sslBtn.selectedProperty().addListener((observable, oldValue, newValue) -> {
             FontIcon icon = (FontIcon) sslBtn.getGraphic();
-            String color = newValue ? BTN_ACTIVE : BTN_INACTIVE;
-            icon.setIconColor(Color.valueOf(color));
+            Color color = newValue ? COLOR_ACTIVE : COLOR_INACTIVE;
+            icon.setIconColor(color);
             appConfig.getSettings().setHandleSsl(newValue);
 
             String toolTip = newValue ? "Stop Handling SSL" : "Handle SSL";
             sslBtn.getTooltip().setText(toolTip);
-        }));
+        });
         sslBtn.setSelected(appConfig.getSettings().isHandleSsl());
 
         // init throttle button
-        throttleBtn.selectedProperty().addListener(((observable, oldValue, newValue) -> {
+        throttleBtn.selectedProperty().addListener((observable, oldValue, newValue) -> {
             FontIcon icon = (FontIcon) throttleBtn.getGraphic();
-            String color = newValue ? BTN_ACTIVE : BTN_INACTIVE;
-            icon.setIconColor(Color.valueOf(color));
+            Color color = newValue ? COLOR_ACTIVE : COLOR_INACTIVE;
+            icon.setIconColor(color);
             appConfig.getSettings().setThrottle(newValue);
 
             String toolTip = newValue ? "Stop Throttling" : "Start Throttling";
             throttleBtn.getTooltip().setText(toolTip);
-        }));
+        });
         throttleBtn.setSelected(appConfig.getSettings().isThrottle());
+
+        // init sysProxyBtn
+        sysProxyBtn.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            FontIcon icon = (FontIcon) sysProxyBtn.getGraphic();
+            Color color = newValue ? COLOR_ACTIVE : COLOR_INACTIVE;
+            icon.setIconColor(color);
+        });
+        appConfig.getObservableConfig().systemProxyStatusProperty().addListener((observable, oldValue, newValue) -> {
+            sysProxyBtn.setDisable(newValue == SystemProxyStatus.DISABLED);
+            sysProxyBtn.setSelected(newValue == SystemProxyStatus.ON);
+
+            // SUSPENDED 状态视为 unselected, 只能流转为 selected
+            if (newValue == SystemProxyStatus.SUSPENDED) {
+                FontIcon icon = (FontIcon) sysProxyBtn.getGraphic();
+                icon.setIconColor(COLOR_SUSPEND);
+            }
+        });
     }
 
     public void mockTreeItem() {
@@ -248,5 +265,10 @@ public class ButtonBarController implements Initializable {
 
     public void clearLeafNode(ActionEvent event) {
         requestViewController.clearLeafNode();
+    }
+
+    public void onSysProxy(ActionEvent actionEvent) {
+        appConfig.getSettings().setSystemProxy(sysProxyBtn.selectedProperty().get());
+        scheduledManager.invoke(WorkerConstant.SYS_PROXY_WORKER);
     }
 }

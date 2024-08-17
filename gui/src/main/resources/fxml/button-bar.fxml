@@ -26,26 +26,31 @@
             </tooltip>
         </JFXToggleNode>
         <JFXToggleNode fx:id="sslBtn" prefWidth="200.0" textOverrun="CLIP">
-            <graphic>
-                <FontIcon iconColor="#68cbc8" iconLiteral="fas-mask" iconSize="18" />
-            </graphic>
             <VBox.margin>
-                <Insets top="20.0" />
+                <Insets top="20.0"/>
             </VBox.margin>
             <tooltip>
-                <Tooltip text="Handle SSL" />
+                <Tooltip text="Handle SSL"/>
             </tooltip>
+            <FontIcon iconColor="#68cbc8" iconLiteral="fas-mask" iconSize="18"/>
+        </JFXToggleNode>
+        <JFXToggleNode fx:id="sysProxyBtn" prefWidth="200.0" textOverrun="CLIP" onAction="#onSysProxy">
+            <VBox.margin>
+                <Insets top="20.0"/>
+            </VBox.margin>
+            <tooltip>
+                <Tooltip text="Set as system proxy"/>
+            </tooltip>
+            <FontIcon iconColor="#616161" iconLiteral="fas-burn" iconSize="18"/>
         </JFXToggleNode>
         <JFXToggleNode fx:id="throttleBtn" prefWidth="200.0" textOverrun="CLIP">
-            <graphic>
-                <FontIcon iconColor="#616161" iconLiteral="fas-hourglass-half" iconSize="18" />
-            </graphic>
             <VBox.margin>
-                <Insets top="20.0" />
+                <Insets top="20.0"/>
             </VBox.margin>
             <tooltip>
-                <Tooltip text="Start Throttling" />
+                <Tooltip text="Start Throttling"/>
             </tooltip>
+            <FontIcon iconColor="#616161" iconLiteral="fas-hourglass-half" iconSize="18"/>
         </JFXToggleNode>
         <Separator prefWidth="200.0" >
              <VBox.margin>

@@ -7,6 +7,7 @@ import com.catas.wicked.server.cert.CertPool;
 import com.catas.wicked.server.cert.CertService;
 import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.server.handler.server.ServerChannelInitializer;
+import io.micronaut.context.annotation.Parallel;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
@@ -101,7 +102,7 @@ public class ProxyServer {
         }
     }
 
-    // @Parallel
+    @Parallel
     @PostConstruct
     private void init() {
         setStatus(ServerStatus.HALTED);
@@ -134,6 +135,7 @@ public class ProxyServer {
             start();
         } else {
             ThreadPoolService.getInstance().run(() -> {
+                System.out.println("Starting");
                 try {
                     start();
                 } catch (Exception e) {
