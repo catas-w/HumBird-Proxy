@@ -1,8 +1,11 @@
-package com.catas.wicked.common.worker;
+package com.catas.wicked.common.worker.worker;
 
 import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.common.executor.ScheduledThreadPoolService;
+import com.catas.wicked.common.executor.ThreadPoolService;
 import com.catas.wicked.common.provider.SysProxyProvider;
+import com.catas.wicked.common.worker.ScheduledWorker;
+import com.catas.wicked.common.worker.SystemProxyWorker;
 import jakarta.annotation.PostConstruct;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
@@ -11,7 +14,9 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.RunnableScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
+import static com.catas.wicked.common.constant.WorkerConstant.CHECK_UPDATE_WORKER;
 import static com.catas.wicked.common.constant.WorkerConstant.SYS_PROXY_WORKER;
 
 @Slf4j
@@ -29,7 +34,9 @@ public class ScheduledManager {
 
     @PostConstruct
     public void init() {
+        // register default workers
         register(SYS_PROXY_WORKER, new SystemProxyWorker(appConfig, sysProxyProvider));
+        register(CHECK_UPDATE_WORKER, new UpdateCheckWorker());
     }
 
     /**
@@ -46,7 +53,7 @@ public class ScheduledManager {
             throw new IllegalArgumentException("Worker name already exist.");
         }
         RunnableScheduledFuture<?> future = (RunnableScheduledFuture<?>) ScheduledThreadPoolService.getInstance()
-                .submit(worker, worker.getDelay());
+                .submit(worker, worker.getInitDelay(), worker.getDelay(), TimeUnit.MILLISECONDS);
         workerMap.put(name, worker);
         futureMap.put(name, future);
         worker.start();
@@ -57,7 +64,9 @@ public class ScheduledManager {
      * @param name name
      */
     public void cancel(String name) {
-        if (StringUtils.isBlank(name) || !workerMap.containsKey(name)) {
+        try {
+            checkWorkerExist(name);
+        } catch (IllegalArgumentException ignored) {
             log.error("Worker not exist: {}", name);
             return;
         }
@@ -73,14 +82,21 @@ public class ScheduledManager {
 
     /**
      * invoke task once
-     * TODO async
      */
     public void invoke(String name) {
-        if (StringUtils.isBlank(name) || !workerMap.containsKey(name)) {
-            throw new IllegalArgumentException("Worker not exist: " + name);
-        }
+        checkWorkerExist(name);
         ScheduledWorker worker = workerMap.get(name);
         worker.invoke();
         log.info("Manually invoked worker: {}", name);
+    }
+
+    public void invokeAsync(String name) {
+        ThreadPoolService.getInstance().run(() -> invoke(name));
+    }
+
+    private void checkWorkerExist(String name) {
+        if (StringUtils.isBlank(name) || !workerMap.containsKey(name)) {
+            throw new IllegalArgumentException("Worker not exist: " + name);
+        }
     }
 }

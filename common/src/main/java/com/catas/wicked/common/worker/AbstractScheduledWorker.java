@@ -42,7 +42,7 @@ public abstract class AbstractScheduledWorker implements ScheduledWorker {
     }
 
     private void getLockAndRun(boolean manually) {
-        long timeout = manually ? lockTimeout : 0;
+        long timeout = manually ? getLockTimeout() : 0;
         if (!tryLock(timeout)) {
             log.warn("Worker failed to get lock for: {} ms", timeout);
             return;
@@ -60,7 +60,8 @@ public abstract class AbstractScheduledWorker implements ScheduledWorker {
         if (lock.compareAndSet(LOCK_STATUS.FREE, LOCK_STATUS.LOCKED)) {
             return true;
         }
-        if (timeout <= spinDelay) {
+        System.out.println(getSpinDelay());
+        if (timeout <= getSpinDelay()) {
             return false;
         }
         long endTime = System.currentTimeMillis() + timeout;
@@ -69,11 +70,19 @@ public abstract class AbstractScheduledWorker implements ScheduledWorker {
                 return true;
             }
             try {
-                Thread.sleep(spinDelay);
+                Thread.sleep(getSpinDelay());
             } catch (InterruptedException ignored) {}
         }
         return false;
     }
 
     protected abstract void doWork(boolean manually);
+
+    protected long getSpinDelay() {
+        return spinDelay;
+    }
+
+    protected long getLockTimeout() {
+        return lockTimeout;
+    }
 }

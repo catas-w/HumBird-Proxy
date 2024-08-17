@@ -10,7 +10,7 @@ import com.catas.wicked.common.constant.WorkerConstant;
 import com.catas.wicked.common.pipeline.MessageQueue;
 import com.catas.wicked.common.pipeline.Topic;
 import com.catas.wicked.common.executor.ThreadPoolService;
-import com.catas.wicked.common.worker.ScheduledManager;
+import com.catas.wicked.common.worker.worker.ScheduledManager;
 import com.catas.wicked.proxy.service.RequestMockService;
 import com.catas.wicked.server.client.MinimalHttpClient;
 import com.catas.wicked.server.proxy.ProxyServer;

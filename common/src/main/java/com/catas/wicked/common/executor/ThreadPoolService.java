@@ -4,11 +4,11 @@ import java.util.concurrent.*;
 
 public class ThreadPoolService {
 
-    private int corePoolSize = 16;
+    private static final int CORE_POOL_SIZE = 10;
 
-    private int maxPoolSize = 128;
+    private static final int MAX_POOL_SIZE = 128;
 
-    private long aliveTime = 0L;
+    private static final long ALIVE_TIME = 0L;
 
     private final ExecutorService service;
 
@@ -23,7 +23,7 @@ public class ThreadPoolService {
             }
         };
 
-        service = new ThreadPoolExecutor(corePoolSize, maxPoolSize, aliveTime,
+        service = new ThreadPoolExecutor(CORE_POOL_SIZE, MAX_POOL_SIZE, ALIVE_TIME,
                 TimeUnit.SECONDS, new LinkedBlockingQueue<>(1024), threadFactory
         );
     }

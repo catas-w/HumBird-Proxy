@@ -1,6 +1,8 @@
 package com.catas.wicked.common.worker;
 
 import com.catas.wicked.BaseTest;
+import com.catas.wicked.common.executor.ThreadPoolService;
+import com.catas.wicked.common.worker.worker.ScheduledManager;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -62,10 +64,61 @@ public class ScheduledManagerTest extends BaseTest {
         Assertions.assertThrows(IllegalArgumentException.class, () -> manager.invoke("not-exist"));
     }
 
-    static class Count {
-        public int count;
+    @Test
+    public void testScheduledManagerInvoke() throws InterruptedException {
+        Count asyncCnt = new Count();
+        Count totalCnt = new Count();
+        ScheduledManager manager = new ScheduledManager();
+        ScheduledWorker worker = new AbstractScheduledWorker() {
+            final long stat = System.currentTimeMillis();
 
-        public void add(int amount) {
+            @Override
+            public long getDelay() {
+                return 2000;
+            }
+
+            @Override
+            protected long getLockTimeout() {
+                return 5;
+            }
+
+            @Override
+            protected void doWork(boolean manually) {
+                long time = System.currentTimeMillis() - stat;
+                System.out.println(time + " Manually: " + manually + ", " + Thread.currentThread().getName());
+                totalCnt.add(1);
+                if (ThreadPoolService.owns(Thread.currentThread().getName())) {
+                    asyncCnt.add(1);
+                }
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException ignored) {}
+            }
+        };
+
+        String worker1 = "worker1";
+        // success +1
+        manager.register(worker1, worker);
+        Thread.sleep(200);
+
+        // success +1
+        manager.invoke(worker1);
+        Thread.sleep(200);
+
+        // success +1
+        manager.invokeAsync(worker1);
+        // failed on lock
+        manager.invokeAsync(worker1);
+        Thread.sleep(200);
+
+        Assertions.assertEquals(1, asyncCnt.count);
+        Assertions.assertEquals(3, totalCnt.count);
+    }
+
+    static class Count {
+        public volatile int count;
+
+        public synchronized void add(int amount) {
             count += amount;
         }
     }

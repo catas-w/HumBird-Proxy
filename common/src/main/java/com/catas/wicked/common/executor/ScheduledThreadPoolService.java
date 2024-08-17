@@ -8,7 +8,7 @@ import java.util.concurrent.TimeUnit;
 
 public class ScheduledThreadPoolService {
 
-    private static final int CORE_SIZE = 16;
+    private static final int CORE_SIZE = 10;
     private static final String PREFIX = "common-scheduled-thread-";
 
     private final ScheduledThreadPoolExecutor service;
