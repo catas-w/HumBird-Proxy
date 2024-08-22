@@ -2,15 +2,14 @@ package com.catas.wicked.common.provider;
 
 import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.common.config.SystemProxyConfig;
+import com.catas.wicked.common.util.SystemUtils;
 import io.micronaut.context.annotation.Requires;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -45,7 +44,7 @@ public class MacSysProxyProvider implements SysProxyProvider {
             for (String networkService: networkServices) {
                 for (String proxyType : PROXY_TYPES) {
                     String httpProxySettings = getProxySettings(networkService, proxyType);
-                    SystemProxyConfig httpProxyConfig = SystemProxyConfig.parseFromLines(httpProxySettings);
+                    SystemProxyConfig httpProxyConfig = parseFromNetworkSetup(httpProxySettings);
                     httpProxyConfig.setProxyType(proxyType);
                     httpProxyConfig.setNetworkService(networkService);
                     result.add(httpProxyConfig);
@@ -62,7 +61,7 @@ public class MacSysProxyProvider implements SysProxyProvider {
                 NETWORK_SETUP,
                 "-get" + proxyType,
                 networkService);
-        return runCommand(builder);
+        return SystemUtils.runCommand(builder);
     }
 
     @Override
@@ -104,7 +103,7 @@ public class MacSysProxyProvider implements SysProxyProvider {
                     "-get" + BYPASS_DOMAIN,
                     networkService);
             try {
-                String res = runCommand(builder);
+                String res = SystemUtils.runCommand(builder);
                 List<String> domainList = Arrays.stream(res.split("\n"))
                         .filter(Objects::nonNull)
                         .filter(item -> !item.contains(" "))
@@ -143,7 +142,7 @@ public class MacSysProxyProvider implements SysProxyProvider {
             cmd.addAll(domains);
             ProcessBuilder builder = new ProcessBuilder(cmd);
             try {
-                runCommand(builder);
+                SystemUtils.runCommand(builder);
             } catch (Exception e) {
                 log.error("Error in setting macOs bypass domains.", e);
             }
@@ -154,7 +153,7 @@ public class MacSysProxyProvider implements SysProxyProvider {
         ProcessBuilder builder = new ProcessBuilder(NETWORK_SETUP, "-listallnetworkservices");
         String res = null;
         try {
-            res = runCommand(builder);
+            res = SystemUtils.runCommand(builder);
         } catch (Exception e) {
             log.error("Error in getting available MacOS network services.", e);
         }
@@ -181,7 +180,7 @@ public class MacSysProxyProvider implements SysProxyProvider {
                 proxyAddress,
                 String.valueOf(proxyPort)
         );
-        String res = runCommand(builder);
+        String res = SystemUtils.runCommand(builder);
         log.info("Setting MacOs proxy for {}, type: {}, host:{}-{}, res: {}", networkService, proxyType, proxyAddress, proxyPort, res);
     }
 
@@ -192,21 +191,38 @@ public class MacSysProxyProvider implements SysProxyProvider {
                 networkService,
                 state ? "on" : "off"
         );
-        String res = runCommand(builder);
+        String res = SystemUtils.runCommand(builder);
         log.info("Setting MacOs proxy for {}, type: {}, state: {}, res: {}", networkService, proxyType, state, res);
     }
 
-    private String runCommand(ProcessBuilder builder) throws IOException, InterruptedException {
-        Process process = builder.start();
-        StringBuilder result = new StringBuilder();
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                result.append(line).append("\n");
+    /**
+     * parse result from networksetup
+     * @param lines
+     * Enabled: Yes
+     * Server: 127.0.0.1
+     * Port: 7890
+     * Authenticated Proxy Enabled: 0
+     */
+    public SystemProxyConfig parseFromNetworkSetup(String lines) {
+        if (lines == null) {
+            return null;
+        }
+        SystemProxyConfig config = new SystemProxyConfig();
+        for (String line : lines.split("\n")) {
+            String[] parts = line.split(":", 2);
+            if (parts.length != 2) {
+                continue;
+            }
+            // Trim the key and value and add them to the map
+            String key = parts[0].trim();
+            String value = parts[1].trim();
+            switch (key.toLowerCase()) {
+                case "enabled" -> config.setEnabled(StringUtils.equalsIgnoreCase(value, "Yes"));
+                case "server" -> config.setServer(value);
+                case "port" -> config.setPort(Integer.parseInt(value));
+                case "authenticated proxy enabled" -> config.setAuthEnabled(value.equals("1"));
             }
         }
-
-        process.waitFor();
-        return result.toString();
+        return config;
     }
 }

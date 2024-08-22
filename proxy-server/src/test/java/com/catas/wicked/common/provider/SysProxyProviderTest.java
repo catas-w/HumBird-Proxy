@@ -100,19 +100,41 @@ public class SysProxyProviderTest extends BaseTest {
 
     @Test
     @ConditionalTest(os = Requires.Family.WINDOWS)
+    public void testWinGetSysProxy() throws NoSuchFieldException, IllegalAccessException {
+        WinSysProxyProvider provider = new WinSysProxyProvider();
+        setPrivateField(provider, "appConfig", new ApplicationConfig());
+        List<SystemProxyConfig> configList = provider.getSysProxyConfig();
+        System.out.println(configList);
+        Assertions.assertFalse(configList.isEmpty());
+        Assertions.assertNotNull(configList.get(0));
+    }
+
+    @Test
+    @ConditionalTest(os = Requires.Family.WINDOWS)
+    public void testWinByPassDomains() throws Exception {
+        WinSysProxyProvider provider = new WinSysProxyProvider();
+        setPrivateField(provider, "appConfig", new ApplicationConfig());
+        List<String> domains = provider.getBypassDomains();
+        System.out.println(domains);
+    }
+
+    @Test
+    @ConditionalTest(os = Requires.Family.WINDOWS)
     public void test4() {
         System.out.println("test-from-win");
     }
 
     @Test
-    public void testParseSysProxyConfig() {
+    public void testParseSysProxyConfig() throws NoSuchFieldException, IllegalAccessException {
+        MacSysProxyProvider proxyProvider = new MacSysProxyProvider();
+        setPrivateField(proxyProvider, "appConfig", new ApplicationConfig());
         {
             String lines = """
                     Enabled: Yes
                     Server: 127.0.0.1
                     Port: 7890
                     Authenticated Proxy Enabled: 0""";
-            SystemProxyConfig config = SystemProxyConfig.parseFromLines(lines);
+            SystemProxyConfig config = proxyProvider.parseFromNetworkSetup(lines);
             Assertions.assertNotNull(config);
             Assertions.assertTrue(config.isEnabled());
             Assertions.assertEquals("127.0.0.1", config.getServer());
@@ -125,7 +147,7 @@ public class SysProxyProviderTest extends BaseTest {
                     Server:\s
                     Port: 0
                     Authenticated Proxy Enabled: 0""";
-            SystemProxyConfig config = SystemProxyConfig.parseFromLines(lines);
+            SystemProxyConfig config = proxyProvider.parseFromNetworkSetup(lines);
             Assertions.assertNotNull(config);
             Assertions.assertFalse(config.isEnabled());
             Assertions.assertTrue(config.getServer().isBlank());
