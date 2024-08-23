@@ -58,6 +58,23 @@ public class WinSysProxyProvider implements SysProxyProvider {
 
     @Override
     public void setSysProxyConfig() {
+        String proxyServer = String.format("%s:%s", appConfig.getHost(), appConfig.getSettings().getPort());
+        boolean enabled = appConfig.getSettings().isSystemProxy();
+        String enableProxy = enabled ? "1" : "0";
+
+        try {
+            String res = setRegistryValue(KEY_PROXY_ENABLE, enableProxy, "REG_DWORD");
+            if (enabled) {
+                res += setRegistryValue(KEY_PROXY_SERVER, proxyServer, "REG_SZ");
+            }
+            // Notify the system about the changes
+            // ProcessBuilder notifyBuilder = new ProcessBuilder("RUNDLL32.EXE", "inetcpl.cpl,ProxyStub");
+            // SystemUtils.runCommand(notifyBuilder);
+
+            log.info("Set Windows system proxy with {}, enabled: {}, res: {}", proxyServer, enableProxy, res);
+        } catch (Exception e) {
+            log.error("Error in setting Windows system proxy.", e);
+        }
     }
 
     @Override
@@ -80,7 +97,24 @@ public class WinSysProxyProvider implements SysProxyProvider {
 
     @Override
     public void setBypassDomains(List<String> domains) {
+        if (domains == null) {
+            throw new IllegalArgumentException("Domains cannot be null");
+        }
+        String value = String.join(";", domains);
+        try {
+            setRegistryValue(KEY_PROXY_OVERRIDE, value, "REG_SZ");
+        } catch (Exception e) {
+            log.error("Error in setting Windows bypass domains.", e);
+        }
+    }
 
+    private String setRegistryValue(String key, String value, String valueType) throws IOException, InterruptedException {
+        ProcessBuilder builder = new ProcessBuilder(
+                "reg",
+                "add",
+                QUOTE_REG_PATH,
+                "/v", key, "/t", valueType, "/d", value, "/f");
+        return SystemUtils.runCommand(builder);
     }
 
     private String getRegistryValue(String valueName) throws IOException, InterruptedException {

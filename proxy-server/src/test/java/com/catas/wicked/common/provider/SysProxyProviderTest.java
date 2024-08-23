@@ -114,14 +114,57 @@ public class SysProxyProviderTest extends BaseTest {
     public void testWinByPassDomains() throws Exception {
         WinSysProxyProvider provider = new WinSysProxyProvider();
         setPrivateField(provider, "appConfig", new ApplicationConfig());
-        List<String> domains = provider.getBypassDomains();
-        System.out.println(domains);
+
+        final String testDomain = "*.catas.org";
+        List<String> target = List.of(testDomain, "*.google.com", "bing.com");
+
+        // add domain
+        {
+            provider.setBypassDomains(target);
+            List<String> finalDomains = provider.getBypassDomains();
+            Assertions.assertTrue(finalDomains.contains(testDomain));
+            Assertions.assertEquals(finalDomains, target);
+        }
+
+        // clear
+        {
+            provider.setBypassDomains(Collections.emptyList());
+            List<String> finalDomains = provider.getBypassDomains();
+            Assertions.assertTrue(finalDomains.isEmpty());
+        }
     }
 
     @Test
     @ConditionalTest(os = Requires.Family.WINDOWS)
-    public void test4() {
-        System.out.println("test-from-win");
+    public void testWinSetSysProxy() throws NoSuchFieldException, IllegalAccessException {
+        int port = 19624;
+        WinSysProxyProvider proxyProvider = new WinSysProxyProvider();
+        ApplicationConfig appConfig = new ApplicationConfig();
+        Settings settings = new Settings();
+        settings.setSystemProxy(true);
+        settings.setPort(port);
+        appConfig.setSettings(settings);
+        setPrivateField(proxyProvider, "appConfig", appConfig);
+
+        // set system proxy
+        proxyProvider.setSysProxyConfig();
+        {
+            List<SystemProxyConfig> configList = proxyProvider.getSysProxyConfig();
+            Assertions.assertFalse(configList.isEmpty());
+            SystemProxyConfig config = configList.get(0);
+            Assertions.assertTrue(config.isEnabled());
+            Assertions.assertEquals(port, config.getPort());
+            Assertions.assertEquals(appConfig.getHost(), config.getServer());
+        }
+
+        // cancel system proxy
+        settings.setSystemProxy(false);
+        proxyProvider.setSysProxyConfig();
+        {
+            List<SystemProxyConfig> configList = proxyProvider.getSysProxyConfig();
+            Assertions.assertFalse(configList.isEmpty());
+            Assertions.assertFalse(configList.get(0).isEnabled());
+        }
     }
 
     @Test
