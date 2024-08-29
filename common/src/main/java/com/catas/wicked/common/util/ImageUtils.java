@@ -25,12 +25,12 @@ import java.nio.IntBuffer;
 @Slf4j
 public class ImageUtils {
 
-    private static final WebPReadParam readParam;
+    // private static final WebPReadParam readParam;
 
-    static {
-        readParam = new WebPReadParam();
-        readParam.setBypassFiltering(true);
-    }
+    // static {
+    //     readParam = new WebPReadParam();
+    //     readParam.setBypassFiltering(true);
+    // }
 
     /**
      * convert bufferedImage to javafx image
@@ -94,6 +94,9 @@ public class ImageUtils {
             MemoryCacheImageInputStream imageInputStream = new MemoryCacheImageInputStream(inputStream);
             reader.setInput(imageInputStream);
         }
+        // FIXME: arm64 support
+        WebPReadParam readParam = new WebPReadParam();
+        readParam.setBypassFiltering(true);
         BufferedImage image = reader.read(0, readParam);
         return image;
     }

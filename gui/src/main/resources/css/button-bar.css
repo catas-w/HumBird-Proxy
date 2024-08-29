@@ -6,24 +6,32 @@
     -fx-background-radius: 3px;
     -fx-background-insets: 0px;
 }
+.main-menu-btn:hover,
+.jfx-toggle-node:hover,
 .button:hover {
-    -fx-opacity: 0.5;
+    -fx-background-color: rgba(229, 229, 229, 0.75);
+    /*-fx-opacity: 0.6;*/
 }
-
+.main-menu-btn:hover .ikonli-font-icon,
+.jfx-toggle-node:hover .ikonli-font-icon,
+.button:hover .ikonli-font-icon{
+    -fx-opacity: 0.8;
+}
 
 
 /******** Main config menu *********/
 .main-menu-btn {
-    -fx-background-color: #ffffff;
+    -fx-background-color: TRANSPARENT;
 }
 
-.main-menu-btn:hover {
-    /*-fx-background-color: #d0d0d0;*/
-    -fx-opacity: 0.6;
-}
+/*.main-menu-btn:hover {*/
+/*    -fx-background-color: rgba(255, 255, 255, 0.55);*/
+/*    -fx-opacity: 0.6;*/
+/*}*/
 
 .main-menu-btn .menu-item:focused {
     -fx-background-color: #29c1c1;
+    /*-fx-background-color: #cc3636;*/
 }
 
 .main-menu-btn .menu-item {
@@ -65,4 +73,11 @@
 }
 #recordBtn:focused .jfx-rippler{
     -jfx-rippler-fill: white;
+}
+
+/********** Separator **********/
+.separator .line {
+    -fx-background-color: #C2C2C2BC;
+    -fx-border-width: 0;
+    -fx-pref-height: 2;
 }

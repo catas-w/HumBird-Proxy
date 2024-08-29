@@ -47,6 +47,7 @@ import java.util.ResourceBundle;
 
 import static com.catas.wicked.common.constant.StyleConstant.COLOR_ACTIVE;
 import static com.catas.wicked.common.constant.StyleConstant.COLOR_INACTIVE;
+import static com.catas.wicked.common.constant.StyleConstant.COLOR_RED;
 import static com.catas.wicked.common.constant.StyleConstant.COLOR_SUSPEND;
 
 @Slf4j
@@ -102,10 +103,10 @@ public class ButtonBarController implements Initializable {
             FontIcon icon = (FontIcon) recordBtn.getGraphic();
             if (newValue) {
                 icon.setIconLiteral("fas-record-vinyl");
-                icon.setIconColor(Color.valueOf("#ec2222"));
+                icon.setIconColor(COLOR_RED);
             } else {
                 icon.setIconLiteral("far-play-circle");
-                icon.setIconColor(Color.valueOf("#616161"));
+                icon.setIconColor(COLOR_INACTIVE);
             }
             appConfig.getSettings().setRecording(newValue);
 

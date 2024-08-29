@@ -22,7 +22,7 @@
     </stylesheets>
     <JFXTabPane fx:id="mainTabPane" minWidth="300.0" prefHeight="567.0" prefWidth="600.0" style="-fx-background-color: TRANSPARENT;" styleClass="jfx-tab-pane" VBox.vgrow="ALWAYS">
         <Tab text="  Overview  ">
-            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="388.0" prefWidth="584.0">
+            <AnchorPane styleClass="tab-anchor-pane">
                 <DisplayCodeArea fx:id="overviewArea" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <cursor>
                         <Cursor fx:constant="TEXT" />
@@ -37,7 +37,7 @@
             </AnchorPane>
         </Tab>
         <Tab text="  Request  ">
-            <AnchorPane>
+            <AnchorPane styleClass="tab-anchor-pane">
                 <SplitPane fx:id="reqSplitPane" styleClass="vertical-split-pane" dividerPositions="0.45" orientation="VERTICAL" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <HeaderTitledPane fx:id="reqHeaderPane" animated="true" maxHeight="Infinity" text="Headers" VBox.vgrow="ALWAYS">
                         <AnchorPane minHeight="0.0" minWidth="0.0" styleClass="code-anchor-pane">
@@ -85,7 +85,7 @@
             </AnchorPane>
         </Tab>
         <Tab text="  Response  ">
-            <AnchorPane minHeight="0.0" minWidth="0.0">
+            <AnchorPane minHeight="0.0" minWidth="0.0" styleClass="tab-anchor-pane">
                 <SplitPane fx:id="respSplitPane" styleClass="vertical-split-pane" dividerPositions="0.45" orientation="VERTICAL" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <HeaderTitledPane fx:id="respHeaderPane" checkBoxTitle="Origin" checkIndex="0" animated="false" maxHeight="Infinity" text="Headers" VBox.vgrow="ALWAYS">
                         <AnchorPane minHeight="0.0" minWidth="0.0" styleClass="code-anchor-pane">
@@ -114,7 +114,7 @@
         </Tab>
         <Tab text="   Timing   ">
             <!-- <HeaderTitledPane animated="true" maxHeight="Infinity" text="Timing" VBox.vgrow="ALWAYS"> -->
-            <AnchorPane minHeight="0.0" minWidth="0.0">
+            <AnchorPane minHeight="0.0" minWidth="0.0" styleClass="tab-anchor-pane">
                 <GridPane fx:id="timingGridPane" hgap="5" vgap="10"
                           AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="10.0"
                           AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="5.0">
@@ -154,7 +154,7 @@
             <!-- </HeaderTitledPane> -->
         </Tab>
         <Tab text="   Test   ">
-            <AnchorPane minHeight="0.0" minWidth="0.0">
+            <AnchorPane minHeight="0.0" minWidth="0.0" styleClass="tab-anchor-pane">
                 <DisplayCodeArea codeStyle="XML" fx:id="testCodeArea" />
                 <JFXTreeTableView fx:id="testTable" styleClass="overview" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
 

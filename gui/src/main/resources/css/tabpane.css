@@ -1,6 +1,6 @@
 
 .jfx-tab-pane .tab-header-background {
-    -fx-background-color: TRANSPARENT;
+    -fx-background-color: #ffffff;
 }
 
 .jfx-tab-pane .tab-header-area .tab-down-button {
@@ -65,6 +65,10 @@
 
 .jfx-tab-pane .headers-region .tab {
 
+}
+
+.tab-anchor-pane {
+    -fx-background-color: #ffffff;
 }
 
 /******** request payload *********/

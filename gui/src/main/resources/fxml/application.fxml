@@ -15,22 +15,20 @@
         <URL value="@../css/app.css"/>
         <URL value="@../css/common-design.css"/>
     </stylesheets>
-    <!--<ToolBar style="-fx-background-color: TRANSPARENT;" VBox.vgrow="NEVER">-->
-    <!--    <HBox>-->
-    <!--        <Button fx:id="closeBtn" text="X"/>-->
-    <!--    </HBox>-->
-    <!--</ToolBar>-->
+    <HBox fx:id="customTitleBar" styleClass="custom-title-bar" VBox.vgrow="NEVER">
+        <!-- <HBox fx:id="leftBar" styleClass="left-bar" prefWidth="200" HBox.hgrow="ALWAYS"/> -->
+        <!-- <HBox fx:id="rightBar" styleClass="right-bar" HBox.hgrow="NEVER"/> -->
+    </HBox>
     <HBox VBox.vgrow="ALWAYS">
         <fx:include source="button-bar.fxml"/>
         <SplitPane dividerPositions="0.3" focusTraversable="true"
                    style="-fx-background-color: TRANSPARENT;" HBox.hgrow="ALWAYS">
-            <fx:include source="request-view-pane.fxml"/>
-            <fx:include source="detail-tab-pane.fxml"/>
+            <fx:include styleClass="request-view-pane" source="request-view-pane.fxml"/>
+            <fx:include fx:id="detailTabPane" source="detail-tab-pane.fxml"/>
             <!-- <fx:include source="detail-web-view.fxml"/> -->
         </SplitPane>
     </HBox>
-    <HBox id="HBox" alignment="CENTER_LEFT" spacing="5.0"
-          style="-fx-background-color: TRANSPARENT; -fx-border-color: #efefef;" VBox.vgrow="NEVER">
+    <HBox styleClass="bottom-bar" alignment="CENTER_LEFT" spacing="5.0" VBox.vgrow="NEVER">
         <padding>
             <Insets bottom="3.0" left="3.0" right="3.0" top="3.0"/>
         </padding>

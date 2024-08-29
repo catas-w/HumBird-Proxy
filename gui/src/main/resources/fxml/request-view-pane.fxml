@@ -39,6 +39,9 @@
         </JFXToggleNode>
         <JFXToggleNode fx:id="viewToggleNode" styleClass="toggle-node">
             <FontIcon iconColor="#616161" iconLiteral="fas-tree" iconSize="18"/>
+            <!-- <HBox.margin> -->
+            <!--     <Insets left="4.0" /> -->
+            <!-- </HBox.margin> -->
         </JFXToggleNode>
 
         <HBox.margin>

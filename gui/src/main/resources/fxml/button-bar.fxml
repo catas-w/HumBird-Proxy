@@ -8,22 +8,24 @@
 <?import javafx.scene.text.*?>
 <?import org.kordamp.ikonli.javafx.*?>
 
-<AnchorPane maxWidth="55.0" minWidth="50.0" prefHeight="545.0" prefWidth="50.0" style="-fx-background-color: TRANSPARENT; -fx-border-color: #efefef; -fx-border-width: 0 1 0 0;" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.catas.wicked.proxy.gui.controller.ButtonBarController">
+<AnchorPane maxWidth="55.0" minWidth="50.0" prefHeight="545.0" prefWidth="50.0"
+            style="-fx-background-color: TRANSPARENT; -fx-border-color: rgba(119,119,119,0.38); -fx-border-width: 0 0.6 0 0;"
+            xmlns="http://javafx.com/javafx/11.0.14-internal"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.catas.wicked.proxy.gui.controller.ButtonBarController">
     <stylesheets>
         <URL value="@../css/common-design.css" />
         <URL value="@../css/button-bar.css" />
     </stylesheets>
     <VBox prefHeight="200.0" prefWidth="100.0" style="-fx-background-color: TRANSPARENT;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="20.0">
-        <JFXToggleNode fx:id="recordBtn" prefWidth="200.0" selected="true" textOverrun="CLIP">
-            <graphic>
-                <FontIcon iconColor="#ec2222" iconLiteral="fas-record-vinyl" iconSize="18" />
-            </graphic>
+        <JFXToggleNode fx:id="recordBtn" prefWidth="200.0" selected="false" textOverrun="CLIP">
             <VBox.margin>
-                <Insets top="20.0" />
+                <Insets top="20.0"/>
             </VBox.margin>
             <tooltip>
-                <Tooltip text="Record Requests" />
+                <Tooltip text="Record Requests"/>
             </tooltip>
+            <FontIcon iconLiteral="fas-record-vinyl" iconSize="18"/>
         </JFXToggleNode>
         <JFXToggleNode fx:id="sslBtn" prefWidth="200.0" textOverrun="CLIP">
             <VBox.margin>
@@ -52,6 +54,7 @@
             </tooltip>
             <FontIcon iconColor="#616161" iconLiteral="fas-hourglass-half" iconSize="18"/>
         </JFXToggleNode>
+
         <Separator prefWidth="200.0" >
              <VBox.margin>
                 <Insets top="20.0" />
@@ -112,7 +115,7 @@
         </JFXButton>
 
         <Pane VBox.vgrow="ALWAYS" />
-        <MenuButton fx:id="mainMenuButton" mnemonicParsing="false" popupSide="TOP" prefHeight="28.0" prefWidth="45.0" styleClass="main-menu-btn" textFill="#363636bd">
+        <MenuButton fx:id="mainMenuButton" mnemonicParsing="false" popupSide="TOP" styleClass="main-menu-btn">
             <items>
                 <MenuItem fx:id="proxySetting" onAction="#displaySettingPage" text="Settings">
                     <graphic>

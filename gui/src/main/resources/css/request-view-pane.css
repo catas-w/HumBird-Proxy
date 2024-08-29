@@ -1,7 +1,7 @@
 
-.button:hover {
-    -fx-opacity: 0.5;
-}
+/*.button:hover {*/
+/*    -fx-opacity: 0.5;*/
+/*}*/
 
 /* list/tree view menu */
 .view-button {
@@ -23,7 +23,7 @@
 }
 
 .context-menu {
-    -fx-background-color: white;
+    -fx-background-color: TRANSPARENT;
     -fx-background-insets: 0, 1, 2;
     -fx-background-radius: 6 6 6 6, 6 6 6 6, 6 6 6 6;
     /*    -fx-padding: 0.666667em 0.083333em 0.666667em 0.083333em;  8 1 8 1 */
@@ -41,6 +41,7 @@
 /********** tree view **********/
 .tree-view {
     -fx-background-insets: 0;
+    -fx-background-color: TRANSPARENT;
 }
 .tree-cell:selected {
     -fx-background-color: #7fd9d0;
@@ -54,7 +55,7 @@
     /*-fx-background-color: #29c1c1;*/
 }
 .tree-cell {
-    /*-fx-background-color: -fx-control-inner-background;*/
+    -fx-background-color: TRANSPARENT;
     /*-fx-background-color: #449ee7;*/
     -fx-content-display: graphic-only;
     -fx-padding: 0.1em; /* 3 */
@@ -128,14 +129,16 @@
 
 /********** filter input **********/
 #filterInput {
-    -fx-background-color: #efefef;
+    -fx-background-color: rgba(180, 180, 180, 0.51);
     -fx-background-radius: 12 12 12 12;
-    -fx-border-width: 1;
+    -fx-border-width: 0;
     -fx-border-radius: 12;
-    -fx-border-color: #eeeeee;
+    /*-fx-border-color: rgba(131, 131, 131, 0.49);*/
     -fx-pref-width: 200;
-    -fx-pref-height: 25;
+    -fx-pref-height: 22;
     -fx-padding: 0 0 1 5;
+
+    -fx-prompt-text-fill: #989898;
 }
 
 /********** toggle-node **********/
