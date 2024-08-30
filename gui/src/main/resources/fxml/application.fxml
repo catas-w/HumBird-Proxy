@@ -7,7 +7,7 @@
 <?import javafx.scene.paint.*?>
 <?import javafx.scene.text.*?>
 
-<VBox minWidth="500.0" minHeight="500" style="-fx-border-radius: 5;"
+<VBox fx:id="rootVBox" styleClass="root-vbox" minWidth="500.0" minHeight="500" style="-fx-border-radius: 5;"
       xmlns="http://javafx.com/javafx/11.0.14-internal"
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.catas.wicked.proxy.gui.controller.AppController">
@@ -15,10 +15,10 @@
         <URL value="@../css/app.css"/>
         <URL value="@../css/common-design.css"/>
     </stylesheets>
-    <HBox fx:id="customTitleBar" styleClass="custom-title-bar" VBox.vgrow="NEVER">
+    <!-- <HBox fx:id="customTitleBar" styleClass="custom-title-bar" VBox.vgrow="NEVER"> -->
         <!-- <HBox fx:id="leftBar" styleClass="left-bar" prefWidth="200" HBox.hgrow="ALWAYS"/> -->
         <!-- <HBox fx:id="rightBar" styleClass="right-bar" HBox.hgrow="NEVER"/> -->
-    </HBox>
+    <!-- </HBox> -->
     <HBox VBox.vgrow="ALWAYS">
         <fx:include source="button-bar.fxml"/>
         <SplitPane dividerPositions="0.3" focusTraversable="true"

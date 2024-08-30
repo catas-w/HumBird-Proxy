@@ -1,14 +1,14 @@
-package com.catas.wicked.common.jna;
+package com.catas.wicked.proxy.gui;
 
 import com.catas.wicked.common.constant.BlurOption;
+import com.catas.wicked.common.jna.FoundationLibrary;
+import com.catas.wicked.common.jna.WindowBlurLibrary;
 import com.sun.javafx.stage.WindowHelper;
 import com.sun.javafx.tk.quantum.WindowStage;
 import com.sun.jna.NativeLong;
 import javafx.stage.Window;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
-public class JnaUtils {
+public class JnaTestUtils {
 
     public static void setBlurWindow(long windowPtr, BlurOption blurOption) {
         if (blurOption == null) {
@@ -32,5 +32,4 @@ public class JnaUtils {
             return 0L;
         }
     }
-
 }
