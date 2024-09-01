@@ -51,15 +51,15 @@ public class FilterableTreeItem<T> extends TreeItem<T> {
 
     protected void setHiddenFieldChildren(ObservableList<TreeItem<T>> list) {
         try {
-            Field childrenField = TreeItem.class.getDeclaredField("children"); //$NON-NLS-1$
+            Field childrenField = TreeItem.class.getDeclaredField("children");
             childrenField.setAccessible(true);
             childrenField.set(this, list);
 
-            Field declaredField = TreeItem.class.getDeclaredField("childrenListener"); //$NON-NLS-1$
+            Field declaredField = TreeItem.class.getDeclaredField("childrenListener");
             declaredField.setAccessible(true);
             list.addListener((ListChangeListener<? super TreeItem<T>>) declaredField.get(this));
         } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
-            throw new RuntimeException("Could not set TreeItem.children", e); //$NON-NLS-1$
+            throw new RuntimeException("Could not set TreeItem.children", e);
         }
     }
 

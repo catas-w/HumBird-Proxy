@@ -81,30 +81,12 @@ public class RequestViewTreeCell<T> extends TreeCell<T> {
     @Override
     protected void layoutChildren() {
         super.layoutChildren();
-        // if (!getChildren().contains(selectedPane)) {
-        //     getChildren().add(0, selectedPane);
-        //     selectedPane.resizeRelocate(0, 0, getWidth(), getHeight());
-        //     selectedPane.setVisible(true);
-        //     selectedPane.setOpacity(0);
-        // }
-        // selectedPane.resizeRelocate(0, 0, getWidth(), getHeight());
-        // selectedPane.setVisible(true);
-        // selectedPane.setOpacity(0);
     }
 
     /**
      * play animation
      */
     private void triggerFade() {
-        // if (showTransition == null) {
-        //     showTransition = new FadeTransition();
-        //     showTransition.setNode(selectedPane);
-        //     showTransition.setDuration(Duration.millis(500));
-        //     showTransition.setCycleCount(1);
-        //     showTransition.setAutoReverse(true);
-        //     showTransition.setFromValue(0);
-        //     showTransition.setToValue(1);
-        // }
         if (this.fadeTransition == null) {
             this.fadeTransition = new FadeTransition();
             this.fadeTransition.setNode(selectedPane);
@@ -159,7 +141,7 @@ public class RequestViewTreeCell<T> extends TreeCell<T> {
             if (pathIcon == null) {
                 pathIcon = new FontIcon();
                 pathIcon.getStyleClass().add("req-icon");
-                pathIcon.setIconColor(Color.valueOf("#8C9C9E"));
+                // pathIcon.setIconColor(Color.valueOf("#8C9C9E"));
                 pathIcon.setIconSize(14);
             }
             if (requestCell.getPath().startsWith("http")) {

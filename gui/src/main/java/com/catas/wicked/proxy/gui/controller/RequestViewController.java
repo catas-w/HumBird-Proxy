@@ -13,6 +13,7 @@ import com.jfoenix.controls.JFXToggleNode;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import javafx.beans.binding.Bindings;
+import javafx.beans.binding.ObjectBinding;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -149,14 +150,11 @@ public class RequestViewController implements Initializable {
      * filter requests
      */
     private void filterInputEventBind() {
-        filterInput.setOnKeyTyped(e -> {
-            CharSequence characters = filterInput.getText();
-            filterCancelBtn.setVisible(characters.length() > 0);
-        });
+        filterCancelBtn.visibleProperty().bind(Bindings.createBooleanBinding(
+                () -> !filterInput.getText().isEmpty(), filterInput.textProperty()));
 
-        filterCancelBtn.setOnMouseClicked(e -> {
+        filterCancelBtn.setOnAction(e -> {
             filterInput.clear();
-            filterCancelBtn.setVisible(false);
         });
 
         // bind filter treeView from: JFX

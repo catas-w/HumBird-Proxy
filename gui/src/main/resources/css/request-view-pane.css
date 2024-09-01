@@ -44,12 +44,12 @@
     -fx-background-color: TRANSPARENT;
 }
 .tree-cell:selected {
-    -fx-background-color: #7fd9d0;
+    -fx-background-color: rgba(12, 204, 204, 0.5);
 }
 
 .tree-cell:selected .req-method-label {
     -fx-opacity: 1;
-    -fx-text-fill: #ffffff;
+    -fx-text-fill: #000000;
 }
 .req-leaf {
     /*-fx-background-color: #29c1c1;*/
@@ -59,11 +59,11 @@
     /*-fx-background-color: #449ee7;*/
     -fx-content-display: graphic-only;
     -fx-padding: 0.1em; /* 3 */
-    -fx-text-fill: #3d4242;
+    /*-fx-text-fill: #3d4242;*/
     -fx-indent: 14;
 }
 .tree-cell .arrow {
-    -fx-background-color: #8C9C9E;
+    -fx-background-color: #647c80;
 }
 .tree-cell .label {
     -fx-padding: 0.0em 0.0em 0.0em 0.0em; /* 0 0 0 3 */
@@ -77,14 +77,16 @@
 
 /****** path label ******/
 .req-path-label {
-    /*-fx-background-color: #0059b0;*/
-    /*-fx-opacity: 0.7;*/
+    -fx-text-fill: #414141;
+}
+.tree-cell:selected .req-path-label {
+    -fx-text-fill: #000000;
 }
 
 /********** method label **********/
 .req-method-label {
     -fx-border-radius: 0.5em;
-    -fx-opacity: 0.6;
+    -fx-opacity: 0.8;
     -fx-padding: 0 0.1em 0 0.1em;
     -fx-font-weight: bold;
 }
@@ -103,7 +105,7 @@
 }
 
 .req-cell-bar {
-    -fx-background-color: #33cbb9;
+    -fx-background-color: #46a8a8;
     -fx-opacity: 0;
 }
 
@@ -111,14 +113,14 @@
 /********** List view cell **********/
 .list-view {
     -fx-background-insets: 0;
+    -fx-background-color: TRANSPARENT;
 }
 .list-cell:selected .req-method-label {
     -fx-opacity: 1;
-    -fx-text-fill: #ffffff;
 }
 .list-cell:odd:selected,
-.list-cell:even:selected{
-    -fx-background-color: #7fd9d0;
+.list-cell:even:selected {
+    -fx-background-color: rgba(12, 204, 204, 0.5);
 }
 
 .list-cell:odd,
@@ -126,6 +128,12 @@
     -fx-background-color: TRANSPARENT;
 }
 
+.list-cell {
+    -fx-text-fill: #414141;
+}
+.list-cell:selected {
+    -fx-text-fill: #000000 ;
+}
 
 /********** filter input **********/
 #filterInput {
@@ -144,7 +152,7 @@
 /********** toggle-node **********/
 .toggle-node {
     -jfx-toggle-color: TRANSPARENT;
-    -jfx-rippler-fill: #33cbb9;
+    -jfx-rippler-fill: #7fd9d0;
     -fx-max-width: 25;
     -fx-min-width: 25;
     -fx-padding: 5 0 0 0;
@@ -154,4 +162,8 @@
     -fx-opacity: 0.5;
 }
 
+/********** tree-cells **********/
+.req-icon {
+    -fx-icon-color: #647c80
+}
 

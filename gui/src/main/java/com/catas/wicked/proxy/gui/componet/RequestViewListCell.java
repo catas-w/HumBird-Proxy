@@ -37,15 +37,6 @@ public class RequestViewListCell<T> extends ListCell<T> {
      * play animation
      */
     private void triggerFade() {
-        // if (showTransition == null) {
-        //     showTransition = new FadeTransition();
-        //     showTransition.setNode(selectedPane);
-        //     showTransition.setDuration(Duration.millis(500));
-        //     showTransition.setCycleCount(1);
-        //     showTransition.setAutoReverse(true);
-        //     showTransition.setFromValue(0);
-        //     showTransition.setToValue(1);
-        // }
         if (fadeTransition == null) {
             fadeTransition = new FadeTransition();
             fadeTransition.setNode(selectedPane);

@@ -22,7 +22,7 @@
                     <Insets bottom="2.0" left="5.0" top="2.0" />
                 </StackPane.margin>
             </TextField>
-            <Button fx:id="filterCancelBtn" prefHeight="22.0" prefWidth="22.0" style="-fx-background-color: TRANSPARENT;" visible="false">
+            <Button fx:id="filterCancelBtn" prefHeight="22.0" prefWidth="22.0" style="-fx-background-color: TRANSPARENT;">
                 <graphic>
                     <FontIcon iconColor="#616161" iconLiteral="fas-times-circle" iconSize="14" opacity="0.7" />
                 </graphic>

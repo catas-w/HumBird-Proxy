@@ -9,6 +9,7 @@ import com.catas.wicked.proxy.message.MessageService;
 import com.catas.wicked.proxy.provider.StageProvider;
 import com.catas.wicked.server.proxy.ProxyServer;
 import io.micronaut.context.annotation.Any;
+import io.micronaut.core.annotation.Nullable;
 import jakarta.inject.Inject;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -45,6 +46,7 @@ public class WickedProxyApplication implements ApplicationDelegate {
     private AppController appController;
 
     @Inject
+    @Nullable
     private StageProvider stageProvider;
 
     public static void main(String[] args) {
