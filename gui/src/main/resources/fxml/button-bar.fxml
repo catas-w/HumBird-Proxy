@@ -23,7 +23,7 @@
                 <Insets top="20.0"/>
             </VBox.margin>
             <tooltip>
-                <Tooltip text="Record Requests"/>
+                <Tooltip text="Record Requests" showDelay="500ms" />
             </tooltip>
             <FontIcon iconLiteral="fas-record-vinyl" iconSize="18"/>
         </JFXToggleNode>
@@ -32,7 +32,7 @@
                 <Insets top="20.0"/>
             </VBox.margin>
             <tooltip>
-                <Tooltip text="Handle SSL"/>
+                <Tooltip text="Handle SSL" showDelay="500ms" />
             </tooltip>
             <FontIcon iconColor="#68cbc8" iconLiteral="fas-mask" iconSize="18"/>
         </JFXToggleNode>
@@ -41,7 +41,7 @@
                 <Insets top="20.0"/>
             </VBox.margin>
             <tooltip>
-                <Tooltip text="Set as system proxy"/>
+                <Tooltip text="Set as system proxy" showDelay="500ms" />
             </tooltip>
             <FontIcon iconColor="#616161" iconLiteral="fas-burn" iconSize="18"/>
         </JFXToggleNode>
@@ -50,7 +50,7 @@
                 <Insets top="20.0"/>
             </VBox.margin>
             <tooltip>
-                <Tooltip text="Start Throttling"/>
+                <Tooltip text="Start Throttling" showDelay="500ms" />
             </tooltip>
             <FontIcon iconColor="#616161" iconLiteral="fas-hourglass-half" iconSize="18"/>
         </JFXToggleNode>
@@ -69,7 +69,7 @@
                 <Insets top="20.0" />
             </VBox.margin>
             <tooltip>
-                <Tooltip text="Delete Requests" />
+                <Tooltip text="Delete Requests" showDelay="500ms" />
             </tooltip>
         </JFXButton>
         <JFXButton fx:id="removeAllBtn" onAction="#deleteAll" prefWidth="200.0" textOverrun="CLIP">
@@ -91,7 +91,7 @@
                 <Insets top="20.0" />
             </VBox.margin>
             <tooltip>
-                <Tooltip text="Resend Selected Request" />
+                <Tooltip text="Resend Selected Request" showDelay="500ms"/>
             </tooltip>
         </JFXButton>
         <JFXButton fx:id="locateBtn" onAction="#locateToSelectedItem" prefWidth="200.0" textOverrun="CLIP">

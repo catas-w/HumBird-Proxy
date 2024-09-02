@@ -7,7 +7,8 @@
 <?import org.kordamp.ikonli.javafx.*?>
 
 <?import com.catas.wicked.proxy.gui.componet.FilterableTreeItem?>
-<?import com.jfoenix.controls.JFXToggleNode?>
+<?import com.catas.wicked.proxy.gui.componet.CustomToggleNode?>
+
 <VBox xmlns="http://javafx.com/javafx/11.0.14-internal"
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.catas.wicked.proxy.gui.controller.RequestViewController">
@@ -31,18 +32,24 @@
                 </StackPane.margin>
             </Button>
         </StackPane>
-        <JFXToggleNode styleClass="toggle-node" onAction="#clearLeafNode">
-            <FontIcon iconColor="#616161" iconLiteral="fas-quidditch" iconSize="18"/>
-            <HBox.margin>
-                <Insets left="5.0" />
-            </HBox.margin>
-        </JFXToggleNode>
-        <JFXToggleNode fx:id="viewToggleNode" styleClass="toggle-node">
-            <FontIcon iconColor="#616161" iconLiteral="fas-tree" iconSize="18"/>
-            <!-- <HBox.margin> -->
-            <!--     <Insets left="4.0" /> -->
-            <!-- </HBox.margin> -->
-        </JFXToggleNode>
+        <!-- <JFXToggleNode styleClass="toggle-node" onAction="#clearLeafNode"> -->
+        <!--     <FontIcon iconColor="#616161" iconLiteral="fas-quidditch" iconSize="18"/> -->
+        <!--     <HBox.margin> -->
+        <!--         <Insets left="5.0" /> -->
+        <!--     </HBox.margin> -->
+        <!-- </JFXToggleNode> -->
+        <CustomToggleNode fx:id="treeViewToggleNode" styleClass="toggle-node" selected="false">
+            <FontIcon iconLiteral="fas-tree" iconSize="18"/>
+            <tooltip>
+                <Tooltip text="Tree view" showDelay="500ms"/>
+            </tooltip>
+        </CustomToggleNode>
+        <CustomToggleNode fx:id="listViewToggleNode" styleClass="toggle-node" >
+            <FontIcon iconLiteral="fas-list-ul" iconSize="18"/>
+            <tooltip>
+                <Tooltip text="List view" showDelay="500ms"/>
+            </tooltip>
+        </CustomToggleNode>
 
         <HBox.margin>
             <Insets right="5.0" />

@@ -13,7 +13,6 @@ import com.jfoenix.controls.JFXToggleNode;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import javafx.beans.binding.Bindings;
-import javafx.beans.binding.ObjectBinding;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -24,6 +23,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import lombok.extern.slf4j.Slf4j;
@@ -39,7 +39,9 @@ import java.util.function.Predicate;
 public class RequestViewController implements Initializable {
 
     @FXML
-    public JFXToggleNode viewToggleNode;
+    public JFXToggleNode treeViewToggleNode;
+    @FXML
+    public JFXToggleNode listViewToggleNode;
     @FXML
     private TextField filterInput;
     @FXML
@@ -58,6 +60,8 @@ public class RequestViewController implements Initializable {
     private MessageQueue messageQueue;
     @Inject
     private RequestViewService requestViewService;
+
+    private ToggleGroup toggleGroup;
 
     private MessageService messageService;
     /**
@@ -133,16 +137,28 @@ public class RequestViewController implements Initializable {
         toggleRequestView();
     }
 
+    /**
+     * int toggle request view event
+     */
     public void toggleRequestView() {
-        viewToggleNode.selectedProperty().addListener((observable, oldValue, newValue) -> {
-            FontIcon icon = (FontIcon) viewToggleNode.getGraphic();
-            if (newValue) {
-                icon.setIconLiteral("fas-list-ul");
-            } else {
-                icon.setIconLiteral("fas-tree");
+        toggleGroup = new ToggleGroup();
+        treeViewToggleNode.setToggleGroup(toggleGroup);
+        listViewToggleNode.setToggleGroup(toggleGroup);
+        treeViewToggleNode.setSelected(true);
+
+        // make at least & only one being selected
+        toggleGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue == null) {
+                oldValue.setSelected(true);
             }
-            reqTreeView.setVisible(!newValue);
-            reqListView.setVisible(newValue);
+            if (newValue instanceof JFXToggleNode toggleNode) {
+                if (oldValue == newValue) {
+                    return;
+                }
+                // System.out.println("selected " + toggleNode);
+                reqTreeView.setVisible(toggleNode == treeViewToggleNode);
+                reqListView.setVisible(toggleNode == listViewToggleNode);
+            }
         });
     }
 
@@ -189,7 +205,7 @@ public class RequestViewController implements Initializable {
         RequestCell requestCell = null;
         DeleteMessage deleteMessage = new DeleteMessage();
 
-        if (!viewToggleNode.selectedProperty().get()) {
+        if (!treeViewToggleNode.selectedProperty().get()) {
             // from tree view
             selectedItem = reqTreeView.getSelectionModel().getSelectedItem();
             FilterableTreeItem<RequestCell> parent = (FilterableTreeItem<RequestCell>) selectedItem.getParent();

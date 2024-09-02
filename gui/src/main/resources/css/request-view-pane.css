@@ -152,7 +152,7 @@
 /********** toggle-node **********/
 .toggle-node {
     -jfx-toggle-color: TRANSPARENT;
-    -jfx-rippler-fill: #7fd9d0;
+    /*-jfx-rippler-disabled: true;*/
     -fx-max-width: 25;
     -fx-min-width: 25;
     -fx-padding: 5 0 0 0;
@@ -160,6 +160,12 @@
 .toggle-node:hover {
     /*-fx-fill: #a6a6a6;*/
     -fx-opacity: 0.5;
+}
+.toggle-node .ikonli-font-icon {
+    -fx-icon-color: rgba(133, 133, 133, 0.55);
+}
+.toggle-node:selected .ikonli-font-icon {
+    -fx-icon-color: #46a8a8
 }
 
 /********** tree-cells **********/
