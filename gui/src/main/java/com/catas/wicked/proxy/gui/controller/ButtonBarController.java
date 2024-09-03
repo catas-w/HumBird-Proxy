@@ -62,10 +62,13 @@ public class ButtonBarController implements Initializable {
     public JFXButton resendBtn;
     public JFXToggleNode throttleBtn;
     public JFXToggleNode sysProxyBtn;
+    public MenuItem exportBtn;
+    public MenuItem aboutBtn;
+    public MenuItem quitBtn;
+    @FXML
+    private MenuItem settingBtn;
     @FXML
     private MenuButton mainMenuButton;
-    @FXML
-    private MenuItem proxySetting;
 
     private Dialog<Node> settingPage;
 
@@ -95,8 +98,6 @@ public class ButtonBarController implements Initializable {
     @SneakyThrows
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        // proxy setting dialog
-        // bindProxySettingBtn();
 
         // toggle record button TODO: wrap in component
         recordBtn.selectedProperty().addListener((observable, oldValue, newValue) -> {

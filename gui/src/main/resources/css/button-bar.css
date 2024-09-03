@@ -35,13 +35,14 @@
 }
 
 .main-menu-btn .menu-item {
+    -fx-background-color: TRANSPARENT;
     -fx-arrows-visible: false;
     -fx-background-radius: 6 6 6 6, 6 6 6 6, 6 6 6 6;
     -fx-padding: 10 50 10 5;
 }
 
 .main-menu-btn .context-menu {
-    -fx-background-color: #ffffff;
+    -fx-background-color: rgba(255, 255, 255, 0.85);
     -fx-background-insets: 0, 1, 2;
     -fx-background-radius: 6 6 6 6, 6 6 6 6, 6 6 6 6;
     /*    -fx-padding: 0.666667em 0.083333em 0.666667em 0.083333em;  8 1 8 1 */

@@ -8,6 +8,8 @@
 <?import javafx.scene.text.*?>
 <?import org.kordamp.ikonli.javafx.*?>
 
+<?import com.catas.wicked.proxy.gui.componet.CustomToggleNode?>
+<?import com.catas.wicked.proxy.gui.componet.CustomMenuButton?>
 <AnchorPane maxWidth="55.0" minWidth="50.0" prefHeight="545.0" prefWidth="50.0"
             style="-fx-background-color: TRANSPARENT; -fx-border-color: rgba(119,119,119,0.38); -fx-border-width: 0 0.6 0 0;"
             xmlns="http://javafx.com/javafx/11.0.14-internal"
@@ -18,7 +20,7 @@
         <URL value="@../css/button-bar.css" />
     </stylesheets>
     <VBox prefHeight="200.0" prefWidth="100.0" style="-fx-background-color: TRANSPARENT;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="20.0">
-        <JFXToggleNode fx:id="recordBtn" prefWidth="200.0" selected="false" textOverrun="CLIP">
+        <CustomToggleNode fx:id="recordBtn" prefWidth="200.0" selected="false" textOverrun="CLIP">
             <VBox.margin>
                 <Insets top="20.0"/>
             </VBox.margin>
@@ -26,7 +28,7 @@
                 <Tooltip text="Record Requests" showDelay="500ms" />
             </tooltip>
             <FontIcon iconLiteral="fas-record-vinyl" iconSize="18"/>
-        </JFXToggleNode>
+        </CustomToggleNode>
         <JFXToggleNode fx:id="sslBtn" prefWidth="200.0" textOverrun="CLIP">
             <VBox.margin>
                 <Insets top="20.0"/>
@@ -115,11 +117,11 @@
         </JFXButton>
 
         <Pane VBox.vgrow="ALWAYS" />
-        <MenuButton fx:id="mainMenuButton" mnemonicParsing="false" popupSide="TOP" styleClass="main-menu-btn">
+        <CustomMenuButton fx:id="mainMenuButton" mnemonicParsing="false" popupSide="TOP" styleClass="main-menu-btn">
             <items>
-                <MenuItem fx:id="proxySetting" onAction="#displaySettingPage" text="Settings">
+                <MenuItem fx:id="settingBtn" onAction="#displaySettingPage" text="Settings">
                     <graphic>
-                        <FontIcon iconLiteral="fas-cog" iconSize="18" />
+                        <FontIcon iconLiteral="fas-cogs" iconSize="18" />
                     </graphic>
                 </MenuItem>
                 <MenuItem fx:id="exportBtn" text="Release Notes">
@@ -127,7 +129,7 @@
                         <FontIcon iconLiteral="fas-book-reader" iconSize="18" />
                     </graphic>
                 </MenuItem>
-                <MenuItem fx:id="AboutBtn" text="About">
+                <MenuItem fx:id="aboutBtn" text="About">
                     <graphic>
                         <FontIcon iconLiteral="fas-info-circle" iconSize="18" />
                     </graphic>
@@ -138,15 +140,16 @@
                     </graphic>
                 </MenuItem>
             </items>
+
             <font>
                 <Font name="System Bold" size="12.0" />
             </font>
             <graphic>
-                <FontIcon iconColor="#616161" iconLiteral="fas-ellipsis-h" iconSize="18" />
+                <FontIcon iconColor="#616161" iconLiteral="fas-cog" iconSize="18" />
             </graphic>
-            <padding>
-                <Insets left="3.0" />
-            </padding>
-        </MenuButton>
+            <VBox.margin>
+                <Insets bottom="5.0" left="3" />
+            </VBox.margin>
+        </CustomMenuButton>
     </VBox>
 </AnchorPane>
