@@ -26,8 +26,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -46,10 +46,15 @@ public class RequestViewController implements Initializable {
     private TextField filterInput;
     @FXML
     private Button filterCancelBtn;
+
+    @Getter
     @FXML
     private TreeView<RequestCell> reqTreeView;
+
+    @Getter
     @FXML
     private ListView<RequestCell> reqListView;
+
     @FXML
     private TreeItem root;
     @FXML
@@ -64,26 +69,17 @@ public class RequestViewController implements Initializable {
     private ToggleGroup toggleGroup;
 
     private MessageService messageService;
+
     /**
      * save requestList in filteredList
      */
+    @Getter
     private ObservableList<RequestCell> reqSourceList;
+
     private FilteredList<RequestCell> filteredList;
 
     public FilterableTreeItem getTreeRoot() {
         return (FilterableTreeItem) reqTreeView.getRoot();
-    }
-
-    public ListView<RequestCell> getReqListView() {
-        return reqListView;
-    }
-
-    public TreeView<RequestCell> getReqTreeView() {
-        return reqTreeView;
-    }
-
-    public ObservableList<RequestCell> getReqSourceList() {
-        return reqSourceList;
     }
 
     /**
@@ -205,7 +201,7 @@ public class RequestViewController implements Initializable {
         RequestCell requestCell = null;
         DeleteMessage deleteMessage = new DeleteMessage();
 
-        if (!treeViewToggleNode.selectedProperty().get()) {
+        if (treeViewToggleNode.selectedProperty().get()) {
             // from tree view
             selectedItem = reqTreeView.getSelectionModel().getSelectedItem();
             FilterableTreeItem<RequestCell> parent = (FilterableTreeItem<RequestCell>) selectedItem.getParent();

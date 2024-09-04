@@ -10,15 +10,18 @@ import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.common.pipeline.MessageQueue;
 import com.catas.wicked.common.pipeline.Topic;
 import com.catas.wicked.proxy.gui.componet.FilterableTreeItem;
+import com.catas.wicked.proxy.gui.controller.ButtonBarController;
 import com.catas.wicked.proxy.gui.controller.RequestViewController;
 import com.catas.wicked.proxy.service.RequestViewService;
 import jakarta.annotation.PostConstruct;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TreeItem;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.ehcache.Cache;
@@ -45,10 +48,16 @@ public class MessageService {
     @Inject
     private Cache<String, RequestMessage> requestCache;
 
-    private MessageTree messageTree;
-
     @Inject
     private RequestViewController requestViewController;
+
+    @Inject
+    private ButtonBarController buttonBarController;
+
+    private MessageTree messageTree;
+
+    @Getter
+    private final SimpleIntegerProperty requestCntProperty = new SimpleIntegerProperty(0);
 
     @PostConstruct
     public void init() {
@@ -57,14 +66,23 @@ public class MessageService {
         messageQueue.subscribe(Topic.UPDATE_MSG, this::processUpdate);
         // avoid circular dependency
         requestViewController.setMessageService(this);
+        buttonBarController.setMessageService(this);
         resetMessageTree();
     }
 
     private void resetMessageTree() {
         messageTree = new MessageTree();
         messageTree.setRequestViewController(requestViewController);
+        requestCntProperty.set(0);
     }
 
+    private void refreshCntProperty() {
+        if (messageTree.isEmpty()) {
+            requestCntProperty.set(-1);
+        } else {
+            requestCntProperty.set(messageTree.getCount());
+        }
+    }
 
     /**
      * set selectionMode in treeView/listView
@@ -144,6 +162,7 @@ public class MessageService {
                     // put to cache
                     requestCache.put(requestMessage.getRequestId(), requestMessage);
                     messageTree.add(requestMessage);
+                    refreshCntProperty();
                 }
                 case REQUEST_CONTENT -> {
                     // 添加请求体
@@ -188,6 +207,7 @@ public class MessageService {
             } else {
                 deleteRequest(deleteMessage);
             }
+            refreshCntProperty();
         }
     }
 
@@ -243,6 +263,7 @@ public class MessageService {
             });
         }
         messageTree.delete(nodeToDelete);
+        messageTree.subtractCnt(requestIdList.size());
 
         // remove requestId from ehcache
         try {
@@ -270,6 +291,7 @@ public class MessageService {
             });
         });
         treeNodeList.forEach(messageTree::delete);
+        messageTree.resetCnt();
 
         // delete all items in listView
         ObservableList<RequestCell> reqSourceList = requestViewController.getReqSourceList();
@@ -292,6 +314,7 @@ public class MessageService {
             requestViewController.getReqSourceList().clear();
         });
         resetMessageTree();
+        messageTree.resetCnt();
 
         try {
             requestCache.clear();

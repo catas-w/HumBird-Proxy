@@ -5,6 +5,7 @@ import com.catas.wicked.common.bean.RequestCell;
 import com.catas.wicked.proxy.gui.componet.FilterableTreeItem;
 import com.catas.wicked.proxy.gui.controller.RequestViewController;
 import com.catas.wicked.common.util.WebUtils;
+import io.micronaut.core.util.CollectionUtils;
 import io.netty.handler.codec.http.HttpMethod;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
@@ -20,6 +21,8 @@ import java.util.function.Consumer;
 public class MessageTree {
 
     private final TreeNode root = new TreeNode();
+
+    private int count;
 
     private TreeNode latestNode;
 
@@ -55,12 +58,7 @@ public class MessageTree {
         createTreeItemUI(parent, node);
         createListItemUI(node);
 
-        // if (latestNode == null) {
-        //     latestNode = new TreeNode();
-        // }
-        // latestNode.setNext(node);
-        // node.setPrev(latestNode);
-        // latestNode = node;
+        addCnt();
     }
 
     /**
@@ -167,6 +165,7 @@ public class MessageTree {
         // memory leak
         if (node.isLeaf()) {
             node.getParent().getLeafChildren().remove(node);
+            // subtractCnt(1);
         } else {
             node.getParent().getPathChildren().remove(node.getPath());
         }
@@ -218,6 +217,10 @@ public class MessageTree {
         return findNodeByPath(root, requestId, pathSplits, 0);
     }
 
+    public boolean isEmpty() {
+        return CollectionUtils.isEmpty(root.getPathChildren()) && CollectionUtils.isEmpty(root.getLeafChildren());
+    }
+
     private TreeNode findNodeByPath(TreeNode parent, String requestId, List<String> pathSplits, int index) {
         if (index >= pathSplits.size() || parent == null) {
             return parent;
@@ -237,5 +240,23 @@ public class MessageTree {
         String curPath = pathSplits.get(index);
         TreeNode node = parent.getPathChildren().getOrDefault(curPath, null);
         return findNodeByPath(node, requestId, pathSplits, ++index);
+    }
+
+    void addCnt() {
+        this.count += 1;
+    }
+
+    void subtractCnt(int num) {
+        if (this.count > 0) {
+            this.count -= num;
+        }
+    }
+
+    void resetCnt() {
+        this.count = 0;
+    }
+
+    int getCount() {
+        return this.count;
     }
 }

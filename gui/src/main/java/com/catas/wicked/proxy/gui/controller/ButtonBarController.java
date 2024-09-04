@@ -11,6 +11,7 @@ import com.catas.wicked.common.pipeline.MessageQueue;
 import com.catas.wicked.common.pipeline.Topic;
 import com.catas.wicked.common.executor.ThreadPoolService;
 import com.catas.wicked.common.worker.worker.ScheduledManager;
+import com.catas.wicked.proxy.message.MessageService;
 import com.catas.wicked.proxy.service.RequestMockService;
 import com.catas.wicked.server.client.MinimalHttpClient;
 import com.catas.wicked.server.proxy.ProxyServer;
@@ -34,6 +35,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Window;
+import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -57,7 +59,6 @@ public class ButtonBarController implements Initializable {
     public JFXButton markerBtn;
     public JFXToggleNode recordBtn;
     public JFXToggleNode sslBtn;
-    public JFXButton removeAllBtn;
     public JFXButton locateBtn;
     public JFXButton resendBtn;
     public JFXToggleNode throttleBtn;
@@ -65,6 +66,7 @@ public class ButtonBarController implements Initializable {
     public MenuItem exportBtn;
     public MenuItem aboutBtn;
     public MenuItem quitBtn;
+    public JFXButton clearBtn;
     @FXML
     private MenuItem settingBtn;
     @FXML
@@ -95,9 +97,24 @@ public class ButtonBarController implements Initializable {
 
     private SettingController settingController;
 
+    @Setter
+    private MessageService messageService;
+
     @SneakyThrows
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        // clear request event
+        messageService.getRequestCntProperty().addListener((observable, oldValue, newValue) -> {
+            // System.out.println("current count: " + newValue.intValue());
+            if (newValue.intValue() < 0) {
+                clearBtn.setDisable(true);
+            } else {
+                clearBtn.setDisable(false);
+                FontIcon icon = (FontIcon) clearBtn.getGraphic();
+                String targetIcon = newValue.intValue() == 0 ? "fas-broom": "fas-quidditch";
+                icon.setIconLiteral(targetIcon);
+            }
+        });
 
         // toggle record button TODO: wrap in component
         recordBtn.selectedProperty().addListener((observable, oldValue, newValue) -> {
@@ -162,15 +179,6 @@ public class ButtonBarController implements Initializable {
         markerBtn.setOnAction(event -> {
             requestMockService.mockRequest();
         });
-    }
-
-    /**
-     * delete all requests
-     */
-    public void deleteAll() {
-        DeleteMessage deleteMessage = new DeleteMessage();
-        deleteMessage.setRemoveAll(true);
-        messageQueue.pushMsg(Topic.RECORD, deleteMessage);
     }
 
     public void displaySettingPage() {
@@ -265,8 +273,24 @@ public class ButtonBarController implements Initializable {
         Platform.exit();
     }
 
+    /**
+     * clear or deleteAll
+     */
     public void clearLeafNode(ActionEvent event) {
-        requestViewController.clearLeafNode();
+        if (messageService.getRequestCntProperty().get() == 0) {
+            deleteAll();
+        } else {
+            requestViewController.clearLeafNode();
+        }
+    }
+
+    /**
+     * delete all requests
+     */
+    public void deleteAll() {
+        DeleteMessage deleteMessage = new DeleteMessage();
+        deleteMessage.setRemoveAll(true);
+        messageQueue.pushMsg(Topic.RECORD, deleteMessage);
     }
 
     public void onSysProxy(ActionEvent actionEvent) {

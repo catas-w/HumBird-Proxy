@@ -10,6 +10,7 @@
 
 <?import com.catas.wicked.proxy.gui.componet.CustomToggleNode?>
 <?import com.catas.wicked.proxy.gui.componet.CustomMenuButton?>
+<?import com.catas.wicked.proxy.gui.componet.CustomButton?>
 <AnchorPane maxWidth="55.0" minWidth="50.0" prefHeight="545.0" prefWidth="50.0"
             style="-fx-background-color: TRANSPARENT; -fx-border-color: rgba(119,119,119,0.38); -fx-border-width: 0 0.6 0 0;"
             xmlns="http://javafx.com/javafx/11.0.14-internal"
@@ -63,7 +64,7 @@
              </VBox.margin>
         </Separator>
 
-        <JFXButton onAction="#clearLeafNode" prefWidth="200.0" textOverrun="CLIP">
+        <JFXButton fx:id="clearBtn" onAction="#clearLeafNode" prefWidth="200.0" textOverrun="CLIP" disable="true">
             <graphic>
                 <FontIcon iconColor="#616161" iconLiteral="fas-quidditch" iconSize="18"/>
             </graphic>
@@ -74,18 +75,18 @@
                 <Tooltip text="Delete Requests" showDelay="500ms" />
             </tooltip>
         </JFXButton>
-        <JFXButton fx:id="removeAllBtn" onAction="#deleteAll" prefWidth="200.0" textOverrun="CLIP">
-            <graphic>
-                <FontIcon iconColor="#616161" iconLiteral="fas-trash-alt" iconSize="18" />
-            </graphic>
-            <VBox.margin>
-                <Insets top="20.0" />
-            </VBox.margin>
-            <tooltip>
-                <Tooltip text="Delete Requests And Structure" />
-            </tooltip>
-        </JFXButton>
-        <JFXButton fx:id="resendBtn" onAction="#resendRequest" prefWidth="200.0" textOverrun="CLIP">
+        <!-- <JFXButton fx:id="removeAllBtn" onAction="#deleteAll" prefWidth="200.0" textOverrun="CLIP"> -->
+        <!--     <graphic> -->
+        <!--         <FontIcon iconColor="#616161" iconLiteral="fas-trash-alt" iconSize="18" /> -->
+        <!--     </graphic> -->
+        <!--     <VBox.margin> -->
+        <!--         <Insets top="20.0" /> -->
+        <!--     </VBox.margin> -->
+        <!--     <tooltip> -->
+        <!--         <Tooltip text="Delete Requests And Structure" /> -->
+        <!--     </tooltip> -->
+        <!-- </JFXButton> -->
+        <CustomButton fx:id="resendBtn" onAction="#resendRequest"  prefWidth="200.0" textOverrun="CLIP">
             <graphic>
                 <FontIcon iconColor="#616161" iconLiteral="fas-redo-alt" iconSize="18" />
             </graphic>
@@ -95,8 +96,8 @@
             <tooltip>
                 <Tooltip text="Resend Selected Request" showDelay="500ms"/>
             </tooltip>
-        </JFXButton>
-        <JFXButton fx:id="locateBtn" onAction="#locateToSelectedItem" prefWidth="200.0" textOverrun="CLIP">
+        </CustomButton>
+        <CustomButton fx:id="locateBtn" onAction="#locateToSelectedItem" prefWidth="200.0" textOverrun="CLIP">
             <graphic>
                 <FontIcon iconColor="#616161" iconLiteral="fas-crosshairs" iconSize="18" />
             </graphic>
@@ -106,15 +107,15 @@
             <tooltip>
                 <Tooltip text="Locate" />
             </tooltip>
-        </JFXButton>
-        <JFXButton fx:id="markerBtn" onAction="#mockTreeItem" prefWidth="200.0" textOverrun="CLIP">
+        </CustomButton>
+        <CustomButton fx:id="markerBtn" onAction="#mockTreeItem" prefWidth="200.0" textOverrun="CLIP">
             <graphic>
                 <FontIcon iconColor="#616161" iconLiteral="fas-marker" iconSize="18" />
             </graphic>
             <VBox.margin>
                 <Insets top="20.0" />
             </VBox.margin>
-        </JFXButton>
+        </CustomButton>
 
         <Pane VBox.vgrow="ALWAYS" />
         <CustomMenuButton fx:id="mainMenuButton" mnemonicParsing="false" popupSide="TOP" styleClass="main-menu-btn">
