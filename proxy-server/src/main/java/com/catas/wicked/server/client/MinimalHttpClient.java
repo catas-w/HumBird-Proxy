@@ -1,9 +1,7 @@
 package com.catas.wicked.server.client;
 
 import com.catas.wicked.common.config.ExternalProxyConfig;
-import com.catas.wicked.common.constant.ProxyProtocol;
 import com.catas.wicked.common.util.ProxyHandlerFactory;
-import com.catas.wicked.common.util.WebUtils;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;
@@ -48,7 +46,7 @@ import static com.catas.wicked.common.constant.NettyConstant.SSL_HANDLER;
  * Simple httpClient for resending request
  */
 @Slf4j
-public class MinimalHttpClient {
+public class MinimalHttpClient implements AutoCloseable {
 
     private String uri;
     private HttpMethod method;
@@ -142,7 +140,9 @@ public class MinimalHttpClient {
         if (channelFuture != null) {
             channelFuture.channel().close();
         }
-        eventExecutors.shutdownGracefully();
+        if (eventExecutors != null) {
+            eventExecutors.shutdownGracefully();
+        }
     }
 
     public HttpResponse response() throws InterruptedException, ExecutionException {

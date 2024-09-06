@@ -103,6 +103,18 @@ public class ButtonBarController implements Initializable {
     @SneakyThrows
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        // listen on current request
+        appConfig.getObservableConfig().currentRequestIdProperty().addListener((observable, oldValue, newValue) -> {
+            // System.out.println("reqId: " + newValue);
+            resendBtn.setDisable(newValue == null || newValue.startsWith("PATH"));
+            locateBtn.setDisable(newValue == null);
+        });
+        locateBtn.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                requestViewController.updateFocusPseudoClass(newValue);
+            }
+        });
+
         // clear request event
         messageService.getRequestCntProperty().addListener((observable, oldValue, newValue) -> {
             // System.out.println("current count: " + newValue.intValue());
@@ -217,18 +229,14 @@ public class ButtonBarController implements Initializable {
      * scroll to selected item
      */
     public void locateToSelectedItem() {
-        int selectedTreeItem = requestViewController.getReqTreeView().getSelectionModel().getSelectedIndex();
-        requestViewController.getReqTreeView().scrollTo(selectedTreeItem);
-
-        int selectedListItem = requestViewController.getReqListView().getSelectionModel().getSelectedIndex();
-        requestViewController.getReqListView().scrollTo(selectedListItem);
+        requestViewController.focus();
     }
 
     /**
      * resend selected request
      */
     public void resendRequest() {
-        String requestId = appConfig.getCurrentRequestId().get();
+        String requestId = appConfig.getObservableConfig().getCurrentRequestId();
         if (StringUtils.isBlank(requestId)) {
             return;
         }
@@ -249,22 +257,19 @@ public class ButtonBarController implements Initializable {
             proxyConfig.setProtocol(ProxyProtocol.HTTP);
             proxyConfig.setProxyAddress(appConfig.getHost(), appConfig.getSettings().getPort());
 
-            MinimalHttpClient client = MinimalHttpClient.builder()
+            try (MinimalHttpClient client = MinimalHttpClient.builder()
                     .uri(url)
                     .method(HttpMethod.valueOf(method))
                     .httpVersion(protocol)
                     .headers(headers)
                     .content(content)
                     .proxyConfig(proxyConfig)
-                    .build();
-            try {
+                    .build()) {
                 client.execute();
                 HttpResponse response = client.response();
                 log.info("Get response in resending: {}", response);
             } catch (Exception e) {
                 log.error("Error in resending request: {}", requestMessage.getRequestUrl());
-            } finally {
-                client.close();
             }
         });
     }

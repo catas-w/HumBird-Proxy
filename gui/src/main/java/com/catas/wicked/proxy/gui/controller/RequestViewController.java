@@ -16,7 +16,7 @@ import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
-import javafx.event.ActionEvent;
+import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -26,7 +26,9 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.scene.input.KeyCode;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.URL;
@@ -68,6 +70,11 @@ public class RequestViewController implements Initializable {
 
     private ToggleGroup toggleGroup;
 
+    /**
+     * To avoid circular dependency
+     * postConstruct() executed earlier than initialize()
+     */
+    @Setter
     private MessageService messageService;
 
     /**
@@ -78,16 +85,10 @@ public class RequestViewController implements Initializable {
 
     private FilteredList<RequestCell> filteredList;
 
+    private final PseudoClass FocusPseudoClass = PseudoClass.getPseudoClass("custom-focused");
+
     public FilterableTreeItem getTreeRoot() {
         return (FilterableTreeItem) reqTreeView.getRoot();
-    }
-
-    /**
-     * To avoid circular dependency
-     * Since postConstruct() is executed earlier than initialize()
-     */
-    public void setMessageService(MessageService messageService) {
-        this.messageService = messageService;
     }
 
     @Override
@@ -104,33 +105,11 @@ public class RequestViewController implements Initializable {
 
         reqTreeView.setCellFactory(treeView -> cellFactory.createTreeCell(treeView));
         reqListView.setCellFactory(listView -> cellFactory.createListCell(listView));
-
         reqTreeView.setContextMenu(contextMenu);
         reqListView.setContextMenu(contextMenu);
 
-        reqTreeView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue == null) {
-                return;
-            }
-            RequestCell requestCell = newValue.getValue();
-            if (!requestCell.isLeaf()) {
-                // TODO display pathNode
-                return;
-            }
-            String requestId = requestCell.getRequestId();
-            requestViewService.updateRequestTab(requestId);
-            messageService.selectRequestItem(requestId, true);
-        });
-        reqListView.getSelectionModel().selectedItemProperty().addListener(((observable, oldValue, newValue) -> {
-            if (newValue == null) {
-                return;
-            }
-            String requestId = newValue.getRequestId();
-            requestViewService.updateRequestTab(requestId);
-            messageService.selectRequestItem(requestId, false);
-        }));
-
         toggleRequestView();
+        bindKeyboardDeleteEvent();
     }
 
     /**
@@ -194,9 +173,22 @@ public class RequestViewController implements Initializable {
     }
 
     /**
+     * delete treeView/listView item with key down
+     */
+    private void bindKeyboardDeleteEvent() {
+        reqTreeView.setOnKeyPressed(e -> {
+            TreeItem<RequestCell> selectedItem = reqTreeView.getSelectionModel().getSelectedItem();
+            if (selectedItem != null && (e.getCode() == KeyCode.BACK_SPACE || e.getCode() == KeyCode.DELETE)) {
+                System.out.println("Delete from key: " + selectedItem.getValue());
+                // removeItem();
+            }
+        });
+    }
+
+    /**
      * remove item from listView or treeView
      */
-    public void removeItem(ActionEvent event) {
+    public void removeItem() {
         TreeItem<RequestCell> selectedItem = null;
         RequestCell requestCell = null;
         DeleteMessage deleteMessage = new DeleteMessage();
@@ -219,6 +211,11 @@ public class RequestViewController implements Initializable {
         if (requestCell == null) {
             log.error("Unable to delete request, request cell is null.");
         }
+        // clear selection
+        reqListView.getSelectionModel().clearSelection();
+        reqTreeView.getSelectionModel().clearSelection();
+
+        // send msg
         deleteMessage.setRequestCell(requestCell);
         messageQueue.pushMsg(Topic.RECORD, deleteMessage);
     }
@@ -230,5 +227,28 @@ public class RequestViewController implements Initializable {
         DeleteMessage deleteMessage = new DeleteMessage();
         deleteMessage.setCleanLeaves(true);
         messageQueue.pushMsg(Topic.RECORD, deleteMessage);
+    }
+
+    /**
+     * focus on selected item
+     */
+    public void focus() {
+        // scroll treeView
+        int selectedTreeItem = reqTreeView.getSelectionModel().getSelectedIndex();
+        reqTreeView.scrollTo(selectedTreeItem);
+
+        // scroll listView
+        int selectedListItem = reqListView.getSelectionModel().getSelectedIndex();
+        reqListView.scrollTo(selectedListItem);
+
+        // focus style
+        // reqTreeView.pseudoClassStateChanged(FocusPseudoClass, true);
+        // reqListView.pseudoClassStateChanged(FocusPseudoClass, true);
+
+    }
+
+    public void updateFocusPseudoClass(Boolean state) {
+        reqTreeView.pseudoClassStateChanged(FocusPseudoClass, state);
+        reqListView.pseudoClassStateChanged(FocusPseudoClass, state);
     }
 }

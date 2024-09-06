@@ -43,8 +43,12 @@
     -fx-background-insets: 0;
     -fx-background-color: TRANSPARENT;
 }
-.tree-cell:selected {
+.tree-view:custom-focused .tree-cell:filled:selected,
+.tree-view:focused .tree-cell:filled:selected {
     -fx-background-color: rgba(12, 204, 204, 0.5);
+}
+.tree-cell:filled:selected {
+    -fx-background-color: rgba(161, 161, 161, 0.7);
 }
 
 .tree-cell:selected .req-method-label {
@@ -118,9 +122,13 @@
 .list-cell:selected .req-method-label {
     -fx-opacity: 1;
 }
-.list-cell:odd:selected,
-.list-cell:even:selected {
+
+.list-view:custom-focused .list-cell:filled:selected,
+.list-view:focused .list-cell:filled:selected {
     -fx-background-color: rgba(12, 204, 204, 0.5);
+}
+.list-cell:filled:selected {
+    -fx-background-color: rgba(161, 161, 161, 0.7);
 }
 
 .list-cell:odd,

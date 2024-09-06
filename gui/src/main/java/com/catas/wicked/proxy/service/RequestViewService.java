@@ -48,6 +48,7 @@ public class RequestViewService {
 
     @Inject
     private ApplicationConfig appConfig;
+
     @Inject
     private MessageQueue messageQueue;
     private BlockingQueue<BaseMessage> queue;
@@ -104,28 +105,36 @@ public class RequestViewService {
 
     /**
      * update request tab by requestId
-     * @param requestId requestId
+     * @param requestId requestId, nullable
      */
     public void updateRequestTab(String requestId) {
-        String curRequestId = appConfig.getCurrentRequestId().get();
+        // String curRequestId = appConfig.getCurrentRequestId().get();
+        String curRequestId = appConfig.getObservableConfig().getCurrentRequestId();
+        appConfig.getObservableConfig().currentRequestIdProperty().set(requestId);
+
         if (StringUtils.equals(curRequestId, requestId)) {
             return;
         }
-        appConfig.getCurrentRequestId().set(requestId);
+        // appConfig.getCurrentRequestId().set(requestId);
 
+        String toSend = requestId;
+        if (requestId == null) {
+            toSend = RenderMessage.EMPTY_MSG;
+        } else if (requestId.startsWith("PATH_")) {
+            // TODO
+            return;
+        }
         messageQueue.clearMsg(Topic.RENDER);
-        // queue.clear();
-        // System.out.println("-----requestId: " + requestId + "-----");
 
         // current requestView tab
         String curTab = detailTabController.getActiveRequestTab();
         RenderMessage.Tab firstTargetTab = RenderMessage.Tab.valueOfIgnoreCase(curTab);
 
         Queue<RenderMessage> messages = new PriorityQueue<>(Comparator.comparingInt(o -> o.getTargetTab().getOrder()));
-        messages.offer(new RenderMessage(requestId, RenderMessage.Tab.OVERVIEW));
-        messages.offer(new RenderMessage(requestId, RenderMessage.Tab.REQUEST));
-        messages.offer(new RenderMessage(requestId, RenderMessage.Tab.RESPONSE));
-        messages.offer(new RenderMessage(requestId, RenderMessage.Tab.TIMING));
+        messages.offer(new RenderMessage(toSend, RenderMessage.Tab.OVERVIEW));
+        messages.offer(new RenderMessage(toSend, RenderMessage.Tab.REQUEST));
+        messages.offer(new RenderMessage(toSend, RenderMessage.Tab.RESPONSE));
+        messages.offer(new RenderMessage(toSend, RenderMessage.Tab.TIMING));
 
         // render current tab first
         Iterator<RenderMessage> iterator = messages.iterator();

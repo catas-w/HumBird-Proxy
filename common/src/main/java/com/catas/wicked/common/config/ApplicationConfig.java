@@ -58,7 +58,6 @@ public class ApplicationConfig implements AutoCloseable {
     private PublicKey serverPubKey;
 
     private final ObservableConfig observableConfig = new ObservableConfig();
-    private final AtomicReference<String> currentRequestId = new AtomicReference<>(null);
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final AtomicBoolean shutDownFlag = new AtomicBoolean(false);
 

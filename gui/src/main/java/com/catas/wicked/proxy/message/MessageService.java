@@ -90,11 +90,16 @@ public class MessageService {
      * @param fromTreeView source
      */
     public void selectRequestItem(String requestId, boolean fromTreeView) {
-        RequestMessage requestMessage = requestCache.get(requestId);
-        if (requestMessage == null) {
+        if (requestId == null) {
             return;
         }
+
+        RequestMessage requestMessage = requestCache.get(requestId);
         TreeNode treeNode = messageTree.findNodeByPath(requestMessage.getRequestUrl(), requestId);
+        if (treeNode == null) {
+            log.error("treeNode to select is null: {}", requestId);
+            return;
+        }
         if (fromTreeView) {
             requestViewController.getReqListView().getSelectionModel().select(treeNode.getListItem());
         } else {
@@ -246,9 +251,9 @@ public class MessageService {
         messageTree.travel(nodeToDelete, treeNode -> {
             requestIdList.add(treeNode.getRequestId());
             listItemList.add(treeNode.getListItem());
-            if (StringUtils.equals(appConfig.getCurrentRequestId().get(), treeNode.getRequestId())) {
+            if (StringUtils.equals(appConfig.getObservableConfig().getCurrentRequestId(), treeNode.getRequestId())) {
                 // System.out.println("***** remove reqId: " + treeNode.getRequestId());
-                requestViewService.updateRequestTab(RenderMessage.EMPTY_MSG);
+                requestViewService.updateRequestTab(null);
             }
         });
 
@@ -292,6 +297,7 @@ public class MessageService {
         });
         treeNodeList.forEach(messageTree::delete);
         messageTree.resetCnt();
+        requestViewService.updateRequestTab(null);
 
         // delete all items in listView
         ObservableList<RequestCell> reqSourceList = requestViewController.getReqSourceList();
@@ -315,6 +321,7 @@ public class MessageService {
         });
         resetMessageTree();
         messageTree.resetCnt();
+        requestViewService.updateRequestTab(null);
 
         try {
             requestCache.clear();

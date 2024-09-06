@@ -86,7 +86,7 @@
         <!--         <Tooltip text="Delete Requests And Structure" /> -->
         <!--     </tooltip> -->
         <!-- </JFXButton> -->
-        <CustomButton fx:id="resendBtn" onAction="#resendRequest"  prefWidth="200.0" textOverrun="CLIP">
+        <CustomButton fx:id="resendBtn" onAction="#resendRequest" prefWidth="200.0" textOverrun="CLIP" disable="true">
             <graphic>
                 <FontIcon iconColor="#616161" iconLiteral="fas-redo-alt" iconSize="18" />
             </graphic>
@@ -97,7 +97,7 @@
                 <Tooltip text="Resend Selected Request" showDelay="500ms"/>
             </tooltip>
         </CustomButton>
-        <CustomButton fx:id="locateBtn" onAction="#locateToSelectedItem" prefWidth="200.0" textOverrun="CLIP">
+        <CustomButton fx:id="locateBtn" onAction="#locateToSelectedItem" prefWidth="200.0" textOverrun="CLIP" disable="true">
             <graphic>
                 <FontIcon iconColor="#616161" iconLiteral="fas-crosshairs" iconSize="18" />
             </graphic>
