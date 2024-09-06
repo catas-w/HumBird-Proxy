@@ -173,14 +173,20 @@ public class RequestViewController implements Initializable {
     }
 
     /**
-     * delete treeView/listView item with key down
+     * delete treeView/listView item by keyPressed
      */
     private void bindKeyboardDeleteEvent() {
         reqTreeView.setOnKeyPressed(e -> {
             TreeItem<RequestCell> selectedItem = reqTreeView.getSelectionModel().getSelectedItem();
             if (selectedItem != null && (e.getCode() == KeyCode.BACK_SPACE || e.getCode() == KeyCode.DELETE)) {
-                System.out.println("Delete from key: " + selectedItem.getValue());
-                // removeItem();
+                removeItem();
+            }
+        });
+
+        reqListView.setOnKeyPressed(e -> {
+            RequestCell selectedItem = reqListView.getSelectionModel().getSelectedItem();
+            if (selectedItem != null && (e.getCode() == KeyCode.BACK_SPACE || e.getCode() == KeyCode.DELETE)) {
+                removeItem();
             }
         });
     }

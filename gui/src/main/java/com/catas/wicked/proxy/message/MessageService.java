@@ -256,6 +256,10 @@ public class MessageService {
                 requestViewService.updateRequestTab(null);
             }
         });
+        // set currentRequestId to null if current path is deleted
+        if (!requestCell.isLeaf()) {
+            requestViewService.updateRequestTab(null);
+        }
 
         if (deleteMessage.getSource() == DeleteMessage.Source.TREE_VIEW) {
             // delete listItem
