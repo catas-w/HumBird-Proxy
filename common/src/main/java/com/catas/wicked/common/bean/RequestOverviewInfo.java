@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @Singleton
-public class OverviewInfo {
+public class RequestOverviewInfo {
 
     private final PairEntry url = new PairEntry("Url");
     private final PairEntry method = new PairEntry("Method");

@@ -1,13 +1,14 @@
 package com.catas.wicked.proxy.gui.controller;
 
 import com.catas.wicked.common.bean.HeaderEntry;
-import com.catas.wicked.common.bean.OverviewInfo;
+import com.catas.wicked.common.bean.RequestOverviewInfo;
 import com.catas.wicked.common.bean.PairEntry;
 import com.catas.wicked.common.constant.CodeStyle;
 import com.catas.wicked.common.util.TableUtils;
 import com.catas.wicked.proxy.gui.componet.SelectableTableCell;
 import com.catas.wicked.proxy.gui.componet.MessageLabel;
 import com.catas.wicked.proxy.gui.componet.SelectableNodeBuilder;
+import com.catas.wicked.proxy.gui.componet.SelectableTreeTableCell;
 import com.catas.wicked.proxy.gui.componet.SideBar;
 import com.catas.wicked.proxy.gui.componet.ZoomImageView;
 import com.catas.wicked.proxy.gui.componet.highlight.CodeStyleLabel;
@@ -18,7 +19,9 @@ import com.jfoenix.controls.JFXTabPane;
 import com.jfoenix.controls.JFXTreeTableView;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
@@ -33,6 +36,8 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TitledPane;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.skin.TableHeaderRow;
@@ -122,7 +127,7 @@ public class DetailTabController implements Initializable {
     private TableView<HeaderEntry> respHeaderTable;
 
     @Inject
-    private OverviewInfo overviewInfo;
+    private RequestOverviewInfo requestOverviewInfo;
 
     private final Map<SplitPane, double[]> dividerPositionMap =new HashMap<>();
 
@@ -152,6 +157,54 @@ public class DetailTabController implements Initializable {
         // init tableView
         initTableView(reqHeaderTable);
         initTableView(respHeaderTable);
+        initOverviewTable(overviewTable);
+    }
+
+    public void setOverviewTableRoot(TreeItem<PairEntry> root) {
+        if (overviewTable.getRoot() == root) {
+            return;
+        }
+        Platform.runLater(() -> {
+            overviewTable.setRoot(root);
+        });
+    }
+
+    @SuppressWarnings("unchecked")
+    private void initOverviewTable(TreeTableView<PairEntry> tableView) {
+        TreeTableColumn<PairEntry, String> nameColumn = new TreeTableColumn<>("Name");
+        nameColumn.setPrefWidth(130);
+        nameColumn.setMaxWidth(200);
+        nameColumn.setMinWidth(100);
+        nameColumn.setSortable(false);
+        nameColumn.setCellValueFactory((TreeTableColumn.CellDataFeatures<PairEntry, String> param) ->
+                new ReadOnlyStringWrapper(param.getValue().getValue().getKey()));
+        final String titleStyle = "tree-table-key";
+        nameColumn.getStyleClass().add(titleStyle);
+
+        TreeTableColumn<PairEntry, String> valueColumn = new TreeTableColumn<>("Value");
+        valueColumn.setSortable(false );
+        valueColumn.setCellValueFactory((TreeTableColumn.CellDataFeatures<PairEntry, String> param) ->
+                new ReadOnlyStringWrapper(param.getValue().getValue().getVal()));
+        valueColumn.setCellFactory((TreeTableColumn<PairEntry, String> param) ->
+                new SelectableTreeTableCell<>(new SelectableNodeBuilder(), valueColumn));
+
+        Platform.runLater(() -> {
+            tableView.getColumns().addAll(nameColumn, valueColumn);
+            tableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+            tableView.setColumnResizePolicy(TreeTableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
+            tableView.setShowRoot(false);
+            tableView.setEditable(true);
+        });
+
+        tableView.widthProperty().addListener((source, oldWidth, newWidth) -> {
+            TableHeaderRow header = (TableHeaderRow) tableView.lookup("TableHeaderRow");
+            header.reorderingProperty().addListener((observable, oldValue, newValue) -> header.setReordering(false));
+        });
+        tableView.focusedProperty().addListener((obs, oldVal, newVal) -> {
+            if (!newVal) {
+                tableView.getSelectionModel().clearSelection();
+            }
+        });
     }
 
     /**

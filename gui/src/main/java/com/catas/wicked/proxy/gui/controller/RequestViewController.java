@@ -140,6 +140,7 @@ public class RequestViewController implements Initializable {
     /**
      * filter requests
      */
+    @SuppressWarnings("unchecked")
     private void filterInputEventBind() {
         filterCancelBtn.visibleProperty().bind(Bindings.createBooleanBinding(
                 () -> !filterInput.getText().isEmpty(), filterInput.textProperty()));

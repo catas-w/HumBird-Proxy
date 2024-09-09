@@ -1,6 +1,7 @@
 package com.catas.wicked.proxy.gui.controller;
 
 import com.catas.wicked.common.bean.message.DeleteMessage;
+import com.catas.wicked.common.bean.message.RenderMessage;
 import com.catas.wicked.common.bean.message.RequestMessage;
 import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.common.config.ExternalProxyConfig;
@@ -106,7 +107,7 @@ public class ButtonBarController implements Initializable {
         // listen on current request
         appConfig.getObservableConfig().currentRequestIdProperty().addListener((observable, oldValue, newValue) -> {
             // System.out.println("reqId: " + newValue);
-            resendBtn.setDisable(newValue == null || newValue.startsWith("PATH"));
+            resendBtn.setDisable(newValue == null || newValue.startsWith(RenderMessage.PATH_MSG));
             locateBtn.setDisable(newValue == null);
         });
         locateBtn.focusedProperty().addListener((observable, oldValue, newValue) -> {

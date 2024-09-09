@@ -2,6 +2,7 @@ package com.catas.wicked.common.bean.message;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 
 @EqualsAndHashCode(callSuper = true)
@@ -9,11 +10,16 @@ import org.apache.commons.lang3.StringUtils;
 public class RenderMessage extends BaseMessage {
 
     public final static String EMPTY_MSG = "_EMPTY_";
+
+    public final static String PATH_MSG = "PATH_";
+
     private String requestId;
 
     private Tab targetTab;
 
     private boolean isEmpty;
+
+    private boolean isPath;
 
     public RenderMessage() {
     }
@@ -21,11 +27,11 @@ public class RenderMessage extends BaseMessage {
     public RenderMessage(String requestId, Tab tab) {
         this.requestId = requestId;
         this.targetTab = tab;
-        if (StringUtils.equals(requestId, EMPTY_MSG)) {
-            isEmpty = true;
-        }
+        this.isEmpty = StringUtils.equals(requestId, EMPTY_MSG);
+        this.isPath = requestId.startsWith(PATH_MSG);
     }
 
+    @Getter
     public enum Tab {
 
         EMPTY(0),
@@ -39,10 +45,6 @@ public class RenderMessage extends BaseMessage {
 
         Tab(int i) {
             this.order = i;
-        }
-
-        public int getOrder() {
-            return order;
         }
 
         public static Tab valueOfIgnoreCase(String value) {

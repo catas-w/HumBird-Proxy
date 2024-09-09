@@ -120,9 +120,6 @@ public class RequestViewService {
         String toSend = requestId;
         if (requestId == null) {
             toSend = RenderMessage.EMPTY_MSG;
-        } else if (requestId.startsWith("PATH_")) {
-            // TODO
-            return;
         }
         messageQueue.clearMsg(Topic.RENDER);
 

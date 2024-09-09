@@ -1,6 +1,7 @@
 package com.catas.wicked.proxy.gui.componet;
 
 import com.catas.wicked.common.bean.RequestCell;
+import com.catas.wicked.common.bean.message.RenderMessage;
 import com.catas.wicked.proxy.service.RequestViewService;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
@@ -26,7 +27,7 @@ public class ViewCellFactory {
                 if (requestCell.isLeaf()) {
                     requestViewService.updateRequestTab(requestCell.getRequestId());
                 } else {
-                    requestViewService.updateRequestTab("PATH_");
+                    requestViewService.updateRequestTab(RenderMessage.PATH_MSG + requestCell.getFullPath());
                 }
             }
         });
