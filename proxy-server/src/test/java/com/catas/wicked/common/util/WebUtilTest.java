@@ -5,6 +5,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -85,5 +86,26 @@ public class WebUtilTest {
         Assert.assertEquals("httpbin.org", WebUtils.removeProtocol("https://httpbin.org"));
         Assert.assertEquals("httpbin.org", WebUtils.removeProtocol("http://httpbin.org"));
         Assert.assertEquals("httpbin.org", WebUtils.removeProtocol("httpbin.org"));
+    }
+
+    @Test
+    public void testUrl() throws MalformedURLException {
+        String urlString = "https://www.example.com/some/path/to/resource?query=parameter";
+
+            // Create a URL object from the string
+        URL url = new URL(urlString);
+
+        // Extract the domain (host)
+        String domain = url.getHost();  // Outputs: "www.example.com"
+
+        // Extract the path
+        String path = url.getPath();  // Outputs: "/some/path/to/resource"
+
+        // Print the extracted domain and path
+        System.out.println("Domain: " + domain);
+        System.out.println("Path: " + path);
+        System.out.println("Port: " + url.getPort());
+        System.out.println("Port-Default: " + url.getDefaultPort());
+        System.out.println("Protocol: " + url.getProtocol());
     }
 }

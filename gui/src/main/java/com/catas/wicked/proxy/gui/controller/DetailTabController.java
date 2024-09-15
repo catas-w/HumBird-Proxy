@@ -169,6 +169,10 @@ public class DetailTabController implements Initializable {
         });
     }
 
+    public void refreshOverviewTable() {
+        overviewTable.refresh();
+    }
+
     @SuppressWarnings("unchecked")
     private void initOverviewTable(TreeTableView<PairEntry> tableView) {
         TreeTableColumn<PairEntry, String> nameColumn = new TreeTableColumn<>("Name");

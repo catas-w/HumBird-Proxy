@@ -35,6 +35,10 @@ public class TimingTabRenderer extends AbstractTabRenderer {
         if (renderMsg.isEmpty()) {
             return;
         }
+        if (renderMsg.isPath()) {
+            System.out.println("Rendering path");
+            return;
+        }
         RequestMessage request = requestCache.get(renderMsg.getRequestId());
         ResponseMessage response = request.getResponse();
 

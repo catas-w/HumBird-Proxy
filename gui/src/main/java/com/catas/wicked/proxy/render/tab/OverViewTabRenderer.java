@@ -3,23 +3,31 @@ package com.catas.wicked.proxy.render.tab;
 import com.catas.wicked.common.bean.PathOverviewInfo;
 import com.catas.wicked.common.bean.RequestOverviewInfo;
 import com.catas.wicked.common.bean.PairEntry;
+import com.catas.wicked.common.bean.StatsData;
 import com.catas.wicked.common.bean.message.RenderMessage;
 import com.catas.wicked.common.bean.message.RequestMessage;
 import com.catas.wicked.common.bean.message.ResponseMessage;
 import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.common.util.WebUtils;
 import com.catas.wicked.proxy.gui.controller.DetailTabController;
+import com.catas.wicked.proxy.message.MessageService;
+import io.netty.handler.codec.http.HttpMethod;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableView;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.ehcache.Cache;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Map;
+import java.util.function.Function;
 
 @Slf4j
 @Singleton
@@ -39,6 +47,9 @@ public class OverViewTabRenderer extends AbstractTabRenderer {
 
     @Inject
     private PathOverviewInfo pathOverviewInfo;
+
+    @Setter
+    private MessageService messageService;
 
     private TreeItem<PairEntry> requestRoot;
     private TreeItem<PairEntry> pathRoot;
@@ -71,6 +82,50 @@ public class OverViewTabRenderer extends AbstractTabRenderer {
             initPathRoot();
         }
         detailTabController.setOverviewTableRoot(pathRoot);
+
+        String urlPath = "-";
+        String host = "-";
+        String port = "-";
+        String protocol = "-";
+        try {
+            URL url = new URL(path);
+            urlPath = url.getPath();
+            host = url.getHost();
+            port = String.valueOf(url.getPort() == -1 ? url.getDefaultPort(): url.getPort());
+            protocol = url.getProtocol().toUpperCase(Locale.ROOT);
+        } catch (MalformedURLException e) {
+            log.error("Error in parsing overview path: ", e);
+        }
+        pathOverviewInfo.getHost().setVal(host);
+        pathOverviewInfo.getPath().setVal(urlPath);
+        pathOverviewInfo.getPort().setVal(port);
+        pathOverviewInfo.getProtocol().setVal(protocol);
+
+        StatsData statsData = messageService.pathStatistics(path);
+        if (statsData == null) {
+            log.error("OverviewTab statsData is null, {}", path);
+            detailTabController.refreshOverviewTable();
+            return;
+        }
+        Map<HttpMethod, Integer> countMap = statsData.getCountMap();
+        pathOverviewInfo.getTotalCnt().setVal(String.valueOf(statsData.getCount()));
+        pathOverviewInfo.getGetCnt().setVal(String.valueOf(countMap.getOrDefault(HttpMethod.GET, 0)));
+        pathOverviewInfo.getPostCnt().setVal(String.valueOf(countMap.getOrDefault(HttpMethod.POST, 0)));
+
+        // time
+        pathOverviewInfo.getTimeCost().setVal(statsData.getTimeCost() == 0 ? "-": statsData.getTimeCost() + " ms");
+        Date startTime = statsData.getStartTime();
+        pathOverviewInfo.getStartTime().setVal(startTime != null && startTime.getTime() > 0 ? dateFormat.format(startTime): "-");
+        Date endTime = statsData.getEndTime();
+        pathOverviewInfo.getEndTime().setVal(endTime != null && endTime.getTime() > 0 ? dateFormat.format(endTime): "-");
+        pathOverviewInfo.getAverageSpeed().setVal(statsData.getAverageSpeed() > 0 ? String.format("%.2f KB/s", statsData.getAverageSpeed()) : "-");
+
+        // size
+        pathOverviewInfo.getTotalSize().setVal(statsData.getTotalSize() > 0 ? WebUtils.getHSize(statsData.getTotalSize()) : "-");
+        pathOverviewInfo.getRequestsSize().setVal(statsData.getRequestsSize() > 0 ? WebUtils.getHSize(statsData.getRequestsSize()) : "-");
+        pathOverviewInfo.getResponsesSize().setVal(statsData.getResponsesSize() > 0 ? WebUtils.getHSize(statsData.getResponsesSize()) : "-");
+
+        detailTabController.refreshOverviewTable();
     }
 
     public void displayOverView(RequestMessage request) {
@@ -114,16 +169,16 @@ public class OverViewTabRenderer extends AbstractTabRenderer {
         requestOverviewInfo.getResponseSize().setVal(response == null ? "-": WebUtils.getHSize(response.getSize()));
         requestOverviewInfo.getAverageSpeed().setVal(getSpeed(request, response));
 
-        overviewTable.refresh();
+        detailTabController.refreshOverviewTable();
     }
 
     private String getSpeed(RequestMessage request, ResponseMessage response) {
         if (response == null || (request.getSize() == 0 && response.getSize() == 0)) {
             return "-";
         }
-        int size = request.getSize() + response.getSize();
+        long size = request.getSize() + response.getSize();
         int time = (int) (response.getEndTime() - request.getStartTime());
-        return String.format("%.2f KB/s", (double) size/(double) time);
+        return String.format("%.2f KB/s", (double) size / (double) time);
     }
 
     private String getContentStr(Map<String, String> map) {

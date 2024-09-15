@@ -1,5 +1,7 @@
 package com.catas.wicked.proxy.message;
 
+import com.catas.wicked.common.bean.TimeStatsData;
+import com.catas.wicked.common.bean.message.BaseMessage;
 import com.catas.wicked.common.bean.message.RequestMessage;
 import com.catas.wicked.common.bean.RequestCell;
 import com.catas.wicked.proxy.gui.componet.FilterableTreeItem;
@@ -44,6 +46,7 @@ public class MessageTree {
         node.setUrl(msg.getRequestUrl());
         node.setFullPath(msg.getRequestUrl());
         node.setLeaf(true);
+        updateTimeStats(node.getReqTimeStats(), msg);
 
         // add node to its position
         List<String> pathSplits = WebUtils.getPathSplits(msg.getRequestUrl());
@@ -217,10 +220,6 @@ public class MessageTree {
         return findNodeByPath(root, requestId, pathSplits, 0);
     }
 
-    public boolean isEmpty() {
-        return CollectionUtils.isEmpty(root.getPathChildren()) && CollectionUtils.isEmpty(root.getLeafChildren());
-    }
-
     private TreeNode findNodeByPath(TreeNode parent, String requestId, List<String> pathSplits, int index) {
         if (index >= pathSplits.size() || parent == null) {
             return parent;
@@ -242,6 +241,10 @@ public class MessageTree {
         return findNodeByPath(node, requestId, pathSplits, ++index);
     }
 
+    public boolean isEmpty() {
+        return CollectionUtils.isEmpty(root.getPathChildren()) && CollectionUtils.isEmpty(root.getLeafChildren());
+    }
+
     void addCnt() {
         this.count += 1;
     }
@@ -258,5 +261,20 @@ public class MessageTree {
 
     int getCount() {
         return this.count;
+    }
+
+    void updateTimeStats(TimeStatsData timeStatsData, BaseMessage msg) {
+        if (timeStatsData == null || msg == null) {
+            return;
+        }
+        if (msg.getStartTime() > 0) {
+            timeStatsData.setStartTime(msg.getStartTime());
+        }
+        if (msg.getEndTime() > timeStatsData.getEndTime()) {
+            timeStatsData.setEndTime(msg.getEndTime());
+        }
+        if (msg.getSize() > timeStatsData.getSize()) {
+            timeStatsData.setSize(msg.getSize());
+        }
     }
 }

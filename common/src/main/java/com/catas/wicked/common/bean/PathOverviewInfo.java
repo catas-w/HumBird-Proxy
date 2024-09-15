@@ -14,9 +14,6 @@ public class PathOverviewInfo {
     private final PairEntry totalCnt = new PairEntry("Total");
     private final PairEntry getCnt = new PairEntry("GET");
     private final PairEntry postCnt = new PairEntry("POST");
-    private final PairEntry putCnt = new PairEntry("PUT");
-    private final PairEntry deleteCnt = new PairEntry("DELETE");
-    private final PairEntry patchCnt = new PairEntry("PATCH");
 
     private final PairEntry timeCost = new PairEntry("Time Cost");
     private final PairEntry startTime = new PairEntry("Start");

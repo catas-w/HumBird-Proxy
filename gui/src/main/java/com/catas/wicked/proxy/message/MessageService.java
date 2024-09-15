@@ -1,9 +1,10 @@
 package com.catas.wicked.proxy.message;
 
 import com.catas.wicked.common.bean.RequestCell;
+import com.catas.wicked.common.bean.StatsData;
+import com.catas.wicked.common.bean.TimeStatsData;
 import com.catas.wicked.common.bean.message.BaseMessage;
 import com.catas.wicked.common.bean.message.DeleteMessage;
-import com.catas.wicked.common.bean.message.RenderMessage;
 import com.catas.wicked.common.bean.message.RequestMessage;
 import com.catas.wicked.common.bean.message.ResponseMessage;
 import com.catas.wicked.common.config.ApplicationConfig;
@@ -12,6 +13,7 @@ import com.catas.wicked.common.pipeline.Topic;
 import com.catas.wicked.proxy.gui.componet.FilterableTreeItem;
 import com.catas.wicked.proxy.gui.controller.ButtonBarController;
 import com.catas.wicked.proxy.gui.controller.RequestViewController;
+import com.catas.wicked.proxy.render.tab.OverViewTabRenderer;
 import com.catas.wicked.proxy.service.RequestViewService;
 import jakarta.annotation.PostConstruct;
 import jakarta.inject.Inject;
@@ -28,8 +30,11 @@ import org.ehcache.Cache;
 import org.ehcache.spi.loaderwriter.BulkCacheWritingException;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Slf4j
@@ -54,6 +59,9 @@ public class MessageService {
     @Inject
     private ButtonBarController buttonBarController;
 
+    @Inject
+    private OverViewTabRenderer overViewTabRenderer;
+
     private MessageTree messageTree;
 
     @Getter
@@ -64,9 +72,11 @@ public class MessageService {
         // TODO: use one thread-pool consumer
         messageQueue.subscribe(Topic.RECORD, this::processMsg);
         messageQueue.subscribe(Topic.UPDATE_MSG, this::processUpdate);
+
         // avoid circular dependency
         requestViewController.setMessageService(this);
         buttonBarController.setMessageService(this);
+        overViewTabRenderer.setMessageService(this);
         resetMessageTree();
     }
 
@@ -84,11 +94,60 @@ public class MessageService {
         }
     }
 
+    public StatsData pathStatistics(String fullPath) {
+        if (StringUtils.isBlank(fullPath)) {
+            return null;
+        }
+        StatsData statsData = new StatsData();
+
+        TreeNode pathNode = messageTree.findNodeByPath(fullPath, null);
+        if (pathNode == null) {
+            log.warn("pathNode is null: {}", fullPath);
+            return statsData;
+        }
+
+        List<TreeNode> leafNodeList = new ArrayList<>();
+        messageTree.travel(pathNode, leafNodeList::add);
+
+        // count
+        statsData.setCount(leafNodeList.size());
+        statsData.setCountMap(new HashMap<>());
+        for (TreeNode node : leafNodeList) {
+            if (node.getMethod() != null) {
+                Integer cnt = statsData.getCountMap().computeIfAbsent(node.getMethod(), httpMethod -> 0);
+                statsData.getCountMap().put(node.getMethod(), cnt + 1);
+            }
+
+            // time
+            TimeStatsData requestTimeStats = node.getReqTimeStats();
+            TimeStatsData respTimeStats = node.getRespTimeStats();
+            statsData.addTimeCost(respTimeStats.getEndTime() - requestTimeStats.getStartTime());
+            if (statsData.getStartTime() == null || statsData.getStartTime().getTime() > requestTimeStats.getStartTime()) {
+                statsData.setStartTime(new Date(requestTimeStats.getStartTime()));
+            }
+            if (statsData.getEndTime() == null || statsData.getEndTime().getTime() < respTimeStats.getEndTime()) {
+                statsData.setEndTime(new Date(requestTimeStats.getEndTime()));
+            }
+
+            // size
+            statsData.addTotalSize(requestTimeStats.getSize());
+            statsData.addTotalSize(respTimeStats.getSize());
+            statsData.addRequestsSize(requestTimeStats.getSize());
+            statsData.addResponsesSize(respTimeStats.getSize());
+        }
+        if (statsData.getTotalSize() > 0 && statsData.getTimeCost() > 0) {
+            statsData.setAverageSpeed((double) statsData.getTotalSize() / statsData.getTimeCost());
+        }
+
+        return statsData;
+    }
+
     /**
      * set selectionMode in treeView/listView
      * @param requestId requestId
      * @param fromTreeView source
      */
+    @Deprecated
     public void selectRequestItem(String requestId, boolean fromTreeView) {
         if (requestId == null) {
             return;
@@ -132,6 +191,9 @@ public class MessageService {
                 requestMessage.getHeaders().putAll(updateMsg.getHeaders());
             }
             requestCache.put(requestMessage.getRequestId(), requestMessage);
+
+            // update time in treeNode
+            updateTimeStats(requestMessage, updateMsg);
         } else if (msg instanceof ResponseMessage updateMsg) {
             RequestMessage requestMessage = requestCache.get(updateMsg.getRequestId());
             if (requestMessage == null) {
@@ -151,6 +213,9 @@ public class MessageService {
             requestMessage.getResponse().setSize(updateMsg.getSize());
             requestMessage.getResponse().setEndTime(updateMsg.getEndTime());
             requestCache.put(requestMessage.getRequestId(), requestMessage);
+
+            // update timeStatsData
+            updateTimeStats(requestMessage, updateMsg);
         } else {
             log.warn("Unrecognized requestMsg");
         }
@@ -169,6 +234,7 @@ public class MessageService {
                     messageTree.add(requestMessage);
                     refreshCntProperty();
                 }
+                // TODO: deprecated
                 case REQUEST_CONTENT -> {
                     // 添加请求体
                     RequestMessage contentMsg = (RequestMessage) msg;
@@ -184,13 +250,16 @@ public class MessageService {
         if (msg instanceof ResponseMessage responseMessage) {
             switch (responseMessage.getType()) {
                 case RESPONSE -> {
-                    ResponseMessage respMessage = (ResponseMessage) msg;
-                    RequestMessage data = requestCache.get(respMessage.getRequestId());
+                    RequestMessage data = requestCache.get(responseMessage.getRequestId());
                     if (data != null) {
-                        data.setResponse(respMessage);
+                        data.setResponse(responseMessage);
                         requestCache.put(data.getRequestId(), data);
+
+                        // update timeStatsData
+                        updateTimeStats(data, responseMessage);
                     }
                 }
+                // Deprecated
                 case RESPONSE_CONTENT -> {
                     // 添加响应体
                     // TODO 分开resp
@@ -331,6 +400,30 @@ public class MessageService {
             requestCache.clear();
         } catch (Exception e) {
             log.error("Error in deleting in cache.", e);
+        }
+    }
+
+    /**
+     * update timeStatsData
+     */
+    private void updateTimeStats(RequestMessage requestMessage, BaseMessage msg) {
+        if (requestMessage == null || msg == null) {
+            log.error("Update timeStatsData with null args: {}",
+                    Optional.ofNullable(requestMessage).map(RequestMessage::getRequestUrl).orElse(null));
+            return;
+        }
+        TreeNode treeNode = messageTree.findNodeByPath(requestMessage.getRequestUrl(), requestMessage.getRequestId());
+        if (treeNode == null) {
+            return;
+        }
+
+        // log.info("update timeStat: {}-{}, size: {}, request: {}", msg.getStartTime(), msg.getEndTime(), msg.getSize(), msg instanceof RequestMessage);
+        if (msg instanceof RequestMessage) {
+            messageTree.updateTimeStats(treeNode.getReqTimeStats(), msg);
+        } else if (msg instanceof ResponseMessage){
+            messageTree.updateTimeStats(treeNode.getRespTimeStats(), msg);
+        } else {
+            log.warn("Unexpected msg type");
         }
     }
 }

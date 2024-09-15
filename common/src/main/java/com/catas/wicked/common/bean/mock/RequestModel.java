@@ -9,7 +9,7 @@ import lombok.Data;
 import java.util.List;
 
 /**
- * Request data for mocking
+ * Request data for mocking TODO: move to test package
  */
 @Data
 public class RequestModel {

@@ -254,14 +254,14 @@ public class WebUtils {
         return map;
     }
 
-    public static String getHSize(int size) {
+    public static String getHSize(long size) {
         if (size < 1024) {
             return String.format("%d B", size);
         }
         return String.format("%.2f KB", size / 1024.0);
     }
 
-    public static int estimateSize(HttpMessage httpMessage) {
+    public static long estimateSize(HttpMessage httpMessage) {
         if (httpMessage == null) {
             return 0;
         }

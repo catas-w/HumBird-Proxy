@@ -53,6 +53,10 @@ public class RequestTabRenderer extends AbstractTabRenderer {
             setEmptyMsgLabel(detailTabController.getReqContentMsgLabel());
             return;
         }
+        if (renderMsg.isPath()) {
+            System.out.println("Rendering path");
+            return;
+        }
         RequestMessage request = requestCache.get(renderMsg.getRequestId());
         displayRequest(request);
     }

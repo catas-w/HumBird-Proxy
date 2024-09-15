@@ -17,15 +17,21 @@ public class BaseMessage implements Serializable {
 
     private long endTime;
 
-    private int size;
+    private long size;
 
     public enum MessageType {
         REQUEST,
+
+        @Deprecated
         REQUEST_CONTENT,
+
         RESPONSE,
+
+        @Deprecated
         RESPONSE_CONTENT,
+
         POISON,
+
         UPDATE,
-        DELETE,
     }
 }
