@@ -17,6 +17,7 @@ import com.catas.wicked.proxy.render.ContextMenuFactory;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXTabPane;
 import com.jfoenix.controls.JFXTreeTableView;
+import io.micronaut.core.util.CollectionUtils;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import javafx.application.Platform;
@@ -46,7 +47,9 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
@@ -83,6 +86,14 @@ public class DetailTabController implements Initializable {
     public SideBar reqQuerySideBar;
     @FXML
     public GridPane timingGridPane;
+    @FXML
+    public Tab overviewTab;
+    @FXML
+    public Tab requestTab;
+    @FXML
+    public Tab respTab;
+    @FXML
+    public Tab timingTab;
     @FXML
     private JFXComboBox<Labeled> respComboBox;
     @FXML
@@ -129,7 +140,9 @@ public class DetailTabController implements Initializable {
     @Inject
     private RequestOverviewInfo requestOverviewInfo;
 
-    private final Map<SplitPane, double[]> dividerPositionMap =new HashMap<>();
+    private final Map<SplitPane, double[]> dividerPositionMap = new HashMap<>();
+
+    private final List<Tab> requestOnlyTabs = new ArrayList<>();
 
     private boolean dividerUpdating;
 
@@ -139,6 +152,8 @@ public class DetailTabController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         dividerPositionMap.put(reqSplitPane, reqSplitPane.getDividerPositions().clone());
         dividerPositionMap.put(respSplitPane, respSplitPane.getDividerPositions().clone());
+
+        requestOnlyTabs.addAll(List.of(requestTab, respTab, timingTab));
 
         // init titlePane collapse
         addTitleListener(reqHeaderPane, reqSplitPane);
@@ -387,5 +402,25 @@ public class DetailTabController implements Initializable {
     public String getActiveRequestTab() {
         Tab selectedTab = this.mainTabPane.getSelectionModel().getSelectedItem();
         return selectedTab.getText();
+    }
+
+    public void hideRequestOnlyTabs() {
+        if (CollectionUtils.isEmpty(requestOnlyTabs)) {
+            return;
+        }
+        Platform.runLater(() -> {
+            requestOnlyTabs.forEach(tab -> tab.setDisable(true));
+        });
+        mainTabPane.getSelectionModel().select(overviewTab);
+    }
+
+    public void showRequestOnlyTabs() {
+        if (CollectionUtils.isEmpty(requestOnlyTabs)) {
+            return;
+        }
+        Platform.runLater(() -> {
+            // mainTabPane.getTabs().removeAll(requestOnlyTabs);
+            requestOnlyTabs.forEach(tab -> tab.setDisable(false));
+        });
     }
 }

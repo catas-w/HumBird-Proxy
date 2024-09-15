@@ -94,7 +94,7 @@ public class ImageUtils {
             MemoryCacheImageInputStream imageInputStream = new MemoryCacheImageInputStream(inputStream);
             reader.setInput(imageInputStream);
         }
-        // FIXME: arm64 support
+        // TODO FIXME: arm64 support
         WebPReadParam readParam = new WebPReadParam();
         readParam.setBypassFiltering(true);
         BufferedImage image = reader.read(0, readParam);

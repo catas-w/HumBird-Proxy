@@ -123,6 +123,12 @@ public class RequestViewService {
         }
         messageQueue.clearMsg(Topic.RENDER);
 
+        // display path info
+        if (requestId != null && requestId.startsWith(RenderMessage.PATH_MSG)) {
+            messageQueue.pushMsg(Topic.RENDER, new RenderMessage(toSend, RenderMessage.Tab.OVERVIEW));
+            return;
+        }
+
         // current requestView tab
         String curTab = detailTabController.getActiveRequestTab();
         RenderMessage.Tab firstTargetTab = RenderMessage.Tab.valueOfIgnoreCase(curTab);
@@ -148,6 +154,5 @@ public class RequestViewService {
             // pushMsg(messages.poll());
             messageQueue.pushMsg(Topic.RENDER, messages.poll());
         }
-        // appConfig.getCurrentRequestId().set(requestId);
     }
 }

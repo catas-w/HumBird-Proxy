@@ -65,6 +65,7 @@ public class OverViewTabRenderer extends AbstractTabRenderer {
         }
         if (renderMsg.isPath()) {
             // display path info
+            detailTabController.hideRequestOnlyTabs();
             displayPathOverview(renderMsg);
         } else {
             // display request info
