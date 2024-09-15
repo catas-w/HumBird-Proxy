@@ -2,23 +2,29 @@ package com.catas.wicked.common.pipeline;
 
 import com.catas.wicked.common.bean.message.BaseMessage;
 import com.catas.wicked.common.bean.message.PoisonMessage;
-import com.catas.wicked.common.executor.ThreadPoolService;
+import com.catas.wicked.common.executor.CommonExecutorService;
 import jakarta.annotation.PostConstruct;
 import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
 
 @Slf4j
 @Singleton
-public class MessageQueue {
+public class MessageQueue implements AutoCloseable{
 
     private final Map<Topic, MessageChannel> channelMap;
 
+    private final List<ExecutorService> singleThreadExecutors;
+
     public MessageQueue() {
         this.channelMap = new HashMap<>();
+        this.singleThreadExecutors = new ArrayList<>();
     }
 
     @PostConstruct
@@ -26,8 +32,11 @@ public class MessageQueue {
         for (Topic topic : Topic.values()) {
             MessageChannel messageChannel = new MessageChannel(topic);
             channelMap.put(topic, messageChannel);
-            // TODO 设置线程名称
-            ThreadPoolService.getInstance().run(() -> {
+
+            // 设置线程名称
+            ExecutorService executor = CommonExecutorService.singleThreadExecutor(topic.name().toLowerCase());
+            singleThreadExecutors.add(executor);
+            executor.execute(() -> {
                 log.info("Start listening to topic: {}", messageChannel.getTopic());
                 while (true) {
                     try {
@@ -43,6 +52,9 @@ public class MessageQueue {
                 }
                 log.info("End listening to topic: {}", messageChannel.getTopic());
             });
+            // ThreadPoolService.getInstance().run(() -> {
+            //
+            // });
         }
     }
 
@@ -74,4 +86,12 @@ public class MessageQueue {
         messageChannel.pushMsg(message);
     }
 
+    @Override
+    public void close() throws Exception {
+        for (ExecutorService executor : singleThreadExecutors) {
+            if (executor != null) {
+                executor.shutdown();
+            }
+        }
+    }
 }
