@@ -5,6 +5,7 @@ import com.catas.wicked.common.bean.RequestOverviewInfo;
 import com.catas.wicked.common.bean.PairEntry;
 import com.catas.wicked.common.constant.CodeStyle;
 import com.catas.wicked.common.util.TableUtils;
+import com.catas.wicked.proxy.gui.componet.OverviewTreeTableCell;
 import com.catas.wicked.proxy.gui.componet.SelectableTableCell;
 import com.catas.wicked.proxy.gui.componet.MessageLabel;
 import com.catas.wicked.proxy.gui.componet.SelectableNodeBuilder;
@@ -38,11 +39,13 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeTableCell;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.skin.TableHeaderRow;
 import javafx.scene.layout.GridPane;
+import javafx.util.Callback;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -195,17 +198,19 @@ public class DetailTabController implements Initializable {
         nameColumn.setMaxWidth(200);
         nameColumn.setMinWidth(100);
         nameColumn.setSortable(false);
-        nameColumn.setCellValueFactory((TreeTableColumn.CellDataFeatures<PairEntry, String> param) ->
-                new ReadOnlyStringWrapper(param.getValue().getValue().getKey()));
         final String titleStyle = "tree-table-key";
         nameColumn.getStyleClass().add(titleStyle);
+        nameColumn.setCellValueFactory((TreeTableColumn.CellDataFeatures<PairEntry, String> param) ->
+                new ReadOnlyStringWrapper(param.getValue().getValue().getKey()));
+        nameColumn.setCellFactory((TreeTableColumn<PairEntry, String> param) ->
+                new OverviewTreeTableCell());
 
         TreeTableColumn<PairEntry, String> valueColumn = new TreeTableColumn<>("Value");
         valueColumn.setSortable(false );
         valueColumn.setCellValueFactory((TreeTableColumn.CellDataFeatures<PairEntry, String> param) ->
                 new ReadOnlyStringWrapper(param.getValue().getValue().getVal()));
         valueColumn.setCellFactory((TreeTableColumn<PairEntry, String> param) ->
-                new SelectableTreeTableCell<>(new SelectableNodeBuilder(), valueColumn));
+                new SelectableTreeTableCell(new SelectableNodeBuilder(), valueColumn));
 
         Platform.runLater(() -> {
             tableView.getColumns().addAll(nameColumn, valueColumn);

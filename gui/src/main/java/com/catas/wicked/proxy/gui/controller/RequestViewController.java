@@ -58,8 +58,6 @@ public class RequestViewController implements Initializable {
     private ListView<RequestCell> reqListView;
 
     @FXML
-    private TreeItem root;
-    @FXML
     private ContextMenu contextMenu;
     @Inject
     private ViewCellFactory cellFactory;

@@ -77,7 +77,6 @@ public class OverViewTabRenderer extends AbstractTabRenderer {
 
     private void displayPathOverview(RenderMessage renderMsg) {
         String path = renderMsg.getRequestId().substring(RenderMessage.PATH_MSG.length());
-        System.out.println("Rendering path: " + path);
 
         if (pathRoot == null) {
             initPathRoot();
@@ -199,8 +198,8 @@ public class OverViewTabRenderer extends AbstractTabRenderer {
     public void initRequestRoot() {
         requestRoot = new TreeItem<>();
         TreeItem<PairEntry> reqNode = new TreeItem<>(new PairEntry("General", null));
-        TreeItem<PairEntry> sizeNode = new TreeItem<>(new PairEntry("Size", null));
-        TreeItem<PairEntry> timingNode = new TreeItem<>(new PairEntry("Timing", null));
+        TreeItem<PairEntry> sizeNode = new TreeItem<>(new PairEntry("Size", null, "Maybe inaccurate"));
+        TreeItem<PairEntry> timingNode = new TreeItem<>(new PairEntry("Timing", null, "Maybe inaccurate"));
 
         // basic info
         reqNode.getChildren().add(new TreeItem<>(requestOverviewInfo.getUrl()));
@@ -247,14 +246,14 @@ public class OverViewTabRenderer extends AbstractTabRenderer {
         generalNode.getChildren().add(new TreeItem<>(pathOverviewInfo.getPostCnt()));
 
         // timing
-        TreeItem<PairEntry> timingNode = new TreeItem<>(new PairEntry("Timing", null));
+        TreeItem<PairEntry> timingNode = new TreeItem<>(new PairEntry("Timing", null, "Maybe inaccurate"));
         timingNode.getChildren().add(new TreeItem<>(pathOverviewInfo.getTimeCost()));
         timingNode.getChildren().add(new TreeItem<>(pathOverviewInfo.getStartTime()));
         timingNode.getChildren().add(new TreeItem<>(pathOverviewInfo.getEndTime()));
         timingNode.getChildren().add(new TreeItem<>(pathOverviewInfo.getAverageSpeed()));
 
         // size
-        TreeItem<PairEntry> sizeNode = new TreeItem<>(new PairEntry("Size", null));
+        TreeItem<PairEntry> sizeNode = new TreeItem<>(new PairEntry("Size", null, "Maybe inaccurate"));
         sizeNode.getChildren().add(new TreeItem<>(pathOverviewInfo.getTotalSize()));
         sizeNode.getChildren().add(new TreeItem<>(pathOverviewInfo.getRequestsSize()));
         sizeNode.getChildren().add(new TreeItem<>(pathOverviewInfo.getResponsesSize()));

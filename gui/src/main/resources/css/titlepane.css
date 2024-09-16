@@ -209,6 +209,14 @@
     /*-fx-max-width: 300;*/
 }
 
+/*************** treeTableView button ***************/
+.overview-key-btn {
+    -fx-background-color: rgb(200, 200, 200, 0.7);
+    -fx-font-size: 11;
+    -fx-text-fill: #838383;
+    -fx-translate-y: 2;
+}
+
 
 /*************** Button Bar ***************/
 .content-button-bar {
