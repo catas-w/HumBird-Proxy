@@ -3,7 +3,6 @@ package com.catas.wicked.proxy.service.settings;
 import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.common.config.Settings;
 import com.catas.wicked.common.constant.ThrottlePreset;
-import com.catas.wicked.proxy.gui.controller.ButtonBarController;
 import com.catas.wicked.proxy.gui.controller.SettingController;
 import com.jfoenix.controls.JFXComboBox;
 import javafx.scene.control.Label;
@@ -14,12 +13,9 @@ import lombok.extern.slf4j.Slf4j;
 public class ThrottleSettingService extends AbstractSettingService{
 
     private final SettingController settingController;
-    private final ButtonBarController buttonBarController;
 
-    public ThrottleSettingService(SettingController settingController,
-                                  ButtonBarController buttonBarController) {
+    public ThrottleSettingService(SettingController settingController) {
         this.settingController = settingController;
-        this.buttonBarController = buttonBarController;
     }
 
     @Override
@@ -61,6 +57,6 @@ public class ThrottleSettingService extends AbstractSettingService{
         settings.setThrottlePreset(ThrottlePreset.valueOf(selected.getText()));
 
         // update throttle toggle button in homepage
-        buttonBarController.throttleBtn.setSelected(settings.isThrottle());
+        settingController.updateThrottleBtn(settings.isThrottle());
     }
 }

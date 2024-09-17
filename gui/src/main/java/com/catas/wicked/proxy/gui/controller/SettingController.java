@@ -16,6 +16,7 @@ import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXRadioButton;
 import com.jfoenix.controls.JFXTextField;
 import com.jfoenix.controls.JFXToggleButton;
+import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -79,26 +80,20 @@ public class SettingController implements Initializable {
     @FXML
     private JFXButton saveBtn;
 
-    @Setter
+    @Inject
     private ApplicationConfig appConfig;
     @Setter
     private ButtonBarController buttonBarController;
-    @Setter
+    @Inject
     private ProxyServer proxyServer;
-    @Setter
+    @Inject
     private ScheduledManager scheduledManager;
 
     private List<SettingService> settingServiceList;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        // settingServiceList = new ArrayList<>();
-        // settingServiceList.add(new GeneralSettingService(this));
-        // settingServiceList.add(new ProxySettingService(this));
-        // settingServiceList.add(new SslSettingService(this));
-        // settingServiceList.add(new ExternalProxySettingService(this));
-        // settingServiceList.add(new ThrottleSettingService(this, buttonBarController));
-        // settingServiceList.forEach(SettingService::init);
+        init();
     }
 
     /**
@@ -110,7 +105,7 @@ public class SettingController implements Initializable {
         settingServiceList.add(new ProxySettingService(this));
         settingServiceList.add(new SslSettingService(this));
         settingServiceList.add(new ExternalProxySettingService(this));
-        settingServiceList.add(new ThrottleSettingService(this, buttonBarController));
+        settingServiceList.add(new ThrottleSettingService(this));
         settingServiceList.forEach(SettingService::init);
     }
 
@@ -195,5 +190,9 @@ public class SettingController implements Initializable {
                 }
             }
         }
+    }
+
+    public void updateThrottleBtn(boolean selected) {
+        buttonBarController.updateThrottleBtn(selected);
     }
 }

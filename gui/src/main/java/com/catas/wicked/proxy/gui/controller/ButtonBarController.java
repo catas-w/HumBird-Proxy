@@ -43,9 +43,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.ehcache.Cache;
 import org.kordamp.ikonli.javafx.FontIcon;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.Map;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 import static com.catas.wicked.common.constant.StyleConstant.COLOR_ACTIVE;
@@ -57,6 +57,7 @@ import static com.catas.wicked.common.constant.StyleConstant.COLOR_SUSPEND;
 @Singleton
 public class ButtonBarController implements Initializable {
 
+    public Node settingScene;
     public JFXButton markerBtn;
     public JFXToggleNode recordBtn;
     public JFXToggleNode sslBtn;
@@ -68,10 +69,6 @@ public class ButtonBarController implements Initializable {
     public MenuItem aboutBtn;
     public MenuItem quitBtn;
     public JFXButton clearBtn;
-    @FXML
-    private MenuItem settingBtn;
-    @FXML
-    private MenuButton mainMenuButton;
 
     private Dialog<Node> settingPage;
 
@@ -91,11 +88,9 @@ public class ButtonBarController implements Initializable {
     private RequestViewController requestViewController;
 
     @Inject
-    private ProxyServer proxyServer;
-
-    @Inject
     private ScheduledManager scheduledManager;
 
+    @Inject
     private SettingController settingController;
 
     @Setter
@@ -195,31 +190,19 @@ public class ButtonBarController implements Initializable {
     }
 
     public void displaySettingPage() {
-        if (settingPage == null || settingController == null) {
-            try {
-                // Parent settingScene = FXMLLoader.load(getClass().getResource("/fxml/setting-page/settings.fxml"));
-                FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/setting-page/settings.fxml"));
-                Parent settingScene = fxmlLoader.load();
-                settingController = fxmlLoader.getController();
-                settingController.setAppConfig(appConfig);
-                settingController.setProxyServer(proxyServer);
-                settingController.setButtonBarController(this);
-                settingController.setScheduledManager(scheduledManager);
-                settingController.init();
+        if (settingPage == null) {
+            settingController.setButtonBarController(this);
 
-                settingPage = new Dialog<>();
-                settingPage.setTitle("Settings");
-                settingPage.initModality(Modality.APPLICATION_MODAL);
-                DialogPane dialogPane = settingPage.getDialogPane();
-                dialogPane.setContent(settingScene);
-                dialogPane.getStylesheets().add(
-                        getClass().getResource("/css/dialog.css").toExternalForm());
-                dialogPane.getStyleClass().add("myDialog");
-                Window window = dialogPane.getScene().getWindow();
-                window.setOnCloseRequest(e -> window.hide());
-            } catch (IOException e) {
-                log.error("Error loading settings-page.", e);
-            }
+            settingPage = new Dialog<>();
+            settingPage.setTitle("Settings");
+            settingPage.initModality(Modality.APPLICATION_MODAL);
+            DialogPane dialogPane = settingPage.getDialogPane();
+            dialogPane.setContent(settingScene);
+            dialogPane.getStylesheets().add(
+                    Objects.requireNonNull(getClass().getResource("/css/dialog.css")).toExternalForm());
+            dialogPane.getStyleClass().add("myDialog");
+            Window window = dialogPane.getScene().getWindow();
+            window.setOnCloseRequest(e -> window.hide());
         }
 
         settingController.initValues();
@@ -302,5 +285,9 @@ public class ButtonBarController implements Initializable {
     public void onSysProxy(ActionEvent actionEvent) {
         appConfig.getSettings().setSystemProxy(sysProxyBtn.selectedProperty().get());
         scheduledManager.invoke(WorkerConstant.SYS_PROXY_WORKER);
+    }
+
+    public void updateThrottleBtn(boolean selected) {
+        throttleBtn.setSelected(selected);
     }
 }

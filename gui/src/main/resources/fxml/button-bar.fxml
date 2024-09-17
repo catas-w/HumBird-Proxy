@@ -153,4 +153,8 @@
             </VBox.margin>
         </CustomMenuButton>
     </VBox>
+
+    <fx:define>
+        <fx:include fx:id="settingScene" source="setting-page/settings.fxml"/>
+    </fx:define>
 </AnchorPane>
