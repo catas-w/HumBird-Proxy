@@ -138,6 +138,7 @@ public class ApplicationConfig implements AutoCloseable {
             proxyLoopGroup.shutdownGracefully();
         }
 
+        messageQueue.shutdown();
         ThreadPoolService.getInstance().shutdown();
         ScheduledThreadPoolService.getInstance().shutdown();
     }

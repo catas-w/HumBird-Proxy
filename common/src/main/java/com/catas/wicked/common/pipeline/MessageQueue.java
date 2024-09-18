@@ -16,7 +16,7 @@ import java.util.function.Consumer;
 
 @Slf4j
 @Singleton
-public class MessageQueue implements AutoCloseable{
+public class MessageQueue {
 
     private final Map<Topic, MessageChannel> channelMap;
 
@@ -52,9 +52,6 @@ public class MessageQueue implements AutoCloseable{
                 }
                 log.info("End listening to topic: {}", messageChannel.getTopic());
             });
-            // ThreadPoolService.getInstance().run(() -> {
-            //
-            // });
         }
     }
 
@@ -86,11 +83,16 @@ public class MessageQueue implements AutoCloseable{
         messageChannel.pushMsg(message);
     }
 
-    @Override
-    public void close() throws Exception {
+    public void shutdown() {
+        // System.out.println("Quit mq");
+        for (MessageChannel channel : channelMap.values()) {
+            if (channel != null) {
+                channel.pushMsg(new PoisonMessage());
+            }
+        }
         for (ExecutorService executor : singleThreadExecutors) {
             if (executor != null) {
-                executor.shutdown();
+                executor.shutdownNow();
             }
         }
     }
