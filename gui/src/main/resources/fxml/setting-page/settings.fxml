@@ -20,18 +20,18 @@
 <?import javafx.scene.control.TextArea?>
 <?import com.jfoenix.controls.JFXRadioButton?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0"
-            prefWidth="700.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1"
+<?import com.jfoenix.controls.JFXTabPane?>
+<AnchorPane prefHeight="500.0" prefWidth="700.0"
+            xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.catas.wicked.proxy.gui.controller.SettingController">
     <stylesheets>
         <URL value="@../../css/setting-page.css"/>
         <URL value="@../../css/common-design.css"/>
     </stylesheets>
-    <TabPane fx:id="settingTabPane" styleClass="setting-tab-pane" rotateGraphic="true" side="LEFT" tabClosingPolicy="UNAVAILABLE"
+    <JFXTabPane fx:id="settingTabPane" styleClass="setting-tab-pane" side="TOP" tabClosingPolicy="UNAVAILABLE"
              AnchorPane.bottomAnchor="-10.0" AnchorPane.leftAnchor="-10.0"
              AnchorPane.rightAnchor="-10.0" AnchorPane.topAnchor="-10.0">
-        <Tab text="General" styleClass="setting-general, setting-tab-1">
-            <!-- <ScrollPane hbarPolicy="NEVER" vbarPolicy="ALWAYS"> -->
+        <Tab text="General" fx:id="generalSettingTab" styleClass="setting-general, setting-tab-1" >
             <AnchorPane>
                 <GridPane AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="15.0"
                           AnchorPane.topAnchor="15.0" AnchorPane.bottomAnchor="40.0">
@@ -64,7 +64,7 @@
             </AnchorPane>
             <!-- </ScrollPane> -->
         </Tab>
-        <Tab text="Proxy Settings" styleClass="setting-server, setting-tab-2">
+        <Tab text="Proxy" fx:id="proxySettingTab" styleClass="setting-server, setting-tab-2">
             <AnchorPane>
                 <GridPane AnchorPane.leftAnchor="20.0"
                           AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0">
@@ -87,7 +87,7 @@
                 </GridPane>
             </AnchorPane>
         </Tab>
-        <Tab text="SSl Settings" styleClass="setting-ssl, setting-tab-3">
+        <Tab text=" SSl " fx:id="sslSettingTab" styleClass="setting-ssl, setting-tab-3">
             <AnchorPane>
                 <GridPane AnchorPane.leftAnchor="20.0"
                           AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0">
@@ -110,13 +110,13 @@
                     <HBox GridPane.columnIndex="1" GridPane.rowIndex="2">
                         <JFXRadioButton fx:id="customCertRadio" text="Select Certificate"/>
                         <Pane HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
-                        <JFXButton fx:id="selectCertBtn" text="Select From..." translateY="-5"/>
+                        <JFXButton fx:id="selectCertBtn" onAction="#loadCertFile" text="Select From..." translateY="-5"/>
                     </HBox>
                     <TextArea fx:id="sslExcludeArea" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
                 </GridPane>
             </AnchorPane>
         </Tab>
-        <Tab text="External Proxy" styleClass="setting-external, setting-tab-4">
+        <Tab text="External Proxy" fx:id="externalSettingTab" styleClass="setting-external, setting-tab-4">
             <AnchorPane>
                 <GridPane AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0">
                     <columnConstraints>
@@ -159,7 +159,7 @@
                 </GridPane>
             </AnchorPane>
         </Tab>
-        <Tab text="Throttle Settings" styleClass="setting-throttle, setting-tab-5">
+        <Tab text="Throttle" fx:id="throttleSettingTab" styleClass="setting-throttle, setting-tab-5">
             <AnchorPane>
                 <GridPane AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="15.0"
                           AnchorPane.topAnchor="15.0" AnchorPane.bottomAnchor="40.0">
@@ -179,7 +179,7 @@
                 </GridPane>
             </AnchorPane>
         </Tab>
-    </TabPane>
+    </JFXTabPane>
 
     <HBox styleClass="settings-btn"
           prefHeight="40.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="190.0" AnchorPane.rightAnchor="0.0">

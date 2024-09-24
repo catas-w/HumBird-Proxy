@@ -90,7 +90,7 @@ public class RequestViewService {
 
         messageQueue.subscribe(Topic.RENDER, msg -> {
             if (msg instanceof RenderMessage renderMsg) {
-                // System.out.println(renderMsg);
+                log.info("rendingMsg: {}", msg);
                 TabRenderer renderer = renderFuncMap.get(renderMsg.getTargetTab());
                 if (renderer != null) {
                     renderer.render(renderMsg);

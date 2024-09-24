@@ -29,13 +29,17 @@ import javafx.scene.control.Labeled;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.kordamp.ikonli.javafx.FontIcon;
 
+import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -67,6 +71,12 @@ public class SettingController implements Initializable {
     public TextArea sslExcludeArea;
     public JFXToggleButton throttleBtn;
     public JFXComboBox<Labeled> throttleComboBox;
+
+    public Tab generalSettingTab;
+    public Tab proxySettingTab;
+    public Tab sslSettingTab;
+    public Tab externalSettingTab;
+    public Tab throttleSettingTab;
     @FXML
     private JFXToggleButton sysProxyBtn;
     @FXML
@@ -93,13 +103,42 @@ public class SettingController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        init();
+        initServers();
+
+        // set icons
+        configTabStyle(generalSettingTab, "fas-sliders-h");
+        configTabStyle(proxySettingTab, "fas-hat-cowboy");
+        configTabStyle(sslSettingTab, "fas-key");
+        configTabStyle(externalSettingTab, "fas-monument");
+        configTabStyle(throttleSettingTab, "fas-hourglass-end");
+    }
+
+    private void configTabStyle(Tab tab, String iconCode) {
+        if (tab == null) {
+            return;
+        }
+
+        final String styleClass = "setting-icon-pane";
+        FontIcon icon = new FontIcon();
+        icon.setIconLiteral(iconCode);
+        // icon.setIconSize(36);
+
+        Label label = new Label(tab.getText());
+
+        BorderPane tabPane = new BorderPane();
+        tabPane.setPrefWidth(90);
+        tabPane.setCenter(icon);
+        tabPane.setBottom(label);
+        tabPane.getStyleClass().add(styleClass);
+
+        tab.setText(null);
+        tab.setGraphic(tabPane);
     }
 
     /**
      * initialize all components
      */
-    public void init() {
+    public void initServers() {
         settingServiceList = new ArrayList<>();
         settingServiceList.add(new GeneralSettingService(this));
         settingServiceList.add(new ProxySettingService(this));
@@ -194,5 +233,35 @@ public class SettingController implements Initializable {
 
     public void updateThrottleBtn(boolean selected) {
         buttonBarController.updateThrottleBtn(selected);
+    }
+
+    public void loadCertFile(ActionEvent event) {
+        FileChooser fileChooser = new FileChooser();
+
+        // Set file chooser initial directory
+        fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+
+        // Set file extension filters
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Text Files", "*.txt"),
+                new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.gif"),
+                new FileChooser.ExtensionFilter("All Files", "*.*")
+        );
+
+        // Show the open file dialog
+        File selectedFile = null;
+        List<Window> windows = Stage.getWindows().stream().filter(Window::isShowing).filter(Window::isFocused).toList();
+        for (Window window : windows) {
+            if (window instanceof Stage ) {
+                selectedFile = fileChooser.showOpenDialog(window);
+            }
+        }
+
+        // Check if a file was selected
+        if (selectedFile != null) {
+            System.out.println("File selected: " + selectedFile.getAbsolutePath());
+        } else {
+            System.out.println("File selection canceled.");
+        }
     }
 }
