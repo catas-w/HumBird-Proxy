@@ -3,6 +3,7 @@ package com.catas.wicked.proxy.gui.controller;
 import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.common.util.AlertUtils;
 import com.catas.wicked.common.worker.worker.ScheduledManager;
+import com.catas.wicked.proxy.gui.componet.CertSelectComponent;
 import com.catas.wicked.proxy.gui.componet.ProxyTypeLabel;
 import com.catas.wicked.proxy.service.settings.ExternalProxySettingService;
 import com.catas.wicked.proxy.service.settings.GeneralSettingService;
@@ -16,6 +17,7 @@ import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXRadioButton;
 import com.jfoenix.controls.JFXTextField;
 import com.jfoenix.controls.JFXToggleButton;
+import io.micronaut.core.util.CollectionUtils;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import javafx.event.ActionEvent;
@@ -26,10 +28,14 @@ import javafx.scene.Parent;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.Labeled;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -77,6 +83,8 @@ public class SettingController implements Initializable {
     public Tab sslSettingTab;
     public Tab externalSettingTab;
     public Tab throttleSettingTab;
+    public HBox importCerBox;
+    public GridPane sslGridPane;
     @FXML
     private JFXToggleButton sysProxyBtn;
     @FXML
@@ -111,6 +119,13 @@ public class SettingController implements Initializable {
         configTabStyle(sslSettingTab, "fas-key");
         configTabStyle(externalSettingTab, "fas-monument");
         configTabStyle(throttleSettingTab, "fas-hourglass-end");
+
+        // TODO: for all
+        AnchorPane sslAnchorPane = (AnchorPane) sslSettingTab.getContent();
+        ScrollPane scrollPane = (ScrollPane) sslAnchorPane.getChildren().get(0);
+        // sslGridPane.prefWidthProperty().bind(scrollPane.widthProperty());
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scrollPane.setFitToWidth(true);
     }
 
     private void configTabStyle(Tab tab, String iconCode) {
@@ -263,5 +278,25 @@ public class SettingController implements Initializable {
         } else {
             System.out.println("File selection canceled.");
         }
+    }
+
+    public void setSelectableCert(List<? extends Node> certList) {
+        if (CollectionUtils.isEmpty(certList)) {
+            return;
+        }
+
+        // clean old
+        final int startRowIndex = 2;
+        sslGridPane.getChildren().remove(importCerBox);
+        sslGridPane.getChildren().removeIf(item -> item instanceof CertSelectComponent);
+
+        // add
+        int rowIndex = startRowIndex;
+        for (Node node : certList) {
+            sslGridPane.add(node, 1, rowIndex);
+            rowIndex ++;
+        }
+
+        sslGridPane.add(importCerBox, 1, rowIndex);
     }
 }

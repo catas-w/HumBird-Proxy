@@ -6,7 +6,6 @@
 <?import javafx.scene.layout.*?>
 <?import org.kordamp.ikonli.javafx.*?>
 
-<?import com.catas.wicked.proxy.gui.componet.FilterableTreeItem?>
 <?import com.catas.wicked.proxy.gui.componet.CustomToggleNode?>
 
 <VBox xmlns="http://javafx.com/javafx/11.0.14-internal"

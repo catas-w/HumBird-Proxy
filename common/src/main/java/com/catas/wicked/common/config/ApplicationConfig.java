@@ -4,7 +4,7 @@ import com.catas.wicked.common.executor.ScheduledThreadPoolService;
 import com.catas.wicked.common.pipeline.MessageQueue;
 import com.catas.wicked.common.executor.ThreadPoolService;
 import com.catas.wicked.common.util.AlertUtils;
-import com.catas.wicked.common.util.WebUtils;
+import com.catas.wicked.common.util.SystemUtils;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,7 +18,6 @@ import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,7 +27,6 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Slf4j
@@ -43,8 +41,6 @@ public class ApplicationConfig implements AutoCloseable {
     private EventLoopGroup proxyLoopGroup;
 
     private Settings settings;
-
-    private String settingPath;
 
     /**
      * ssl configs
@@ -91,12 +87,7 @@ public class ApplicationConfig implements AutoCloseable {
     }
 
     private File getLocalConfigFile() throws IOException {
-        Path configPath;
-        if (StringUtils.isBlank(settingPath)) {
-            configPath = Paths.get(WebUtils.getStoragePath(), "config", "config.json");
-        } else {
-            configPath = Paths.get(settingPath);
-        }
+        Path configPath = Paths.get(SystemUtils.USER_HOME, ".wkproxy", "config.json");
         return configPath.toFile();
     }
 

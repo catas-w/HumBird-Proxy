@@ -160,3 +160,74 @@
     -fx-text-fill: #33cbb9;
     -fx-font-weight: bold;
 }
+
+/****** scrollPane ******/
+.scroll-pane {
+    -fx-background-color: TRANSPARENT;
+}
+
+/****** gridPane ******/
+.setting-grid-pane {
+    -fx-background-color: #ffffff;
+}
+
+.grid-element {
+    -fx-pref-height: 40;
+    /*-fx-border-color: red;*/
+}
+.grid-element .label {
+    -fx-pref-height: 40;
+    /*-fx-text-fill: #0aa89b;*/
+    -fx-padding: 0 0 0 10
+}
+.grid-element .button,
+.grid-element .radio-button {
+    /*-fx-background-color: yellow;*/
+    -fx-pref-height: 40;
+    -fx-pref-width: 80;
+    /*-fx-padding: 0;*/
+}
+.grid-element-lg {
+    /*-fx-pref-height: 120;*/
+    -fx-pref-height: 220;
+}
+
+.import-btn {
+    -fx-pref-width: 80;
+    -fx-max-height: 30;
+    -fx-background-color: #29c1c1;
+    /*-fx-font-weight: bold;*/
+    -fx-text-fill: #ffffff;
+}
+/*.preview-btn {*/
+/*    -fx-pref-width: 75;*/
+/*    -fx-max-height: 25;*/
+/*    -fx-background-color: #d2d2d2;*/
+/*    -fx-translate-y: 7;*/
+/*}*/
+.preview-btn,
+.operate-btn {
+    -fx-max-width: 25;
+    -fx-max-height: 25;
+    /*-fx-background-color: #d2d2d2;*/
+    -fx-background-color: TRANSPARENT;
+    -fx-background-radius: 5;
+    -fx-translate-y: 7;
+}
+.preview-btn .ikonli-font-icon,
+.operate-btn .ikonli-font-icon
+{
+    -fx-icon-color: #8f8f8f;
+    -fx-icon-size: 15;
+}
+.import-btn:hover,
+.preview-btn:hover,
+.operate-btn:hover {
+    -fx-opacity: 0.6;
+}
+
+.alert-label {
+    -fx-text-fill: #ce1414;
+    -fx-pref-width: 200;
+    -fx-padding: 0 0 0 20;
+}

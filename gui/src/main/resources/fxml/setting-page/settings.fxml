@@ -2,7 +2,6 @@
 
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Tab?>
-<?import javafx.scene.control.TabPane?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
@@ -18,9 +17,9 @@
 <?import com.jfoenix.controls.JFXTextField?>
 <?import com.jfoenix.controls.JFXComboBox?>
 <?import javafx.scene.control.TextArea?>
-<?import com.jfoenix.controls.JFXRadioButton?>
 
 <?import com.jfoenix.controls.JFXTabPane?>
+<?import javafx.scene.control.ScrollPane?>
 <AnchorPane prefHeight="500.0" prefWidth="700.0"
             xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.catas.wicked.proxy.gui.controller.SettingController">
@@ -89,31 +88,82 @@
         </Tab>
         <Tab text=" SSl " fx:id="sslSettingTab" styleClass="setting-ssl, setting-tab-3">
             <AnchorPane>
-                <GridPane AnchorPane.leftAnchor="20.0"
-                          AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0">
-                    <columnConstraints>
-                        <ColumnConstraints hgrow="NEVER" maxWidth="120.0" minWidth="120.0"/>
-                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="450" minWidth="100.0" prefWidth="400"/>
-                    </columnConstraints>
-                    <rowConstraints>
-                        <RowConstraints minHeight="45.0" prefHeight="45.0" vgrow="SOMETIMES"/>
-                        <RowConstraints minHeight="45.0" prefHeight="45.0" vgrow="SOMETIMES"/>
-                        <RowConstraints minHeight="45.0" prefHeight="45.0" vgrow="SOMETIMES"/>
-                        <RowConstraints minHeight="45.0" prefHeight="80.0" vgrow="SOMETIMES"/>
-                    </rowConstraints>
-                    <Label text="Handle SSL"/>
-                    <Label text="Certificate" GridPane.rowIndex="1"/>
-                    <Label text="Exclude Domains" GridPane.rowIndex="3"/>
+                <ScrollPane AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="10.0" AnchorPane.bottomAnchor="20">
+                    <GridPane fx:id="sslGridPane" styleClass="setting-grid-pane">
+                        <columnConstraints>
+                            <ColumnConstraints hgrow="NEVER" maxWidth="120.0" minWidth="120.0"/>
+                            <!-- <ColumnConstraints hgrow="SOMETIMES" prefWidth="300" minWidth="100.0" /> -->
+                        </columnConstraints>
+                        <rowConstraints>
+                            <RowConstraints minHeight="45.0" prefHeight="45.0" vgrow="SOMETIMES"/>
+                            <!-- <RowConstraints minHeight="45.0" prefHeight="45.0" vgrow="SOMETIMES"/> -->
+                            <!-- <RowConstraints minHeight="45.0" prefHeight="45.0" vgrow="SOMETIMES"/> -->
+                            <!-- <RowConstraints minHeight="45.0" prefHeight="45.0" vgrow="SOMETIMES"/> -->
+                            <!-- <RowConstraints minHeight="45.0" prefHeight="80.0" vgrow="SOMETIMES"/> -->
+                        </rowConstraints>
+                        <Label text="Handle SSL" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                        <JFXToggleButton fx:id="sslBtn" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
 
-                    <JFXToggleButton fx:id="sslBtn" GridPane.columnIndex="1"/>
-                    <JFXRadioButton fx:id="defaultCertRadio" text="Built-in Certificate" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
-                    <HBox GridPane.columnIndex="1" GridPane.rowIndex="2">
-                        <JFXRadioButton fx:id="customCertRadio" text="Select Certificate"/>
-                        <Pane HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
-                        <JFXButton fx:id="selectCertBtn" onAction="#loadCertFile" text="Select From..." translateY="-5"/>
-                    </HBox>
-                    <TextArea fx:id="sslExcludeArea" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
-                </GridPane>
+                        <Label text="Exclude Domains" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                        <TextArea styleClass="grid-element-lg" fx:id="sslExcludeArea" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+                        <Label styleClass="grid-element" text="Root Certificate" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                        <!-- <HBox styleClass="grid-element" GridPane.rowIndex="2" GridPane.columnIndex="1"> -->
+                        <!--     <JFXRadioButton fx:id="defaultCertRadio" text="Built-in"/> -->
+                        <!--     <Pane HBox.hgrow="ALWAYS" maxWidth="Infinity"> -->
+                        <!--         <Label styleClass="alert-label" text="Certificate is not installed!"/> -->
+                        <!--     </Pane> -->
+                        <!--     <JFXButton styleClass="preview-btn"> -->
+                        <!--         <graphic> -->
+                        <!--             <FontIcon iconLiteral="fas-eye"/> -->
+                        <!--         </graphic> -->
+                        <!--     </JFXButton> -->
+                        <!--     <JFXButton styleClass="operate-btn"> -->
+                        <!--         <graphic> -->
+                        <!--             <FontIcon iconLiteral="fas-download"/> -->
+                        <!--         </graphic> -->
+                        <!--     </JFXButton> -->
+                        <!-- </HBox> -->
+                        <!-- <HBox styleClass="grid-element" GridPane.rowIndex="3" GridPane.columnIndex="1"> -->
+                        <!--     <JFXRadioButton fx:id="customCertRadio" text="Cert1"/> -->
+                        <!--     <Pane HBox.hgrow="ALWAYS"> -->
+                        <!--         <Label styleClass="alert-label" text="Certificate is not installed!"/> -->
+                        <!--     </Pane> -->
+                        <!--     <JFXButton styleClass="preview-btn"> -->
+                        <!--         <graphic> -->
+                        <!--             <FontIcon iconLiteral="fas-eye"/> -->
+                        <!--         </graphic> -->
+                        <!--     </JFXButton> -->
+                        <!--     <JFXButton styleClass="operate-btn"> -->
+                        <!--         <graphic> -->
+                        <!--             <FontIcon iconLiteral="fas-trash-alt"/> -->
+                        <!--         </graphic> -->
+                        <!--     </JFXButton> -->
+                        <!-- </HBox> -->
+                        <!-- <HBox styleClass="grid-element" GridPane.rowIndex="4" GridPane.columnIndex="1"> -->
+                        <!--     <JFXRadioButton text="Cert2"/> -->
+                        <!--     <Pane HBox.hgrow="ALWAYS" maxWidth="Infinity"> -->
+                        <!--         <Label styleClass="alert-label" text="Certificate is not installed!"/> -->
+                        <!--     </Pane> -->
+                        <!--     <JFXButton styleClass="preview-btn"> -->
+                        <!--         <graphic> -->
+                        <!--             <FontIcon iconLiteral="fas-eye"/> -->
+                        <!--         </graphic> -->
+                        <!--     </JFXButton> -->
+                        <!--     <JFXButton styleClass="operate-btn"> -->
+                        <!--         <graphic> -->
+                        <!--             <FontIcon iconLiteral="fas-trash-alt"/> -->
+                        <!--         </graphic> -->
+                        <!--     </JFXButton> -->
+                        <!-- </HBox> -->
+
+                        <HBox fx:id="importCerBox" styleClass="grid-element" GridPane.rowIndex="5" GridPane.columnIndex="1">
+                            <JFXButton styleClass="import-btn" text="Import"/>
+                        </HBox>
+
+                    </GridPane>
+                </ScrollPane>
+
             </AnchorPane>
         </Tab>
         <Tab text="External Proxy" fx:id="externalSettingTab" styleClass="setting-external, setting-tab-4">
