@@ -71,6 +71,12 @@ public class CertSelectComponent extends HBox {
         }
     }
 
+    public void setPreviewEvent(Consumer<ActionEvent> consumer) {
+        if (consumer != null) {
+            this.previewBtn.setOnAction(consumer::accept);
+        }
+    }
+
     public void setSelected(boolean value) {
         this.radioBtn.setSelected(value);
     }

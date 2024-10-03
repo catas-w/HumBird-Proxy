@@ -2,6 +2,7 @@ package com.catas.wicked.server.proxy;
 
 import com.catas.wicked.common.constant.ServerStatus;
 import com.catas.wicked.common.executor.ThreadPoolService;
+import com.catas.wicked.common.provider.CertManageProvider;
 import com.catas.wicked.common.util.AlertUtils;
 import com.catas.wicked.server.cert.CertPool;
 import com.catas.wicked.server.cert.CertService;
@@ -42,6 +43,9 @@ public class ProxyServer {
 
     @Inject
     private CertService certService;
+
+    @Inject
+    private CertManageProvider certManageProvider;
 
     @Inject
     private CertPool certPool;

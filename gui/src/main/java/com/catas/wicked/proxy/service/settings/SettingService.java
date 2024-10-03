@@ -1,6 +1,7 @@
 package com.catas.wicked.proxy.service.settings;
 
 import com.catas.wicked.common.config.ApplicationConfig;
+import com.catas.wicked.proxy.gui.controller.SettingController;
 
 public interface SettingService {
 
@@ -18,4 +19,6 @@ public interface SettingService {
      * perform update setting values
      */
     void update(ApplicationConfig appConfig);
+
+    void setSettingController(SettingController settingController);
 }

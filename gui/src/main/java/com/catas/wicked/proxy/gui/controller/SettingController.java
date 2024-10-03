@@ -47,7 +47,6 @@ import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.io.File;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -55,6 +54,7 @@ import java.util.Set;
 @Getter
 @Slf4j
 @Singleton
+// @RequiredArgsConstructor(onConstructor_={@Inject})
 public class SettingController implements Initializable {
 
     public JFXComboBox<ProxyTypeLabel> proxyComboBox;
@@ -66,9 +66,9 @@ public class SettingController implements Initializable {
     public Label exUsernameLabel;
     public Label exPasswordLabel;
     public JFXComboBox<Labeled> languageComboBox;
-    public JFXRadioButton defaultCertRadio;
-    public JFXRadioButton customCertRadio;
-    public JFXButton selectCertBtn;
+    // public JFXRadioButton defaultCertRadio;
+    // public JFXRadioButton customCertRadio;
+    // public JFXButton selectCertBtn;
     public JFXToggleButton recordBtn;
     public TextArea recordIncludeArea;
     public TextArea recordExcludeArea;
@@ -107,11 +107,14 @@ public class SettingController implements Initializable {
     @Inject
     private ScheduledManager scheduledManager;
 
+    @Inject
     private List<SettingService> settingServiceList;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        initServers();
+        // initServers();
+        settingServiceList.forEach(settingService -> settingService.setSettingController(this));
+        settingServiceList.forEach(SettingService::init);
 
         // set icons
         configTabStyle(generalSettingTab, "fas-sliders-h");
@@ -154,13 +157,13 @@ public class SettingController implements Initializable {
      * initialize all components
      */
     public void initServers() {
-        settingServiceList = new ArrayList<>();
-        settingServiceList.add(new GeneralSettingService(this));
-        settingServiceList.add(new ProxySettingService(this));
-        settingServiceList.add(new SslSettingService(this));
-        settingServiceList.add(new ExternalProxySettingService(this));
-        settingServiceList.add(new ThrottleSettingService(this));
-        settingServiceList.forEach(SettingService::init);
+        // settingServiceList = new ArrayList<>();
+        // settingServiceList.add(new GeneralSettingService(this));
+        // settingServiceList.add(new ProxySettingService(this));
+        // settingServiceList.add(new SslSettingService(this));
+        // settingServiceList.add(new ExternalProxySettingService(this));
+        // settingServiceList.add(new ThrottleSettingService(this));
+        // settingServiceList.forEach(SettingService::init);
     }
 
     public void save(ActionEvent event) {

@@ -40,7 +40,7 @@ public class Settings {
     private boolean handleSsl = true;
     private CertType certType = CertType.BUILT_IN;
     private String selectedCert;
-    private List<CertificateConfig> certConfigList;
+
     private List<String> sslExcludeList;
 
     /**

@@ -164,11 +164,16 @@
 /****** scrollPane ******/
 .scroll-pane {
     -fx-background-color: TRANSPARENT;
+    /*-fx-border-color: red;*/
+}
+.scroll-pane > .viewport {
+    -fx-background-color: transparent;
 }
 
 /****** gridPane ******/
 .setting-grid-pane {
     -fx-background-color: #ffffff;
+    /*-fx-border-color: green;*/
 }
 
 .grid-element {
@@ -189,7 +194,7 @@
 }
 .grid-element-lg {
     /*-fx-pref-height: 120;*/
-    -fx-pref-height: 220;
+    -fx-pref-height: 140;
 }
 
 .import-btn {

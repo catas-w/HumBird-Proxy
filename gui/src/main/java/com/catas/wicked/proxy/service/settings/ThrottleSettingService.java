@@ -3,20 +3,15 @@ package com.catas.wicked.proxy.service.settings;
 import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.common.config.Settings;
 import com.catas.wicked.common.constant.ThrottlePreset;
-import com.catas.wicked.proxy.gui.controller.SettingController;
 import com.jfoenix.controls.JFXComboBox;
+import jakarta.inject.Singleton;
 import javafx.scene.control.Label;
 import javafx.scene.control.Labeled;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@Singleton
 public class ThrottleSettingService extends AbstractSettingService{
-
-    private final SettingController settingController;
-
-    public ThrottleSettingService(SettingController settingController) {
-        this.settingController = settingController;
-    }
 
     @Override
     public void init() {

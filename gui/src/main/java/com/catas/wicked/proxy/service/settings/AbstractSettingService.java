@@ -1,5 +1,6 @@
 package com.catas.wicked.proxy.service.settings;
 
+import com.catas.wicked.proxy.gui.controller.SettingController;
 import com.jfoenix.controls.JFXTextField;
 import com.jfoenix.validation.RequiredFieldValidator;
 import javafx.scene.control.TextFormatter;
@@ -14,6 +15,13 @@ import java.util.List;
 import java.util.function.UnaryOperator;
 
 public abstract class AbstractSettingService implements SettingService {
+
+    protected SettingController settingController;
+
+    @Override
+    public void setSettingController(SettingController settingController) {
+        this.settingController = settingController;
+    }
 
     /**
      * make textInputControl integer-only

@@ -5,19 +5,14 @@ import com.catas.wicked.common.config.Settings;
 import com.catas.wicked.common.constant.WorkerConstant;
 import com.catas.wicked.common.util.AlertUtils;
 import com.catas.wicked.common.util.WebUtils;
-import com.catas.wicked.proxy.gui.controller.SettingController;
+import jakarta.inject.Singleton;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@Singleton
 public class ProxySettingService extends AbstractSettingService{
-
-    private final SettingController settingController;
-
-    public ProxySettingService(SettingController settingController) {
-        this.settingController = settingController;
-    }
 
     @Override
     public void init() {

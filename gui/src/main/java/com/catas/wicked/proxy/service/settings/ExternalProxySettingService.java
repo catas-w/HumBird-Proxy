@@ -5,19 +5,14 @@ import com.catas.wicked.common.config.ExternalProxyConfig;
 import com.catas.wicked.common.config.Settings;
 import com.catas.wicked.common.constant.ProxyProtocol;
 import com.catas.wicked.proxy.gui.componet.ProxyTypeLabel;
-import com.catas.wicked.proxy.gui.controller.SettingController;
 import com.jfoenix.controls.JFXComboBox;
+import jakarta.inject.Singleton;
 import javafx.scene.layout.Pane;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@Singleton
 public class ExternalProxySettingService extends AbstractSettingService{
-
-    private final SettingController settingController;
-
-    public ExternalProxySettingService(SettingController settingController) {
-        this.settingController = settingController;
-    }
 
     @Override
     public void init() {

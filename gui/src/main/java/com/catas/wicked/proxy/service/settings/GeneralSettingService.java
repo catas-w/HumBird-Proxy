@@ -2,20 +2,15 @@ package com.catas.wicked.proxy.service.settings;
 
 import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.common.config.Settings;
-import com.catas.wicked.proxy.gui.controller.SettingController;
+import jakarta.inject.Singleton;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 
 /**
  * setting service for general-page
  */
+@Singleton
 public class GeneralSettingService extends AbstractSettingService {
-
-    private final SettingController settingController;
-
-    public GeneralSettingService(SettingController settingController) {
-        this.settingController = settingController;
-    }
 
     @Override
     public void init() {
