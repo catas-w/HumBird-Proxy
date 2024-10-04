@@ -1,20 +1,45 @@
 package com.catas.wicked.proxy.service.settings;
 
+import com.catas.wicked.common.bean.HeaderEntry;
 import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.common.config.CertificateConfig;
 import com.catas.wicked.common.config.Settings;
 import com.catas.wicked.common.provider.CertManageProvider;
+import com.catas.wicked.common.util.TableUtils;
 import com.catas.wicked.proxy.gui.componet.CertSelectComponent;
+import com.catas.wicked.proxy.gui.componet.SelectableNodeBuilder;
+import com.catas.wicked.proxy.gui.componet.SelectableTableCell;
+import com.jfoenix.controls.JFXButton;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
+import javafx.application.Platform;
+import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.util.Pair;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 @Slf4j
 @Singleton
@@ -31,9 +56,6 @@ public class SslSettingService extends AbstractSettingService {
         settingController.getSslBtn().setSelected(true);
 
         settingController.getSslBtn().selectedProperty().addListener(((observable, oldValue, newValue) -> {
-            // settingController.getDefaultCertRadio().setDisable(!newValue);
-            // settingController.getCustomCertRadio().setDisable(!newValue);
-            // settingController.getSelectCertBtn().setDisable(!newValue);
             settingController.getSslExcludeArea().setDisable(!newValue);
 
             Pane parent = (Pane) settingController.getSslBtn().getParent();
@@ -45,6 +67,9 @@ public class SslSettingService extends AbstractSettingService {
                         labeled.setDisable(!newValue);
                     });
         }));
+
+        // import cert dialog
+        settingController.setImportCertEvent(actionEvent -> displayImportDialog());
     }
 
     @Override
@@ -60,7 +85,7 @@ public class SslSettingService extends AbstractSettingService {
             String iconStr = config.isDefault() ? "fas-download": "fas-trash-alt";
             CertSelectComponent component = new CertSelectComponent(config.getName(), config.getId(), iconStr);
             component.setToggleGroup(certSelectGroup);
-            component.setPreviewEvent(actionEvent -> System.out.println("preview"));
+            component.setPreviewEvent(actionEvent -> displayPreviewDialog());
 
             if (StringUtils.equals(selectedCertId, config.getId())) {
                 component.setSelected(true);
@@ -89,8 +114,144 @@ public class SslSettingService extends AbstractSettingService {
         settings.setHandleSsl(settingController.getSslBtn().isSelected());
 
         // update selected cert
-        CertSelectComponent.CertRadioButton selectedToggle = (CertSelectComponent.CertRadioButton) certSelectGroup.getSelectedToggle();
-        System.out.println("Selected: " + selectedToggle.getCertId());
+        // CertSelectComponent.CertRadioButton selectedToggle = (CertSelectComponent.CertRadioButton) certSelectGroup.getSelectedToggle();
+        // System.out.println("Selected: " + selectedToggle.getCertId());
         settings.setSslExcludeList(getListFromText(settingController.getSslExcludeArea().getText()));
+    }
+
+    /**
+     * import cert dialog
+     */
+    private void displayImportDialog() {
+        Dialog<Pair<String, String>> dialog = new Dialog<>();
+        dialog.setTitle("Import Certificate");
+
+        // buttons
+        ButtonType okButton = new ButtonType("Save", ButtonBar.ButtonData.OK_DONE);
+        ButtonType cancelBtn = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+
+        dialog.getDialogPane().getButtonTypes().addAll(okButton, cancelBtn);
+
+        VBox vBox = new VBox();
+        vBox.setPrefWidth(500);
+        vBox.setPrefHeight(400);
+
+        // private key input
+        TextArea certArea = createInputComponent(vBox, "Paste Certificate (PEM):");
+        TextArea priKeyTextArea = createInputComponent(vBox, "Paste Private Key (PEM):");
+
+
+        // dialog
+        dialog.getDialogPane().setContent(vBox);
+        dialog.getDialogPane().getStyleClass().add("cert-dialog");
+        dialog.getDialogPane().lookupButton(okButton).getStyleClass().add("ok-btn");
+        dialog.getDialogPane().lookupButton(cancelBtn).getStyleClass().add("cancel-btn");
+        dialog.getDialogPane().getStylesheets()
+                .add(Objects.requireNonNull(getClass().getResource("/css/cert-dialog.css")).toExternalForm());
+        // dialog.getDialogPane().lookupButton(okButtonType).setDisable(true);
+
+        // Convert the result to a Pair<String, String> when OK button is clicked
+        dialog.setResultConverter(dialogButton -> {
+            if (dialogButton == okButton) {
+                return new Pair<>(certArea.getText(), priKeyTextArea.getText());
+            }
+            return null;
+        });
+
+        // Show the dialog and wait for the user's input
+        dialog.showAndWait().ifPresent(result -> {
+            System.out.println("cert: " + result.getKey());
+            System.out.println("priKey: " + result.getValue());
+        });
+    }
+
+    private TextArea createInputComponent(VBox vBox, String title) {
+        Label label = new Label(title);
+        JFXButton selectBtn = new JFXButton("Select");
+        FontIcon icon = new FontIcon();
+        icon.setIconLiteral("fas-file-upload");
+        selectBtn.setGraphic(icon);
+        selectBtn.getStyleClass().add("cert-select-btn");
+
+        StackPane.setAlignment(selectBtn, Pos.BOTTOM_LEFT);
+        StackPane.setMargin(selectBtn, new Insets(0, 0, 5, 5));
+
+        TextArea textArea = new TextArea();
+
+        StackPane stackPane = new StackPane();
+        VBox.setMargin(stackPane, new Insets(0, 0, 10, 0));
+        stackPane.getChildren().addAll(textArea, selectBtn);
+
+        vBox.getChildren().addAll(label, stackPane);
+        return textArea;
+    }
+
+    /**
+     * preview dialog
+     */
+    @SuppressWarnings("unchecked")
+    private void displayPreviewDialog() {
+        Dialog<Pair<String, String>> dialog = new Dialog<>();
+        dialog.setTitle("Import Certificate");
+
+        // buttons
+        ButtonType cancelBtn = new ButtonType("OK", ButtonBar.ButtonData.CANCEL_CLOSE);
+        dialog.getDialogPane().getButtonTypes().addAll(cancelBtn);
+
+        // label
+        Label label = new Label("Certificate");
+
+        // tableView
+        TableView<HeaderEntry> tableView = new TableView<>();
+        // set key column
+        TableColumn<HeaderEntry, String> keyColumn = new TableColumn<>();
+        keyColumn.setText("Name");
+        keyColumn.getStyleClass().add("table-key");
+        keyColumn.setSortable(false);
+        keyColumn.setCellValueFactory(new PropertyValueFactory<>("key"));
+        keyColumn.setPrefWidth(100);
+
+        // set value column
+        TableColumn<HeaderEntry, String> valColumn = new TableColumn<>();
+        valColumn.setText("Value");
+        valColumn.getStyleClass().add("table-value");
+        valColumn.setPrefWidth(150);
+        valColumn.setSortable(false);
+        valColumn.setEditable(true);
+        valColumn.setCellValueFactory(new PropertyValueFactory<>("val"));
+        valColumn.setCellFactory((TableColumn<HeaderEntry, String> param) -> {
+            return new SelectableTableCell<>(new SelectableNodeBuilder(), valColumn);
+        });
+        tableView.getColumns().setAll(keyColumn, valColumn);
+        tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
+
+        // TODO: add data
+        Map<String, String> map = new LinkedHashMap<>();
+        map.put("subject", "123");
+        map.put("notBefore", "2024-01-01");
+        map.put("notAfter", "2025-01-01");
+        map.put("version", "3");
+        map.put("SHA-256", "67 0A 55 10 F6 32 EF 4D 56 2F 5A 4F 68 F1 CE E3 8A EA E8 65 6F 41 6A 04 95 8E A4 F2 C8 0E A3 70");
+
+        ObservableList<HeaderEntry> list = TableUtils.headersConvert(map);
+        Platform.runLater(() -> {
+            if (!tableView.getColumns().isEmpty()) {
+                tableView.setItems(list);
+            }
+        });
+
+        VBox vBox = new VBox();
+        vBox.setPrefWidth(300);
+        vBox.setPrefHeight(400);
+        vBox.getChildren().addAll(label, tableView);
+
+        // dialog
+        dialog.getDialogPane().setContent(vBox);
+        dialog.getDialogPane().getStyleClass().add("cert-view-dialog");
+        dialog.getDialogPane().lookupButton(cancelBtn).getStyleClass().add("cancel-btn");
+        dialog.getDialogPane().getStylesheets()
+                .add(Objects.requireNonNull(getClass().getResource("/css/cert-dialog.css")).toExternalForm());
+
+        dialog.showAndWait();
     }
 }

@@ -157,8 +157,8 @@
                         <!--     </JFXButton> -->
                         <!-- </HBox> -->
 
-                        <HBox fx:id="importCerBox" styleClass="grid-element" GridPane.rowIndex="5" GridPane.columnIndex="1">
-                            <JFXButton styleClass="import-btn" text="Import"/>
+                        <HBox fx:id="importCertBox" styleClass="grid-element" GridPane.rowIndex="5" GridPane.columnIndex="1">
+                            <JFXButton fx:id="importCertBtn" styleClass="import-btn" text="Import"/>
                         </HBox>
 
                     </GridPane>
@@ -231,7 +231,7 @@
         </Tab>
     </JFXTabPane>
 
-    <HBox styleClass="settings-btn"
+    <HBox styleClass="settings-btn" visible="false"
           prefHeight="40.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="190.0" AnchorPane.rightAnchor="0.0">
         <JFXButton onAction="#reset" text="Reset" styleClass="reset-btn">
             <HBox.margin>

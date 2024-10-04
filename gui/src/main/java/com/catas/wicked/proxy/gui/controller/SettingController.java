@@ -10,11 +10,9 @@ import com.catas.wicked.proxy.service.settings.GeneralSettingService;
 import com.catas.wicked.proxy.service.settings.ProxySettingService;
 import com.catas.wicked.proxy.service.settings.SettingService;
 import com.catas.wicked.proxy.service.settings.SslSettingService;
-import com.catas.wicked.proxy.service.settings.ThrottleSettingService;
 import com.catas.wicked.server.proxy.ProxyServer;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
-import com.jfoenix.controls.JFXRadioButton;
 import com.jfoenix.controls.JFXTextField;
 import com.jfoenix.controls.JFXToggleButton;
 import io.micronaut.core.util.CollectionUtils;
@@ -50,6 +48,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.function.Consumer;
 
 @Getter
 @Slf4j
@@ -66,9 +65,6 @@ public class SettingController implements Initializable {
     public Label exUsernameLabel;
     public Label exPasswordLabel;
     public JFXComboBox<Labeled> languageComboBox;
-    // public JFXRadioButton defaultCertRadio;
-    // public JFXRadioButton customCertRadio;
-    // public JFXButton selectCertBtn;
     public JFXToggleButton recordBtn;
     public TextArea recordIncludeArea;
     public TextArea recordExcludeArea;
@@ -83,7 +79,8 @@ public class SettingController implements Initializable {
     public Tab sslSettingTab;
     public Tab externalSettingTab;
     public Tab throttleSettingTab;
-    public HBox importCerBox;
+    public HBox importCertBox;
+    public JFXButton importCertBtn;
     public GridPane sslGridPane;
     @FXML
     private JFXToggleButton sysProxyBtn;
@@ -106,7 +103,6 @@ public class SettingController implements Initializable {
     private ProxyServer proxyServer;
     @Inject
     private ScheduledManager scheduledManager;
-
     @Inject
     private List<SettingService> settingServiceList;
 
@@ -290,7 +286,7 @@ public class SettingController implements Initializable {
 
         // clean old
         final int startRowIndex = 2;
-        sslGridPane.getChildren().remove(importCerBox);
+        sslGridPane.getChildren().remove(importCertBox);
         sslGridPane.getChildren().removeIf(item -> item instanceof CertSelectComponent);
 
         // add
@@ -300,6 +296,12 @@ public class SettingController implements Initializable {
             rowIndex ++;
         }
 
-        sslGridPane.add(importCerBox, 1, rowIndex);
+        sslGridPane.add(importCertBox, 1, rowIndex);
+    }
+
+    public void setImportCertEvent(Consumer<ActionEvent> consumer) {
+        if (consumer != null) {
+            importCertBtn.setOnAction(consumer::accept);
+        }
     }
 }

@@ -1,0 +1,64 @@
+
+/******* import cert dialog ******/
+.cert-select-btn {
+    -fx-background-color: #29c1c1;
+    -fx-background-radius: 9;
+    -fx-text-fill: #ffffff;
+}
+.cert-select-btn .ikonli-font-icon {
+    -fx-icon-color: #ffffff;
+    -fx-icon-size: 15;
+}
+
+.ok-btn {
+    -fx-background-color: #29c1c1;
+    -fx-background-radius: 5;
+    /*-fx-pref-height: 40;*/
+}
+.cancel-btn {
+    -fx-background-color: #e2e2e2;
+    -fx-background-radius: 5;
+    /*-fx-pref-height: 40;*/
+}
+.cancel-btn:hover {
+    -fx-opacity: 1;
+    -fx-background-color: #bbbbbb;
+}
+.cert-dialog .button:hover {
+    -fx-opacity: 0.7;
+}
+
+.text-area {
+    -fx-focus-color: #29c1c1;
+    -fx-faint-focus-color: TRANSPARENT;
+}
+
+
+/******* preview cert dialog ******/
+.cert-view-dialog {
+    -fx-background-color: #ffffff;
+}
+.cert-view-dialog .table-view .column-header-background {
+    -fx-max-height: 0;
+    -fx-pref-height: 0;
+    -fx-min-height: 0;
+}
+.cert-view-dialog .table-view,
+.cert-view-dialog .table-view:focused {
+    /*-fx-border-color: TRANSPARENT;*/
+    -fx-focus-color: TRANSPARENT;
+    -fx-faint-focus-color: #dedede;
+}
+.cert-view-dialog .table-view .table-cell{
+    -fx-text-fill: black;
+}
+.cert-view-dialog .table-row-cell,
+.cert-view-dialog .table-row-cell:odd,
+.cert-view-dialog .table-row-cell:even{
+    -fx-background-color: -fx-table-cell-border-color, #ffffff;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
+.cert-view-dialog .table-row-cell:selected {
+    -fx-background-color: #e2e2e2;
+}
