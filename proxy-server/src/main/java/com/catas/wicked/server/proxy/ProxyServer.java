@@ -45,7 +45,7 @@ public class ProxyServer {
     private CertService certService;
 
     @Inject
-    private CertManageProvider certManageProvider;
+    private CertManageProvider certManage;
 
     @Inject
     private CertPool certPool;
@@ -106,7 +106,7 @@ public class ProxyServer {
         }
     }
 
-    @Parallel
+    // @Parallel
     @PostConstruct
     private void init() {
         setStatus(ServerStatus.HALTED);
@@ -119,6 +119,7 @@ public class ProxyServer {
         PrivateKey caPriKey;
         try {
             applicationConfig.setClientSslCtx(contextBuilder.build());
+            // TODO use certManager
             caCert = certService.loadCert(getClass().getResource("/cert/cert.crt").openStream());
             caPriKey = certService.loadPriKey(getClass().getResource("/cert/private.key").openStream());
             applicationConfig.setIssuer(certService.getSubject(caCert));

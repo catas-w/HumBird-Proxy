@@ -3,17 +3,33 @@ package com.catas.wicked.server.cert;
 import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.common.config.CertificateConfig;
 import com.catas.wicked.common.provider.CertManageProvider;
+import com.catas.wicked.common.util.AesUtils;
+import com.catas.wicked.common.util.IdUtil;
 import com.catas.wicked.common.util.SystemUtils;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.crypto.SecretKey;
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.Base64;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+
+import static com.catas.wicked.common.constant.ProxyConstant.CERT_FILE_PATTERN;
 
 @Slf4j
 @Singleton
@@ -25,43 +41,80 @@ public class SimpleCertManager implements CertManageProvider {
     @Inject
     private ApplicationConfig appConfig;
 
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
     private final List<CertificateConfig> customCertList = new ArrayList<>();
 
     private final CertificateConfig defaultCert = DefaultCertHolder.INSTANCE;
 
+    private static final String KEY = "yz7EZiJZ5/bPmoq6/UrqDQ==";
+    private static final SecretKey secretKey = AesUtils.stringToSecretKey(KEY);
+
+    private static final int LIMIT = 5;
+
     @PostConstruct
-    public void init() {
-        // TODO: load custom certs
-        File certFile = Paths.get(SystemUtils.USER_HOME, ".wkproxy", "certs.bin").toFile();
+    public void init() throws IOException {
+        // load custom certs
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        File certFile = getCertFile();
         if (!certFile.exists()) {
             log.warn("custom certs not exist");
+            certFile.getParentFile().mkdirs();
+            certFile.createNewFile();
+            objectMapper.writeValue(certFile, Collections.emptyList());
+            return;
         }
 
-        CertificateConfig cert1 = CertificateConfig.builder()
-                .id("cert01")
-                .name("Cert01")
-                .cert("DEFAULT_CERT")
-                .privateKey("DEFAULT_PRI_KEY")
-                .isDefault(false)
-                .build();
-        CertificateConfig cert2 = CertificateConfig.builder()
-                .id("cert02")
-                .name("Cert02")
-                .cert("DEFAULT_CERT")
-                .privateKey("DEFAULT_PRI_KEY")
-                .isDefault(false)
-                .build();
-        customCertList.add(cert1);
-        customCertList.add(cert2);
+        List<CertificateConfig> configs = objectMapper.readValue(certFile, new TypeReference<List<CertificateConfig>>() {});
+        log.info("Load custom certs: {}", configs);
+        customCertList.addAll(configs);
     }
 
     @Override
-    public void importCert(InputStream inputStream) {
+    public CertificateConfig importCert(InputStream certInputStream, InputStream priKeyInputStream) {
+        if (customCertList.size() > LIMIT) {
+            throw new RuntimeException("Certificate number has reached limit");
+        }
+        if (certInputStream == null) {
+            throw new IllegalArgumentException();
+        }
+        try {
+            X509Certificate cert = certService.loadCert(certInputStream);
+            String subject = certService.getSubject(cert);
+            Map<String, String> subjectMap = certService.getSubjectMap(cert);
 
+            log.info("import cert: {}", subjectMap);
+            String name = subjectMap.getOrDefault("CN", subject);
+
+            // byte[] encodedCert = cert.getEncoded();
+            byte[] encoded = cert.getEncoded();
+            String certStr = Base64.getEncoder().encodeToString(encoded);
+            String encryptCert = AesUtils.encrypt(certStr, secretKey);
+            String encryptPriKey = AesUtils.encrypt(priKeyInputStream.readAllBytes(), secretKey);
+
+            CertificateConfig config = CertificateConfig.builder()
+                    .id(IdUtil.getSimpleId())
+                    .name(name)
+                    .cert(encryptCert)
+                    .privateKey(encryptPriKey)
+                    .isDefault(false)
+                    .build();
+
+            customCertList.add(config);
+            objectMapper.writeValue(getCertFile(), customCertList);
+
+            return config;
+        } catch (CertificateException e) {
+            log.error("Error in converting into X509Certificate.", e);
+            throw new RuntimeException("Certificate format incorrect!", e);
+        } catch (Exception e) {
+            log.error("error in loading certificate");
+            throw new RuntimeException("Certificate load error!", e);
+        }
     }
 
     @Override
-    public void exportCert(String certId) {
+    public void exportCert(String certId, File file) {
 
     }
 
@@ -76,7 +129,7 @@ public class SimpleCertManager implements CertManageProvider {
     @Override
     public CertificateConfig getSelectedCert() {
         String id = appConfig.getSettings().getSelectedCert();
-        CertificateConfig selectedCert = getCertById(id);
+        CertificateConfig selectedCert = getCertConfigById(id);
         if (selectedCert == null) {
             log.warn("Selected cert is null: {}", id);
             return defaultCert;
@@ -85,7 +138,19 @@ public class SimpleCertManager implements CertManageProvider {
     }
 
     @Override
-    public CertificateConfig getCertById(String certId) {
+    public void deleteCertConfig(String certId) {
+        boolean res = customCertList.removeIf(config -> config.getId().equals(certId));
+        if (res) {
+            try {
+                objectMapper.writeValue(getCertFile(), customCertList);
+            } catch (IOException e) {
+                log.error("Error in deleting cert");
+            }
+        }
+    }
+
+    @Override
+    public CertificateConfig getCertConfigById(String certId) {
         if (certId == null) {
             return null;
         }
@@ -93,6 +158,46 @@ public class SimpleCertManager implements CertManageProvider {
             return defaultCert;
         }
         return customCertList.stream().filter(cert -> cert.getId().equals(certId)).findFirst().orElse(null);
+    }
+
+    @Override
+    public X509Certificate getCertById(String certId) throws Exception {
+        String certPEM = getCertPEM(certId);
+        if (certPEM == null) {
+            return null;
+        }
+        return certService.loadCert(new ByteArrayInputStream(certPEM.getBytes(StandardCharsets.UTF_8)));
+    }
+
+    @Override
+    public String getCertPEM(String id) throws Exception {
+        CertificateConfig config = getCertConfigById(id);
+        if (config == null) {
+            return null;
+        }
+        if (config.isDefault()) {
+            return config.getCert();
+        }
+
+        String certPEM = AesUtils.decrypt(config.getCert(), secretKey);
+        return String.format(CERT_FILE_PATTERN, certPEM);
+    }
+
+    @Override
+    public String getPriKeyPEM(String id) throws Exception {
+        CertificateConfig config = getCertConfigById(id);
+        if (config == null) {
+            return null;
+        }
+        if (config.isDefault()) {
+            return config.getPrivateKey();
+        }
+
+        return AesUtils.decrypt(config.getPrivateKey(), secretKey);
+    }
+
+    private File getCertFile() {
+        return Paths.get(SystemUtils.USER_HOME, ".wkproxy", "certs.data").toFile();
     }
 
     static class DefaultCertHolder {
@@ -147,7 +252,6 @@ public class SimpleCertManager implements CertManageProvider {
             bgS82fs4/JS6MITgb07K2/KXUuIyjKScVsnt9eC/d3FnXpASQvApSv4wpXTp/svA
             yujYbyIpOP7HNC/PJxVh9On
             -----END PRIVATE KEY-----
-                        
             """;
 
         public static final CertificateConfig INSTANCE = CertificateConfig.builder()

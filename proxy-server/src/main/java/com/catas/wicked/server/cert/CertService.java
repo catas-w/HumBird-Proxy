@@ -29,11 +29,11 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Base64;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -170,7 +170,7 @@ public class CertService {
     public String getSubject(InputStream inputStream) throws Exception {
         X509Certificate certificate = loadCert(inputStream);
         //读出来顺序是反的需要反转下
-        List<String> tempList = Arrays.asList(certificate.getIssuerX500Principal().toString().split(", "));
+        List<String> tempList = List.of(certificate.getIssuerX500Principal().toString().split(", "));
         return IntStream.rangeClosed(0, tempList.size() - 1)
                 .mapToObj(i -> tempList.get(tempList.size() - i - 1)).collect(Collectors.joining(", "));
     }
@@ -180,9 +180,20 @@ public class CertService {
      */
     public String getSubject(X509Certificate certificate) throws Exception {
         //读出来顺序是反的需要反转下
-        List<String> tempList = Arrays.asList(certificate.getIssuerX500Principal().toString().split(", "));
+        List<String> tempList = List.of(certificate.getIssuerX500Principal().toString().split(", "));
         return IntStream.rangeClosed(0, tempList.size() - 1)
                 .mapToObj(i -> tempList.get(tempList.size() - i - 1)).collect(Collectors.joining(", "));
+    }
+
+    /**
+     * 读取证书主题信息
+     */
+    public Map<String, String> getSubjectMap(X509Certificate certificate) {
+        List<String> list = List.of(certificate.getIssuerX500Principal().toString().split(", "));
+        return list.stream()
+                .distinct()
+                .map(s -> s.split("=", 2))
+                .collect(Collectors.toMap(arr -> arr[0], arr -> arr[1]));
     }
 
     /**
