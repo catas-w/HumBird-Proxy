@@ -108,54 +108,6 @@
                         <TextArea styleClass="grid-element-lg" fx:id="sslExcludeArea" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
 
                         <Label styleClass="grid-element" text="Root Certificate" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
-                        <!-- <HBox styleClass="grid-element" GridPane.rowIndex="2" GridPane.columnIndex="1"> -->
-                        <!--     <JFXRadioButton fx:id="defaultCertRadio" text="Built-in"/> -->
-                        <!--     <Pane HBox.hgrow="ALWAYS" maxWidth="Infinity"> -->
-                        <!--         <Label styleClass="alert-label" text="Certificate is not installed!"/> -->
-                        <!--     </Pane> -->
-                        <!--     <JFXButton styleClass="preview-btn"> -->
-                        <!--         <graphic> -->
-                        <!--             <FontIcon iconLiteral="fas-eye"/> -->
-                        <!--         </graphic> -->
-                        <!--     </JFXButton> -->
-                        <!--     <JFXButton styleClass="operate-btn"> -->
-                        <!--         <graphic> -->
-                        <!--             <FontIcon iconLiteral="fas-download"/> -->
-                        <!--         </graphic> -->
-                        <!--     </JFXButton> -->
-                        <!-- </HBox> -->
-                        <!-- <HBox styleClass="grid-element" GridPane.rowIndex="3" GridPane.columnIndex="1"> -->
-                        <!--     <JFXRadioButton fx:id="customCertRadio" text="Cert1"/> -->
-                        <!--     <Pane HBox.hgrow="ALWAYS"> -->
-                        <!--         <Label styleClass="alert-label" text="Certificate is not installed!"/> -->
-                        <!--     </Pane> -->
-                        <!--     <JFXButton styleClass="preview-btn"> -->
-                        <!--         <graphic> -->
-                        <!--             <FontIcon iconLiteral="fas-eye"/> -->
-                        <!--         </graphic> -->
-                        <!--     </JFXButton> -->
-                        <!--     <JFXButton styleClass="operate-btn"> -->
-                        <!--         <graphic> -->
-                        <!--             <FontIcon iconLiteral="fas-trash-alt"/> -->
-                        <!--         </graphic> -->
-                        <!--     </JFXButton> -->
-                        <!-- </HBox> -->
-                        <!-- <HBox styleClass="grid-element" GridPane.rowIndex="4" GridPane.columnIndex="1"> -->
-                        <!--     <JFXRadioButton text="Cert2"/> -->
-                        <!--     <Pane HBox.hgrow="ALWAYS" maxWidth="Infinity"> -->
-                        <!--         <Label styleClass="alert-label" text="Certificate is not installed!"/> -->
-                        <!--     </Pane> -->
-                        <!--     <JFXButton styleClass="preview-btn"> -->
-                        <!--         <graphic> -->
-                        <!--             <FontIcon iconLiteral="fas-eye"/> -->
-                        <!--         </graphic> -->
-                        <!--     </JFXButton> -->
-                        <!--     <JFXButton styleClass="operate-btn"> -->
-                        <!--         <graphic> -->
-                        <!--             <FontIcon iconLiteral="fas-trash-alt"/> -->
-                        <!--         </graphic> -->
-                        <!--     </JFXButton> -->
-                        <!-- </HBox> -->
 
                         <HBox fx:id="importCertBox" styleClass="grid-element" GridPane.rowIndex="5" GridPane.columnIndex="1">
                             <JFXButton fx:id="importCertBtn" styleClass="import-btn" text="Import"/>

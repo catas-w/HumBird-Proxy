@@ -1,5 +1,6 @@
 package com.catas.wicked.server.proxy;
 
+import com.catas.wicked.common.config.CertificateConfig;
 import com.catas.wicked.common.constant.ServerStatus;
 import com.catas.wicked.common.executor.ThreadPoolService;
 import com.catas.wicked.common.provider.CertManageProvider;
@@ -8,7 +9,6 @@ import com.catas.wicked.server.cert.CertPool;
 import com.catas.wicked.server.cert.CertService;
 import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.server.handler.server.ServerChannelInitializer;
-import io.micronaut.context.annotation.Parallel;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
@@ -45,7 +45,7 @@ public class ProxyServer {
     private CertService certService;
 
     @Inject
-    private CertManageProvider certManage;
+    private CertManageProvider certManager;
 
     @Inject
     private CertPool certPool;
@@ -115,18 +115,17 @@ public class ProxyServer {
                 .startTls(true)
                 .protocols("TLSv1.1", "TLSv1.2", "TLSv1")
                 .trustManager(InsecureTrustManagerFactory.INSTANCE);
-        X509Certificate caCert;
-        PrivateKey caPriKey;
         try {
             applicationConfig.setClientSslCtx(contextBuilder.build());
-            // TODO use certManager
-            caCert = certService.loadCert(getClass().getResource("/cert/cert.crt").openStream());
-            caPriKey = certService.loadPriKey(getClass().getResource("/cert/private.key").openStream());
+            CertificateConfig certConfig = certManager.getSelectedCert();
+            X509Certificate caCert = certManager.getCertById(certConfig.getId());
+            PrivateKey caPriKey = certManager.getPriKeyById(certConfig.getId());
+
             applicationConfig.setIssuer(certService.getSubject(caCert));
             applicationConfig.setCaNotBefore(caCert.getNotBefore());
             applicationConfig.setCaNotAfter(caCert.getNotAfter());
-            //CA私钥用于给动态生成的网站SSL证书签证
             applicationConfig.setCaPriKey(caPriKey);
+
             //生产一对随机公私钥用于网站SSL证书动态创建
             KeyPair keyPair = certService.genKeyPair();
             applicationConfig.setServerPriKey(keyPair.getPrivate());

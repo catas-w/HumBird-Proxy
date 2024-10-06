@@ -5,15 +5,23 @@ import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.common.config.CertificateConfig;
 import com.catas.wicked.common.config.Settings;
 import com.catas.wicked.common.provider.CertManageProvider;
+import com.catas.wicked.common.util.CommonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.security.PrivateKey;
+import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
+
+import static com.catas.wicked.common.constant.ProxyConstant.PRIVATE_FILE_PATTERN;
 
 @Slf4j
 public class SimpleCertManagerTest extends BaseTest {
@@ -41,8 +49,7 @@ public class SimpleCertManagerTest extends BaseTest {
             t3CZdirw3lBAoF+/P2tapX/r4JGO6v8EnYcjRhkFnErZ0iYgESTM6RJgOgoHg6v9
             megi8vb7XfdTo/UkZF/MvG7d7f0Ug51Z44TwMV/3aFUMim5qjGLYLhuMW6KsJ37l
             uFb6Vg1Jc+Nh55XYuUloyMaPYaKoegiICakVb60q+k7lVf0Vl8SioG3
-            -----END CERTIFICATE-----
-            """;
+            -----END CERTIFICATE-----""";
 
     String priKey = """
             -----BEGIN PRIVATE KEY-----
@@ -150,6 +157,80 @@ public class SimpleCertManagerTest extends BaseTest {
             List<CertificateConfig> certList = certManager.getCertList();
             Assertions.assertFalse(certList.contains(config));
         }
+    }
 
+    @Test
+    public void testCertMatchPriKey() throws Exception {
+        X509Certificate certificate = certService.loadCert(new ByteArrayInputStream(cert.getBytes(StandardCharsets.UTF_8)));
+        // System.out.println(certificate.getSigAlgName());
+
+        PrivateKey privateKey = certService.loadPriKey(new ByteArrayInputStream(priKey.getBytes(StandardCharsets.UTF_8)));
+
+        boolean res = certManager.isCertMatchingPriKey(certificate, privateKey);
+        Assertions.assertTrue(res);
+
+        String keyStr2 = """
+                MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCR5Z7bLVkb5xzyy
+                w2pWypzoQn8k5CaOX5iaczNgwsbQMX1pqVkvJSH3Pndfi1Gj6WMgBnYPBs+xWmXk
+                OxbRZqJKDruBDUET1ynd6SFYPkqVUCbDLbbUvsN9tTLPGZF1HjcGRQPb7Md3i4E2
+                2RSFYIsmHnu2paOC+7ZJxJkMIeGokRCYyR40D/d2gL1TFAqahav2kZDY2TqbGmMs
+                IUyUNj3JfExspK29fT6v9fJ1XMr9BrN3P7j4eO0JSzU1/Uvj/d9iigx9YsXK/zD3
+                o2Yyk4SussyMKfVvZ7KhU8pNxaTXJxoK3LqOWrwbe8OeD8CkkTas789yC32+/uMw
+                tA/YbgtAgMBAAECggEAF+UJEvGG5hyAb71U0/dj6QMnfQ/3/2JKMjkMu13qfECsC
+                1MLRIfkNao53A5VwPg2z1+NnA4gEjRH2nR4WWx5ZlxJ5oCW5ElRLfZY4iVjOY0z4
+                xD+g8Y/6uYRrOWMBITLdJTA5dRP/CTO2anK8Oyn4MDqO3XecY4/xJ3zE6ilEaYTa
+                83fRQ3Mt6VTCslreTsM1HS57ArXDz89as5Rpj0ZfaWtmGGf/rxkdWLSpcu7IoNpZ
+                f9U7rOniRcb49KB1QYB5hkbzQorSnXzHW6ptlggI3arvo0fUdzhiwNP8efQSFGmE
+                Mc/qhPgOAK8x94ifPHwiaZDUTWq8FtyDhV7q3SpmwKBgQC2yymMrrC1ULTgBcqFp
+                5eP72kWVRyUIR+fqYzcDEVhgSAg9rarw9ck30aOSMg43MKQnXWOPxkCqhE5L3Xyb
+                siyUlIzuYWnXlVXEkZfxC1TQy1kuT2TWjOnn8ocGh0fKiHqZe8dqv5U2AL2H0+wY
+                H1Ub/txZZNHUqvz3uxrBywMHwKBgQDMU6UV7MzeYyrFy+Yl5A9/tzXr5w46SYZ9u
+                zhBuzA3AsvvKcVDcgs3DTdjIPLf4tPPJ7eLNmDccTppR1SjinZrLBO3aNPc+yxOA
+                oxt3n2/cc/wOl5sK2Vwy55ghl82SjaYhrG3A7wQJbo+pZr1tp5tFOYApyJs1iCU1
+                oB0rRryMwKBgE4iBw+QOA44gifjsc5xdXJbxlJ6bO3QPsEzavc/84Qa+o28hxZib
+                prfKTx2VccgbbX86Bu2Us11vkjwRX0r53N5hpN/cGa7BsViFVyn8SvO4h9UosJSY
+                xP6VByw+NOyYa7chVnsFixT7OghOCHPDKND/nlZDpwE9WUXW3zgIu7HAoGAfseHr
+                0r28yXk7EXPz8LqOvya4HzFPzVP1cPM7DwRdpCtqP/p/idM/iOdMkzHZlN/yRGDu
+                UVMZHt9GsW/ppnLUERRF4RbsMnIe77pE2Lx80/TDeOposRqdMpiwtGdUjpKFem9a
+                ylOD1bZcPWgaMWfF1/YNp99pLpYDQHrQnoGNjECgYAK5es7/R5BY2u7hYx2jwFbk
+                +e+DwiP5qv9eUopBQj1oFGQBsp2MV+BqbV+Gu7VVVoY6ylSRjRhjOAFU9Vx0uSv0
+                MM1Qb2zAr138dxdSAoOcD5TLco1HBfJ57jjTu4UG8RjWjb70n9rIU52HFJPUVNml
+                qVSRsvGK4OzYLGIOzgn9A==""";
+        String key2 = String.format(PRIVATE_FILE_PATTERN, keyStr2);
+        PrivateKey privateKey2 = certService.loadPriKey(new ByteArrayInputStream(key2.getBytes(StandardCharsets.UTF_8)));
+        Assertions.assertFalse(certManager.isCertMatchingPriKey(certificate, privateKey2));
+    }
+
+    @Test
+    public void testCertInfo() throws CertificateException, IOException {
+        X509Certificate certificate = certService.loadCert(new ByteArrayInputStream(cert.getBytes(StandardCharsets.UTF_8)));
+
+        System.out.println("Version: " + certificate.getVersion());
+        System.out.println("Serial Number: " + certificate.getSerialNumber());
+        System.out.println("Issuer DN: " + certificate.getIssuerX500Principal().getName());
+        System.out.println("Subject DN: " + certificate.getSubjectX500Principal().getName());
+        System.out.println("Valid From: " + certificate.getNotBefore());
+        System.out.println("Valid Until: " + certificate.getNotAfter());
+        // System.out.println("Public Key: " + certificate.getPublicKey());
+        System.out.println("Public Key Algorithm: " + certificate.getPublicKey().getAlgorithm());
+        // System.out.println("Public Key Format: " + certificate.getPublicKey().getFormat());
+        // System.out.println("Public Key Length: " + certificate.getPublicKey().getEncoded().length);
+        // System.out.println("Public Key Modules: " + CommonUtils.toHexString(certificate.getPublicKey().getEncoded(), ':'));
+
+        System.out.println("Signature Algorithm: " + certificate.getSigAlgName());
+        // System.out.println("Signature: " + new String(certificate.getSignature()));
+        System.out.println("Signature: " + CommonUtils.toHexString(certificate.getSignature(), ':'));
+
+        // Check if the certificate is currently valid
+        certificate.checkValidity(new Date());
+        System.out.println("The certificate is currently valid.");
+    }
+
+    @Test
+    public void testGetCertInfo() throws Exception {
+        CertificateConfig selectedCert = certManager.getSelectedCert();
+        Map<String, String> certInfo = certManager.getCertInfo(selectedCert.getId());
+        System.out.println(certInfo);
+        Assertions.assertNotNull(certInfo);
     }
 }

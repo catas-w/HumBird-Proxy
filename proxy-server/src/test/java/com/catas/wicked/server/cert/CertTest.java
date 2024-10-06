@@ -1,6 +1,5 @@
 package com.catas.wicked.server.cert;
 
-import com.catas.wicked.server.cert.CertService;
 import com.catas.wicked.server.cert.spi.BouncyCastleCertGenerator;
 import com.catas.wicked.server.cert.spi.CertGenerator;
 import org.apache.commons.io.FileUtils;
@@ -51,11 +50,11 @@ public class CertTest {
                 %s
                 -----END RSA PRIVATE KEY-----
                 """, privateKeyStr);
-        FileUtils.write(new File("cert/private.key"), pKeyFileContent, StandardCharsets.UTF_8);
+        FileUtils.write(new File("private.key"), pKeyFileContent, StandardCharsets.UTF_8);
 
 
         X509Certificate cert =
-                certGenerator.generateCaCert(SUBJECT, notBeforeDate, notAfterDate, certService.genKeyPair());
+                certGenerator.generateCaCert(SUBJECT, notBeforeDate, notAfterDate, keyPair);
 
         byte[] encoded = cert.getEncoded();
         String certStr = Base64.getEncoder().encodeToString(encoded);
@@ -75,5 +74,15 @@ public class CertTest {
 
         Path path = Path.of("");
         certService.generateCACertFile(path);
+    }
+
+    @Test
+    public void testGenerateCert2() throws Exception {
+        CertGenerator certGenerator = new BouncyCastleCertGenerator();
+        CertService certService = new CertService();
+        certService.setCertGenerator(certGenerator);
+
+        String subject = "C=US, ST=CA, L=LA, O=Lockheed, CN=lockheed.com";
+        certService.generateCACertFile(Path.of(""), subject);
     }
 }

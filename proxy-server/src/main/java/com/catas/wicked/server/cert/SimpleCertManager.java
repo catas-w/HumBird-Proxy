@@ -4,6 +4,7 @@ import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.common.config.CertificateConfig;
 import com.catas.wicked.common.provider.CertManageProvider;
 import com.catas.wicked.common.util.AesUtils;
+import com.catas.wicked.common.util.CommonUtils;
 import com.catas.wicked.common.util.IdUtil;
 import com.catas.wicked.common.util.SystemUtils;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -13,19 +14,24 @@ import jakarta.annotation.PostConstruct;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
 
 import javax.crypto.SecretKey;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
+import java.security.PrivateKey;
+import java.security.Signature;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -79,7 +85,17 @@ public class SimpleCertManager implements CertManageProvider {
             throw new IllegalArgumentException();
         }
         try {
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            IOUtils.copy(priKeyInputStream, outputStream);
             X509Certificate cert = certService.loadCert(certInputStream);
+            PrivateKey privateKey = certService.loadPriKey(new ByteArrayInputStream(outputStream.toByteArray()));
+
+            // check match
+            boolean certMatchingPriKey = isCertMatchingPriKey(cert, privateKey);
+            if (!certMatchingPriKey) {
+                throw new RuntimeException("Certificate and private key doesn't match!");
+            }
+
             String subject = certService.getSubject(cert);
             Map<String, String> subjectMap = certService.getSubjectMap(cert);
 
@@ -90,6 +106,7 @@ public class SimpleCertManager implements CertManageProvider {
             byte[] encoded = cert.getEncoded();
             String certStr = Base64.getEncoder().encodeToString(encoded);
             String encryptCert = AesUtils.encrypt(certStr, secretKey);
+            priKeyInputStream.reset();
             String encryptPriKey = AesUtils.encrypt(priKeyInputStream.readAllBytes(), secretKey);
 
             CertificateConfig config = CertificateConfig.builder()
@@ -104,6 +121,8 @@ public class SimpleCertManager implements CertManageProvider {
             objectMapper.writeValue(getCertFile(), customCertList);
 
             return config;
+        } catch (RuntimeException e) {
+            throw e;
         } catch (CertificateException e) {
             log.error("Error in converting into X509Certificate.", e);
             throw new RuntimeException("Certificate format incorrect!", e);
@@ -170,6 +189,15 @@ public class SimpleCertManager implements CertManageProvider {
     }
 
     @Override
+    public PrivateKey getPriKeyById(String certId) throws Exception {
+        String priKeyPEM = getPriKeyPEM(certId);
+        if (priKeyPEM == null) {
+            return null;
+        }
+        return certService.loadPriKey(new ByteArrayInputStream(priKeyPEM.getBytes(StandardCharsets.UTF_8)));
+    }
+
+    @Override
     public String getCertPEM(String id) throws Exception {
         CertificateConfig config = getCertConfigById(id);
         if (config == null) {
@@ -194,6 +222,48 @@ public class SimpleCertManager implements CertManageProvider {
         }
 
         return AesUtils.decrypt(config.getPrivateKey(), secretKey);
+    }
+
+    @Override
+    public Map<String, String> getCertInfo(String certId) throws Exception {
+        X509Certificate certificate = getCertById(certId);
+        Map<String, String> map = certService.getSubjectMap(certificate);
+        map.put("Version", String.valueOf(certificate.getVersion()));
+        map.put("Serial Number", String.valueOf(certificate.getSerialNumber()));
+        map.put("Issuer", certificate.getIssuerX500Principal().getName());
+        map.put("Valid From", String.valueOf(certificate.getNotBefore()));
+        map.put("Valid Until", String.valueOf(certificate.getNotAfter()));
+        map.put("Public Key Algorithm", certificate.getPublicKey().getAlgorithm());
+        map.put("Signature Algorithm", certificate.getSigAlgName());
+
+        String sig= CommonUtils.toHexString(certificate.getSignature(), ':');
+        map.put("Signature", sig);
+
+        return map;
+    }
+
+    @Override
+    public boolean isCertMatchingPriKey(X509Certificate certificate, PrivateKey privateKey) {
+        try {
+            String data = "My tea's gone cold, I'm wondering why";
+
+            // Sign the data using the private key
+            String algName = certificate.getSigAlgName();
+            Signature signature = Signature.getInstance(algName);
+            signature.initSign(privateKey);
+            signature.update(data.getBytes());
+            byte[] signedData = signature.sign();
+
+            // Verify the signature using the public key from the certificate
+            Signature signatureVerify = Signature.getInstance(algName);
+            signatureVerify.initVerify(certificate.getPublicKey());
+            signatureVerify.update(data.getBytes());
+
+            return signatureVerify.verify(signedData);
+        } catch (Exception e) {
+            log.error("Error in checking cert matching private key.", e);
+            return false;
+        }
     }
 
     private File getCertFile() {

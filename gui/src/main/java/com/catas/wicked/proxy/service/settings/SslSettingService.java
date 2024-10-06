@@ -85,7 +85,7 @@ public class SslSettingService extends AbstractSettingService {
             String iconStr = config.isDefault() ? "fas-download": "fas-trash-alt";
             CertSelectComponent component = new CertSelectComponent(config.getName(), config.getId(), iconStr);
             component.setToggleGroup(certSelectGroup);
-            component.setPreviewEvent(actionEvent -> displayPreviewDialog());
+            component.setPreviewEvent(actionEvent -> displayPreviewDialog(config.getId()));
 
             if (StringUtils.equals(selectedCertId, config.getId())) {
                 component.setSelected(true);
@@ -138,7 +138,11 @@ public class SslSettingService extends AbstractSettingService {
 
         // private key input
         TextArea certArea = createInputComponent(vBox, "Paste Certificate (PEM):");
+        certArea.setWrapText(true);
+        certArea.setPromptText("Input certificate starts with: -----BEGIN CERTIFICATE-----");
         TextArea priKeyTextArea = createInputComponent(vBox, "Paste Private Key (PEM):");
+        priKeyTextArea.setWrapText(true);
+        priKeyTextArea.setPromptText("Input private key starts with: -----BEGIN PRIVATE KEY-----");
 
 
         // dialog
@@ -190,9 +194,9 @@ public class SslSettingService extends AbstractSettingService {
      * preview dialog
      */
     @SuppressWarnings("unchecked")
-    private void displayPreviewDialog() {
+    private void displayPreviewDialog(String configId) {
         Dialog<Pair<String, String>> dialog = new Dialog<>();
-        dialog.setTitle("Import Certificate");
+        // dialog.setTitle("Import Certificate");
 
         // buttons
         ButtonType cancelBtn = new ButtonType("OK", ButtonBar.ButtonData.CANCEL_CLOSE);
@@ -225,13 +229,15 @@ public class SslSettingService extends AbstractSettingService {
         tableView.getColumns().setAll(keyColumn, valColumn);
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
 
-        // TODO: add data
+        // add data
         Map<String, String> map = new LinkedHashMap<>();
-        map.put("subject", "123");
-        map.put("notBefore", "2024-01-01");
-        map.put("notAfter", "2025-01-01");
-        map.put("version", "3");
-        map.put("SHA-256", "67 0A 55 10 F6 32 EF 4D 56 2F 5A 4F 68 F1 CE E3 8A EA E8 65 6F 41 6A 04 95 8E A4 F2 C8 0E A3 70");
+        try {
+            Map<String, String> certInfo = certManager.getCertInfo(configId);
+            map.putAll(certInfo);
+            dialog.setTitle(certInfo.get("CN"));
+        } catch (Exception e) {
+            log.error("Error in getting certInfo", e);
+        }
 
         ObservableList<HeaderEntry> list = TableUtils.headersConvert(map);
         Platform.runLater(() -> {
@@ -241,8 +247,8 @@ public class SslSettingService extends AbstractSettingService {
         });
 
         VBox vBox = new VBox();
-        vBox.setPrefWidth(300);
-        vBox.setPrefHeight(400);
+        vBox.setPrefWidth(460);
+        vBox.setPrefHeight(500);
         vBox.getChildren().addAll(label, tableView);
 
         // dialog

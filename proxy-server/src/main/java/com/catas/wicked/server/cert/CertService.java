@@ -32,6 +32,7 @@ import java.text.SimpleDateFormat;
 import java.util.Base64;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -190,10 +191,12 @@ public class CertService {
      */
     public Map<String, String> getSubjectMap(X509Certificate certificate) {
         List<String> list = List.of(certificate.getIssuerX500Principal().toString().split(", "));
-        return list.stream()
-                .distinct()
-                .map(s -> s.split("=", 2))
-                .collect(Collectors.toMap(arr -> arr[0], arr -> arr[1]));
+        LinkedHashMap<String, String> map = new LinkedHashMap<>();
+        for (String s : list) {
+            String[] split = s.split("=", 2);
+            map.put(split[0], split[1]);
+        }
+        return map;
     }
 
     /**
@@ -215,11 +218,16 @@ public class CertService {
         return certGenerator.generateCaCert(subject, caNotBefore, caNotAfter, keyPair);
     }
 
-    /**
-     * 生成 CA 证书和私钥到文件
-     * @param basePath 文件路径
-     */
     public void generateCACertFile(Path basePath) throws Exception {
+        generateCACertFile(basePath, SUBJECT);
+    }
+
+    /**
+     * 生成根证书和私钥到文件
+     * @param basePath 文件路径
+     * @param subject 主题信息
+     */
+    public void generateCACertFile(Path basePath, String subject) throws Exception {
         DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         Date notBeforeDate = formatter.parse(START_DATE);
 
@@ -239,7 +247,7 @@ public class CertService {
 
 
         X509Certificate cert =
-                certGenerator.generateCaCert(SUBJECT, notBeforeDate, notAfterDate, keyPair);
+                certGenerator.generateCaCert(subject, notBeforeDate, notAfterDate, keyPair);
 
         byte[] encoded = cert.getEncoded();
         String certStr = Base64.getEncoder().encodeToString(encoded);
