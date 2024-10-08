@@ -5,6 +5,7 @@ import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.common.config.CertificateConfig;
 import com.catas.wicked.common.config.Settings;
 import com.catas.wicked.common.provider.CertManageProvider;
+import com.catas.wicked.common.util.AlertUtils;
 import com.catas.wicked.common.util.TableUtils;
 import com.catas.wicked.proxy.gui.componet.CertSelectComponent;
 import com.catas.wicked.proxy.gui.componet.SelectableNodeBuilder;
@@ -16,6 +17,7 @@ import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
@@ -23,10 +25,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -35,6 +35,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.kordamp.ikonli.javafx.FontIcon;
 
+import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -47,8 +49,13 @@ public class SslSettingService extends AbstractSettingService {
 
     private final ToggleGroup certSelectGroup = new ToggleGroup();
 
+    private static final int MAX_CERT_SIZE = 5;
+
     @Inject
     private CertManageProvider certManager;
+
+    @Inject
+    private ApplicationConfig appConfig;
 
     @Override
     public void init() {
@@ -97,12 +104,13 @@ public class SslSettingService extends AbstractSettingService {
                 component.setOperateEvent(actionEvent -> System.out.println("download cert"));
             } else {
                 component.setAlertLabel("Certificate is not installed!");
-                component.setOperateEvent(actionEvent -> System.out.println("clicked cert01"));
+                component.setOperateEvent(actionEvent -> deleteCert(config.getId()));
             }
 
             certList.add(component);
         }
         settingController.setSelectableCert(certList);
+        settingController.setImportCertBtnStatus(certConfigs.size() >= MAX_CERT_SIZE);
 
         // exclude list
         settingController.getSslExcludeArea().setText(getTextFromList(settings.getSslExcludeList()));
@@ -114,8 +122,6 @@ public class SslSettingService extends AbstractSettingService {
         settings.setHandleSsl(settingController.getSslBtn().isSelected());
 
         // update selected cert
-        // CertSelectComponent.CertRadioButton selectedToggle = (CertSelectComponent.CertRadioButton) certSelectGroup.getSelectedToggle();
-        // System.out.println("Selected: " + selectedToggle.getCertId());
         settings.setSslExcludeList(getListFromText(settingController.getSslExcludeArea().getText()));
     }
 
@@ -152,7 +158,17 @@ public class SslSettingService extends AbstractSettingService {
         dialog.getDialogPane().lookupButton(cancelBtn).getStyleClass().add("cancel-btn");
         dialog.getDialogPane().getStylesheets()
                 .add(Objects.requireNonNull(getClass().getResource("/css/cert-dialog.css")).toExternalForm());
-        // dialog.getDialogPane().lookupButton(okButtonType).setDisable(true);
+
+        // listener on text
+        dialog.getDialogPane().lookupButton(okButton).setDisable(true);
+        certArea.textProperty().addListener((observable, oldValue, newValue) -> {
+            dialog.getDialogPane().lookupButton(okButton).setDisable(newValue.trim().isEmpty()
+                    || priKeyTextArea.getText().trim().isEmpty());
+        });
+        priKeyTextArea.textProperty().addListener((observable, oldValue, newValue) -> {
+            dialog.getDialogPane().lookupButton(okButton).setDisable(newValue.trim().isEmpty()
+                    || certArea.getText().trim().isEmpty());
+        });
 
         // Convert the result to a Pair<String, String> when OK button is clicked
         dialog.setResultConverter(dialogButton -> {
@@ -164,8 +180,18 @@ public class SslSettingService extends AbstractSettingService {
 
         // Show the dialog and wait for the user's input
         dialog.showAndWait().ifPresent(result -> {
-            System.out.println("cert: " + result.getKey());
-            System.out.println("priKey: " + result.getValue());
+            String certStr = result.getKey();
+            String priKeyStr = result.getValue();
+
+            try {
+                CertificateConfig config = certManager.importCert(new ByteArrayInputStream(certStr.getBytes(StandardCharsets.UTF_8)),
+                        new ByteArrayInputStream(priKeyStr.getBytes(StandardCharsets.UTF_8)));
+                log.info("Imported config success: {}", config.getName());
+                initValues(appConfig);
+            } catch (Exception e) {
+                log.error("Error in importing certificate.", e);
+                AlertUtils.alertLater(Alert.AlertType.WARNING, e.getMessage());
+            }
         });
     }
 
@@ -196,7 +222,7 @@ public class SslSettingService extends AbstractSettingService {
     @SuppressWarnings("unchecked")
     private void displayPreviewDialog(String configId) {
         Dialog<Pair<String, String>> dialog = new Dialog<>();
-        // dialog.setTitle("Import Certificate");
+        dialog.setTitle("Preview Certificate");
 
         // buttons
         ButtonType cancelBtn = new ButtonType("OK", ButtonBar.ButtonData.CANCEL_CLOSE);
@@ -234,7 +260,7 @@ public class SslSettingService extends AbstractSettingService {
         try {
             Map<String, String> certInfo = certManager.getCertInfo(configId);
             map.putAll(certInfo);
-            dialog.setTitle(certInfo.get("CN"));
+            label.setText(certInfo.get("CN"));
         } catch (Exception e) {
             log.error("Error in getting certInfo", e);
         }
@@ -259,5 +285,19 @@ public class SslSettingService extends AbstractSettingService {
                 .add(Objects.requireNonNull(getClass().getResource("/css/cert-dialog.css")).toExternalForm());
 
         dialog.showAndWait();
+    }
+
+    /**
+     * delete cert event
+     */
+    private void deleteCert(String certId) {
+        boolean confirmed = AlertUtils.confirm("Warning", "Delete this certificate?");
+        if (!confirmed) {
+            return;
+        }
+        boolean res = certManager.deleteCertConfig(certId);
+        if (res) {
+            initValues(appConfig);
+        }
     }
 }

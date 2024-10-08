@@ -161,6 +161,7 @@
     -fx-font-weight: bold;
 }
 
+
 /****** scrollPane ******/
 .scroll-pane {
     -fx-background-color: TRANSPARENT;
@@ -169,6 +170,8 @@
 .scroll-pane > .viewport {
     -fx-background-color: transparent;
 }
+
+
 
 /****** gridPane ******/
 .setting-grid-pane {
@@ -197,6 +200,8 @@
     -fx-pref-height: 140;
 }
 
+
+/************ certSelect  ************/
 .import-btn {
     -fx-pref-width: 80;
     -fx-max-height: 30;
@@ -210,6 +215,9 @@
 /*    -fx-background-color: #d2d2d2;*/
 /*    -fx-translate-y: 7;*/
 /*}*/
+.cert-radio-btn {
+    -fx-min-width: 120;
+}
 .preview-btn,
 .operate-btn {
     -fx-max-width: 25;

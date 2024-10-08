@@ -93,7 +93,7 @@ public class SimpleCertManager implements CertManageProvider {
             // check match
             boolean certMatchingPriKey = isCertMatchingPriKey(cert, privateKey);
             if (!certMatchingPriKey) {
-                throw new RuntimeException("Certificate and private key doesn't match!");
+                throw new RuntimeException("Certificate and Private Key not match!");
             }
 
             String subject = certService.getSubject(cert);
@@ -124,10 +124,8 @@ public class SimpleCertManager implements CertManageProvider {
         } catch (RuntimeException e) {
             throw e;
         } catch (CertificateException e) {
-            log.error("Error in converting into X509Certificate.", e);
             throw new RuntimeException("Certificate format incorrect!", e);
         } catch (Exception e) {
-            log.error("error in loading certificate");
             throw new RuntimeException("Certificate load error!", e);
         }
     }
@@ -157,15 +155,16 @@ public class SimpleCertManager implements CertManageProvider {
     }
 
     @Override
-    public void deleteCertConfig(String certId) {
+    public boolean deleteCertConfig(String certId) {
         boolean res = customCertList.removeIf(config -> config.getId().equals(certId));
         if (res) {
             try {
                 objectMapper.writeValue(getCertFile(), customCertList);
             } catch (IOException e) {
-                log.error("Error in deleting cert");
+                log.error("Error in deleting cert.", e);
             }
         }
+        return res;
     }
 
     @Override

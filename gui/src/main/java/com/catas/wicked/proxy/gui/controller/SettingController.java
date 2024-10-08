@@ -304,4 +304,8 @@ public class SettingController implements Initializable {
             importCertBtn.setOnAction(consumer::accept);
         }
     }
+
+    public void setImportCertBtnStatus(boolean disabled) {
+        importCertBtn.setDisable(disabled);
+    }
 }

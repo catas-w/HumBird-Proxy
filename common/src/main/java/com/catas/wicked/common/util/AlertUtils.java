@@ -5,8 +5,11 @@ import com.jfoenix.controls.JFXAlert;
 import com.jfoenix.controls.JFXDialogLayout;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.stage.Modality;
+
+import java.util.Optional;
 
 public class AlertUtils {
 
@@ -17,13 +20,14 @@ public class AlertUtils {
     public static void alert(Alert.AlertType type, String msg) {
         Alert alert = new Alert(Alert.AlertType.WARNING);
         alert.setTitle(type.name());
-        alert.setHeaderText(msg);
+        alert.setHeaderText(null);
+        alert.setContentText(msg);
         alert.showAndWait();
     }
 
     public static void alertLater(Alert.AlertType type, String msg) {
         Platform.runLater(() -> {
-            alertLater(type, msg);
+            alert(type, msg);
         });
     }
 
@@ -39,5 +43,18 @@ public class AlertUtils {
         alert.initModality(Modality.WINDOW_MODAL);
 
         alert.showAndWait();
+    }
+
+    public static boolean confirm(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null); // Optional: You can set a header or keep it null
+        alert.setContentText(message);
+
+        // Show the alert and wait for user response
+        Optional<ButtonType> result = alert.showAndWait();
+
+        // Return true if OK was clicked, false otherwise
+        return result.isPresent() && result.get() == ButtonType.OK;
     }
 }

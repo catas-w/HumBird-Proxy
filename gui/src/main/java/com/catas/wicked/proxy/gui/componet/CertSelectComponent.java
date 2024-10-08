@@ -25,6 +25,7 @@ public class CertSelectComponent extends HBox {
 
     public CertSelectComponent(String option, String certId, String operateIconStr) {
         radioBtn = new CertRadioButton(option, certId);
+        radioBtn.getStyleClass().add("cert-radio-btn");
 
         // pane.setStyle("-fx-border-color: red");
         pane.getChildren().add(label);

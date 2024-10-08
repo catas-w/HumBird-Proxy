@@ -19,7 +19,7 @@ public interface CertManageProvider {
 
     CertificateConfig getSelectedCert();
 
-    void deleteCertConfig(String certId);
+    boolean deleteCertConfig(String certId);
 
     CertificateConfig getCertConfigById(String certId);
 
