@@ -30,12 +30,18 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
+import javafx.stage.Window;
 import javafx.util.Pair;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -101,7 +107,7 @@ public class SslSettingService extends AbstractSettingService {
                 if (StringUtils.isBlank(selectedCertId)) {
                     component.setSelected(true);
                 }
-                component.setOperateEvent(actionEvent -> System.out.println("download cert"));
+                component.setOperateEvent(actionEvent -> saveCert(config));
             } else {
                 component.setAlertLabel("Certificate is not installed!");
                 component.setOperateEvent(actionEvent -> deleteCert(config.getId()));
@@ -298,6 +304,39 @@ public class SslSettingService extends AbstractSettingService {
         boolean res = certManager.deleteCertConfig(certId);
         if (res) {
             initValues(appConfig);
+        }
+    }
+
+    /**
+     * save cert
+     */
+    private void saveCert(CertificateConfig certConfig) {
+        String certPEM;
+        try {
+            certPEM = certManager.getCertPEM(certConfig.getId());
+        } catch (Exception e) {
+            log.error("Error in saving certificate.", e);
+            return;
+        }
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save Certificate");
+        fileChooser.setInitialFileName(certConfig.getName());
+        fileChooser.getExtensionFilters().addAll(
+            new FileChooser.ExtensionFilter("Certificate", "*.crt", "*.pem"),
+            new FileChooser.ExtensionFilter("All files", "*.*")
+        );
+
+        List<Window> windows = Stage.getWindows().stream().filter(Window::isShowing).filter(Window::isFocused).toList();
+        File file = fileChooser.showSaveDialog(windows.get(0));
+        if (file == null) {
+            return;
+        }
+
+        try {
+            FileUtils.writeByteArrayToFile(file, certPEM.getBytes(StandardCharsets.UTF_8));
+            log.info("Saved certificate to file: " + file.getAbsoluteFile());
+        } catch (Exception ex) {
+            log.error("Error in saving certificate.", ex);
         }
     }
 }

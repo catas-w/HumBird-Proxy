@@ -104,9 +104,12 @@ public class SimpleCertManagerTest extends BaseTest {
     }
 
     @Test
-    public void testSelectedCert() {
+    public void testSelectedCert() throws Exception {
         CertificateConfig selectedCert = certManager.getSelectedCert();
-        System.out.println(selectedCert);
+        Assertions.assertNotNull(selectedCert);
+
+        String certPEM = certManager.getCertPEM(selectedCert.getId());
+        Assertions.assertTrue(certPEM.startsWith("-----BEGIN CERTIFICATE-----"));
     }
 
     @Test
