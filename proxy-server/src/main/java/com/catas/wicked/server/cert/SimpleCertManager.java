@@ -14,11 +14,9 @@ import jakarta.annotation.PostConstruct;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.IOUtils;
 
 import javax.crypto.SecretKey;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,14 +26,15 @@ import java.security.PrivateKey;
 import java.security.Signature;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static com.catas.wicked.common.constant.ProxyConstant.CERT_FILE_PATTERN;
+import static com.catas.wicked.common.constant.ProxyConstant.PRIVATE_FILE_PATTERN;
 
 @Slf4j
 @Singleton
@@ -85,10 +84,19 @@ public class SimpleCertManager implements CertManageProvider {
             throw new IllegalArgumentException();
         }
         try {
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            IOUtils.copy(priKeyInputStream, outputStream);
-            X509Certificate cert = certService.loadCert(certInputStream);
-            PrivateKey privateKey = certService.loadPriKey(new ByteArrayInputStream(outputStream.toByteArray()));
+            X509Certificate cert = null;
+            try {
+                cert = certService.loadCert(certInputStream);
+            } catch (IllegalArgumentException | CertificateException ex) {
+                throw new RuntimeException("Certificate Parsed Error!");
+            }
+
+            PrivateKey privateKey = null;
+            try {
+                privateKey = certService.loadPriKey(priKeyInputStream);
+            } catch (IllegalArgumentException | InvalidKeySpecException e) {
+                throw new RuntimeException("Private Key Parsed Error!");
+            }
 
             // check match
             boolean certMatchingPriKey = isCertMatchingPriKey(cert, privateKey);
@@ -106,8 +114,9 @@ public class SimpleCertManager implements CertManageProvider {
             byte[] encoded = cert.getEncoded();
             String certStr = Base64.getEncoder().encodeToString(encoded);
             String encryptCert = AesUtils.encrypt(certStr, secretKey);
-            priKeyInputStream.reset();
-            String encryptPriKey = AesUtils.encrypt(priKeyInputStream.readAllBytes(), secretKey);
+
+            String priKeyStr = Base64.getEncoder().encodeToString(privateKey.getEncoded());
+            String encryptPriKey = AesUtils.encrypt(certService.formatPEM(priKeyStr, PRIVATE_FILE_PATTERN), secretKey);
 
             CertificateConfig config = CertificateConfig.builder()
                     .id(IdUtil.getSimpleId())

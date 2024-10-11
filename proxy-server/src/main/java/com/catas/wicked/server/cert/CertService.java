@@ -256,6 +256,10 @@ public class CertService {
         FileUtils.write(basePath.resolve("cert.crt").toFile(), certFileContent, StandardCharsets.UTF_8);
     }
 
+    public String formatPEM(String str, String pattern) {
+        return String.format(pattern, wrap(str));
+    }
+
     private String wrap(String content) {
         if (StringUtils.isEmpty(content)) {
             return content;

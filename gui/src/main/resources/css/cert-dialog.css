@@ -62,3 +62,31 @@
 .cert-view-dialog .table-row-cell:selected {
     -fx-background-color: #e2e2e2;
 }
+
+
+/******* file display ******/
+.file-display {
+    -fx-background-color: rgba(210, 210, 210, 0.6);
+    -fx-background-radius: 5;
+}
+.file-display .button:armed,
+.file-display .button:hover,
+.file-display .button:focused,
+.file-display .button {
+    -fx-background-color: TRANSPARENT, TRANSPARENT, TRANSPARENT, TRANSPARENT;
+}
+.file-display .button .ikonli-font-icon {
+    -fx-icon-color: rgba(157, 157, 157, 0.7);
+    /*-fx-icon-color: rgba(143, 0, 0, 0.76);*/
+    -fx-icon-size: 17;
+}
+.file-display .button:hover .ikonli-font-icon {
+    -fx-icon-color: #646464;
+}
+.file-display .label {
+    -fx-pref-width: 120;
+}
+.file-display .label .ikonli-font-icon {
+    -fx-icon-color: rgba(157, 157, 157, 0.7);
+    -fx-icon-size: 15;
+}

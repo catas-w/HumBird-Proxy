@@ -141,7 +141,7 @@ public class SimpleCertManagerTest extends BaseTest {
         Assertions.assertFalse(certList.isEmpty());
         Assertions.assertTrue(certList.contains(config));
 
-        // certManager.deleteCertConfig(config.getId());
+        certManager.deleteCertConfig(config.getId());
     }
 
     @Test

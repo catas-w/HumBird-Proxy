@@ -10,13 +10,11 @@ import com.catas.wicked.common.util.TableUtils;
 import com.catas.wicked.proxy.gui.componet.CertSelectComponent;
 import com.catas.wicked.proxy.gui.componet.SelectableNodeBuilder;
 import com.catas.wicked.proxy.gui.componet.SelectableTableCell;
-import com.jfoenix.controls.JFXButton;
+import com.catas.wicked.proxy.gui.componet.dialog.CertImportDialog;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
@@ -24,13 +22,10 @@ import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.Window;
@@ -38,9 +33,7 @@ import javafx.util.Pair;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.kordamp.ikonli.javafx.FontIcon;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -135,63 +128,14 @@ public class SslSettingService extends AbstractSettingService {
      * import cert dialog
      */
     private void displayImportDialog() {
-        Dialog<Pair<String, String>> dialog = new Dialog<>();
-        dialog.setTitle("Import Certificate");
+        CertImportDialog dialog = new CertImportDialog();
 
-        // buttons
-        ButtonType okButton = new ButtonType("Save", ButtonBar.ButtonData.OK_DONE);
-        ButtonType cancelBtn = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
-
-        dialog.getDialogPane().getButtonTypes().addAll(okButton, cancelBtn);
-
-        VBox vBox = new VBox();
-        vBox.setPrefWidth(500);
-        vBox.setPrefHeight(400);
-
-        // private key input
-        TextArea certArea = createInputComponent(vBox, "Paste Certificate (PEM):");
-        certArea.setWrapText(true);
-        certArea.setPromptText("Input certificate starts with: -----BEGIN CERTIFICATE-----");
-        TextArea priKeyTextArea = createInputComponent(vBox, "Paste Private Key (PEM):");
-        priKeyTextArea.setWrapText(true);
-        priKeyTextArea.setPromptText("Input private key starts with: -----BEGIN PRIVATE KEY-----");
-
-
-        // dialog
-        dialog.getDialogPane().setContent(vBox);
-        dialog.getDialogPane().getStyleClass().add("cert-dialog");
-        dialog.getDialogPane().lookupButton(okButton).getStyleClass().add("ok-btn");
-        dialog.getDialogPane().lookupButton(cancelBtn).getStyleClass().add("cancel-btn");
-        dialog.getDialogPane().getStylesheets()
-                .add(Objects.requireNonNull(getClass().getResource("/css/cert-dialog.css")).toExternalForm());
-
-        // listener on text
-        dialog.getDialogPane().lookupButton(okButton).setDisable(true);
-        certArea.textProperty().addListener((observable, oldValue, newValue) -> {
-            dialog.getDialogPane().lookupButton(okButton).setDisable(newValue.trim().isEmpty()
-                    || priKeyTextArea.getText().trim().isEmpty());
-        });
-        priKeyTextArea.textProperty().addListener((observable, oldValue, newValue) -> {
-            dialog.getDialogPane().lookupButton(okButton).setDisable(newValue.trim().isEmpty()
-                    || certArea.getText().trim().isEmpty());
-        });
-
-        // Convert the result to a Pair<String, String> when OK button is clicked
-        dialog.setResultConverter(dialogButton -> {
-            if (dialogButton == okButton) {
-                return new Pair<>(certArea.getText(), priKeyTextArea.getText());
-            }
-            return null;
-        });
-
-        // Show the dialog and wait for the user's input
         dialog.showAndWait().ifPresent(result -> {
-            String certStr = result.getKey();
-            String priKeyStr = result.getValue();
+            CertImportDialog.CertImportData certData = result.getKey();
+            CertImportDialog.CertImportData priKeyData = result.getValue();
 
             try {
-                CertificateConfig config = certManager.importCert(new ByteArrayInputStream(certStr.getBytes(StandardCharsets.UTF_8)),
-                        new ByteArrayInputStream(priKeyStr.getBytes(StandardCharsets.UTF_8)));
+                CertificateConfig config = certManager.importCert(certData.fetchData(), priKeyData.fetchData());
                 log.info("Imported config success: {}", config.getName());
                 initValues(appConfig);
             } catch (Exception e) {
@@ -199,27 +143,6 @@ public class SslSettingService extends AbstractSettingService {
                 AlertUtils.alertLater(Alert.AlertType.WARNING, e.getMessage());
             }
         });
-    }
-
-    private TextArea createInputComponent(VBox vBox, String title) {
-        Label label = new Label(title);
-        JFXButton selectBtn = new JFXButton("Select");
-        FontIcon icon = new FontIcon();
-        icon.setIconLiteral("fas-file-upload");
-        selectBtn.setGraphic(icon);
-        selectBtn.getStyleClass().add("cert-select-btn");
-
-        StackPane.setAlignment(selectBtn, Pos.BOTTOM_LEFT);
-        StackPane.setMargin(selectBtn, new Insets(0, 0, 5, 5));
-
-        TextArea textArea = new TextArea();
-
-        StackPane stackPane = new StackPane();
-        VBox.setMargin(stackPane, new Insets(0, 0, 10, 0));
-        stackPane.getChildren().addAll(textArea, selectBtn);
-
-        vBox.getChildren().addAll(label, stackPane);
-        return textArea;
     }
 
     /**
