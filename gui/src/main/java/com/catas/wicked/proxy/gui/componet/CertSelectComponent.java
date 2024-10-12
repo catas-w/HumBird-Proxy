@@ -5,9 +5,11 @@ import com.jfoenix.controls.JFXRadioButton;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Label;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
+import javafx.util.Duration;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 import org.kordamp.ikonli.javafx.FontIcon;
@@ -31,13 +33,21 @@ public class CertSelectComponent extends HBox {
         pane.getChildren().add(label);
         HBox.setHgrow(pane, Priority.ALWAYS);
 
+        // preview btn
         FontIcon previewIcon = new FontIcon();
         previewIcon.setIconLiteral("fas-eye");
         previewBtn.setGraphic(previewIcon);
+        Tooltip previewToolTip = new Tooltip("Preview");
+        previewToolTip.setShowDelay(Duration.millis(100));
+        previewBtn.setTooltip(previewToolTip);
 
+        // operate btn
         FontIcon operateIcon = new FontIcon();
         operateIcon.setIconLiteral(operateIconStr);
         operateBtn.setGraphic(operateIcon);
+        Tooltip operateToolTip = new Tooltip();
+        operateToolTip.setShowDelay(Duration.millis(100));
+        operateBtn.setTooltip(operateToolTip);
 
         label.getStyleClass().add("alert-label");
         previewBtn.getStyleClass().add("preview-btn");
@@ -70,6 +80,10 @@ public class CertSelectComponent extends HBox {
         if (consumer != null) {
             this.operateBtn.setOnAction(consumer::accept);
         }
+    }
+
+    public void setOperateToolTip(String toolTip) {
+        this.operateBtn.getTooltip().setText(toolTip);
     }
 
     public void setPreviewEvent(Consumer<ActionEvent> consumer) {

@@ -127,9 +127,11 @@ public class SslSettingService extends AbstractSettingService {
                     component.setSelected(true);
                 }
                 component.setOperateEvent(actionEvent -> saveCert(config));
+                component.setOperateToolTip("Export");
             } else {
                 component.setAlertLabel("Certificate is not installed!");
                 component.setOperateEvent(actionEvent -> deleteCert(config.getId()));
+                component.setOperateToolTip("Delete");
             }
 
             certList.add(component);
