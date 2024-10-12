@@ -36,6 +36,8 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
+import java.security.PrivateKey;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -76,6 +78,28 @@ public class SslSettingService extends AbstractSettingService {
 
         // import cert dialog
         settingController.setImportCertEvent(actionEvent -> displayImportDialog());
+
+        certSelectGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue instanceof CertSelectComponent.CertRadioButton certRadioButton) {
+                String certId = certRadioButton.getCertId();
+                appConfig.getSettings().setSelectedCert(certId);
+                appConfig.updateSettingsAsync();
+
+                try {
+                    // update root certificate settings
+                    X509Certificate caCert = certManager.getCertById(certId);
+                    PrivateKey caPriKey = certManager.getPriKeyById(certId);
+                    appConfig.updateRootCertConfigs(certManager.getCertSubject(caCert), caCert, caPriKey);
+                } catch (Exception e) {
+                    log.error("Error in updating certConfigs");
+                    // rollback
+                    if (oldValue instanceof CertSelectComponent.CertRadioButton oldButton) {
+                        appConfig.getSettings().setSelectedCert(oldButton.getCertId());
+                        appConfig.updateSettingsAsync();
+                    }
+                }
+            }
+        });
     }
 
     @Override
@@ -87,6 +111,8 @@ public class SslSettingService extends AbstractSettingService {
         List<CertificateConfig> certConfigs = certManager.getCertList();
         List<CertSelectComponent> certList = new ArrayList<>();
         String selectedCertId = appConfig.getSettings().getSelectedCert();
+
+        // set cert-select gui components
         for (CertificateConfig config : certConfigs) {
             String iconStr = config.isDefault() ? "fas-download": "fas-trash-alt";
             CertSelectComponent component = new CertSelectComponent(config.getName(), config.getId(), iconStr);

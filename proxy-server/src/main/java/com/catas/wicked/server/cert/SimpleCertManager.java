@@ -140,11 +140,6 @@ public class SimpleCertManager implements CertManageProvider {
     }
 
     @Override
-    public void exportCert(String certId, File file) {
-
-    }
-
-    @Override
     public List<CertificateConfig> getCertList() {
         List<CertificateConfig> list = new ArrayList<>();
         list.add(defaultCert);
@@ -230,6 +225,14 @@ public class SimpleCertManager implements CertManageProvider {
         }
 
         return AesUtils.decrypt(config.getPrivateKey(), secretKey);
+    }
+
+    @Override
+    public String getCertSubject(X509Certificate certificate) throws Exception {
+        if (certificate == null) {
+            return null;
+        }
+        return certService.getSubject(certificate);
     }
 
     @Override

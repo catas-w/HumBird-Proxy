@@ -13,8 +13,6 @@ public interface CertManageProvider {
 
     CertificateConfig importCert(InputStream inputStream, InputStream priKeyInputStream);
 
-    void exportCert(String certId, File file);
-
     List<CertificateConfig> getCertList();
 
     CertificateConfig getSelectedCert();
@@ -30,6 +28,8 @@ public interface CertManageProvider {
     String getCertPEM(String id) throws Exception;
 
     String getPriKeyPEM(String id) throws Exception;
+
+    String getCertSubject(X509Certificate certificate) throws Exception;
 
     Map<String, String> getCertInfo(String certId) throws Exception;
 

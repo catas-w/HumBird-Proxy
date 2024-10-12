@@ -25,6 +25,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.security.cert.X509Certificate;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -102,7 +103,7 @@ public class ApplicationConfig implements AutoCloseable {
         settings = objectMapper.readValue(file, Settings.class);
     }
 
-    public synchronized void updateSettings() {
+    public void updateSettings() {
         try {
             File file = getLocalConfigFile();
             if (!file.exists()) {
@@ -116,11 +117,28 @@ public class ApplicationConfig implements AutoCloseable {
         }
     }
 
+    public void updateSettingsAsync() {
+        ThreadPoolService.getInstance().run(this::updateSettings);
+    }
+
     public int getMaxContentSize() {
         if (settings == null || settings.getMaxContentSize() <= 0) {
             return 1024 * 1024;
         }
         return settings.getMaxContentSize() * 1024 * 1024;
+    }
+
+    /**
+     * set root certificate
+     * @param issuer issuer
+     * @param caCert X509Certificate
+     * @param caPriKey privateKey
+     */
+    public void updateRootCertConfigs(String issuer, X509Certificate caCert, PrivateKey caPriKey) {
+        this.issuer = issuer;
+        this.caNotBefore = caCert.getNotBefore();
+        this.caNotAfter = caCert.getNotAfter();
+        this.caPriKey = caPriKey;
     }
 
     public void shutDownApplication() {

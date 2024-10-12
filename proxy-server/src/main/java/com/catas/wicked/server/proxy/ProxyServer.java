@@ -120,13 +120,8 @@ public class ProxyServer {
             CertificateConfig certConfig = certManager.getSelectedCert();
             X509Certificate caCert = certManager.getCertById(certConfig.getId());
             PrivateKey caPriKey = certManager.getPriKeyById(certConfig.getId());
+            applicationConfig.updateRootCertConfigs(certManager.getCertSubject(caCert), caCert, caPriKey);
 
-            applicationConfig.setIssuer(certService.getSubject(caCert));
-            applicationConfig.setCaNotBefore(caCert.getNotBefore());
-            applicationConfig.setCaNotAfter(caCert.getNotAfter());
-            applicationConfig.setCaPriKey(caPriKey);
-
-            //生产一对随机公私钥用于网站SSL证书动态创建
             KeyPair keyPair = certService.genKeyPair();
             applicationConfig.setServerPriKey(keyPair.getPrivate());
             applicationConfig.setServerPubKey(keyPair.getPublic());

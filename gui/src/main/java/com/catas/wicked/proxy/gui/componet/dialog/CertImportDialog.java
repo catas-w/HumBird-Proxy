@@ -151,7 +151,6 @@ public class CertImportDialog extends Dialog<Pair<CertImportDialog.CertImportDat
 
             File selectedFile = fileChooser.showOpenDialog(getOwner());
             if (selectedFile != null) {
-                System.out.println("File selected: " + selectedFile.getAbsolutePath());
                 importData.setFile(selectedFile);
 
                 // display selected file
