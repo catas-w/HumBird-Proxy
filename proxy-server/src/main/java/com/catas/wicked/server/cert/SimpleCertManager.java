@@ -2,6 +2,7 @@ package com.catas.wicked.server.cert;
 
 import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.common.config.CertificateConfig;
+import com.catas.wicked.common.provider.CertInstallProvider;
 import com.catas.wicked.common.provider.CertManager;
 import com.catas.wicked.common.util.AesUtils;
 import com.catas.wicked.common.util.CommonUtils;
@@ -32,6 +33,7 @@ import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.catas.wicked.common.constant.ProxyConstant.CERT_FILE_PATTERN;
 import static com.catas.wicked.common.constant.ProxyConstant.PRIVATE_FILE_PATTERN;
@@ -45,6 +47,9 @@ public class SimpleCertManager implements CertManager {
 
     @Inject
     private ApplicationConfig appConfig;
+
+    @Inject
+    private CertInstallProvider certInstallProvider;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -71,7 +76,7 @@ public class SimpleCertManager implements CertManager {
         }
 
         List<CertificateConfig> configs = objectMapper.readValue(certFile, new TypeReference<List<CertificateConfig>>() {});
-        log.info("Load custom certs: {}", configs);
+        log.info("Load custom certs: {}", configs.stream().map(CertificateConfig::getName).collect(Collectors.toList()));
         customCertList.addAll(configs);
     }
 
@@ -197,7 +202,7 @@ public class SimpleCertManager implements CertManager {
         if (priKeyPEM == null) {
             return null;
         }
-        return certService.loadPriKey(new ByteArrayInputStream(priKeyPEM.getBytes(StandardCharsets.UTF_8)));
+        return certService.loadPriKey(new ByteArrayInputStream(priKeyPEM.getBytes()));
     }
 
     @Override
@@ -246,6 +251,7 @@ public class SimpleCertManager implements CertManager {
         map.put("Valid Until", String.valueOf(certificate.getNotAfter()));
         map.put("Public Key Algorithm", certificate.getPublicKey().getAlgorithm());
         map.put("Signature Algorithm", certificate.getSigAlgName());
+        map.put("SHA256", CommonUtils.SHA256(certificate.getEncoded()));
 
         String sig= CommonUtils.toHexString(certificate.getSignature(), ':');
         map.put("Signature", sig);
@@ -275,6 +281,17 @@ public class SimpleCertManager implements CertManager {
             log.error("Error in checking cert matching private key.", e);
             return false;
         }
+    }
+
+    @Override
+    public boolean isInstalled(String certId) {
+        try {
+            Map<String, String> certInfoMap = getCertInfo(certId);
+            return certInstallProvider.checkCertInstalled(certInfoMap.get("CN"), certInfoMap.get("SHA256"));
+        } catch (Exception e) {
+            log.error("Error in check cert installation.", e);
+        }
+        return false;
     }
 
     private File getCertFile() {

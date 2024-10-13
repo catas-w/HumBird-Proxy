@@ -91,7 +91,7 @@ public class SslSettingService extends AbstractSettingService {
                     PrivateKey caPriKey = certManager.getPriKeyById(certId);
                     appConfig.updateRootCertConfigs(certManager.getCertSubject(caCert), caCert, caPriKey);
                 } catch (Exception e) {
-                    log.error("Error in updating certConfigs");
+                    log.error("Error in updating root certificate: {}", certId, e);
                     // rollback
                     if (oldValue instanceof CertSelectComponent.CertRadioButton oldButton) {
                         appConfig.getSettings().setSelectedCert(oldButton.getCertId());
@@ -114,7 +114,7 @@ public class SslSettingService extends AbstractSettingService {
 
         // set cert-select gui components
         for (CertificateConfig config : certConfigs) {
-            String iconStr = config.isDefault() ? "fas-download": "fas-trash-alt";
+            String iconStr = config.isDefault() ? "fas-share-square": "fas-trash-alt";
             CertSelectComponent component = new CertSelectComponent(config.getName(), config.getId(), iconStr);
             component.setToggleGroup(certSelectGroup);
             component.setPreviewEvent(actionEvent -> displayPreviewDialog(config.getId()));
@@ -129,11 +129,13 @@ public class SslSettingService extends AbstractSettingService {
                 component.setOperateEvent(actionEvent -> saveCert(config));
                 component.setOperateToolTip("Export");
             } else {
-                component.setAlertLabel("Certificate is not installed!");
                 component.setOperateEvent(actionEvent -> deleteCert(config.getId()));
                 component.setOperateToolTip("Delete");
             }
 
+            if (!certManager.isInstalled(config.getId())) {
+                component.setAlertLabel("Certificate is not", "installed!");
+            }
             certList.add(component);
         }
         settingController.setSelectableCert(certList);

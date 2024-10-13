@@ -12,10 +12,8 @@ import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.PrivateKey;
-import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Date;
 import java.util.List;
@@ -205,7 +203,7 @@ public class SimpleCertManagerTest extends BaseTest {
     }
 
     @Test
-    public void testCertInfo() throws CertificateException, IOException {
+    public void testCertInfo() throws Exception {
         X509Certificate certificate = certService.loadCert(new ByteArrayInputStream(cert.getBytes(StandardCharsets.UTF_8)));
 
         System.out.println("Version: " + certificate.getVersion());
@@ -214,7 +212,7 @@ public class SimpleCertManagerTest extends BaseTest {
         System.out.println("Subject DN: " + certificate.getSubjectX500Principal().getName());
         System.out.println("Valid From: " + certificate.getNotBefore());
         System.out.println("Valid Until: " + certificate.getNotAfter());
-        // System.out.println("Public Key: " + certificate.getPublicKey());
+        System.out.println("Public Key: " + certificate.getPublicKey());
         System.out.println("Public Key Algorithm: " + certificate.getPublicKey().getAlgorithm());
         // System.out.println("Public Key Format: " + certificate.getPublicKey().getFormat());
         // System.out.println("Public Key Length: " + certificate.getPublicKey().getEncoded().length);
@@ -227,6 +225,8 @@ public class SimpleCertManagerTest extends BaseTest {
         // Check if the certificate is currently valid
         certificate.checkValidity(new Date());
         System.out.println("The certificate is currently valid.");
+
+        System.out.println("SHA256:" + CommonUtils.SHA256(certificate.getEncoded()));
     }
 
     @Test

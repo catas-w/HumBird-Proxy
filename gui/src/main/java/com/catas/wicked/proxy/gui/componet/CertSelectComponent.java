@@ -3,6 +3,7 @@ package com.catas.wicked.proxy.gui.componet;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXRadioButton;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.scene.control.Label;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Tooltip;
@@ -22,6 +23,7 @@ public class CertSelectComponent extends HBox {
     private final CertRadioButton radioBtn;
     private Pane pane = new Pane();
     private final Label label = new Label();
+    private final Label clickLabel = new Label();
     private JFXButton previewBtn = new JFXButton();
     private JFXButton operateBtn = new JFXButton();
 
@@ -29,8 +31,6 @@ public class CertSelectComponent extends HBox {
         radioBtn = new CertRadioButton(option, certId);
         radioBtn.getStyleClass().add("cert-radio-btn");
 
-        // pane.setStyle("-fx-border-color: red");
-        pane.getChildren().add(label);
         HBox.setHgrow(pane, Priority.ALWAYS);
 
         // preview btn
@@ -50,11 +50,12 @@ public class CertSelectComponent extends HBox {
         operateBtn.setTooltip(operateToolTip);
 
         label.getStyleClass().add("alert-label");
+        clickLabel.getStyleClass().add("click-label");
         previewBtn.getStyleClass().add("preview-btn");
         operateBtn.getStyleClass().add("operate-btn");
 
         this.getStyleClass().add("grid-element");
-        this.getChildren().addAll(radioBtn, pane, previewBtn, operateBtn);
+        this.getChildren().addAll(radioBtn, label, clickLabel, pane, previewBtn, operateBtn);
     }
 
     public void setToggleGroup(ToggleGroup toggleGroup) {
@@ -63,8 +64,18 @@ public class CertSelectComponent extends HBox {
         }
     }
 
-    public void setAlertLabel(String str) {
+    public void setAlertLabel(String str, String clickStr) {
         this.label.setText(str);
+        FontIcon icon = new FontIcon();
+        icon.setIconLiteral("fas-exclamation-triangle");
+        this.label.setGraphic(icon);
+
+        this.clickLabel.setText(clickStr);
+        this.clickLabel.setVisible(true);
+    }
+
+    public void setOnClickLabelAction(Consumer<Event> consumer) {
+        clickLabel.setOnMouseClicked(consumer::accept);
     }
 
     public void setOperateIcon(String iconStr) {

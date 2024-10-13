@@ -186,7 +186,7 @@
 .grid-element .label {
     -fx-pref-height: 40;
     /*-fx-text-fill: #0aa89b;*/
-    -fx-padding: 0 0 0 10
+    /*-fx-padding: 0 0 0 10*/
 }
 .grid-element .button,
 .grid-element .radio-button {
@@ -240,7 +240,23 @@
 }
 
 .alert-label {
-    -fx-text-fill: #ce1414;
-    -fx-pref-width: 200;
-    -fx-padding: 0 0 0 20;
+    -fx-text-fill: #b73012;
+    /*-fx-pref-width: 200;*/
+    -fx-padding: 0 0 0 10;
+}
+.alert-label .ikonli-font-icon
+{
+    -fx-icon-color: #b73012;
+    -fx-icon-size: 13;
+}
+.click-label {
+    -fx-text-fill: #b73012;
+    -fx-font-weight: bold;
+    -fx-underline: true;
+    /*-fx-pref-width: 200;*/
+    -fx-padding: 0 0 0 2;
+}
+
+.click-label:hover {
+    -fx-opacity: 0.65;
 }

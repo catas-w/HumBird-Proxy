@@ -33,4 +33,6 @@ public interface CertManager {
     Map<String, String> getCertInfo(String certId) throws Exception;
 
     boolean isCertMatchingPriKey(X509Certificate certificate, PrivateKey privateKey);
+
+    boolean isInstalled(String certId);
 }

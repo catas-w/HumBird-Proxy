@@ -2,6 +2,9 @@ package com.catas.wicked.common.util;
 
 import lombok.extern.slf4j.Slf4j;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 @Slf4j
 public class CommonUtils {
 
@@ -21,5 +24,27 @@ public class CommonUtils {
             builder.deleteCharAt(builder.length() - 1);
         }
         return builder.toString();
+    }
+
+    public static String toHexString(byte[] hash) {
+        StringBuilder hexString = new StringBuilder(2 * hash.length);
+        for (byte b : hash) {
+            String hex = Integer.toHexString(0xff & b);
+            if (hex.length() == 1) {
+                hexString.append('0');
+            }
+            hexString.append(hex);
+        }
+        return hexString.toString();
+    }
+
+    public static String SHA256(byte[] data) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] sha256 = digest.digest(data);
+            return toHexString(sha256);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("Error in get SHA256 hash.", e);
+        }
     }
 }
