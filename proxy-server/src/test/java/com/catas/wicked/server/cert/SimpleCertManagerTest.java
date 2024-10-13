@@ -4,7 +4,7 @@ import com.catas.wicked.BaseTest;
 import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.common.config.CertificateConfig;
 import com.catas.wicked.common.config.Settings;
-import com.catas.wicked.common.provider.CertManageProvider;
+import com.catas.wicked.common.provider.CertManager;
 import com.catas.wicked.common.util.CommonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Before;
@@ -26,7 +26,7 @@ import static com.catas.wicked.common.constant.ProxyConstant.PRIVATE_FILE_PATTER
 @Slf4j
 public class SimpleCertManagerTest extends BaseTest {
 
-    private CertManageProvider certManager;
+    private CertManager certManager;
 
     private CertService certService;
 

@@ -4,7 +4,7 @@ import com.catas.wicked.common.bean.HeaderEntry;
 import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.common.config.CertificateConfig;
 import com.catas.wicked.common.config.Settings;
-import com.catas.wicked.common.provider.CertManageProvider;
+import com.catas.wicked.common.provider.CertManager;
 import com.catas.wicked.common.util.AlertUtils;
 import com.catas.wicked.common.util.TableUtils;
 import com.catas.wicked.proxy.gui.componet.CertSelectComponent;
@@ -53,7 +53,7 @@ public class SslSettingService extends AbstractSettingService {
     private static final int MAX_CERT_SIZE = 5;
 
     @Inject
-    private CertManageProvider certManager;
+    private CertManager certManager;
 
     @Inject
     private ApplicationConfig appConfig;

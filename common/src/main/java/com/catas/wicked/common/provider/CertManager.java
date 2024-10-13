@@ -2,14 +2,13 @@ package com.catas.wicked.common.provider;
 
 import com.catas.wicked.common.config.CertificateConfig;
 
-import java.io.File;
 import java.io.InputStream;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 import java.util.List;
 import java.util.Map;
 
-public interface CertManageProvider {
+public interface CertManager {
 
     CertificateConfig importCert(InputStream inputStream, InputStream priKeyInputStream);
 

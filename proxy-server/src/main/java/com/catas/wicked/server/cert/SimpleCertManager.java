@@ -2,7 +2,7 @@ package com.catas.wicked.server.cert;
 
 import com.catas.wicked.common.config.ApplicationConfig;
 import com.catas.wicked.common.config.CertificateConfig;
-import com.catas.wicked.common.provider.CertManageProvider;
+import com.catas.wicked.common.provider.CertManager;
 import com.catas.wicked.common.util.AesUtils;
 import com.catas.wicked.common.util.CommonUtils;
 import com.catas.wicked.common.util.IdUtil;
@@ -38,7 +38,7 @@ import static com.catas.wicked.common.constant.ProxyConstant.PRIVATE_FILE_PATTER
 
 @Slf4j
 @Singleton
-public class SimpleCertManager implements CertManageProvider {
+public class SimpleCertManager implements CertManager {
 
     @Inject
     private CertService certService;
