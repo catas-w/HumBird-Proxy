@@ -1,3 +1,12 @@
+/******* scroll-bar ******/
+.scroll-bar {
+    -fx-background-color: TRANSPARENT;
+}
+.scroll-bar:horizontal .thumb,
+.scroll-bar:vertical .thumb {
+    -fx-background-color: #bababa;
+    -fx-background-radius: 5;
+}
 
 /*************** tab **************/
 .setting-tab-pane {
@@ -205,10 +214,19 @@
 .import-btn {
     -fx-pref-width: 80;
     -fx-max-height: 30;
-    -fx-background-color: #29c1c1;
+    /*-fx-background-color: #29c1c1;*/
+    -fx-background-color: TRANSPARENT;
+    -fx-border-color: #afafaf;
+    -fx-border-radius: 15;
     /*-fx-font-weight: bold;*/
-    -fx-text-fill: #ffffff;
+    -fx-text-fill: #696969;
 }
+.import-btn:hover {
+    /*-fx-opacity: 0.6;*/
+    -fx-border-color: #545454;
+    -fx-text-fill: #2f2f2f;
+}
+
 /*.preview-btn {*/
 /*    -fx-pref-width: 75;*/
 /*    -fx-max-height: 25;*/
@@ -220,12 +238,14 @@
 }
 .preview-btn,
 .operate-btn {
+    -fx-min-width: 25;
     -fx-max-width: 25;
     -fx-max-height: 25;
     /*-fx-background-color: #d2d2d2;*/
     -fx-background-color: TRANSPARENT;
     -fx-background-radius: 5;
     -fx-translate-y: 7;
+    /*-fx-border-color: red;*/
 }
 .preview-btn .ikonli-font-icon,
 .operate-btn .ikonli-font-icon
@@ -233,7 +253,6 @@
     -fx-icon-color: #8f8f8f;
     -fx-icon-size: 15;
 }
-.import-btn:hover,
 .preview-btn:hover,
 .operate-btn:hover {
     -fx-opacity: 0.6;
@@ -247,7 +266,7 @@
 .alert-label .ikonli-font-icon
 {
     -fx-icon-color: #b73012;
-    -fx-icon-size: 13;
+    -fx-icon-size: 12;
 }
 .click-label {
     -fx-text-fill: #b73012;

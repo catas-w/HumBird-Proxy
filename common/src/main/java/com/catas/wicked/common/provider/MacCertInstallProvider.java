@@ -1,8 +1,10 @@
 package com.catas.wicked.common.provider;
 
+import com.catas.wicked.common.jna.CertInstallerLibrary;
 import io.micronaut.context.annotation.Requires;
 import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -43,30 +45,12 @@ public class MacCertInstallProvider implements CertInstallProvider {
     }
 
     @Override
-    public void install(String certPath) {
-
-        // Construct the command to install the certificate
-        String[] command = {
-                "sudo", "security", "add-trusted-cert", "-d", "-r", "trustRoot",
-                "-k", "/Library/Keychains/System.keychain", certPath
-        };
-
-        ProcessBuilder processBuilder = new ProcessBuilder(command);
-        try {
-            // Start the process
-            Process process = processBuilder.start();
-
-            // Wait for the process to complete and check the exit value
-            int exitCode = process.waitFor();
-            if (exitCode == 0) {
-                System.out.println("Certificate installed successfully.");
-            } else {
-                System.err.println("Failed to install the certificate. Exit code: " + exitCode);
-                throw new RuntimeException("Failed to install the certificate. Exit code: " + exitCode);
-            }
-        } catch (Exception e) {
-            log.error("Error in installing certificate in MacOS: ", e);
-            throw new RuntimeException(e.getMessage());
+    public boolean install(String certPath) {
+        if (StringUtils.isBlank(certPath)) {
+            throw new IllegalArgumentException();
         }
+        boolean success = CertInstallerLibrary.INSTANCE.installCert(certPath);
+        log.info("Installed certificate {} in MacOS, success: {}", certPath, success);
+        return success;
     }
 }

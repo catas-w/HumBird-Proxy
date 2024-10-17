@@ -133,8 +133,12 @@ public class SslSettingService extends AbstractSettingService {
                 component.setOperateToolTip("Delete");
             }
 
-            if (!certManager.isInstalled(config.getId())) {
-                component.setAlertLabel("Certificate is not", "installed!");
+            // set install cert action
+            if (!certManager.checkInstalled(config.getId())) {
+                component.setAlertLabel("Certificate not installed!", "Click to install.");
+                component.setOnClickLabelAction(event -> {
+                    installCert(config.getId());
+                });
             }
             certList.add(component);
         }
@@ -244,6 +248,26 @@ public class SslSettingService extends AbstractSettingService {
                 .add(Objects.requireNonNull(getClass().getResource("/css/cert-dialog.css")).toExternalForm());
 
         dialog.showAndWait();
+    }
+
+    /**
+     * install cert
+     * @param certId
+     */
+    private void installCert(String certId) {
+        boolean confirmed = AlertUtils.confirm("Warning",
+                "Confirm installation of the certificate? This action requires administrator privileges");
+        if (!confirmed) {
+            return;
+        }
+        try {
+            // refresh if succeed
+            certManager.installCert(certId);
+            initValues(appConfig);
+        } catch (Exception e) {
+            log.error("Error in installing certificate.", e);
+            AlertUtils.alertLater(Alert.AlertType.WARNING, "Error: " + e.getMessage());
+        }
     }
 
     /**

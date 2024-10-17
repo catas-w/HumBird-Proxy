@@ -9,5 +9,5 @@ public interface CertInstallProvider {
      * install certificate on local system
      * @param certPath path to x509certificate
      */
-    void install(String certPath);
+    boolean install(String certPath);
 }

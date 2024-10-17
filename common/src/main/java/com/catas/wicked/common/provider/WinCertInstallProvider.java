@@ -53,7 +53,7 @@ public class WinCertInstallProvider implements CertInstallProvider {
     }
 
     @Override
-    public void install(String certPath) {
+    public boolean install(String certPath) {
         String[] command = {
             "cmd.exe", "/c", "certutil", "-addstore", "root", certPath
         };
@@ -74,5 +74,6 @@ public class WinCertInstallProvider implements CertInstallProvider {
             log.error("Error in installing certificate in Windows: ", e);
             throw new RuntimeException(e.getMessage());
         }
+        return false;
     }
 }

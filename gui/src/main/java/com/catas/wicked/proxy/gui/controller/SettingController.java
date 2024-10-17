@@ -23,6 +23,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.control.Button;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.Labeled;
@@ -80,7 +81,7 @@ public class SettingController implements Initializable {
     public Tab externalSettingTab;
     public Tab throttleSettingTab;
     public HBox importCertBox;
-    public JFXButton importCertBtn;
+    public Button importCertBtn;
     public GridPane sslGridPane;
     @FXML
     private JFXToggleButton sysProxyBtn;

@@ -20,6 +20,7 @@
 
 <?import com.jfoenix.controls.JFXTabPane?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Button?>
 <AnchorPane prefHeight="500.0" prefWidth="700.0"
             xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.catas.wicked.proxy.gui.controller.SettingController">
@@ -110,7 +111,7 @@
                         <Label styleClass="grid-element" text="Root Certificate" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
 
                         <HBox fx:id="importCertBox" styleClass="grid-element" GridPane.rowIndex="5" GridPane.columnIndex="1">
-                            <JFXButton fx:id="importCertBtn" styleClass="import-btn" text="Import"/>
+                            <Button fx:id="importCertBtn" styleClass="import-btn" text="Import"/>
                         </HBox>
 
                     </GridPane>

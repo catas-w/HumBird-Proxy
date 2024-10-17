@@ -9,7 +9,7 @@ import java.util.Map;
 
 public interface WindowBlurLibrary extends Library {
     WindowBlurLibrary INSTANCE = Native.load(
-            "WindowBlur",
+            "WindowBlurLib",
             WindowBlurLibrary.class,
             Map.of(Library.OPTION_STRING_ENCODING, StandardCharsets.UTF_8.name()));
 

@@ -34,5 +34,7 @@ public interface CertManager {
 
     boolean isCertMatchingPriKey(X509Certificate certificate, PrivateKey privateKey);
 
-    boolean isInstalled(String certId);
+    boolean checkInstalled(String certId);
+
+    void installCert(String certId) throws Exception;
 }

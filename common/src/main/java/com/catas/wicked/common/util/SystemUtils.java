@@ -3,6 +3,8 @@ package com.catas.wicked.common.util;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * @see io.micronaut.context.condition.OperatingSystem
@@ -30,5 +32,9 @@ public class SystemUtils {
 
         process.waitFor();
         return result.toString();
+    }
+
+    public static Path getStoragePath(String fName) {
+        return Paths.get(SystemUtils.USER_HOME, ".wkproxy", fName);
     }
 }

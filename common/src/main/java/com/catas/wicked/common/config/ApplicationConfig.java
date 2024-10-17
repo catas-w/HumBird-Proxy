@@ -22,7 +22,6 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.cert.X509Certificate;
@@ -88,7 +87,7 @@ public class ApplicationConfig implements AutoCloseable {
     }
 
     private File getLocalConfigFile() throws IOException {
-        Path configPath = Paths.get(SystemUtils.USER_HOME, ".wkproxy", "config.json");
+        Path configPath = SystemUtils.getStoragePath("config.json");
         return configPath.toFile();
     }
 

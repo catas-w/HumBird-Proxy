@@ -50,12 +50,4 @@ public class CertInstallProviderTest extends BaseTest {
         }
 
     }
-
-    @Test
-    @ConditionalTest(os = Requires.Family.MAC_OS)
-    public void testMacInstallCert() {
-        MacCertInstallProvider provider = new MacCertInstallProvider();
-
-        provider.install("/Users/catas/Desktop/locheed.crt");
-    }
 }

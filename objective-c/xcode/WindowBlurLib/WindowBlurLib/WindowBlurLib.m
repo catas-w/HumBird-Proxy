@@ -1,6 +1,6 @@
-#import "WindowBlur.h"
 #import "Foundation/Foundation.h"
 #import "AppKit/AppKit.h"
+#import "WindowBlurLib.h"
 
 void setBlurWindow(void* windowptr, NSString *nsAppearanceName) {
     NSLog(@"Calling setBlurWindow with ptr: %ld, apperance: %@", (long)windowptr, nsAppearanceName);

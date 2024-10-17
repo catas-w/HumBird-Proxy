@@ -1,3 +1,12 @@
+/******* scroll-bar ******/
+.scroll-bar {
+    -fx-background-color: TRANSPARENT;
+}
+.scroll-bar:horizontal .thumb,
+.scroll-bar:vertical .thumb {
+    -fx-background-color: #bababa;
+    -fx-background-radius: 5;
+}
 
 /******* import cert dialog ******/
 .cert-select-btn {

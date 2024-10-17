@@ -15,6 +15,8 @@ import jakarta.annotation.PostConstruct;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.crypto.SecretKey;
 import java.io.ByteArrayInputStream;
@@ -22,7 +24,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Paths;
 import java.security.PrivateKey;
 import java.security.Signature;
 import java.security.cert.CertificateException;
@@ -66,7 +67,7 @@ public class SimpleCertManager implements CertManager {
     public void init() throws IOException {
         // load custom certs
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        File certFile = getCertFile();
+        File certFile = getCertStorageFile();
         if (!certFile.exists()) {
             log.warn("custom certs not exist");
             certFile.getParentFile().mkdirs();
@@ -132,7 +133,7 @@ public class SimpleCertManager implements CertManager {
                     .build();
 
             customCertList.add(config);
-            objectMapper.writeValue(getCertFile(), customCertList);
+            objectMapper.writeValue(getCertStorageFile(), customCertList);
 
             return config;
         } catch (RuntimeException e) {
@@ -168,7 +169,7 @@ public class SimpleCertManager implements CertManager {
         boolean res = customCertList.removeIf(config -> config.getId().equals(certId));
         if (res) {
             try {
-                objectMapper.writeValue(getCertFile(), customCertList);
+                objectMapper.writeValue(getCertStorageFile(), customCertList);
             } catch (IOException e) {
                 log.error("Error in deleting cert.", e);
             }
@@ -284,7 +285,7 @@ public class SimpleCertManager implements CertManager {
     }
 
     @Override
-    public boolean isInstalled(String certId) {
+    public boolean checkInstalled(String certId) {
         try {
             Map<String, String> certInfoMap = getCertInfo(certId);
             return certInstallProvider.checkCertInstalled(certInfoMap.get("CN"), certInfoMap.get("SHA256"));
@@ -294,8 +295,28 @@ public class SimpleCertManager implements CertManager {
         return false;
     }
 
-    private File getCertFile() {
-        return Paths.get(SystemUtils.USER_HOME, ".wkproxy", "certs.data").toFile();
+    @Override
+    public void installCert(String certId) throws Exception {
+        String certPEM = getCertPEM(certId);
+        if (StringUtils.isBlank(certId)) {
+            throw new RuntimeException("Cannot Parse Certificate!");
+        }
+
+        File tempFile = SystemUtils.getStoragePath("temp_" + IdUtil.getSimpleId() + ".crt").toFile();
+        if (!tempFile.exists()) {
+            tempFile.getParentFile().mkdirs();
+        }
+        FileUtils.writeByteArrayToFile(tempFile, certPEM.getBytes(StandardCharsets.UTF_8));
+
+        log.info("Trying to install {}", tempFile.getAbsoluteFile());
+        boolean res = certInstallProvider.install(tempFile.getAbsolutePath());
+        if (!res) {
+            throw new RuntimeException("Failed To Install Certificate!");
+        }
+    }
+
+    private File getCertStorageFile() {
+        return SystemUtils.getStoragePath("certs.data").toFile();
     }
 
     static class DefaultCertHolder {

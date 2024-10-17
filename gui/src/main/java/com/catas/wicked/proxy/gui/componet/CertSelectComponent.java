@@ -7,9 +7,12 @@ import javafx.event.Event;
 import javafx.scene.control.Label;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Tooltip;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.Border;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
+import javafx.scene.paint.Color;
 import javafx.util.Duration;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
@@ -31,6 +34,7 @@ public class CertSelectComponent extends HBox {
         radioBtn = new CertRadioButton(option, certId);
         radioBtn.getStyleClass().add("cert-radio-btn");
 
+        // pane.setBorder(Border.stroke(Color.valueOf("#00ea00")));
         HBox.setHgrow(pane, Priority.ALWAYS);
 
         // preview btn
