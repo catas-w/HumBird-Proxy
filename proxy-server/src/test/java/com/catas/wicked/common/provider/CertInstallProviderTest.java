@@ -48,6 +48,19 @@ public class CertInstallProviderTest extends BaseTest {
             boolean res = provider.checkCertInstalled(certInfo.get("CN"), certInfo.get("SHA256"));
             System.out.println("name: " + config.getName() + " installed: " + res);
         }
+    }
 
+    @Test
+    @ConditionalTest(os = Requires.Family.WINDOWS)
+    public void testWinCertInstallCheck() throws Exception {
+        WinCertInstallProvider provider = new WinCertInstallProvider();
+        provider.init();
+
+        List<CertificateConfig> certList = certManager.getCertList();
+        for (CertificateConfig config : certList) {
+            Map<String, String> certInfo = certManager.getCertInfo(config.getId());
+            boolean res = provider.checkCertInstalled(certInfo.get("CN"), certInfo.get("SHA256"));
+            System.out.println("name: " + config.getName() + " installed: " + res);
+        }
     }
 }

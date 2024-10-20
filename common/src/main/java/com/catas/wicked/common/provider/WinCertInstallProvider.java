@@ -27,8 +27,7 @@ public class WinCertInstallProvider implements CertInstallProvider {
     @Override
     public boolean checkCertInstalled(String certName, String sha256) {
         try {
-            // Access the Windows-ROOT certificate store using BouncyCastle
-            KeyStore keyStore = KeyStore.getInstance("Windows-ROOT", "BC");
+            KeyStore keyStore = KeyStore.getInstance("Windows-ROOT");
             keyStore.load(null, null);
 
             // Iterate over all certificates in the Windows-ROOT store
@@ -37,23 +36,57 @@ public class WinCertInstallProvider implements CertInstallProvider {
                 String alias = aliases.nextElement();
                 Certificate cert = keyStore.getCertificate(alias);
                 if (alias.equals(certName) && cert instanceof X509Certificate localCert) {
-                    // if (x509Cert.equals(certificateToCheck)) {
-
                     if (StringUtils.equalsIgnoreCase(sha256, CommonUtils.SHA256(localCert.getEncoded()))) {
-                        log.info("Certificate is installed in the Windows-ROOT store.");
+                        log.info("Certificate: {} is installed in the Windows-ROOT store.", certName);
                         return true;
                     }
                 }
             }
-            log.info("Certificate is NOT installed in the Windows-ROOT store.");
         } catch (Exception e) {
-            log.error("Error in checking cert installation on Win: ", e);
+            log.error("Error in checking cert installation on Win: {}", certName, e);
         }
         return false;
     }
 
     @Override
     public boolean install(String certPath) {
+        return installWithPowerShell(certPath);
+    }
+
+    /**
+     * Import-Certificate -FilePath "C:\Users\catas\Desktop\TestLocheed.crt" -CertStoreLocation Cert:\LocalMachine\Root
+     */
+    private boolean installWithPowerShell(String certPath) {
+        String[] cmd = {
+            "Import-Certificate", "-FilePath", certPath, "-CertStoreLocation", "Cert:\\LocalMachine\\Root"
+        };
+
+        // PowerShell command to run cmd as admin
+        String psCommand = "\"Start-Process powershell -ArgumentList '-NoProfile -ExecutionPolicy Bypass -Command " +
+               StringUtils.join(cmd, ' ') + "' -Verb RunAs\"";
+
+        try {
+            ProcessBuilder pb = new ProcessBuilder("powershell.exe", "-Command", psCommand);
+            pb.inheritIO();
+
+            // Start the process
+            Process process = pb.start();
+            process.waitFor();
+            int exitCode = process.waitFor();
+
+            if (exitCode == 0) {
+                log.info("Certificate installed successfully.");
+            } else {
+                throw new RuntimeException("Failed to install the certificate. Exit code: " + exitCode);
+            }
+            return true;
+        } catch (Exception e) {
+            log.error("Error in installing certificate in Windows: ", e);
+        }
+        return false;
+    }
+
+    private boolean installWithCmd(String certPath) {
         String[] command = {
             "cmd.exe", "/c", "certutil", "-addstore", "root", certPath
         };
